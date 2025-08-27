@@ -461,3 +461,45 @@ class MCPServerStatus(BaseModel):
     error: Optional[str] = None
     restart_count: int = 0
     uptime: float = 0.0
+
+
+# API Models for Web Interface
+class HumanCreate(BaseModel):
+    """Model for creating a new human."""
+    name: str
+    email: Optional[str] = None
+    skills: List[str] = Field(default_factory=list)
+    expertise_areas: List[str] = Field(default_factory=list)
+    communication_style: str = "collaborative"
+    availability_status: str = "available"
+
+
+class AgentCreate(BaseModel):
+    """Model for creating a new agent."""
+    role_type: AgentRoleType = AgentRoleType.WORKER
+    capabilities: List[str] = Field(default_factory=list)
+    human_id: Optional[str] = None
+    relationship_type: AgentHumanRelationType = AgentHumanRelationType.PURE_AGENT
+
+
+class TaskCreate(BaseModel):
+    """Model for creating a new task."""
+    description: str
+    priority: int = Field(default=2, ge=1, le=5)
+    agent_id: Optional[str] = None
+    deadline: Optional[datetime] = None
+
+
+class SystemStatusResponse(BaseModel):
+    """Response model for system status."""
+    status: str
+    uptime: float
+    total_agents: int
+    total_humans: int
+    total_tasks: int
+    active_agents: int
+    pending_tasks: int
+    completed_tasks: int
+    failed_tasks: int
+    mcp_servers_running: int
+    last_updated: datetime

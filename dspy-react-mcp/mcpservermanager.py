@@ -97,8 +97,8 @@ class MCPServerManager:
             return False
         
         try:
-            # Prepare environment
-            env = {**server_config.env}
+            # Prepare environment - inherit current environment and add server-specific vars
+            env = {**os.environ, **server_config.env}
             
             # Start the process
             process = subprocess.Popen(

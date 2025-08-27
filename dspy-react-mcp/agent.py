@@ -142,6 +142,36 @@ class Agent:
         
         logger.info(f"Agent {self.number} stopped")
     
+    async def receive_task(self, description: str, priority: int = 1, requires_human_approval: bool = False) -> str:
+        """Receive a new task and add it to the queue."""
+        task = Task(
+            description=description,
+            status=TaskStatus.PENDING,
+            priority=priority,
+            metadata={
+                "requires_human_approval": requires_human_approval,
+                "assigned_agent": self.number
+            }
+        )
+        
+        # Add to task queue
+        self.task_queue.append(task)
+        
+        # Sort queue by priority (higher priority first)
+        self.task_queue.sort(key=lambda t: t.priority, reverse=True)
+        
+        # Add to memory
+        self.memory.add_episodic({
+            "action": "received_task",
+            "task_id": task.id,
+            "description": description,
+            "priority": priority,
+            "requires_human_approval": requires_human_approval
+        })
+        
+        logger.info(f"Agent {self.number} received task {task.id}: {description}")
+        return task.id
+    
     async def hire_sub_agent(
         self,
         role_type: AgentRoleType = AgentRoleType.WORKER,
@@ -736,6 +766,37 @@ class Agent:
         status = self.get_status()
         status["sub_agents"] = [agent.get_hierarchy_status() for agent in self.agents]
         return status
+    
+    async def receive_task(self, description: str, priority: int = 2) -> str:
+        """Receive a task from external source."""
+        task = Task(
+            description=description,
+            status=TaskStatus.PENDING,
+            priority=priority,
+            created_at=datetime.utcnow()
+        )
+        
+        # Add to task queue
+        self.task_queue.append(task)
+        
+        # Add to memory
+        self.memory.add_short_term({
+            "type": "task_received",
+            "task_id": task.id,
+            "description": description,
+            "priority": priority,
+            "timestamp": datetime.utcnow().isoformat()
+        })
+        
+        # Add thought
+        task_thought = Thought(
+            type=ThoughtType.TASK,
+            content=f"Received new task: {description} (Priority: {priority})"
+        )
+        self.thought_graph.add_thought(task_thought)
+        
+        logger.info(f"Agent {self.number} received task: {description}")
+        return task.id
     
     @asynccontextmanager
     async def temporary_sub_agent(self, capabilities: List[str] = None):
