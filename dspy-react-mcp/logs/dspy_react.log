@@ -1,0 +1,570 @@
+2025-08-27 18:50:25,189 - __main__ - INFO - Starting basic functionality test
+2025-08-27 18:50:25,189 - __main__ - INFO - Starting system...
+2025-08-27 18:50:25,189 - main - INFO - Starting DSPy React MCP System
+2025-08-27 18:50:25,189 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 18:50:25,198 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,204 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,210 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,211 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 18:50:25,211 - main - ERROR - Failed to start system: module 'dspy' has no attribute 'OpenAI'
+2025-08-27 18:50:25,212 - __main__ - ERROR - Test failed: module 'dspy' has no attribute 'OpenAI'
+2025-08-27 18:50:25,212 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 18:50:25,212 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 18:50:25,212 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 18:50:25,212 - main - INFO - DSPy React MCP System stopped
+2025-08-27 18:50:25,212 - __main__ - INFO - System stopped
+2025-08-27 18:50:25,212 - __main__ - INFO - Starting human-agent relationship test
+2025-08-27 18:50:25,212 - main - INFO - Starting DSPy React MCP System
+2025-08-27 18:50:25,212 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 18:50:25,219 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,224 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,231 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,231 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 18:50:25,231 - main - ERROR - Failed to start system: module 'dspy' has no attribute 'OpenAI'
+2025-08-27 18:50:25,231 - __main__ - ERROR - Human-agent relationship test failed: module 'dspy' has no attribute 'OpenAI'
+2025-08-27 18:50:25,231 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 18:50:25,232 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 18:50:25,232 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 18:50:25,232 - main - INFO - DSPy React MCP System stopped
+2025-08-27 18:50:25,232 - __main__ - INFO - Starting agent hierarchy test
+2025-08-27 18:50:25,233 - main - INFO - Starting DSPy React MCP System
+2025-08-27 18:50:25,233 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 18:50:25,239 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,245 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,252 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:50:25,252 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 18:50:25,253 - main - ERROR - Failed to start system: module 'dspy' has no attribute 'OpenAI'
+2025-08-27 18:50:25,253 - __main__ - ERROR - Hierarchy test failed: module 'dspy' has no attribute 'OpenAI'
+2025-08-27 18:50:25,253 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 18:50:25,253 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 18:50:25,253 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 18:50:25,253 - main - INFO - DSPy React MCP System stopped
+2025-08-27 18:51:54,237 - __main__ - INFO - Starting DSPy React MCP System
+2025-08-27 18:51:54,238 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 18:51:54,247 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:51:54,254 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:51:54,262 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:51:54,262 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 18:51:54,268 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID c3f068b4-ff2e-4726-a620-455ca5f75057 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:51:54,268 - agent - INFO - Agent 0 started
+2025-08-27 18:51:54,272 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID 7baad8e7-78bb-4b64-b85c-a4699f5f406b - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:51:54,272 - agent - INFO - Agent 1 started
+2025-08-27 18:51:54,272 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:51:54,275 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID 66b519ac-079e-45ef-9490-f639825e782e - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:51:54,275 - agent - INFO - Agent 2 started
+2025-08-27 18:51:54,275 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:51:54,278 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID f0ddfb6c-24ba-45bd-a5c7-003723e93809 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:51:54,278 - agent - INFO - Agent 3 started
+2025-08-27 18:51:54,278 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:51:54,278 - __main__ - INFO - Created 3 initial agents
+2025-08-27 18:51:54,279 - __main__ - INFO - DSPy React MCP System started successfully
+2025-08-27 18:51:54,279 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:51:59,278 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:04,279 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:09,281 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:14,281 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:19,283 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:24,284 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:29,283 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:34,285 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:39,286 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:44,287 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:49,288 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:54,289 - __main__ - WARNING - No MCP servers are running
+2025-08-27 18:52:57,032 - __main__ - INFO - Received signal 2, initiating shutdown...
+2025-08-27 18:52:57,086 - __main__ - INFO - Added human Alice Johnson with ID c98ef84a-fd23-4447-a23d-6b57a2ca8c22
+2025-08-27 18:52:57,087 - __main__ - INFO - Added human Bob Smith with ID 81e435f5-161a-49c5-9135-7023ff35f6c0
+2025-08-27 18:52:57,090 - agent - INFO - Initialized Agent 4 (AgentRoleType.ANALYST) with ID 10ff2d66-3396-406b-83c7-d1c31b993042 - Relationship: AgentHumanRelationType.HUMAN_AGENT_PAIR
+2025-08-27 18:52:57,090 - agent - INFO - Agent 4 started
+2025-08-27 18:52:57,090 - agent - INFO - Agent 0 hired sub-agent 4 (AgentHumanRelationType.HUMAN_AGENT_PAIR)
+2025-08-27 18:52:57,090 - __main__ - INFO - Created human-agent pair: Human c98ef84a-fd23-4447-a23d-6b57a2ca8c22 with Agent 4
+2025-08-27 18:52:57,093 - agent - INFO - Initialized Agent 5 (AgentRoleType.COORDINATOR) with ID 0bb98f45-7b71-4e11-b561-d6b71426080b - Relationship: AgentHumanRelationType.HUMAN_PROXY_AGENT
+2025-08-27 18:52:57,093 - agent - INFO - Agent 5 started
+2025-08-27 18:52:57,093 - agent - INFO - Agent 0 hired sub-agent 5 (AgentHumanRelationType.HUMAN_PROXY_AGENT)
+2025-08-27 18:52:57,094 - __main__ - INFO - Created human proxy agent: Agent 5 for Human 81e435f5-161a-49c5-9135-7023ff35f6c0
+2025-08-27 18:52:57,094 - agent - INFO - Agent 0 received task: Analyze system logs for errors
+2025-08-27 18:52:57,094 - __main__ - INFO - Submitted task: 314acd92-1084-46b8-bcec-8f3e9fd3f1f0
+2025-08-27 18:52:57,094 - agent - INFO - Agent 0 received task: Generate quarterly performance report for external stakeholders
+2025-08-27 18:52:57,094 - __main__ - INFO - Submitted task: ee96b0af-f6cb-45df-8037-93affc506ef5
+2025-08-27 18:52:57,094 - agent - INFO - Agent 0 received task: Coordinate system maintenance schedule across teams
+2025-08-27 18:52:57,094 - __main__ - INFO - Submitted task: d36616fd-cfc3-4aab-a78d-b9b6f23cc533
+2025-08-27 18:52:57,778 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:52:58,029 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:52:59,160 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:01,572 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:07,644 - agent - ERROR - Error in agent 0 processing loop: 1 validation error for TaskOutput
+status
+  Field required [type=missing, input_value={'result': None, 'success...08-27T18:53:07.643624'}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2025-08-27 18:53:08,815 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:08,962 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:10,093 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:12,225 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:18,294 - agent - ERROR - Error in agent 0 processing loop: 1 validation error for TaskOutput
+status
+  Field required [type=missing, input_value={'result': None, 'success...08-27T18:53:18.294589'}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2025-08-27 18:53:19,470 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:19,616 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:20,746 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:22,885 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-08-27 18:53:28,951 - agent - ERROR - Error in agent 0 processing loop: 1 validation error for TaskOutput
+status
+  Field required [type=missing, input_value={'result': None, 'success...08-27T18:53:28.951222'}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2025-08-27 18:53:46,106 - __main__ - INFO - Received signal 2, initiating shutdown...
+2025-08-27 18:53:48,294 - __main__ - INFO - Stopping DSPy React MCP System
+2025-08-27 18:53:48,294 - agent - INFO - Agent 1 stopped
+2025-08-27 18:53:48,294 - agent - INFO - Agent 2 stopped
+2025-08-27 18:53:48,294 - agent - INFO - Agent 3 stopped
+2025-08-27 18:53:48,294 - agent - INFO - Agent 4 stopped
+2025-08-27 18:53:48,294 - agent - INFO - Agent 5 stopped
+2025-08-27 18:53:48,294 - agent - INFO - Agent 0 stopped
+2025-08-27 18:53:48,294 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 18:53:48,294 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 18:53:48,294 - __main__ - INFO - DSPy React MCP System stopped
+2025-08-27 18:54:17,893 - main - INFO - Starting DSPy React MCP System
+2025-08-27 18:54:17,893 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 18:54:17,901 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:54:17,908 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:54:17,916 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:54:17,916 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 18:54:17,921 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 955d2a7f-8370-4767-89aa-8143bb12b35f - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:54:17,921 - agent - INFO - Agent 0 started
+2025-08-27 18:54:17,924 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID ef4fe7f5-ff55-44b2-bbc4-2f9eaca2a301 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:54:17,924 - agent - INFO - Agent 1 started
+2025-08-27 18:54:17,924 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:54:17,927 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID 1f011eeb-8bd0-4b80-9406-6b68ac95aba0 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:54:17,927 - agent - INFO - Agent 2 started
+2025-08-27 18:54:17,927 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:54:17,931 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 83730abc-01ba-4054-801b-d903c466b30b - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:54:17,931 - agent - INFO - Agent 3 started
+2025-08-27 18:54:17,931 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:54:17,931 - main - INFO - Created 3 initial agents
+2025-08-27 18:54:17,931 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 18:54:17,931 - main - WARNING - No MCP servers are running
+2025-08-27 18:54:22,932 - main - WARNING - No MCP servers are running
+2025-08-27 18:54:27,930 - main - WARNING - No MCP servers are running
+2025-08-27 18:54:32,931 - main - WARNING - No MCP servers are running
+2025-08-27 18:54:37,932 - main - WARNING - No MCP servers are running
+2025-08-27 18:54:42,933 - main - WARNING - No MCP servers are running
+2025-08-27 18:54:47,934 - main - WARNING - No MCP servers are running
+2025-08-27 18:54:50,733 - main - INFO - Received signal 2, initiating shutdown...
+2025-08-27 18:54:50,744 - main - INFO - Added human Alice Johnson with ID ba772c13-a8df-4592-9470-e4dd39ac947d
+2025-08-27 18:54:50,744 - main - INFO - Added human Bob Smith with ID 696d1518-5863-4190-83b2-4d0e2d7e7501
+2025-08-27 18:54:50,748 - agent - INFO - Initialized Agent 4 (AgentRoleType.ANALYST) with ID d210ce50-639f-4895-8b2b-22ad044b2d76 - Relationship: AgentHumanRelationType.HUMAN_AGENT_PAIR
+2025-08-27 18:54:50,749 - agent - INFO - Agent 4 started
+2025-08-27 18:54:50,749 - agent - INFO - Agent 0 hired sub-agent 4 (AgentHumanRelationType.HUMAN_AGENT_PAIR)
+2025-08-27 18:54:50,749 - main - INFO - Created human-agent pair: Human ba772c13-a8df-4592-9470-e4dd39ac947d with Agent 4
+2025-08-27 18:54:50,752 - agent - INFO - Initialized Agent 5 (AgentRoleType.COORDINATOR) with ID 342a49de-d4f3-4ab3-9cd4-c6ed34c12686 - Relationship: AgentHumanRelationType.HUMAN_PROXY_AGENT
+2025-08-27 18:54:50,752 - agent - INFO - Agent 5 started
+2025-08-27 18:54:50,752 - agent - INFO - Agent 0 hired sub-agent 5 (AgentHumanRelationType.HUMAN_PROXY_AGENT)
+2025-08-27 18:54:50,752 - main - INFO - Created human proxy agent: Agent 5 for Human 696d1518-5863-4190-83b2-4d0e2d7e7501
+2025-08-27 18:54:50,752 - __main__ - ERROR - Test failed
+Traceback (most recent call last):
+  File "/workspace/dspy-react-mcp/simple_test.py", line 75, in test_system_without_api
+    print(f"  Total Agents: {status.total_agents}")
+                             ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'total_agents'
+2025-08-27 18:54:50,753 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 18:54:50,754 - agent - INFO - Agent 1 stopped
+2025-08-27 18:54:50,754 - agent - INFO - Agent 2 stopped
+2025-08-27 18:54:50,754 - agent - INFO - Agent 3 stopped
+2025-08-27 18:54:50,754 - agent - INFO - Agent 4 stopped
+2025-08-27 18:54:50,754 - agent - INFO - Agent 5 stopped
+2025-08-27 18:54:50,754 - agent - INFO - Agent 0 stopped
+2025-08-27 18:54:50,754 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 18:54:50,754 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 18:54:50,754 - main - INFO - DSPy React MCP System stopped
+2025-08-27 18:55:10,616 - main - INFO - Starting DSPy React MCP System
+2025-08-27 18:55:10,616 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 18:55:10,624 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:55:10,629 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:55:10,634 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:55:10,635 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 18:55:10,639 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 16a1b514-5951-4b2b-b233-f14604117260 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:55:10,639 - agent - INFO - Agent 0 started
+2025-08-27 18:55:10,642 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID da51ea11-e4c3-44af-bdf9-e5b0dedc021c - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:55:10,642 - agent - INFO - Agent 1 started
+2025-08-27 18:55:10,642 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:55:10,644 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID 299b185e-e2f1-43f5-b84a-e442a4a3c680 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:55:10,644 - agent - INFO - Agent 2 started
+2025-08-27 18:55:10,645 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:55:10,647 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 3f3c5fa8-d64d-4711-b7a9-cd5db8bd3f9c - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:55:10,647 - agent - INFO - Agent 3 started
+2025-08-27 18:55:10,648 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:55:10,648 - main - INFO - Created 3 initial agents
+2025-08-27 18:55:10,648 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 18:55:10,648 - main - WARNING - No MCP servers are running
+2025-08-27 18:55:15,649 - main - WARNING - No MCP servers are running
+2025-08-27 18:55:20,651 - main - WARNING - No MCP servers are running
+2025-08-27 18:55:23,707 - main - INFO - Received signal 15, initiating shutdown...
+2025-08-27 18:55:23,790 - main - INFO - Added human Alice Johnson with ID f03a439d-1402-4441-8eef-1b62eeadbe52
+2025-08-27 18:55:23,790 - main - INFO - Added human Bob Smith with ID 99e12501-6750-49b9-b8db-e82179e87ea4
+2025-08-27 18:55:23,793 - agent - INFO - Initialized Agent 4 (AgentRoleType.ANALYST) with ID f40dd183-7c28-48b9-90eb-59fa4e19d428 - Relationship: AgentHumanRelationType.HUMAN_AGENT_PAIR
+2025-08-27 18:55:23,793 - agent - INFO - Agent 4 started
+2025-08-27 18:55:23,793 - agent - INFO - Agent 0 hired sub-agent 4 (AgentHumanRelationType.HUMAN_AGENT_PAIR)
+2025-08-27 18:55:23,793 - main - INFO - Created human-agent pair: Human f03a439d-1402-4441-8eef-1b62eeadbe52 with Agent 4
+2025-08-27 18:55:23,796 - agent - INFO - Initialized Agent 5 (AgentRoleType.COORDINATOR) with ID 55fe5e32-a835-46bb-8140-e0eef7d75043 - Relationship: AgentHumanRelationType.HUMAN_PROXY_AGENT
+2025-08-27 18:55:23,796 - agent - INFO - Agent 5 started
+2025-08-27 18:55:23,796 - agent - INFO - Agent 0 hired sub-agent 5 (AgentHumanRelationType.HUMAN_PROXY_AGENT)
+2025-08-27 18:55:23,796 - main - INFO - Created human proxy agent: Agent 5 for Human 99e12501-6750-49b9-b8db-e82179e87ea4
+2025-08-27 18:55:23,797 - __main__ - ERROR - Test failed
+Traceback (most recent call last):
+  File "/workspace/dspy-react-mcp/simple_test.py", line 90, in test_system_without_api
+    hierarchy = await system.get_agent_hierarchy()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'DSPyReactMCPSystem' object has no attribute 'get_agent_hierarchy'
+2025-08-27 18:55:23,798 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 18:55:23,798 - agent - INFO - Agent 1 stopped
+2025-08-27 18:55:23,798 - agent - INFO - Agent 2 stopped
+2025-08-27 18:55:23,798 - agent - INFO - Agent 3 stopped
+2025-08-27 18:55:23,798 - agent - INFO - Agent 4 stopped
+2025-08-27 18:55:23,798 - agent - INFO - Agent 5 stopped
+2025-08-27 18:55:23,798 - agent - INFO - Agent 0 stopped
+2025-08-27 18:55:23,798 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 18:55:23,798 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 18:55:23,798 - main - INFO - DSPy React MCP System stopped
+2025-08-27 18:58:27,195 - main - INFO - Starting DSPy React MCP System
+2025-08-27 18:58:27,195 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 18:58:27,203 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:58:27,212 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:58:27,224 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 18:58:27,225 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 18:58:27,229 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 67deb265-e9d2-4dff-aec9-01133f76df93 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:58:27,230 - agent - INFO - Agent 0 started
+2025-08-27 18:58:27,234 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID 51b6de10-e18f-4d7a-9d73-aa60d9fc5f7d - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:58:27,235 - agent - INFO - Agent 1 started
+2025-08-27 18:58:27,235 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:58:27,240 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID 49849ffd-a5ac-4091-ba87-bf275984ace2 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:58:27,241 - agent - INFO - Agent 2 started
+2025-08-27 18:58:27,241 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:58:27,246 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID d574a04e-848b-47b3-8c80-1bb0a39aa24a - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 18:58:27,246 - agent - INFO - Agent 3 started
+2025-08-27 18:58:27,246 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 18:58:27,246 - main - INFO - Created 3 initial agents
+2025-08-27 18:58:27,246 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 18:58:27,246 - main - WARNING - No MCP servers are running
+2025-08-27 18:58:32,248 - main - WARNING - No MCP servers are running
+2025-08-27 18:58:37,250 - main - WARNING - No MCP servers are running
+2025-08-27 18:58:42,250 - main - WARNING - No MCP servers are running
+2025-08-27 18:58:47,251 - main - WARNING - No MCP servers are running
+2025-08-27 18:58:52,252 - main - WARNING - No MCP servers are running
+2025-08-27 18:58:57,252 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:02,253 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:07,255 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:12,256 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:17,258 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:22,259 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:27,258 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:32,260 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:37,261 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:42,262 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:47,263 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:52,265 - main - WARNING - No MCP servers are running
+2025-08-27 18:59:57,265 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:02,266 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:07,268 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:12,270 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:17,270 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:22,271 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:27,272 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:32,272 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:37,273 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:42,274 - main - WARNING - No MCP servers are running
+2025-08-27 19:00:42,694 - main - INFO - Received signal 2, initiating shutdown...
+2025-08-27 19:00:42,761 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:00:56,743 - main - INFO - Received signal 2, initiating shutdown...
+2025-08-27 19:01:10,194 - main - INFO - Received signal 2, initiating shutdown...
+2025-08-27 19:01:33,850 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:01:33,851 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:01:33,858 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:01:33,863 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:01:33,869 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:01:33,869 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:01:33,874 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 1ae90618-49e9-4f90-b61d-be6c391c2cfc - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:01:33,874 - agent - INFO - Agent 0 started
+2025-08-27 19:01:33,877 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID a5c5b794-279e-4328-ab55-86253cbc226e - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:01:33,877 - agent - INFO - Agent 1 started
+2025-08-27 19:01:33,877 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:01:33,882 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID d8e8addb-c2ef-4981-a82c-b3d708ae0015 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:01:33,882 - agent - INFO - Agent 2 started
+2025-08-27 19:01:33,882 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:01:33,885 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID e90a5e19-a12a-4845-a55b-5809933a0704 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:01:33,885 - agent - INFO - Agent 3 started
+2025-08-27 19:01:33,885 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:01:33,885 - main - INFO - Created 3 initial agents
+2025-08-27 19:01:33,885 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:01:33,885 - main - WARNING - No MCP servers are running
+2025-08-27 19:01:38,886 - main - WARNING - No MCP servers are running
+2025-08-27 19:01:43,887 - main - WARNING - No MCP servers are running
+2025-08-27 19:01:48,889 - main - WARNING - No MCP servers are running
+2025-08-27 19:01:53,889 - main - WARNING - No MCP servers are running
+2025-08-27 19:01:58,888 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:03,889 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:08,891 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:13,893 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:18,893 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:23,894 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:28,892 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:33,893 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:38,894 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:43,895 - main - WARNING - No MCP servers are running
+2025-08-27 19:02:45,868 - main - INFO - Received signal 15, initiating shutdown...
+2025-08-27 19:02:45,927 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:02:45,928 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 19:02:45,928 - agent - INFO - Agent 1 stopped
+2025-08-27 19:02:45,928 - agent - INFO - Agent 2 stopped
+2025-08-27 19:02:45,928 - agent - INFO - Agent 3 stopped
+2025-08-27 19:02:45,928 - agent - INFO - Agent 0 stopped
+2025-08-27 19:02:45,928 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 19:02:45,928 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 19:02:45,928 - main - INFO - DSPy React MCP System stopped
+2025-08-27 19:02:45,928 - webui - INFO - DSPy React MCP System stopped
+2025-08-27 19:03:30,854 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:03:30,854 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:03:30,862 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:03:30,869 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:03:30,877 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:03:30,877 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:03:30,881 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 86e64eb7-a490-4bfc-b333-180f05afded5 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:03:30,881 - agent - INFO - Agent 0 started
+2025-08-27 19:03:30,885 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID fdeb5666-917d-4f82-805e-4e8e7c7f2f88 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:03:30,886 - agent - INFO - Agent 1 started
+2025-08-27 19:03:30,886 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:03:30,889 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID 29468d60-ac7e-4aaa-a243-342eb58e591b - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:03:30,889 - agent - INFO - Agent 2 started
+2025-08-27 19:03:30,889 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:03:30,892 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 9c6ee1bf-9ffa-4d6b-acc4-5faf77f3e781 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:03:30,892 - agent - INFO - Agent 3 started
+2025-08-27 19:03:30,892 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:03:30,892 - main - INFO - Created 3 initial agents
+2025-08-27 19:03:30,892 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:03:30,892 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:03:30,893 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 19:03:30,893 - agent - INFO - Agent 1 stopped
+2025-08-27 19:03:30,893 - agent - INFO - Agent 2 stopped
+2025-08-27 19:03:30,893 - agent - INFO - Agent 3 stopped
+2025-08-27 19:03:30,893 - agent - INFO - Agent 0 stopped
+2025-08-27 19:03:30,893 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 19:03:30,893 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 19:03:30,893 - main - INFO - DSPy React MCP System stopped
+2025-08-27 19:03:30,893 - webui - INFO - DSPy React MCP System stopped
+2025-08-27 19:03:47,545 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:03:47,545 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:03:47,553 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:03:47,559 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:03:47,565 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:03:47,565 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:03:47,569 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 3b65400d-3154-4a1f-9619-b4aa83e25b34 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:03:47,570 - agent - INFO - Agent 0 started
+2025-08-27 19:03:47,572 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID 3c4cb54a-ac78-422d-8b17-283d16895e82 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:03:47,573 - agent - INFO - Agent 1 started
+2025-08-27 19:03:47,573 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:03:47,576 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID b74168f7-ce53-44ee-bec4-03d4c21e1185 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:03:47,577 - agent - INFO - Agent 2 started
+2025-08-27 19:03:47,577 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:03:47,579 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 522fbc6c-2845-4d3f-84d3-ba81301c0f65 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:03:47,579 - agent - INFO - Agent 3 started
+2025-08-27 19:03:47,580 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:03:47,580 - main - INFO - Created 3 initial agents
+2025-08-27 19:03:47,580 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:03:47,580 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:03:47,580 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 19:03:47,580 - agent - INFO - Agent 1 stopped
+2025-08-27 19:03:47,580 - agent - INFO - Agent 2 stopped
+2025-08-27 19:03:47,580 - agent - INFO - Agent 3 stopped
+2025-08-27 19:03:47,580 - agent - INFO - Agent 0 stopped
+2025-08-27 19:03:47,580 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 19:03:47,580 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 19:03:47,581 - main - INFO - DSPy React MCP System stopped
+2025-08-27 19:03:47,581 - webui - INFO - DSPy React MCP System stopped
+2025-08-27 19:04:16,527 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:04:16,527 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:04:16,535 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:04:16,542 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:04:16,549 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:04:16,549 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:04:16,553 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 45d51abf-3de9-4089-b1e9-9fc621aaef8f - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:04:16,554 - agent - INFO - Agent 0 started
+2025-08-27 19:04:16,556 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID fabe6e10-7c34-4fc5-85be-7757e69b3467 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:04:16,556 - agent - INFO - Agent 1 started
+2025-08-27 19:04:16,556 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:04:16,560 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID 51539131-7c29-40c7-b96d-c25d7f9c8a73 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:04:16,560 - agent - INFO - Agent 2 started
+2025-08-27 19:04:16,560 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:04:16,563 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID a027aa3c-a513-4684-bf63-a10df1192789 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:04:16,563 - agent - INFO - Agent 3 started
+2025-08-27 19:04:16,563 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:04:16,563 - main - INFO - Created 3 initial agents
+2025-08-27 19:04:16,563 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:04:16,563 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:04:30,257 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:04:30,258 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:04:30,258 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+2025-08-27 19:05:00,250 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:05:00,250 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:05:30,248 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:05:30,248 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:05:59,856 - main - INFO - Received signal 15, initiating shutdown...
+2025-08-27 19:06:00,246 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:06:00,246 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:06:06,991 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:06:06,991 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:06:06,998 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:06:07,004 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:06:07,010 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:06:07,010 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:06:07,014 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 72ac394c-f008-45a6-a64f-9cf8dbddff32 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:06:07,014 - agent - INFO - Agent 0 started
+2025-08-27 19:06:07,017 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID ef677def-a595-454a-9222-debce07471c6 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:06:07,017 - agent - INFO - Agent 1 started
+2025-08-27 19:06:07,017 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:06:07,022 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID eb237028-c849-493c-9fa1-947166a9f2f0 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:06:07,022 - agent - INFO - Agent 2 started
+2025-08-27 19:06:07,022 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:06:07,025 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 00cea9f0-6c7b-459f-8255-f6b9c1c9a868 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:06:07,025 - agent - INFO - Agent 3 started
+2025-08-27 19:06:07,025 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:06:07,025 - main - INFO - Created 3 initial agents
+2025-08-27 19:06:07,026 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:06:07,026 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:06:07,026 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 19:06:07,026 - agent - INFO - Agent 1 stopped
+2025-08-27 19:06:07,026 - agent - INFO - Agent 2 stopped
+2025-08-27 19:06:07,026 - agent - INFO - Agent 3 stopped
+2025-08-27 19:06:07,026 - agent - INFO - Agent 0 stopped
+2025-08-27 19:06:07,026 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 19:06:07,026 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 19:06:07,026 - main - INFO - DSPy React MCP System stopped
+2025-08-27 19:06:07,026 - webui - INFO - DSPy React MCP System stopped
+2025-08-27 19:06:27,777 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:06:27,777 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:06:27,785 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:06:27,791 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:06:27,797 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:06:27,797 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:06:27,801 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID ecee6ebb-4ffc-4ccb-bdb2-35589d922a1b - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:06:27,801 - agent - INFO - Agent 0 started
+2025-08-27 19:06:27,804 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID 7f327677-d8bb-4a69-b9bd-e3fc29e52a38 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:06:27,804 - agent - INFO - Agent 1 started
+2025-08-27 19:06:27,804 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:06:27,808 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID fcdcac23-deba-4b12-b7a9-c8fae4dd63bf - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:06:27,808 - agent - INFO - Agent 2 started
+2025-08-27 19:06:27,808 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:06:27,811 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 0ba7100e-26f8-44f6-a846-f9ec4e3990ed - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:06:27,812 - agent - INFO - Agent 3 started
+2025-08-27 19:06:27,812 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:06:27,812 - main - INFO - Created 3 initial agents
+2025-08-27 19:06:27,812 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:06:27,812 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:06:30,245 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:06:30,245 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:06:35,856 - main - INFO - Received signal 15, initiating shutdown...
+2025-08-27 19:06:52,729 - main - INFO - Received signal 2, initiating shutdown...
+2025-08-27 19:06:52,730 - main - INFO - Received signal 2, initiating shutdown...
+2025-08-27 19:07:00,243 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:07:00,243 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:07:19,299 - main - INFO - Received signal 2, initiating shutdown...
+2025-08-27 19:07:30,241 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:07:30,242 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:07:38,008 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:07:38,008 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:07:38,015 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:38,022 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:38,028 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:38,028 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:07:38,032 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 55966ddc-c44e-49a9-aa49-85628376ce4f - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:38,032 - agent - INFO - Agent 0 started
+2025-08-27 19:07:38,036 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID f73929f8-10ef-47b0-b0e6-d8d9021a4b2c - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:38,036 - agent - INFO - Agent 1 started
+2025-08-27 19:07:38,036 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:38,040 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID 6dbe4a76-f96b-448a-809f-b2b112d83fde - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:38,040 - agent - INFO - Agent 2 started
+2025-08-27 19:07:38,040 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:38,043 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 880c2e78-dcfb-4027-8761-e858b3dd49d7 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:38,044 - agent - INFO - Agent 3 started
+2025-08-27 19:07:38,044 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:38,044 - main - INFO - Created 3 initial agents
+2025-08-27 19:07:38,044 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:07:38,044 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:07:38,045 - main - INFO - Stopping DSPy React MCP System
+2025-08-27 19:07:38,045 - agent - INFO - Agent 1 stopped
+2025-08-27 19:07:38,045 - agent - INFO - Agent 2 stopped
+2025-08-27 19:07:38,045 - agent - INFO - Agent 3 stopped
+2025-08-27 19:07:38,045 - agent - INFO - Agent 0 stopped
+2025-08-27 19:07:38,045 - mcpservermanager - INFO - Stopping MCP Server Manager
+2025-08-27 19:07:38,045 - mcpservermanager - INFO - MCP Server Manager stopped
+2025-08-27 19:07:38,045 - main - INFO - DSPy React MCP System stopped
+2025-08-27 19:07:38,045 - webui - INFO - DSPy React MCP System stopped
+2025-08-27 19:07:54,848 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:07:54,848 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:07:54,855 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:54,860 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:54,865 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:54,865 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:07:54,870 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 15a7c325-b7a1-4e77-bf72-5b431732da82 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:54,870 - agent - INFO - Agent 0 started
+2025-08-27 19:07:54,873 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID d99f23c7-e99b-4bb8-90fb-cf2579295ebd - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:54,874 - agent - INFO - Agent 1 started
+2025-08-27 19:07:54,874 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:54,877 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID c9ce05a2-70d1-48aa-8cb2-f76d537dc6ca - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:54,878 - agent - INFO - Agent 2 started
+2025-08-27 19:07:54,878 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:54,881 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 2b3197e4-d10e-4a18-a75e-273ad6511adb - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:54,881 - agent - INFO - Agent 3 started
+2025-08-27 19:07:54,881 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:54,881 - main - INFO - Created 3 initial agents
+2025-08-27 19:07:54,881 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:07:54,881 - webui - INFO - DSPy React MCP System started successfully
+2025-08-27 19:08:00,239 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:08:00,240 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:08:11,287 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:08:11,288 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:08:11,288 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+2025-08-27 19:08:31,889 - main - INFO - Added human John Smith with ID 2d127f5b-3d4a-4d34-bbe2-17e3267d411c
+2025-08-27 19:08:31,893 - webui - ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+2025-08-27 19:08:31,895 - webui - ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+2025-08-27 19:08:41,284 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:08:41,285 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:09:11,283 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:09:11,283 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:09:41,281 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:09:41,281 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:10:11,279 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:10:11,280 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:10:41,284 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:10:41,284 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:11:11,275 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:11:11,276 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:11:41,274 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:11:41,274 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:11:48,744 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:11:48,772 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:11:48,801 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+2025-08-27 19:12:11,273 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:12:11,273 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:12:18,681 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:12:18,683 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:12:41,271 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:12:41,271 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:12:48,690 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:12:48,692 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:12:58,598 - main - INFO - Added human josh with ID 97b47bf3-71c0-4c2a-b909-f5f6e1d9ffac
+2025-08-27 19:12:58,605 - webui - ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+2025-08-27 19:12:58,611 - webui - ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+2025-08-27 19:13:02,528 - webui - ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+2025-08-27 19:13:04,483 - webui - ERROR - Failed to create agent: 'Agent' object has no attribute 'hire_agent'
+2025-08-27 19:13:06,444 - webui - ERROR - Failed to create agent: 'Agent' object has no attribute 'hire_agent'
+2025-08-27 19:13:11,270 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:13:11,270 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:13:11,392 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:13:16,065 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+2025-08-27 19:13:17,087 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+2025-08-27 19:13:17,368 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+2025-08-27 19:13:18,718 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:13:18,740 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:13:41,267 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:13:41,268 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+2025-08-27 19:13:48,753 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+2025-08-27 19:13:48,754 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
