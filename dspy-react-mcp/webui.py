@@ -823,7 +823,7 @@ async def get_humans():
                 "email": human.email,
                 "skills": human.skills,
                 "expertise_areas": human.expertise_areas,
-                "active": human.active
+                "active": human.availability_status == "available"
             })
         return humans
     except Exception as e:
@@ -875,10 +875,10 @@ async def get_agents():
                 "id": agent.id,
                 "number": agent.number,
                 "role_type": agent.state.role_type.value,
-                "relationship_type": agent.state.relationship_type.value,
-                "status": agent.state.status.value,
+                "relationship_type": agent.state.relationship.relation_type.value,
+                "status": "active" if agent.state.active else "inactive",
                 "human_name": human_name,
-                "created_at": agent.state.created_at.isoformat()
+                "created_at": agent.state.last_activity.isoformat()
             })
         return agents
     except Exception as e:
@@ -941,12 +941,18 @@ async def get_tasks():
     try:
         tasks = []
         for agent in system.agents:
-            for task in agent.state.tasks:
+            # Get tasks from agent's task queues
+            all_agent_tasks = []
+            all_agent_tasks.extend(agent.current_tasks)
+            all_agent_tasks.extend(agent.completed_tasks)
+            all_agent_tasks.extend(agent.task_queue)
+            
+            for task in all_agent_tasks:
                 tasks.append({
                     "id": task.id,
                     "description": task.description,
                     "status": task.status.value,
-                    "priority": task.priority,
+                    "priority": getattr(task, 'priority', 1),
                     "assigned_agent": agent.number,
                     "created_at": task.created_at.isoformat(),
                     "requires_human_approval": getattr(task, 'requires_human_approval', False)
