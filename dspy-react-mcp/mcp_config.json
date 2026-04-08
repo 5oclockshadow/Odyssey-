@@ -1,0 +1,36 @@
+{
+  "filesystem": {
+    "name": "filesystem",
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"],
+    "env": {},
+    "enabled": true,
+    "timeout": 30
+  },
+  "brave_search": {
+    "name": "brave_search", 
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+    "env": {
+      "BRAVE_API_KEY": ""
+    },
+    "enabled": false,
+    "timeout": 30
+  },
+  "sqlite": {
+    "name": "sqlite",
+    "command": "npx", 
+    "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "./data.db"],
+    "env": {},
+    "enabled": true,
+    "timeout": 30
+  },
+  "memory": {
+    "name": "memory",
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-memory"],
+    "env": {},
+    "enabled": true,
+    "timeout": 30
+  }
+}

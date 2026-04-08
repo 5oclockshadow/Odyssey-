@@ -1,0 +1,141 @@
+/workspace/dspy-react-mcp/webui.py:89: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+/workspace/dspy-react-mcp/webui.py:109: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("shutdown")
+🚀 Starting DSPy React MCP System Web UI
+📡 Server: http://0.0.0.0:9000
+🌐 Access the dashboard at: http://localhost:9000
+INFO:     Started server process [13494]
+INFO:     Waiting for application startup.
+2025-08-27 19:07:54,848 - main - INFO - Starting DSPy React MCP System
+2025-08-27 19:07:54,848 - mcpservermanager - INFO - Starting MCP Server Manager
+2025-08-27 19:07:54,855 - mcpservermanager - ERROR - Failed to start server filesystem: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:54,860 - mcpservermanager - ERROR - Failed to start server sqlite: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:54,865 - mcpservermanager - ERROR - Failed to start server memory: [Errno 2] No such file or directory: 'npx'
+2025-08-27 19:07:54,865 - mcpservermanager - INFO - MCP Server Manager started successfully
+2025-08-27 19:07:54,870 - agent - INFO - Initialized Agent 0 (AgentRoleType.BOSS) with ID 15a7c325-b7a1-4e77-bf72-5b431732da82 - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:54,870 - agent - INFO - Agent 0 started
+2025-08-27 19:07:54,873 - agent - INFO - Initialized Agent 1 (AgentRoleType.SPECIALIST) with ID d99f23c7-e99b-4bb8-90fb-cf2579295ebd - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:54,874 - agent - INFO - Agent 1 started
+2025-08-27 19:07:54,874 - agent - INFO - Agent 0 hired sub-agent 1 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:54,877 - agent - INFO - Initialized Agent 2 (AgentRoleType.SPECIALIST) with ID c9ce05a2-70d1-48aa-8cb2-f76d537dc6ca - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:54,878 - agent - INFO - Agent 2 started
+2025-08-27 19:07:54,878 - agent - INFO - Agent 0 hired sub-agent 2 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:54,881 - agent - INFO - Initialized Agent 3 (AgentRoleType.WORKER) with ID 2b3197e4-d10e-4a18-a75e-273ad6511adb - Relationship: AgentHumanRelationType.PURE_AGENT
+2025-08-27 19:07:54,881 - agent - INFO - Agent 3 started
+2025-08-27 19:07:54,881 - agent - INFO - Agent 0 hired sub-agent 3 (AgentHumanRelationType.PURE_AGENT)
+2025-08-27 19:07:54,881 - main - INFO - Created 3 initial agents
+2025-08-27 19:07:54,881 - main - INFO - DSPy React MCP System started successfully
+2025-08-27 19:07:54,881 - webui - INFO - DSPy React MCP System started successfully
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:9000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52134 - "GET /api/system/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52148 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52148 - "GET /api/system/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52164 - "GET /api/humans HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52162 - "WebSocket /ws" [accepted]
+INFO:     connection open
+2025-08-27 19:08:11,287 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:52176 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:08:11,288 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:52188 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:08:11,288 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+INFO:     127.0.0.1:52202 - "GET /api/mcp/servers HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:08:31,889 - main - INFO - Added human John Smith with ID 2d127f5b-3d4a-4d34-bbe2-17e3267d411c
+INFO:     127.0.0.1:51484 - "POST /api/humans HTTP/1.1" 200 OK
+2025-08-27 19:08:31,893 - webui - ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+INFO:     127.0.0.1:51484 - "GET /api/humans HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:51496 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:08:31,895 - webui - ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+INFO:     127.0.0.1:51484 - "GET /api/humans HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:51510 - "GET /api/system/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32852 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:08:41,284 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:32866 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:08:41,285 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:32878 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:40736 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:09:11,283 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:40738 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:09:11,283 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:40742 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:34298 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:09:41,281 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:34308 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:09:41,281 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:34318 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:35102 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:10:11,279 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:35118 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:10:11,280 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:35128 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:45968 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:10:41,284 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:45974 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:10:41,284 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:45978 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53056 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:11:11,275 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:53062 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:11:11,276 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:53066 - "GET /api/tasINFO:     172.17.0.1:35636 - "GET / HTTP/1.1" 200 OK
+INFO:     172.17.0.1:35646 - "GET / HTTP/1.1" 200 OK
+INFO:     172.17.0.1:35646 - "GET /api/system/status HTTP/1.1" 200 OK
+INFO:     172.17.0.1:35646 - "GET /api/humans HTTP/1.1" 200 OK
+2025-08-27 19:11:48,744 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     172.17.0.1:35646 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:11:48,772 - webui - ERROR - Failed to get INFO:     127.0.0.1:55014 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:12:11,273 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:55028 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:12:11,273 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:55042 - "GET /api/tasks HTTP/1.1" 500 Internal Server ErINFOINFO:     127.0.0.1:48882 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:12:41,271 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:48892 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:12:41,271 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:48898 - "GET /api/tasks HTTP/1.1" 500 Internal Server ErrorIINFO:     127.0.0.1:38308 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:13:11,270 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:38324 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:11,270 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:38330 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:40756 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:13:41,267 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     127.0.0.1:40760 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:41,268 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     127.0.0.1:40774 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+INFO:     172.17.0.1:36992 - "GET /api/humans HTTP/1.1" 500 Internal Server Error
+INFO:     172.17.0.1:36988 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:13:02,528 - webui - ERROR - Failed to get humans: 'Human' object has no attribute 'active'
+INFO:     172.17.0.1:36992 - "GET /api/humans HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:04,483 - webui - ERROR - Failed to create agent: 'Agent' object has no attribute 'hire_agent'
+INFO:     172.17.0.1:36992 - "POST /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:06,444 - webui - ERROR - Failed to create agent: 'Agent' object has no attribute 'hire_agent'
+INFO:     172.17.0.1:36992 - "POST /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:11,392 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     172.17.0.1:36992 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:16,065 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+INFO:     172.17.0.1:36992 - "GET /api/mcp/servers HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:17,087 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+INFO:     172.17.0.1:36992 - "GET /api/mcp/servers HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:17,368 - webui - ERROR - Failed to get MCP servers: MCPServerManager.get_server_status() missing 1 required positional argument: 'name'
+INFO:     172.17.0.1:36992 - "GET /api/mcp/servers HTTP/1.1" 500 Internal Server Error
+INFO:     172.17.0.1:36992 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:13:18,718 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     172.17.0.1:36992 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:18,740 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     172.17.0.1:36992 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
+INFO:     172.17.0.1:57722 - "GET /api/system/status HTTP/1.1" 200 OK
+2025-08-27 19:13:48,753 - webui - ERROR - Failed to get agents: 'AgentState' object has no attribute 'relationship_type'
+INFO:     172.17.0.1:57734 - "GET /api/agents HTTP/1.1" 500 Internal Server Error
+2025-08-27 19:13:48,754 - webui - ERROR - Failed to get tasks: 'AgentState' object has no attribute 'tasks'
+INFO:     172.17.0.1:57750 - "GET /api/tasks HTTP/1.1" 500 Internal Server Error
