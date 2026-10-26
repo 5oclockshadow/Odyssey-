@@ -4,3 +4,9 @@
 # Python bytecode
 __pycache__/
 *.pyc
+
+# tendergraph
+tendergraph/.venv/
+tendergraph/state/
+__pycache__/
+*.pyc
