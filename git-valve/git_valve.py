@@ -485,12 +485,15 @@ def build_parser() -> argparse.ArgumentParser:
         prog="git_valve",
         description="Two-way communication valve between coding agents over GitHub.",
     )
-    p.add_argument("--as", dest="identity", help="this peer's identity (e.g. cloud, local)")
+    # --as is attached to every subcommand (used after the subcommand name),
+    # and also honoured from the VALVE_IDENTITY environment variable.
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--as", dest="identity", help="this peer's identity (e.g. cloud, local)")
     sub = p.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("init", help="initialise the valve channel and commit it")
+    sub.add_parser("init", help="initialise the valve channel and commit it", parents=[common])
 
-    s = sub.add_parser("send", help="send a message to the other peer")
+    s = sub.add_parser("send", help="send a message to the other peer", parents=[common])
     s.add_argument("--to", required=True, help="recipient identity (or 'all')")
     s.add_argument("--subject", required=True)
     s.add_argument("--body", default="")
@@ -501,16 +504,16 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--no-push", dest="no_push", action="store_true",
                    help="commit locally but do not push")
 
-    i = sub.add_parser("inbox", help="list unseen messages for this peer")
+    i = sub.add_parser("inbox", help="list unseen messages for this peer", parents=[common])
     i.add_argument("--no-pull", dest="no_pull", action="store_true")
     i.add_argument("--json", dest="as_json", action="store_true")
     i.add_argument("--mark", action="store_true", help="mark listed messages as seen")
 
-    r = sub.add_parser("read", help="print one message and mark it seen")
+    r = sub.add_parser("read", help="print one message and mark it seen", parents=[common])
     r.add_argument("--id", required=True)
     r.add_argument("--no-mark", dest="no_mark", action="store_true")
 
-    w = sub.add_parser("watch", help="poll the channel continuously")
+    w = sub.add_parser("watch", help="poll the channel continuously", parents=[common])
     w.add_argument("--interval", type=int, default=15)
     w.add_argument("--exec", dest="exec_cmd", help="handler command per message")
     w.add_argument("--once", action="store_true", help="poll a single time and exit")
