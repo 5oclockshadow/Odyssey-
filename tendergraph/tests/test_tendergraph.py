@@ -1,6 +1,6 @@
-import time
 """TenderGraph: osiiso lanes, graph plasticity, discovery, and the bid-seeking cycle."""
 import asyncio
+import time
 
 from tendergraph.bidseeker import BidSeeker, _score_tender, DEFAULT_CAPABILITIES
 from tendergraph.graph import Graph
