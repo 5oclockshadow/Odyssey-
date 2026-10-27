@@ -12,26 +12,33 @@ from fastapi.responses import StreamingResponse
 
 from .bidseeker import BidSeeker
 from .osiiso import Scheduler
+from . import store as gstore
 from .registry import seed_nodes
 
 engine = BidSeeker()
+STORE = gstore.from_env()  # raises on a misconfigured Redis: fail at boot, not later
 STARTED = time.time()
 INTERVAL_S = float(os.getenv("TENDER_INTERVAL_S", "900"))
 
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
+    snap = STORE.load()
+    if snap:
+        engine.recorder.record("restore", {"store": STORE.describe(), "nodes": gstore.restore(engine.graph, snap)})
     for n in seed_nodes():  # Agent = Graph: seed the registry into the graph
         engine.graph.ensure(n["id"], n["text"], archetype=n["archetype"], **n.get("attrs", {}))
     sched = Scheduler(engine.osiiso, tick_s=1.0)
     sched.add("bid-cycle", engine.cycle, interval_s=INTERVAL_S, nature="async")
     sched.add("hebbian-decay", engine.graph.decay, interval_s=max(60.0, INTERVAL_S / 4), nature="thread")
+    sched.add("persist", lambda: STORE.save(gstore.dump(engine.graph)), interval_s=60.0, nature="thread")
     task = asyncio.create_task(sched.run_forever())
     engine.recorder.record("boot", {"interval_s": INTERVAL_S})
     try:
         yield
     finally:
         sched.stop()
+        STORE.save(gstore.dump(engine.graph))  # final snapshot on shutdown
         task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await task
@@ -43,7 +50,8 @@ app = FastAPI(title="TenderGraph", lifespan=lifespan)
 
 @app.get("/health")
 async def health():
-    return {"ok": True, "uptime_s": int(time.time() - STARTED), "service": "tendergraph"}
+    return {"ok": True, "uptime_s": int(time.time() - STARTED), "service": "tendergraph", "store": STORE.describe(),
+            "nodes": engine.graph.g.number_of_nodes()}
 
 
 @app.get("/status")

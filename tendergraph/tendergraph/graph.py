@@ -4,7 +4,7 @@ A 3D/4D networkx DiGraph of typed nodes (models.Archetype) with Hebbian edges an
 a Q-table-ready structure. There is no separate agent object: the graph's MISSION
 node plus its traversal state IS the agent (per the Skilld architecture). Recall
 is token-overlap + one Hebbian hop; traverse follows edges for multi-hop context.
-Redis-backed persistence is optional (cascade handled by the caller).
+Persistence is real and explicit: tendergraph/store.py (Redis when configured, else a JSON snapshot).
 """
 from __future__ import annotations
 

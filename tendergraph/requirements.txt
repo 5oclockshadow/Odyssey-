@@ -9,8 +9,7 @@ pyyaml>=6.0
 pytest>=8.0
 pytest-asyncio>=0.23
 
-# --- Optional (capability-gated; engine runs offline without them) ----------
-# dspy-ai>=2.4          # single Any|Any OutputField structured reasoning
-# redis>=5.0            # RaptorRedis -> RawRedis -> fakeredis cascade
-# arize-phoenix>=4.0    # tracing (JSONL fallback otherwise)
-# rank-bm25>=0.2        # BM25Plus sparse index for RAPTOR
+# --- Optional ----------------------------------------------------------------
+# redis>=5.0            # only if TENDERGRAPH_REDIS_URL is set (tendergraph/store.py); else a JSON snapshot on disk
+# NOT implemented yet (no code uses them — listed so nobody assumes they exist): DSPy reasoning, Phoenix tracing,
+# RAPTOR/BM25 retrieval. Add the code and a test before adding the dependency back.

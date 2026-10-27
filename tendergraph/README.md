@@ -3,7 +3,7 @@
 Self-maintaining, self-improving, **bid-seeking** agent-graph for public & private
 work — all cities + their government/infrastructure/sentiment data, expanding to
 gov/military and companies (capex ≥ $50M). Built on the **Skilld** framework
-(Agent = Graph, single DSPy OutputField, RAPTOR, Hebbian + Q-table) with
+(Agent = Graph, Hebbian + Q-table; DSPy and RAPTOR are planned, not implemented yet) with
 **osiiso** execution routing (ASYNC/THREAD/PROCESS, temporal multi-lane,
 non-blocking) and the reused **recorder** + **Tester** peers.
 

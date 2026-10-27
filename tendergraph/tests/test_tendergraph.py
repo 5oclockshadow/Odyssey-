@@ -125,3 +125,20 @@ def test_bidseeker_paused_skips(tmp_path):
     eng = BidSeeker(recorder=Recorder(tmp_path / "tape.jsonl"))
     eng.control.enable(); eng.control.pause("manual")
     assert "skipped" in asyncio.run(eng.cycle())
+
+
+def test_store_is_real_and_loud(tmp_path, monkeypatch):
+    from tendergraph import store
+    g = Graph()
+    g.ensure("tender:x", "sewer relining", archetype="tender")
+    g.coactivate(["tender:x", "mission"], lr=0.3)
+    fs = store.FileStore(tmp_path / "graph.json")
+    fs.save(store.dump(g))
+    g2 = Graph()
+    assert store.restore(g2, fs.load()) == g.g.number_of_nodes()
+    assert "tender:x" in [h["id"] for h in g2.recall("sewer relining")]          # recall index rebuilt
+    assert g2.g.has_edge("tender:x", "mission", key="coactivates")
+    monkeypatch.setenv("TENDERGRAPH_REDIS_URL", "redis://127.0.0.1:1/0")
+    import pytest
+    with pytest.raises(Exception):                                                # misconfigured Redis fails at boot
+        store.from_env()
