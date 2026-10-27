@@ -1,3 +1,4 @@
+import time
 """TenderGraph: osiiso lanes, graph plasticity, discovery, and the bid-seeking cycle."""
 import asyncio
 
@@ -33,6 +34,31 @@ async def test_osiiso_map_concurrent():
     def dbl(x): return x * 2
     out = await o.map(dbl, [1, 2, 3], nature="thread")
     assert sorted(out) == [2, 4, 6]
+    await o.aclose()
+
+
+async def test_osiiso_25_lanes_and_15_minimum_fanout():
+    import threading
+    o = Osiiso()
+    assert o.lanes == 25 and o.min_lanes == 15 and o.snapshot()["lanes"] == 25
+    peak, now, lock = [0], [0], threading.Lock()
+
+    def slow(x):
+        with lock:
+            now[0] += 1
+            peak[0] = max(peak[0], now[0])
+        time.sleep(0.2)
+        with lock:
+            now[0] -= 1
+        return x
+
+    out = await o.map(slow, list(range(40)), nature="thread")
+    assert sorted(out) == list(range(40)) and peak[0] == 25          # all 25 lanes used at once
+    o.stats[Lane.ASYNC].inflight = 20                                 # most lanes busy elsewhere …
+    peak[0] = 0
+    await o.map(slow, list(range(30)), nature="thread")
+    assert peak[0] >= 15                                              # … a thought still gets 15
+    o.stats[Lane.ASYNC].inflight = 0
     await o.aclose()
 
 

@@ -15,6 +15,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import multiprocessing
+import os
 import time
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -38,12 +39,22 @@ class LaneStats:
     inflight: int = 0
 
 
-class Osiiso:
-    """Route-and-run executor. One per process; `aclose()` on shutdown."""
+LANES = int(os.environ.get("OSIISO_LANES", "25"))          # parallel lanes per class of work
+MIN_LANES = int(os.environ.get("OSIISO_MIN_LANES", "15"))  # a thought's fan-out never drops below this
 
-    def __init__(self, thread_workers: int = 16, process_workers: int | None = None,
-                 async_concurrency: int = 64):
-        self._threads = ThreadPoolExecutor(max_workers=thread_workers)
+
+class Osiiso:
+    """Route-and-run executor. One per process; `aclose()` on shutdown.
+
+    25 lanes by default (OSIISO_LANES): 25 thread workers and 25 concurrent async calls. A fan-out (`map`)
+    takes every free lane up to 25, and never fewer than OSIISO_MIN_LANES (15) even when others are busy.
+    """
+
+    def __init__(self, thread_workers: int = LANES, process_workers: int | None = None,
+                 async_concurrency: int = LANES):
+        self.lanes = max(1, thread_workers)
+        self.min_lanes = max(1, min(MIN_LANES, self.lanes))
+        self._threads = ThreadPoolExecutor(max_workers=self.lanes)
         self._procs: ProcessPoolExecutor | None = None
         self._process_workers = process_workers
         self._sema = asyncio.Semaphore(async_concurrency)
@@ -96,8 +107,11 @@ class Osiiso:
 
     async def map(self, fn: Callable, items: list, *, nature: str | None = None,
                   limit: int = 0) -> list:
-        """Run `fn` over items concurrently on its lane (optionally bounded)."""
-        sem = asyncio.Semaphore(limit) if limit else None
+        """Run `fn` over items concurrently on its lane. Without `limit`: all free lanes, at least min_lanes."""
+        if not limit:
+            busy = sum(st.inflight for st in self.stats.values())
+            limit = max(self.min_lanes, self.lanes - busy)
+        sem = asyncio.Semaphore(limit)
 
         async def one(it):
             if sem:
@@ -108,7 +122,7 @@ class Osiiso:
         return await asyncio.gather(*(one(it) for it in items), return_exceptions=True)
 
     def snapshot(self) -> dict:
-        return {ln.value: vars(st) for ln, st in self.stats.items()}
+        return {"lanes": self.lanes, "min_lanes": self.min_lanes, **{ln.value: vars(st) for ln, st in self.stats.items()}}
 
     async def aclose(self):
         self._threads.shutdown(wait=False, cancel_futures=True)
