@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>body{margin:0;background:#0b1e2d}a{color:#5eead4}a:hover{color:#ccfbf1}</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1e2d;color:#e6f1f5;font-family:'Bricolage Grotesque',sans-serif;background-image:linear-gradient(rgba(94,234,212,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(94,234,212,0.06) 1px,transparent 1px);background-size:32px 32px;">
+<div style="max-width:1080px;margin:0 auto;padding:28px clamp(20px,5vw,48px) 80px;display:grid;gap:72px;">
+  <header style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;">tmpltz<span style="color:#5eead4;">_</span></span>
+    <nav style="display:flex;gap:24px;font-family:'IBM Plex Mono',monospace;font-size:13px;"><a href="#how" style="text-decoration:none;color:#9bb4c0;">how</a><a href="#posts" style="text-decoration:none;color:#9bb4c0;">posts</a><a href="#join" style="text-decoration:none;">follow</a></nav>
+  </header>
+  <section style="display:grid;gap:24px;max-width:780px;">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#5eead4;">research, templatized</span>
+    <h1 style="font-weight:700;font-size:clamp(42px,7.5vw,84px);line-height:1;letter-spacing:-0.035em;margin:0;">Every finding becomes a reusable template.</h1>
+    <p style="font-size:19px;line-height:1.55;color:#b7cbd5;margin:0;">tmpltz is an agent that turns what it reads into a typed graph and the graph into repeatable structures: notes, open questions, checks, and small apps. Share the template, keep the data private.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;"><a href="#join" style="background:#5eead4;color:#0b1e2d;padding:13px 22px;text-decoration:none;font-weight:700;border-radius:4px;">Follow the research</a><a href="#how" style="border:1px solid #5eead4;padding:13px 22px;text-decoration:none;font-weight:600;border-radius:4px;">How it works</a></div>
+  </section>
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
+    <div style="border:1px solid #1e4157;background:rgba(11,30,45,0.8);padding:22px;display:grid;gap:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5eead4;">01 / structure</span><h3 style="margin:0;font-size:22px;">Typed, not free text</h3><p style="margin:0;color:#b7cbd5;line-height:1.55;">One input and one output per call. The shape of the output is the shape of the reasoning.</p></div>
+    <div style="border:1px solid #1e4157;background:rgba(11,30,45,0.8);padding:22px;display:grid;gap:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5eead4;">02 / privacy</span><h3 style="margin:0;font-size:22px;">Greyed until approved</h3><p style="margin:0;color:#b7cbd5;line-height:1.55;">The public graph shows the shape of the work. Content appears only after you publish it.</p></div>
+    <div style="border:1px solid #1e4157;background:rgba(11,30,45,0.8);padding:22px;display:grid;gap:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5eead4;">03 / repair</span><h3 style="margin:0;font-size:22px;">Incidents to pull requests</h3><p style="margin:0;color:#b7cbd5;line-height:1.55;">Errors are traced, patched in a sandbox, tested, and sent to you to merge.</p></div>
+  </section>
+  <section id="how" style="display:grid;gap:20px;">
+    <h2 style="font-size:36px;margin:0;letter-spacing:-0.02em;">Pipeline</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;">
+      <div style="border-top:2px solid #5eead4;padding-top:12px;display:grid;gap:6px;"><b>read</b><span style="color:#9bb4c0;line-height:1.5;">papers, web, repos</span></div>
+      <div style="border-top:2px solid #5eead4;padding-top:12px;display:grid;gap:6px;"><b>graph</b><span style="color:#9bb4c0;line-height:1.5;">nodes, edges, weights</span></div>
+      <div style="border-top:2px solid #5eead4;padding-top:12px;display:grid;gap:6px;"><b>template</b><span style="color:#9bb4c0;line-height:1.5;">notes, questions, apps</span></div>
+      <div style="border-top:2px solid #5eead4;padding-top:12px;display:grid;gap:6px;"><b>approve</b><span style="color:#9bb4c0;line-height:1.5;">you publish or retract</span></div>
+    </div>
+  </section>
+  <section id="posts" style="display:grid;gap:20px;">
+    <h2 style="font-size:36px;margin:0;letter-spacing:-0.02em;">Launch posts</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      <div style="border:1px solid #1e4157;padding:20px;display:grid;gap:10px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5eead4;">X</span><p style="margin:0;line-height:1.5;color:#d3e3ea;">tmpltz turns what an agent reads into a typed graph, then into templates you can reuse. Public view is live soon. Unapproved nodes stay grey.</p></div>
+      <div style="border:1px solid #1e4157;padding:20px;display:grid;gap:10px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5eead4;">LinkedIn</span><p style="margin:0;line-height:1.5;color:#d3e3ea;">tmpltz is a research agent with one owner. It reads, builds a graph, and proposes findings as notes, open questions and small apps. The owner approves what is shared. Everything else is visible only as shape.</p></div>
+      <div style="border:1px solid #1e4157;padding:20px;display:grid;gap:10px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5eead4;">Reddit</span><p style="margin:0;line-height:1.5;color:#d3e3ea;">Built an agent that grows its own hypergraph with one DSPy input and one output per call. The public view greys out anything not approved. Writing up the design and the bugs; ask what you want covered.</p></div>
+    </div>
+  </section>
+  <section id="join" style="border-top:1px solid #1e4157;padding-top:32px;display:grid;gap:12px;max-width:640px;">
+    <h2 style="font-size:36px;margin:0;letter-spacing:-0.02em;">Follow the research</h2>
+    <p style="margin:0;color:#b7cbd5;line-height:1.55;">Link target to be set when the site goes live.</p>
+  </section>
+</div>
+</div>
+
+</x-dc>
+</body>
+</html>

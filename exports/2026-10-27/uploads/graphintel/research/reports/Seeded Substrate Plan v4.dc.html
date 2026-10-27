@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-300); text-decoration-color: var(--color-accent-700); text-underline-offset: 3px; }
+    a:hover { color: var(--color-accent-200); text-decoration-color: var(--color-accent); }
+    code { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; color: var(--color-accent-200); }
+  </style>
+</helmet>
+
+<article style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);padding:0 0 120px;">
+<div style="max-width:1040px;padding:56px clamp(20px,5vw,72px) 0;display:flex;flex-direction:column;gap:56px;">
+
+<header data-screen-label="Masthead" style="display:grid;gap:18px;max-width:860px;">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">
+    <span>Anima · research plan v4</span><span style="color:var(--color-neutral-600);">/</span><span>Implementation: Bridago</span><span style="color:var(--color-neutral-600);">/</span><span>13 October 2026</span>
+  </div>
+  <h1 style="font-size:clamp(38px,5vw,54px);line-height:1.05;letter-spacing:-0.02em;font-weight:500;margin:0;">Anima: the graph carries the cognition. The model is the substrate.</h1>
+  <p style="font-size:clamp(18px,2vw,22px);line-height:1.35;margin:0;color:var(--color-neutral-300);max-width:760px;">Seed the graph once, then hold quality while the model shrinks from 30B to an LSTM on a CPU. If the cognitive and memory layer is built right, and seeded right, the expensive model stops being the thing that matters.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <span class="tag tag-accent">Falsifiable</span>
+    <span class="tag tag-neutral">30B → LSTM · 4 seed conditions · 3 seed qualities</span>
+    <span class="tag tag-outline">Supersedes v3 Part 7</span>
+  </div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:720px;">Claims are tagged <span class="tag tag-accent" style="font-size:10px;padding:1px 8px;">established</span> (peer-reviewed), <span class="tag tag-outline" style="font-size:10px;padding:1px 8px;">contested</span> (credible results both ways) or <span class="tag tag-neutral" style="font-size:10px;padding:1px 8px;">inferred</span> (our reading). v3 findings are carried over by reference, not repeated.</p>
+</header>
+
+<section data-screen-label="01 One experiment" style="display:grid;gap:18px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">01 · Scope</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Anima is the thesis. Bridago is the brain.</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;"><strong style="font-weight:500;">Anima</strong> names the claim. <strong style="font-weight:500;">Bridago</strong> is its implementation: the shared seeded brain, meaning the graph, the seed and the DSPy cognition layer. Rex and Jarvis are branches of Bridago, not separate projects. Every substrate plugs into the same brain.</p>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:640px;">
+      <thead><tr><th>Name</th><th>What it is</th><th>Role in v4</th></tr></thead>
+      <tbody>
+        <tr><td>Anima</td><td>The thesis</td><td>Hypotheses, results, Report v4</td></tr>
+        <tr><td>Bridago</td><td>The shared seeded brain: graph + seed + DSPy cognition layer</td><td>Held fixed across every substrate</td></tr>
+        <tr><td>Rex · branch</td><td>Graph side (from rex-graph-agent): store, seed generator, shuffle control, public/private split</td><td>Seed + controls</td></tr>
+        <tr><td>Jarvis · branch</td><td>Agent side (from the self-agent): the one Signature, its output stack, GEPA reflection</td><td>Cognition layer</td></tr>
+        <tr><td>small/fast</td><td>Inference server on the 5-digit port</td><td>Hosts the substrates</td></tr>
+        <tr><td>dspy-router-test</td><td>Prior result: small models fail deep schemas unseeded</td><td>Baseline, replicated</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section data-screen-label="01b Headline" style="display:grid;gap:18px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Headline experiment</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Seed once. Shrink the model. Watch the line stay flat.</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;">One Bridago brain, seeded once. The same tasks run on a ladder of substrates: 30B, 8B, 1–3B, a tiny transformer, an LSTM on a CPU. Unseeded, quality falls with size, as dspy-router-test already shows. Seeded, Anima predicts the curve flattens. The demo is the two curves on one chart.</p>
+  <p style="margin:0;font-size:16px;line-height:1.65;">The claim this tests: a large, expensive model is not required when the cognitive and memory layer is built right. That holds whether or not the infrastructure around it is a moat. What decides graph intelligence is the brain, and above all how it is seeded.</p>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);">No prior work we found runs one seeded brain across this whole range of substrates. <span class="tag tag-neutral" style="font-size:10px;padding:1px 8px;">inferred</span></p>
+</section>
+
+<section data-screen-label="02 Thesis" style="display:grid;gap:18px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">02 · Thesis</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Stated so it can fail</h2>
+  <div class="card" style="display:grid;gap:10px;">
+    <div class="card-kicker">T · the claim</div>
+    <p style="margin:0;font-size:17px;line-height:1.55;">On tasks whose difficulty is structural (deep schemas, multi-hop reachability, typed constraints), accuracy is governed by the seed and the cognition layer. Substrate size and architecture become second-order once the seed is present.</p>
+  </div>
+  <p style="margin:0;font-size:16px;line-height:1.65;">Three consequences follow, and each is measurable separately:</p>
+  <ul style="margin:0;padding-left:20px;display:grid;gap:10px;font-size:16px;line-height:1.6;">
+    <li><strong style="font-weight:500;">Gap closure.</strong> A seeded small model reaches a large model on the same task.</li>
+    <li><strong style="font-weight:500;">Substrate invariance.</strong> With the seed, the spread between substrates shrinks; without it, it does not.</li>
+    <li><strong style="font-weight:500;">Structure, not volume.</strong> A shuffled seed of the same size gives back almost none of the gain.</li>
+    <li><strong style="font-weight:500;">Seeding decides.</strong> Seed quality moves accuracy more than substrate size does.</li>
+  </ul>
+</section>
+
+<section data-screen-label="03 Evidence" style="display:grid;gap:18px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">03 · Prior evidence</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;max-width:760px;">What already points each way</h2>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:820px;">
+      <thead><tr><th>Finding</th><th>Direction</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>DSPy-compiled programs let a 770M T5 and Llama-2-13B compete with expert prompt chains on GPT-3.5 <a href="#s1">[1]</a></td><td>For: the cognition layer transfers to small substrates</td><td><span class="tag tag-accent">established</span></td></tr>
+        <tr><td>TRM: 7M parameters, 45% ARC-AGI-1, beating large LLMs; deep supervision is the main driver <a href="#s2">[2]</a></td><td>For: structure of the loop beats parameter count</td><td><span class="tag tag-accent">established</span></td></tr>
+        <tr><td>Named params and declared types: 0.98 vs 0.38 tool-call accuracy on the same small model <a href="#s3">[3]</a></td><td>For: field attributes act as seed</td><td><span class="tag tag-outline">contested</span></td></tr>
+        <tr><td>Constraints rescue weak models (Qwen2.5-Coder-7B 0% → 75%) and hurt strong ones (405B 92.5% → 35%) <a href="#s4">[4]</a></td><td>For small, against large: the effect is substrate-dependent</td><td><span class="tag tag-outline">contested</span></td></tr>
+        <tr><td>dspy-router-test: small models fail deep schemas unseeded</td><td>Baseline the thesis must move</td><td><span class="tag tag-neutral">internal</span></td></tr>
+        <tr><td>ALPINE: transformers store adjacency but not transitive reachability <a href="#s5">[5]</a></td><td>Against: substrate limits survive seeding unless the seed supplies closure</td><td><span class="tag tag-accent">established</span></td></tr>
+        <tr><td>JSONSchemaBench / ExtractBench: deep schemas break all models, large included <a href="#s6">[6]</a></td><td>Against the baseline: L may fail too, which caps what "match" means</td><td><span class="tag tag-accent">established</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section data-screen-label="04 LSTM argument" style="display:grid;gap:18px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">04 · The LSTM argument</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Why an LSTM on a CPU is the sharpest test</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;">If the graph carries the cognition, the substrate only has to read the seed, follow the cognition layer's fields and emit. A recurrent network does that in constant memory per step and linear time, which is what makes CPU inference viable. It is also the substrate with the best-documented weakness, so a pass here means more than a pass on a small transformer.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;">
+    <div class="card" style="display:grid;gap:8px;">
+      <div class="card-kicker">For</div>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;font-size:14px;line-height:1.55;color:var(--color-neutral-200);">
+        <li>xLSTM adds exponential gating and matrix memory and scales competitively with transformers and SSMs <a href="#s7">[7]</a>; a 7B xLSTM targets fast, memory-flat inference <a href="#s8">[8]</a>.</li>
+        <li>minLSTM / minGRU drop the hidden-state dependency from the gates, train in parallel and match recent sequence models on several tasks <a href="#s9">[9]</a>.</li>
+        <li>Fixed state per step: cost does not grow with context, so a long seed costs once.</li>
+      </ul>
+    </div>
+    <div class="card" style="display:grid;gap:8px;">
+      <div class="card-kicker">Against</div>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;font-size:14px;line-height:1.55;color:var(--color-neutral-200);">
+        <li>Fixed-size state loses at associative recall; the gap explains most of the quality difference to attention <a href="#s10">[10]</a>.</li>
+        <li>RNNs cannot do in-context retrieval as transformers do; retrieval augmentation or one attention layer closes the gap <a href="#s11">[11]</a>.</li>
+        <li>Copying long strings from context favours transformers over fixed-state models <a href="#s12">[12]</a>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card elev-sm" style="display:grid;gap:8px;">
+    <div class="card-kicker">Our reading <span class="tag tag-neutral" style="font-size:10px;padding:1px 8px;margin-left:6px;">inferred</span></div>
+    <p style="margin:0;font-size:15px;line-height:1.6;">The LSTM's known failure is recall from context. In this design the context is not where the structure lives: the graph is, and Bridago serves it as a lookup. The thesis therefore predicts a specific shape of result: the LSTM fails unseeded, fails seeded-in-context (the seed is just a long prompt it cannot recall from), and passes seeded-by-retrieval. Wen et al. already show retrieval closes the RNN gap on retrieval tasks <a href="#s11">[11]</a>; v4 asks whether it also closes it on structural reasoning. If seeded-by-retrieval does not lift the LSTM, the cognition is not in the graph.</p>
+  </div>
+</section>
+
+<section data-screen-label="05 Seed spec" style="display:grid;gap:18px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">05 · Seed specification</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">One file, five blocks</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;">Unchanged in content from v3 Part 7; v4 fixes the format so every codebase reads the same file.</p>
+<pre style="margin:0;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);font-size:13px;line-height:1.6;overflow-x:auto;color:var(--color-neutral-200);">seed.yaml
+  version: 4
+  incidence:   B  (n_nodes × n_hyperedges, sparse COO)
+  types:       node → ontology symbol, symbol → parent
+  restriction: hyperedge → node map (what a node may hold, how it must agree)
+  constraints: transitivity, disjointness, cardinality (Horn clauses)
+  energy:      consistency score; the halting rule for the round
+  control:
+    shuffle:   same degree sequence, permuted incidence  (S-shuf)
+    delivery:  in_context | retrieval | destroyed</pre>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);">Generator lives in rex-graph-agent: <code>seed gen --nodes 64..4096 --depth 1..6 --seed &lt;int&gt;</code>. Every run records the generator seed so any row of the results table can be rebuilt.</p>
+</section>
+
+<section data-screen-label="06 Cognition layer" style="display:grid;gap:18px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">06 · Cognition layer</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">The DSPy layer, fixed across substrates</h2>
+  <ul style="margin:0;padding-left:20px;display:grid;gap:10px;font-size:16px;line-height:1.6;">
+    <li><strong style="font-weight:500;">One Signature</strong>, one input field, one output: intake → reframe → reasoning → preact → act → postact.</li>
+    <li><strong style="font-weight:500;">Reasoning-first field order</strong>, declared types and descriptions on every field (v3 Parts 13–14).</li>
+    <li><strong style="font-weight:500;">Two shapes</strong>: nested six-deep (current) and rank-split (three emissions), so depth is a factor and not a confound.</li>
+    <li><strong style="font-weight:500;">Optimiser</strong>: GEPA on the Phoenix trajectories, compiled once per substrate on a held-out split <a href="#s13">[13]</a>.</li>
+    <li><strong style="font-weight:500;">Halting</strong>: the seed's energy, max 8 refinements, as TRM's deep supervision <a href="#s2">[2]</a>.</li>
+  </ul>
+</section>
+
+<section data-screen-label="07 Design" style="display:grid;gap:18px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">07 · Design</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;max-width:760px;">A substrate ladder × seed conditions × seed quality</h2>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:820px;">
+      <thead><tr><th>Substrate</th><th>Size</th><th>Hardware</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>L · large open model</td><td>~30B</td><td>GPU</td><td>The top of the ladder</td></tr>
+        <tr><td>M · mid open model</td><td>~8B</td><td>one GPU</td><td>small/fast server</td></tr>
+        <tr><td>S · small open model</td><td>1–3B</td><td>CPU / one GPU</td><td>small/fast server</td></tr>
+        <tr><td>T · tiny transformer</td><td>~7–50M</td><td>CPU</td><td>trained on seed → query → answer only</td></tr>
+        <tr><td>R · LSTM (xLSTM, minLSTM)</td><td>~7–50M</td><td>CPU</td><td>same data and budget as T</td></tr>
+        <tr><td>G · hypergraph GNN</td><td>~1M</td><td>CPU</td><td>no-language baseline</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
+    <div class="card"><div class="card-kicker">∅ unseeded</div><p class="card-body" style="margin:0;">Task only. S∅ replicates dspy-router-test.</p></div>
+    <div class="card"><div class="card-kicker">C · in context</div><p class="card-body" style="margin:0;">Seed serialized into the prompt.</p></div>
+    <div class="card"><div class="card-kicker">Q · by retrieval</div><p class="card-body" style="margin:0;">Seed in the graph; Bridago answers lookups.</p></div>
+    <div class="card"><div class="card-kicker">X · shuffled</div><p class="card-body" style="margin:0;">Q with the permuted seed. The control.</p></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
+    <div class="card"><div class="card-kicker">Seed quality · minimal</div><p class="card-body" style="margin:0;">Incidence and types only.</p></div>
+    <div class="card"><div class="card-kicker">Seed quality · generated</div><p class="card-body" style="margin:0;">All five blocks from the generator, unreviewed.</p></div>
+    <div class="card"><div class="card-kicker">Seed quality · curated</div><p class="card-body" style="margin:0;">All five blocks, constraints and energy reviewed by hand.</p></div>
+  </div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:760px;">A frontier API model runs unseeded as an outside reference only. Tasks: dspy-router-test schemas at depth 1–6; inferred vs observed reachability on generated hypergraphs; typed-constraint satisfaction. 3 generator seeds × 200 items per cell.</p>
+</section>
+
+<section data-screen-label="08 Hypotheses" style="display:grid;gap:18px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">08 · Hypotheses and falsifiers</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;max-width:760px;">What counts as a result</h2>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:860px;">
+      <thead><tr><th>#</th><th>Hypothesis</th><th>Refuted if</th></tr></thead>
+      <tbody>
+        <tr><td>H0 · headline</td><td>Seeded (Q, curated), every rung from L to R stays within 5 points of L</td><td>Any rung falls more than 5 points below L</td></tr>
+        <tr><td>H1</td><td>SQ within 5 points of L∅ on schema validity at depth ≤ 6</td><td>Gap &gt; 5 points at any depth ≥ 3</td></tr>
+        <tr><td>H2</td><td>Seeding halves the spread between substrates</td><td>Spread under Q ≥ 50% of spread under ∅</td></tr>
+        <tr><td>H3</td><td>RQ within 5 points of TQ on inferred reachability, at ≥ 10× lower CPU cost per item</td><td>R trails T by &gt; 5 points under Q</td></tr>
+        <tr><td>H4</td><td>R fails ∅ and C, passes Q (the LSTM signature)</td><td>RC ≈ RQ, or RQ ≈ R∅</td></tr>
+        <tr><td>H5</td><td>The shuffled seed removes ≥ 80% of the gain</td><td>X keeps &gt; 20% of the Q − ∅ gain</td></tr>
+        <tr><td>H6</td><td>The seeded gain grows with schema depth</td><td>Gain flat or shrinking from depth 1 to 6</td></tr>
+        <tr><td>H7</td><td>Seed quality (minimal → curated) moves accuracy more than substrate size (L → R)</td><td>The size effect is larger than the seed-quality effect</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:760px;">Metrics per cell: schema validity, inferred / observed reachability, constraint violations, tokens, wall-clock, CPU-seconds, energy at halt. Probes (linear, then nonlinear) for the incidence matrix and its closure on T and R hidden states.</p>
+</section>
+
+<section data-screen-label="09 Harness" style="display:grid;gap:18px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">09 · Harness</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">One compose profile, tests in the pipeline</h2>
+<pre style="margin:0;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);font-size:13px;line-height:1.6;overflow-x:auto;color:var(--color-neutral-200);">bridago/
+  seed/       gen.py · shuffle.py · schema.py
+  cognition/  signature.py · gepa.py · halt.py
+  substrates/ api.py · small.py · tiny_tf.py · lstm.py · gnn.py
+  bridge/     retrieve.py        (Bridago)
+  run.py      one cell → one row in results.parquet
+  tests/      determinism · shuffle preserves degrees · halting · each substrate on a 4-node seed
+
+docker compose --profile experiment up
+  harness · bridago (rex graph · jarvis cognition) · small-fast :5xxxx · phoenix :6006</pre>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);">CI runs <code>tests/</code> on CPU with a 4-node seed and stub substrates, no model and no network, as the engine tests already do.</p>
+</section>
+
+<section data-screen-label="10 Phases" style="display:grid;gap:18px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">10 · Phases</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;max-width:760px;">Order of work</h2>
+  <ol style="margin:0;padding-left:20px;display:grid;gap:10px;font-size:16px;line-height:1.6;max-width:760px;">
+    <li><strong style="font-weight:500;">P0 · Unify.</strong> Rex and Jarvis merged as branches of Bridago, one port map, one repo under <code>bridago/</code>.</li>
+    <li><strong style="font-weight:500;">P1 · Replicate.</strong> S∅ reproduces dspy-router-test. If it does not, stop and fix the baseline.</li>
+    <li><strong style="font-weight:500;">P2 · Seed.</strong> Generator, shuffle control and Bridago retrieval, with tests.</li>
+    <li><strong style="font-weight:500;">P3 · Small grid.</strong> L, S, R at depth 1–3, curated seed only. Read H0, H4, H5 before spending on the rest.</li>
+    <li><strong style="font-weight:500;">P4 · Full grid.</strong> All rungs, depth 1–6, three seed qualities, probes.</li>
+    <li><strong style="font-weight:500;">P5 · Publish.</strong> Report v4 and the headline demo: seeded vs unseeded curves from 30B to LSTM on one chart. Results on the public graph, raw runs on the private one.</li>
+  </ol>
+</section>
+
+<section data-screen-label="11 Risks" style="display:grid;gap:18px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">11 · Risks</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Ways the result could mislead</h2>
+  <ul style="margin:0;padding-left:20px;display:grid;gap:10px;font-size:16px;line-height:1.6;">
+    <li><strong style="font-weight:500;">The retriever does the reasoning.</strong> If Bridago returns closures, the substrate is only copying. Log every lookup; report the share of answers that are a single retrieved fact.</li>
+    <li><strong style="font-weight:500;">L fails too.</strong> Deep schemas break large models <a href="#s6">[6]</a>; "match L" then means little. Report absolute validity next to the gap.</li>
+    <li><strong style="font-weight:500;">Generated tasks are too clean.</strong> Add one real schema set from the institute graph before P5.</li>
+    <li><strong style="font-weight:500;">GEPA overfits per substrate.</strong> Compile on a split the grid never sees.</li>
+  </ul>
+</section>
+
+<section data-screen-label="Sources" style="display:grid;gap:14px;max-width:860px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Sources</div>
+  <ol style="margin:0;padding-left:0;list-style:none;display:grid;gap:8px;font-size:13px;line-height:1.55;color:var(--color-neutral-300);">
+    <li id="s1"><span style="color:var(--color-accent);">[1]</span> Khattab et al. "DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines." ICLR 2024. <a href="https://arxiv.org/abs/2310.03714">arxiv.org/abs/2310.03714</a></li>
+    <li id="s2"><span style="color:var(--color-accent);">[2]</span> Jolicoeur-Martineau. "Less is More: Recursive Reasoning with Tiny Networks." 2025. <a href="https://arxiv.org/abs/2510.04871">arxiv.org/abs/2510.04871</a></li>
+    <li id="s3"><span style="color:var(--color-accent);">[3]</span> Hybrid LLM+SLM tool-calling study. 2026. <a href="https://arxiv.org/abs/2609.16091">arxiv.org/abs/2609.16091</a></li>
+    <li id="s4"><span style="color:var(--color-accent);">[4]</span> TOON vs JSON under constrained decoding. 2026. <a href="https://arxiv.org/abs/2603.03306">arxiv.org/abs/2603.03306</a></li>
+    <li id="s5"><span style="color:var(--color-accent);">[5]</span> Wang et al. "ALPINE: Unveiling the Planning Capability of Autoregressive Learning." NeurIPS 2024. <a href="https://arxiv.org/abs/2405.09220">arxiv.org/abs/2405.09220</a></li>
+    <li id="s6"><span style="color:var(--color-accent);">[6]</span> Geng et al. "JSONSchemaBench." 2025. <a href="https://arxiv.org/abs/2501.10868">arxiv.org/abs/2501.10868</a> · ExtractBench. 2026. <a href="https://arxiv.org/abs/2602.12247">arxiv.org/abs/2602.12247</a></li>
+    <li id="s7"><span style="color:var(--color-accent);">[7]</span> Beck et al. "xLSTM: Extended Long Short-Term Memory." NeurIPS 2024. <a href="https://arxiv.org/abs/2405.04517">arxiv.org/abs/2405.04517</a></li>
+    <li id="s8"><span style="color:var(--color-accent);">[8]</span> Beck et al. "xLSTM 7B: A Recurrent LLM for Fast and Efficient Inference." 2025. <a href="https://arxiv.org/abs/2503.13427">arxiv.org/abs/2503.13427</a></li>
+    <li id="s9"><span style="color:var(--color-accent);">[9]</span> Feng et al. "Were RNNs All We Needed?" 2024. <a href="https://arxiv.org/abs/2410.01201">arxiv.org/abs/2410.01201</a></li>
+    <li id="s10"><span style="color:var(--color-accent);">[10]</span> Arora et al. "Zoology: Measuring and Improving Recall in Efficient Language Models." 2023. <a href="https://arxiv.org/abs/2312.04927">arxiv.org/abs/2312.04927</a></li>
+    <li id="s11"><span style="color:var(--color-accent);">[11]</span> Wen, Dang, Lyu. "RNNs are not Transformers (Yet): The Key Bottleneck on In-context Retrieval." 2024. <a href="https://arxiv.org/abs/2402.18510">arxiv.org/abs/2402.18510</a></li>
+    <li id="s12"><span style="color:var(--color-accent);">[12]</span> Jelassi et al. "Repeat After Me: Transformers are Better than State Space Models at Copying." ICML 2024. <a href="https://arxiv.org/abs/2402.01032">arxiv.org/abs/2402.01032</a></li>
+    <li id="s13"><span style="color:var(--color-accent);">[13]</span> Agrawal et al. "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning." ICLR 2026. <a href="https://arxiv.org/abs/2507.19457">arxiv.org/abs/2507.19457</a></li>
+  </ol>
+</section>
+
+</div>
+</article>
+</x-dc>
+</body>
+</html>

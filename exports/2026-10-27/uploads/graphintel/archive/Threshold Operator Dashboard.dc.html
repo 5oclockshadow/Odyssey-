@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; font-family: Manrope, system-ui, sans-serif; color: #141a2e; text-wrap: pretty; background: #f6f7fc; }
+    a { color: #5b4fe0; text-decoration: none; } a:hover { color: #3f33c4; text-decoration: underline; text-underline-offset: 3px; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #5b4fe0; outline-offset: 2px; }
+    ::selection { background: rgba(91,79,224,0.22); }
+    input::placeholder, textarea::placeholder { color: #8a90ad; }
+  </style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 50% at 10% 0%, #dcd6ff 0%, transparent 60%), radial-gradient(ellipse 60% 45% at 95% 10%, #cfeee6 0%, transparent 55%), radial-gradient(ellipse 60% 40% at 50% 100%, #ffe3ec 0%, transparent 60%), linear-gradient(180deg, #f6f7fc 0%, #eef0f8 100%);display:flex;flex-direction:column;gap:20px;padding:20px clamp(16px,3vw,40px) 60px;box-sizing:border-box;">
+
+<header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;">
+  <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;"><span style="font-family:'Instrument Serif',serif;font-size:24px;letter-spacing:-0.01em;">The Threshold Institute</span><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">operator dashboard · one agent · one Signature · one graph</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px;font-family:ui-monospace,Menlo,monospace;color:#2b3150;">
+    <span style="padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);">{{ stats.nodes }} nodes</span>
+    <span style="padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);">{{ stats.edges }} hyperedges</span>
+    <span style="padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);">{{ stats.types }} types</span>
+    <span style="padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);">{{ stats.rounds }} rounds · ΣΔE {{ stats.energy }}</span>
+    <span style="padding:6px 10px;border-radius:999px;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);">{{ stats.running }} running · {{ stats.pending }} queued</span>
+  </div>
+</header>
+
+<main style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;align-items:stretch;">
+
+  <!-- chat -->
+  <section style="display:flex;flex-direction:column;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,rgba(255,255,255,0.85),rgba(255,255,255,0.55));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 20px 50px rgba(20,26,46,0.10);min-height:520px;">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(20,26,46,0.08);display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;font-weight:600;white-space:nowrap;">Chat · priority 0</span><span style="font-size:11px;color:#6b7190;white-space:nowrap;">same round() as research</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px;padding:18px;flex:1;overflow-y:auto;max-height:520px;">
+      <sc-for list="{{ messages }}" as="m" hint-placeholder-count="1">
+        <div style="display:grid;gap:3px;font-size:14px;line-height:1.5;color:#2b3150;"><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#5b4fe0;font-weight:600;">{{ m.who }}</span><span style="white-space:pre-wrap;">{{ m.text }}</span><span style="font-size:11px;color:#6b7190;">{{ m.meta }}</span></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:8px;padding:12px;border-top:1px solid rgba(20,26,46,0.08);background:rgba(255,255,255,0.6);">
+      <input style="flex:1;min-width:0;padding:11px 14px;border-radius:999px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;" placeholder="Talk to SEXTANT; research keeps running underneath" value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ onKey }}">
+      <button onClick="{{ send }}" style="padding:11px 16px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 6px 18px rgba(82,69,214,0.3);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">Send</button>
+    </div>
+  </section>
+
+  <!-- graph -->
+  <section style="display:flex;flex-direction:column;border-radius:22px;overflow:hidden;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);min-height:520px;">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(20,26,46,0.08);display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;font-weight:600;white-space:nowrap;">The graph · live</span><span style="font-size:11px;color:#6b7190;">weight = size · hub = hyperedge · dashed = inferred</span></div>
+    <div style="position:relative;flex:1;">
+      <svg viewBox="0 0 600 440" style="width:100%;height:auto;display:block;">
+        <sc-for list="{{ gLinks }}" as="l" hint-placeholder-count="0"><line x1="{{ l.x1 }}" y1="{{ l.y1 }}" x2="{{ l.x2 }}" y2="{{ l.y2 }}" style="{{ l.style }}"></line></sc-for>
+        <sc-for list="{{ gHubs }}" as="h" hint-placeholder-count="0"><circle cx="{{ h.cx }}" cy="{{ h.cy }}" r="3" fill="#5b4fe0"></circle></sc-for>
+        <sc-for list="{{ gNodes }}" as="n" hint-placeholder-count="0"><circle cx="{{ n.cx }}" cy="{{ n.cy }}" r="{{ n.r }}" style="{{ n.style }}"></circle></sc-for>
+      </svg>
+      <sc-for list="{{ gLabels }}" as="t" hint-placeholder-count="0"><span style="{{ t.style }}">{{ t.text }}</span></sc-for>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-top:1px solid rgba(20,26,46,0.08);font-size:11px;font-family:ui-monospace,Menlo,monospace;color:#2b3150;">
+      <sc-for list="{{ typeChips }}" as="t" hint-placeholder-count="3"><span style="padding:3px 8px;border-radius:999px;background:rgba(91,79,224,0.08);">{{ t }}</span></sc-for>
+    </div>
+  </section>
+
+  <!-- queue -->
+  <section style="display:flex;flex-direction:column;border-radius:22px;overflow:hidden;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);min-height:520px;">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(20,26,46,0.08);display:flex;justify-content:space-between;align-items:baseline;gap:10px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;font-weight:600;">Rounds · {{ concurrency }} in flight</span><button onClick="{{ reexamine }}" style="background:none;border:0;padding:0;font:inherit;font-size:12px;color:#5b4fe0;font-weight:600;cursor:pointer;">Re-examine weakest edges</button></div>
+    <div style="display:flex;flex-direction:column;gap:1px;background:rgba(20,26,46,0.06);flex:1;overflow-y:auto;max-height:520px;">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="2">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 18px;background:rgba(255,255,255,0.72);font-size:12px;line-height:1.45;"><span style="{{ r.kindStyle }}">{{ r.kind }}</span><span style="display:grid;gap:2px;min-width:0;"><span style="color:#2b3150;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.text }}</span><span style="color:#6b7190;">{{ r.result }}</span></span><span style="font-family:ui-monospace,Menlo,monospace;color:#5b4fe0;white-space:nowrap;">{{ r.status }}</span></div>
+      </sc-for>
+    </div>
+  </section>
+</main>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;align-items:start;">
+  <div style="display:grid;gap:12px;padding:22px;border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(255,255,255,0.5));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+    <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Pump data · priority 5</span>
+    <p style="margin:0;font-size:14px;line-height:1.55;color:#3a4160;">One topic or pasted passage per line. Each line becomes a research round in the background, into the same graph the chat reads. Chat turns jump the queue; nothing blocks.</p>
+    <textarea value="{{ pump }}" onChange="{{ onPump }}" rows="6" placeholder="stablecoin settlement volume against card networks, monthly&#10;funding-rate regimes on perpetual venues as a crowding signal&#10;sheaf Laplacians as a consistency energy for hypergraphs" style="padding:12px 14px;border-radius:14px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:13px;line-height:1.5;color:#141a2e;width:100%;box-sizing:border-box;resize:vertical;"></textarea>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;"><button onClick="{{ doPump }}" style="padding:10px 16px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 6px 18px rgba(82,69,214,0.3);font:inherit;font-weight:600;font-size:13px;cursor:pointer;">Queue {{ pumpCount }} rounds</button><button onClick="{{ resetGraph }}" style="padding:10px 16px;border-radius:999px;border:1px solid rgba(20,26,46,0.12);color:#141a2e;background:rgba(255,255,255,0.7);font:inherit;font-weight:600;font-size:13px;cursor:pointer;">Reset graph to seed</button></div>
+  </div>
+  <div style="display:grid;gap:12px;padding:22px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+    <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">How one agent chats and researches a thousand things at once</span>
+    <ol style="margin:0;padding-left:18px;display:grid;gap:7px;font-size:14px;line-height:1.5;color:#2b3150;">
+      <li>Everything is a round: <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;">round(intake, kind)</span>. Chat, pumped data and research differ only by priority.</li>
+      <li>A priority queue feeds N workers. Chat is priority 0 and is picked up by the next free worker; research fills the rest.</li>
+      <li>Each round reads a slice of the graph, not the whole: the strongest edges, their nodes, the core, all types.</li>
+      <li>Merging is the only write and it holds a lock; Hebbian weights strengthen what fired and decay the rest.</li>
+      <li>The graph asks about itself: every minute the weakest edges are re-queued for re-examination.</li>
+      <li>The browser version here uses the same Signature through the live model; the Python below is the production loop.</li>
+    </ol>
+  </div>
+</section>
+
+<section style="display:grid;gap:12px;">
+  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+    <sc-for list="{{ files }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.name }}</button></sc-for>
+  </div>
+  <pre style="margin:0;padding:20px 22px;border-radius:22px;background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.06);font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;color:#2b3150;white-space:pre;overflow-x:auto;max-height:560px;overflow-y:auto;">{{ code }}</pre>
+  <p style="margin:0;font-size:12px;line-height:1.5;color:#6b7190;">Run: <span style="font-family:ui-monospace,Menlo,monospace;">pip install -r requirements.txt && python main.py notes/*.md</span> inside <span style="font-family:ui-monospace,Menlo,monospace;">threshold/</span>. Files on the command line are pumped as ingest rounds; stdin is chat; research runs from the yaml forever. Apps the agent builds are cli, tui, qt or web, one kind per approved spec.</p>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;concurrency&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:1,&quot;max&quot;:8,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Engine&quot;}}">
+const SEED = {
+  nodes: [{ id: 'sextant', type: 'agent', label: 'SEXTANT, the agent' }, { id: 'operator', type: 'human', label: 'the operator' }, { id: 'institute', type: 'organisation', label: 'The Threshold Institute' }],
+  types: { agent: 'a software actor that reasons in rounds and acts through tools', human: 'a person with standing in the Institute', organisation: 'a legal or working entity' }
+};
+const MISSION = 'You are SEXTANT, the single agent that runs The Threshold Institute, a self-running think tank. Work, money, attention and trust are being re-priced in real time and most people will notice late; you make the change legible early, in public, with receipts. Every input, whether a chat turn or a research task, is one round: read the graph slice, reason in free text first, then emit the ontology delta, nodes, hyperedges, closure, actors, answer and an energy report, in that order. Reuse existing ids. Mint a type or relation only when nothing fits, and define it with its nearest neighbour. Never give personalised financial advice. The Institute never manages money.';
+const SCHEMA = 'Respond with one JSON object and nothing else, keys in exactly this order: "reasoning" (string, think here first), "evidence" (string[]), "definitions" ([{name, definition, nearest|null}]), "nodes" ([{id, type, label}]), "hyperedges" ([{id, relation, members: string[] (>=2 node ids), inferred: false}]), "closure" (same shape, inferred: true), "actors" ([{id, type, label}]), "answer" (string, what the operator sees), "energy" ({delta: number (negative = more consistent), violations: string[]}). Keep ids as stable slugs; reuse ids from the slice.';
+const FILES = ['threshold/institute.yaml', 'threshold/signature.py', 'threshold/round.py', 'threshold/main.py'];
+const PRIO = { chat: 0, ingest: 3, research: 5, reexamine: 7 };
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const ls = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+    this.state = { graph: ls('ti.graph', null) || this.seedGraph(), log: ls('ti.log', []), queue: [], running: 0, rounds: ls('ti.rounds', 0), energy: ls('ti.energy', 0),
+      messages: [{ who: 'SEXTANT', text: 'This is the live engine. Talk to me here; pump topics below; watch the graph change. Every turn and every research item is the same round through the same Signature.', meta: '' }],
+      draft: '', pump: '', code: {}, file: FILES[2] };
+    this.seq = 0;
+  }
+  seedGraph() {
+    const nodes = {}; SEED.nodes.forEach(n => { nodes[n.id] = Object.assign({}, n, { w: 1, core: true }); });
+    return { nodes, edges: {}, types: Object.assign({}, SEED.types) };
+  }
+  save() { try { localStorage.setItem('ti.graph', JSON.stringify(this.state.graph)); localStorage.setItem('ti.log', JSON.stringify(this.state.log.slice(0, 60))); localStorage.setItem('ti.rounds', JSON.stringify(this.state.rounds)); localStorage.setItem('ti.energy', JSON.stringify(this.state.energy)); } catch (e) {} }
+  componentDidMount() { FILES.forEach(f => fetch(f).then(r => r.text()).then(t => this.setState(s => ({ code: Object.assign({}, s.code, { [f]: t }) }))).catch(() => {})); }
+  slice(k) {
+    const g = this.state.graph; k = k || 40;
+    const top = Object.values(g.edges).sort((a, b) => b.w - a.w).slice(0, k);
+    const ids = new Set(); top.forEach(e => e.members.forEach(m => ids.add(m))); Object.values(g.nodes).forEach(n => { if (n.core) ids.add(n.id); });
+    return JSON.stringify({ types: g.types, nodes: [...ids].filter(i => g.nodes[i]).map(i => g.nodes[i]), edges: top });
+  }
+  merge(r, eta, rho) {
+    eta = eta || 0.2; rho = rho || 0.01;
+    const g = JSON.parse(JSON.stringify(this.state.graph)); const touched = new Set();
+    (r.definitions || []).forEach(t => { if (t && t.name && !(t.name in g.types)) g.types[t.name] = t.definition || ''; });
+    [].concat(r.nodes || [], r.actors || []).forEach(n => { if (!n || !n.id) return; if (!g.nodes[n.id]) g.nodes[n.id] = { id: n.id, type: n.type || 'thing', label: n.label || n.id, w: 0 }; touched.add(n.id); });
+    [].concat(r.hyperedges || [], (r.closure || []).map(e => Object.assign({}, e, { inferred: true }))).forEach(e => { if (!e || !e.id || !Array.isArray(e.members) || e.members.length < 2) return; if (!e.members.every(m => g.nodes[m])) return; if (!g.edges[e.id]) g.edges[e.id] = { id: e.id, relation: e.relation || 'related', members: e.members, inferred: !!e.inferred, w: 0 }; touched.add(e.id); });
+    [g.nodes, g.edges].forEach(t => Object.keys(t).forEach(i => { const x = t[i]; if (x.core) return; x.w = touched.has(i) ? x.w + eta * (1 - x.w) : x.w * (1 - rho); }));
+    return g;
+  }
+  async round(intake, kind) {
+    if (!window.claude || !window.claude.complete) throw new Error('live model not connected');
+    const raw = await window.claude.complete({ system: MISSION + '\n\n' + SCHEMA, messages: [{ role: 'user', content: this.slice() + '\n\n[' + kind + ']\n' + intake }], max_tokens: 1800 });
+    const m = String(raw).match(/\{[\s\S]*\}/); const r = JSON.parse(m ? m[0] : raw);
+    const g = this.merge(r);
+    const dE = Number(r.energy && r.energy.delta) || 0;
+    this.setState(s => ({ graph: g, rounds: s.rounds + 1, energy: Math.round((s.energy + dE) * 100) / 100 }), () => this.save());
+    return r;
+  }
+  put(kind, text) {
+    const item = { id: ++this.seq, kind, text, prio: PRIO[kind], status: 'queued', result: '' };
+    this.setState(s => ({ queue: s.queue.concat([item]).sort((a, b) => a.prio - b.prio || a.id - b.id) }), () => this.tick());
+    return item.id;
+  }
+  tick() {
+    const max = Number(this.props.concurrency ?? 3);
+    const next = this.state.queue.find(q => q.status === 'queued');
+    if (!next || this.state.running >= max) return;
+    this.setState(s => ({ running: s.running + 1, queue: s.queue.map(q => q.id === next.id ? Object.assign({}, q, { status: 'running' }) : q) }), () => this.tick());
+    this.round(next.text, next.kind === 'reexamine' ? 'research' : next.kind).then(r => {
+      const minted = (r.definitions || []).map(t => t.name).join(', ');
+      const result = 'ΔE ' + (Number(r.energy && r.energy.delta) || 0).toFixed(2) + ' · +' + (r.nodes || []).length + ' nodes · +' + (r.hyperedges || []).length + ' edges' + (minted ? ' · minted ' + minted : '');
+      this.finish(next.id, 'done', result);
+      if (next.kind === 'chat') this.setState(s => ({ messages: s.messages.concat([{ who: 'SEXTANT', text: String(r.answer || '').trim(), meta: result }]) }));
+    }).catch(err => {
+      this.finish(next.id, 'failed', String(err.message || err).slice(0, 80));
+      if (next.kind === 'chat') this.setState(s => ({ messages: s.messages.concat([{ who: 'SEXTANT', text: 'That round failed: ' + String(err.message || err).slice(0, 120), meta: '' }]) }));
+    });
+  }
+  finish(id, status, result) {
+    this.setState(s => { const q = s.queue.find(x => x.id === id); return { running: s.running - 1, queue: s.queue.filter(x => x.id !== id), log: [Object.assign({}, q, { status, result })].concat(s.log).slice(0, 60) }; }, () => { this.save(); this.tick(); });
+  }
+  layout() {
+    const g = this.state.graph; const nodes = Object.values(g.nodes); const W = 600, H = 440, cx = W / 2, cy = H / 2;
+    const pos = {}; const core = nodes.filter(n => n.core), rest = nodes.filter(n => !n.core).sort((a, b) => b.w - a.w);
+    core.forEach((n, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / core.length; pos[n.id] = { x: cx + 95 * Math.cos(a), y: cy + 60 * Math.sin(a) }; });
+    rest.forEach((n, i) => { const a = i * 2.39996; const rad = 110 + (1 - n.w) * 90; pos[n.id] = { x: cx + rad * Math.cos(a) * 1.25, y: cy + rad * Math.sin(a) * 0.9 }; });
+    const gNodes = nodes.map(n => ({ cx: pos[n.id].x.toFixed(1), cy: pos[n.id].y.toFixed(1), r: (n.core ? 9 : 4 + 7 * n.w).toFixed(1), style: 'fill:' + (n.core ? '#5b4fe0' : 'rgba(91,79,224,' + (0.25 + 0.6 * n.w).toFixed(2) + ')') + ';stroke:#fff;stroke-width:1.5;' }));
+    const gLabels = nodes.filter(n => n.core || n.w > 0.15).slice(0, 60).map(n => ({ text: String(n.label).slice(0, 22), style: 'position:absolute;left:' + (100 * pos[n.id].x / W).toFixed(2) + '%;top:' + (100 * (pos[n.id].y + (n.core ? 11 : 7)) / H).toFixed(2) + '%;transform:translate(-50%,0);font-size:10px;line-height:1.2;color:#2b3150;white-space:nowrap;pointer-events:none;' }));
+    const gLinks = [], gHubs = [];
+    Object.values(g.edges).forEach(e => { const pts = e.members.map(m => pos[m]).filter(Boolean); if (pts.length < 2) return; const hx = pts.reduce((a, p) => a + p.x, 0) / pts.length, hy = pts.reduce((a, p) => a + p.y, 0) / pts.length; gHubs.push({ cx: hx.toFixed(1), cy: hy.toFixed(1) }); pts.forEach(p => gLinks.push({ x1: hx.toFixed(1), y1: hy.toFixed(1), x2: p.x.toFixed(1), y2: p.y.toFixed(1), style: 'stroke:rgba(91,79,224,' + (0.2 + 0.6 * e.w).toFixed(2) + ');stroke-width:' + (0.6 + 1.8 * e.w).toFixed(1) + ';' + (e.inferred ? 'stroke-dasharray:3 3;' : '') })); });
+    return { gNodes, gLabels, gLinks, gHubs };
+  }
+  renderVals() {
+    const s = this.state; const g = s.graph; const lay = this.layout();
+    const pumpLines = s.pump.split('\n').map(x => x.trim()).filter(Boolean);
+    const kindStyle = (k) => 'font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;padding-top:2px;color:' + (k === 'chat' ? '#5b4fe0' : k === 'ingest' ? '#0f766e' : '#6b7190') + ';';
+    const rows = s.queue.concat(s.log).map(q => ({ kind: q.kind, text: q.text, result: q.result, status: q.status, kindStyle: kindStyle(q.kind) }));
+    const fileBase = 'padding:7px 12px;border-radius:999px;font:inherit;font-size:12px;font-family:ui-monospace,Menlo,monospace;cursor:pointer;border:1px solid rgba(255,255,255,0.95);';
+    return Object.assign({
+      stats: { nodes: Object.keys(g.nodes).length, edges: Object.keys(g.edges).length, types: Object.keys(g.types).length, rounds: s.rounds, energy: s.energy.toFixed(2), running: s.running, pending: s.queue.filter(q => q.status === 'queued').length },
+      concurrency: String(this.props.concurrency ?? 3),
+      messages: s.messages, draft: s.draft, onDraft: (e) => this.setState({ draft: e.target.value }), onKey: (e) => { if (e.key === 'Enter') this.send(); }, send: () => this.send(),
+      typeChips: Object.keys(g.types), rows,
+      pump: s.pump, onPump: (e) => this.setState({ pump: e.target.value }), pumpCount: String(pumpLines.length || 0),
+      doPump: () => { pumpLines.forEach(l => this.put(l.length > 160 ? 'ingest' : 'research', l.length > 160 ? l : 'Research this topic and return what the Institute should know, as graph deltas: ' + l)); this.setState({ pump: '' }); },
+      reexamine: () => { Object.values(g.edges).sort((a, b) => a.w - b.w).slice(0, 3).forEach(e => this.put('reexamine', 'Re-examine edge ' + e.id + ': ' + e.relation + ' over ' + e.members.join(', ') + '. Confirm, refine or retract.')); },
+      resetGraph: () => { const graph = this.seedGraph(); this.setState({ graph, log: [], rounds: 0, energy: 0 }, () => this.save()); },
+      files: FILES.map(f => ({ name: f.replace('threshold/', ''), pick: () => this.setState({ file: f }), style: fileBase + (s.file === f ? 'background:rgba(91,79,224,0.12);color:#141a2e;' : 'background:rgba(255,255,255,0.7);color:#3a4160;') })),
+      code: s.code[s.file] || 'loading ' + s.file + '…'
+    }, lay);
+  }
+  send() {
+    const text = this.state.draft.trim(); if (!text) return;
+    this.setState(s => ({ draft: '', messages: s.messages.concat([{ who: 'Operator', text, meta: '' }]) }));
+    this.put('chat', text);
+  }
+}
+</script>
+</body>
+</html>

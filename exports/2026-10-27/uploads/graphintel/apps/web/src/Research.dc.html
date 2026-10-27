@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <script src="graph3d.js"></script>
+  <style>body{margin:0;background:#0b0c0a;color:#e9ede0;font-family:"IBM Plex Sans",system-ui,sans-serif}a{color:#c8f43a;text-decoration:none}a:hover{color:#e3ff85;text-decoration:underline;text-underline-offset:3px}button{font:inherit;color:inherit}</style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0b0c0a"/><circle cx="35" cy="40" r="8" fill="#c8f43a"/><circle cx="66" cy="32" r="5" fill="#4a4f44"/><circle cx="58" cy="68" r="6" fill="#4a4f44"/><path d="M35 40L66 32M35 40L58 68" stroke="#98a08a" stroke-width="2"/></svg></template>
+</helmet>
+<div data-screen-label="Research place" style="min-height:100vh;background:#0b0c0a;color:#e9ede0;font-size:14px;">
+  <header style="display:flex;flex-wrap:wrap;align-items:baseline;gap:12px 28px;padding:20px 28px;border-bottom:1px solid #2b3024;">
+    <span style="font-weight:600;letter-spacing:0.08em;font-size:12px;display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;background:#c8f43a;display:inline-block;"></span>THE THRESHOLD INSTITUTE</span>
+    <span style="color:#98a08a;white-space:nowrap;">Research place</span>
+    <span style="margin-left:auto;display:flex;flex-wrap:wrap;gap:6px 22px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#98a08a;">
+      <sc-for list="{{ counters }}" as="c" hint-placeholder-count="4"><span><span style="color:#e9ede0;">{{ c.v }}</span> {{ c.k }}</span></sc-for>
+    </span>
+    <a href="{{ L.home }}" style="font-size:12px;">Home</a>
+  </header>
+  <main style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:28px;padding:24px 28px 56px;max-width:1500px;margin:0 auto;">
+    <section style="display:grid;gap:12px;align-content:start;min-width:0;">
+      <div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;">
+        <h2 style="margin:0;font-size:18px;font-weight:600;white-space:nowrap;flex-shrink:0;">The graph</h2>
+        <span style="display:flex;gap:4px;"><sc-for list="{{ hopBtns }}" as="h" hint-placeholder-count="3"><button onClick="{{ h.go }}" style="{{ h.style }}">{{ h.label }}</button></sc-for></span>
+        <button onClick="{{ home }}" style="background:none;border:1px solid #2b3024;padding:3px 10px;cursor:pointer;color:#98a08a;">Reset focus</button>
+        <span style="font-size:12px;color:#98a08a;flex-basis:100%;">{{ focusLabel }}</span>
+      </div>
+      <div style="position:relative;height:540px;border:1px solid #2b3024;background:#0f110d;"><div ref="{{ box }}" style="position:absolute;inset:0;"></div>
+        <div style="position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11px;color:#98a08a;"><span><span style="color:#c8f43a;">●</span> published</span><span><span style="color:#4a4f44;">●</span> not yet approved for publication (shape only)</span><span>distance from centre = edge weight: strong edges sit close</span></div>
+      </div>
+      <p style="margin:0;font-size:12px;line-height:1.6;color:#98a08a;max-width:760px;">Click a published node to re-centre on it; choose 1, 2 or 3 hops from it. Greyed shapes are real nodes and edges the agent holds that the operator has not approved for the public. Their labels, types and relations are withheld.</p>
+      <sc-if value="{{ sample }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:12px;color:#ffb02e;">The engine is not reachable from this page; this is a small sample graph, not live data.</p></sc-if>
+    </section>
+    <aside style="display:grid;gap:26px;align-content:start;min-width:0;">
+      <div style="display:grid;gap:8px;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">OPEN QUESTIONS</span>
+        <sc-for list="{{ questions }}" as="q" hint-placeholder-count="3"><div style="display:grid;gap:3px;padding:8px 0;border-bottom:1px solid #20241b;"><span style="font-weight:500;line-height:1.45;">{{ q.question }}</span><span style="font-size:12px;color:#98a08a;">would end it: {{ q.falsifier }}</span><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#98a08a;">{{ q.support }} edges rest on it · {{ q.published_support }} published</span></div></sc-for>
+        <sc-if value="{{ noQuestions }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">None approved for publication yet.</span></sc-if></div>
+      <div style="display:grid;gap:8px;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">BEING RESEARCHED NOW</span>
+        <sc-for list="{{ feed }}" as="f" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;font-size:12.5px;line-height:1.45;"><span style="font-family:'JetBrains Mono',monospace;color:#646b58;">{{ f.when }}</span><span style="overflow-wrap:anywhere;"><sc-if value="{{ f.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ f.link }}" target="_blank">{{ f.title }}</a></sc-if><sc-if value="{{ f.noLink }}" hint-placeholder-val="{{ true }}"><span>{{ f.title }}</span></sc-if></span></div></sc-for>
+        <sc-if value="{{ noFeed }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">Nothing in the queue yet.</span></sc-if></div>
+      <div style="display:grid;gap:8px;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">REPORTS</span>
+        <sc-for list="{{ reports }}" as="r" hint-placeholder-count="2"><a href="{{ r.href }}" style="display:grid;gap:2px;padding:8px 0;border-bottom:1px solid #20241b;"><span style="font-weight:500;">{{ r.title }}</span><span style="font-size:12px;color:#98a08a;">{{ r.about }}</span></a></sc-for></div>
+      <div style="display:grid;gap:8px;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">NOTES</span>
+        <sc-for list="{{ notes }}" as="n" hint-placeholder-count="1"><div style="display:grid;gap:4px;padding:8px 0;border-bottom:1px solid #20241b;"><span style="font-weight:500;">{{ n.title }}</span><span style="font-size:12.5px;line-height:1.55;color:#cfd5c2;white-space:pre-wrap;">{{ n.note }}</span><span style="font-size:11px;color:#98a08a;overflow-wrap:anywhere;">{{ n.sources }}</span></div></sc-for>
+        <sc-if value="{{ noNotes }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">No notes published yet.</span></sc-if></div>
+      <div style="display:grid;gap:8px;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">APPS THE AGENT SHIPPED</span>
+        <sc-for list="{{ apps }}" as="a" hint-placeholder-count="1"><a href="{{ a.url }}" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #20241b;"><span>{{ a.name }}</span><span style="font-size:12px;color:#98a08a;">{{ a.language }}</span></a></sc-for>
+        <sc-if value="{{ noApps }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">None live yet.</span></sc-if></div>
+    </aside>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;apiUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;/api&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Services&quot;}}">
+const SAMPLE = { focus: 'institute', hops: 2, nodes: [
+  { id: 'institute', label: 'The Threshold Institute', type: 'organisation', hop: 0, w: 1 }, { id: 'sextant', label: 'SEXTANT, the agent', type: 'agent', hop: 1, w: 1 }, { id: 'q-energy', label: 'Which energy forecasts are stale?', type: 'question', hop: 2, w: 0.8 },
+  { id: 'g:1a2b3c4d', grey: true, hop: 1, w: 0.7 }, { id: 'g:5e6f7a8b', grey: true, hop: 2, w: 0.4 }, { id: 'g:9c0d1e2f', grey: true, hop: 2, w: 0.3 }],
+  edges: [{ id: 'e1', relation: 'runs', members: ['sextant', 'institute'], w: 1 }, { id: 'e2', relation: 'investigates', members: ['sextant', 'q-energy'], w: 0.8 }, { id: 'g:e3', grey: true, members: ['institute', 'g:1a2b3c4d'], w: 0.7 }, { id: 'g:e4', grey: true, members: ['g:1a2b3c4d', 'g:5e6f7a8b', 'g:9c0d1e2f'], w: 0.35 }] };
+const REPORTS = [{ title: 'Landscape 2026', about: 'Competition, who pays, sectors, law across tiers of government, a compute-sharing app, and the questions put to the graph.', href: ['../../../research/reports/Landscape 2026.dc.html', 'reports/landscape-2026.html', '/reports/landscape-2026.html'][/\.dc\.html$/.test(location.pathname) ? 0 : /\/(dist|ui)\//.test(location.pathname) ? 1 : 2] }];
+const hm = (ts) => { const d = new Date(typeof ts === 'number' ? ts * 1000 : ts); return isNaN(d) ? '' : d.toTimeString().slice(0, 5); };
+
+class Component extends DCLogic {
+  constructor(p) { super(p); this.box = React.createRef(); this.state = { focus: 'institute', hops: 2, data: null, sample: false, counters: null, questions: [], notes: [], feed: [], apps: [] }; }
+  api(p) { return fetch(String(this.props.apiUrl ?? '/api').replace(/\/$/, '') + p).then(r => r.ok ? r.json() : Promise.reject(r.status)); }
+  componentDidMount() {
+    this.wait = setInterval(() => { if (window.Graph3D) { clearInterval(this.wait); window.Graph3D.load().then(() => { if (!this.box.current) return; this.g = window.Graph3D.mount(this.box.current, { autoRotate: true, onFocus: (id) => this.setState({ focus: id }, () => this.loadGraph()) }); this.loadGraph(); }); } }, 100);
+    this.loadSide(); this.poll = setInterval(() => this.loadSide(), 30000);
+  }
+  componentWillUnmount() { clearInterval(this.wait); clearInterval(this.poll); this.g && this.g.destroy(); }
+  async loadGraph() {
+    try { const d = await this.api(`/public/graph?focus=${encodeURIComponent(this.state.focus)}&hops=${this.state.hops}`); this.setState({ data: d, sample: false }); this.g && this.g.set(d); }
+    catch (e) { this.setState({ data: SAMPLE, sample: true }); this.g && this.g.set(SAMPLE); }
+  }
+  async loadSide() {
+    const get = (p, k, d) => this.api(p).then(j => j[k] ?? j).catch(() => d);
+    const [counters, questions, notes, feed, apps] = await Promise.all([get('/public/counters', 'x', null), get('/public/questions', 'questions', []), get('/public/notes', 'notes', []), get('/public/feed?n=12', 'feed', []), get('/apps', 'apps', {})]);
+    this.setState({ counters, questions, notes, feed, apps: Object.entries(apps || {}).map(([name, a]) => ({ name, ...a })) });
+  }
+  renderVals() { const p = location.pathname, m = /\.dc\.html$/.test(p) ? 0 : /\/(dist|ui)\//.test(p) ? 1 : 2, pick = (a) => a[m]; const L = { home: pick(['../../site/src/Institute.dc.html', 'index.html', '/'])}; return { L, ...this.rv() }; }
+  rv() {
+    const s = this.state, c = s.counters, node = s.data && s.data.nodes.find(n => n.id === s.focus);
+    return {
+      box: this.box, sample: s.sample, counters: c ? [{ k: 'nodes', v: c.nodes }, { k: 'edges', v: c.edges }, { k: 'published', v: c.published }, { k: 'rounds today', v: c.rounds_today }] : [{ k: 'engine offline', v: '–' }],
+      hopBtns: [1, 2, 3].map(h => ({ label: `${h} hop${h > 1 ? 's' : ''}`, go: () => this.setState({ hops: h }, () => this.loadGraph()), style: `border:1px solid ${s.hops === h ? '#c8f43a' : '#2b3024'};background:${s.hops === h ? '#c8f43a' : 'transparent'};color:${s.hops === h ? '#10140a' : '#e9ede0'};padding:3px 12px;cursor:pointer;font-weight:${s.hops === h ? 600 : 400};` })),
+      home: () => this.setState({ focus: 'institute' }, () => this.loadGraph()), focusLabel: node && node.label ? `centred on ${node.label}` : '',
+      questions: s.questions, noQuestions: s.questions.length === 0, notes: s.notes.map(n => ({ title: n.title, note: n.note, sources: (n.sources || []).join(' · ') })), noNotes: s.notes.length === 0,
+      feed: s.feed.map(f => ({ title: f.title, when: hm(f.ts), link: f.link || '', hasLink: !!f.link, noLink: !f.link })), noFeed: s.feed.length === 0, reports: REPORTS,
+      apps: s.apps.map(a => ({ name: a.name, language: a.language || '', url: a.url || `/a/${a.port}/` })), noApps: s.apps.length === 0,
+    };
+  }
+}
+</script>
+</body>
+</html>

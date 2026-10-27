@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; } button, input, select, textarea { font-family: 'Instrument Sans', sans-serif; } button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; } ::placeholder { color: #6d7699; }</style>
+</helmet>
+<div data-screen-label="Join" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.55;">
+  <dc-import name="Map Graph Nav" current="" hint-size="100%,64px"></dc-import>
+  <main style="max-width: 680px; margin: 0 auto; padding: clamp(32px, 6vw, 72px) clamp(16px, 4vw, 32px); display: grid; gap: 28px;">
+    <div style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: #9aa3c4;"><span style="padding: 3px 12px; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 600;">Step 2 of 2</span><span>You are on the list. Two quick questions.</span></div>
+    <h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(34px, 5vw, 58px); line-height: 1; letter-spacing: -0.03em;">What do you want to map?</h1>
+    <form onSubmit="{{ submit }}" style="display: grid; gap: 22px;">
+      <label style="display: grid; gap: 8px;"><span style="font-weight: 600;">In your own words</span><textarea rows="3" value="{{ useCase }}" onChange="{{ onUse }}" placeholder="e.g. who owns what across our suppliers, or how a statute connects to its amendments" style="padding: 14px 16px; border-radius: 14px; border: 1px solid #3a4468; background: #131827; color: #eef1ff; font-size: 16px; line-height: 1.5;"></textarea></label>
+      <div style="display: grid; gap: 8px;"><span style="font-weight: 600;">Or pick some starting points <span style="font-weight: 400; color: #9aa3c4;">(examples, not limits)</span></span><div style="display: flex; flex-wrap: wrap; gap: 8px;"><sc-for list="{{ domains }}" as="d" hint-placeholder-count="9"><button type="button" onClick="{{ d.pick }}" style="{{ d.style }}">{{ d.label }}</button></sc-for></div></div>
+      <div style="display: grid; gap: 8px;"><span style="font-weight: 600;">Who will use it?</span><div style="display: flex; flex-wrap: wrap; gap: 8px;"><sc-for list="{{ sizes }}" as="z" hint-placeholder-count="4"><button type="button" onClick="{{ z.pick }}" style="{{ z.style }}">{{ z.label }}</button></sc-for></div></div>
+      <div style="min-height: 20px; color: #ff7ab8; font-size: 14px;">{{ error }}</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;"><button type="submit" style="padding: 14px 30px; border: 0; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 600; font-size: 16px; cursor: pointer;">{{ label }}</button><a href="{{ skipHref }}" style="color: #9aa3c4;">Skip for now</a></div>
+    </form>
+  </main>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { C: null, useCase: '', domains: [], size: 'solo', error: '', busy: false };
+  async componentDidMount() { const C = await import('./tandem-core.js'); this.API = await import('./tandem-api.js'); this.setState({ C }); this.m = this.API.member.get(); if (!this.m) location.href = C.pageUrl('home') + '#join'; else this.API.track('page_view', 'join'); }
+  go = async e => {
+    e.preventDefault(); const s = this.state; if (!this.m || s.busy) return; this.setState({ busy: true, error: '' });
+    const r = await this.API.api('POST', '/api/waitlist/' + this.m.code + '/survey', { useCase: s.useCase, teamSize: s.size, domains: s.domains });
+    if (r.status >= 400) { this.setState({ busy: false, error: (r.json.errors && Object.values(r.json.errors)[0]) || 'Could not save. Try again.' }); return; }
+    this.API.track('survey_complete', 'join', { size: s.size }); location.href = s.C.pageUrl('thanks');
+  };
+  renderVals() {
+    const s = this.state, C = s.C, pill = on => ({ padding: '8px 16px', borderRadius: 999, border: '1px solid ' + (on ? '#ff3ea5' : '#3a4468'), background: on ? '#ff3ea5' : 'transparent', color: on ? '#0b0e17' : '#dfe4fa', cursor: 'pointer', fontSize: 15, fontWeight: on ? 600 : 400 });
+    const names = (C ? C.PACKS.map(p => p.name) : []).concat(['Logistics', 'My own context']);
+    return { useCase: s.useCase, onUse: e => this.setState({ useCase: e.target.value }), error: s.error, submit: this.go, label: s.busy ? 'Saving…' : 'Finish', skipHref: C ? C.pageUrl('thanks') : '#',
+      domains: names.map(n => ({ label: n, style: pill(s.domains.includes(n)), pick: () => this.setState(st => ({ domains: st.domains.includes(n) ? st.domains.filter(x => x !== n) : [...st.domains, n] })) })),
+      sizes: [['solo', 'Just me'], ['2-5', '2 to 5'], ['6-20', '6 to 20'], ['21+', '21 or more']].map(([id, l]) => ({ label: l, style: pill(s.size === id), pick: () => this.setState({ size: id }) })) };
+  }
+}
+
+</script>
+</body>
+</html>

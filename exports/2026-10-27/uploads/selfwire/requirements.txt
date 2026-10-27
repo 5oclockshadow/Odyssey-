@@ -1,0 +1,26 @@
+# core
+dspy>=3.4.0
+# mcp 2.x renamed FastMCP -> MCPServer and breaks own_server.py on import;
+# stay on the 1.x line until own_server is ported.
+mcp[cli]>=1.27.0,<2
+pydantic>=2.13.0
+networkx>=3.6.0
+redis>=8.1.0
+
+# workbench (chat + live codebase CRUD + tests + dashboard)
+osiiso>=1.1.0          # structured concurrency for jobs; requires Python >= 3.13
+fastapi>=0.115.0
+uvicorn>=0.30.0
+sse-starlette>=2.1.0
+httpx>=0.27.0
+
+# telemetry (optional at runtime — see selfwire/telemetry.py; the agent
+# works fine with these installed but no collector reachable, and Phoenix
+# tracing is opt-in via SELFWIRE_ENABLE_PHOENIX=1 either way)
+arize-phoenix-otel>=0.7.0
+openinference-instrumentation-dspy>=0.1.0
+
+# tests
+pytest>=8.0.0
+pytest-asyncio>=1.0.0
+pytest-timeout>=2.3.0

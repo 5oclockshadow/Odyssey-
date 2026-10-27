@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; } a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; }</style>
+</helmet>
+<div data-screen-label="Early access" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.55;">
+  <dc-import name="Map Graph Nav" current="access" hint-size="100%,64px"></dc-import>
+  <main style="padding: clamp(40px, 7vw, 88px) clamp(16px, 4vw, 48px);"><div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 40px;">
+    <div style="display: grid; gap: 16px; max-width: 760px;"><h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(40px, 6.5vw, 84px); line-height: 0.96; letter-spacing: -0.035em;">Early access comes first.</h1><p style="margin: 0; font-size: 20px; color: #b9c1e0;">Dates and prices are not announced. Waitlist members are invited first, in queue order. Inviting friends moves you up.</p></div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px;">
+      <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="3"><div style="{{ t.style }}"><div style="display: flex; justify-content: space-between; align-items: baseline;"><div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px;">{{ t.name }}</div><span style="font-size: 12px; color: #ff3ea5;">PLACEHOLDER</span></div><div style="color: #b9c1e0;">{{ t.line }}</div><div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 20px; color: #27d3ff;">{{ t.price }}</div><div style="display: grid; gap: 6px; margin-top: 6px;"><sc-for list="{{ t.items }}" as="i" hint-placeholder-count="4"><div style="display: flex; gap: 8px;"><span style="color: #27d3ff;">+</span><span>{{ i }}</span></div></sc-for></div></div></sc-for>
+    </div>
+    <p style="margin: 0; color: #8f98bb; font-size: 14px; max-width: 760px;">Plan names and contents are an outline for discussion. Nothing here is a commitment, and no payment is taken during early access.</p>
+    <div><a href="{{ join }}" style="display: inline-block; padding: 14px 28px; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 600; text-decoration: none;">Join the waitlist</a></div>
+  </div></main>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { C: null };
+  async componentDidMount() { const C = await import('./tandem-core.js'); this.setState({ C }); const API = await import('./tandem-api.js'); API.track('page_view', 'access'); }
+  renderVals() { const C = this.state.C; return { join: C ? C.pageUrl('home') + '#join' : '#', tiers: C ? C.TIERS.map(t => ({ ...t, style: { padding: 24, borderRadius: 18, border: '1px solid ' + (t.hot ? '#ff3ea5' : '#252c42'), background: '#131827', display: 'grid', gap: 10, alignContent: 'start' } })) : [] }; }
+}
+
+</script>
+</body>
+</html>

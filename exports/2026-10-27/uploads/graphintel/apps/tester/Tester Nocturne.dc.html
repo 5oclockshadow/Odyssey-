@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>body{margin:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)}a{color:var(--color-accent-300)}a:hover{color:var(--color-accent)}</style>
+</helmet>
+<div style="min-height:100vh;box-sizing:border-box;padding:24px 28px;max-width:1200px;margin:0 auto;display:grid;gap:20px;">
+  <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
+    <div style="display:grid;gap:4px;">
+      <span class="card-kicker">Tester · Nocturne</span>
+      <h1 style="margin:0;font:500 26px/1.2 var(--font-heading);">Operator room</h1>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <span class="tag tag-accent">{{ roundLabel }}</span>
+      <span class="tag tag-neutral">{{ phaseLabel }}</span>
+      <span class="tag tag-outline">{{ modeLabel }}</span>
+    </div>
+  </header>
+
+  <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}">
+    <div class="card" style="padding:14px 16px;"><span class="card-body">{{ err }}</span></div>
+  </sc-if>
+
+  <nav style="display:flex;flex-wrap:wrap;gap:8px;">
+    <button type="button" class="{{ tLive }}" onClick="{{ goLive }}">Live execution</button>
+    <button type="button" class="{{ tTrace }}" onClick="{{ goTrace }}">Thought trace</button>
+    <button type="button" class="{{ tRecord }}" onClick="{{ goRecord }}">Recorder</button>
+    <button type="button" class="{{ tSoc }}" onClick="{{ goSoc }}">SOC 2 matrix</button>
+    <button type="button" class="{{ tImprove }}" onClick="{{ goImprove }}">Self-improvement</button>
+  </nav>
+
+  <sc-if value="{{ isLive }}" hint-placeholder-val="{{ true }}">
+    <section style="display:grid;gap:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
+        <div class="card"><span class="card-kicker">Passing</span><div style="font:500 28px var(--font-heading);">{{ nPass }}</div></div>
+        <div class="card"><span class="card-kicker">Failing</span><div style="font:500 28px var(--font-heading);">{{ nFail }}</div></div>
+        <div class="card"><span class="card-kicker">Built, unverified</span><div style="font:500 28px var(--font-heading);">{{ nBuilt }}</div></div>
+        <div class="card"><span class="card-kicker">Queued</span><div style="font:500 28px var(--font-heading);">{{ nQueued }}</div></div>
+      </div>
+      <div class="card" style="display:grid;gap:8px;">
+        <span class="card-kicker">This round</span>
+        <span class="card-body">{{ planLine }}</span>
+      </div>
+      <div style="display:grid;gap:6px;">
+        <span class="card-kicker">Repos</span>
+        <table class="table" style="width:100%;">
+          <thead><tr><th>Repo</th><th>Status</th><th>Tests</th><th>Hygiene</th><th>Why</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="4">
+              <tr><td>{{ r.id }}</td><td><span class="tag tag-neutral">{{ r.status }}</span></td><td>{{ r.testsLine }}</td><td>{{ r.hygiene }}</td><td>{{ r.why }}</td></tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isTrace }}" hint-placeholder-val="{{ false }}">
+    <section style="display:grid;gap:8px;">
+      <span class="card-kicker">Latest first · {{ feedCount }} entries</span>
+      <sc-for list="{{ feed }}" as="f" hint-placeholder-count="5">
+        <div class="card" style="display:grid;grid-template-columns:90px 140px 1fr;gap:12px;align-items:baseline;padding:10px 14px;">
+          <span style="font:12px var(--font-mono);opacity:.6;">{{ f.when }}</span>
+          <span class="tag tag-outline">{{ f.who }}{{ f.arrow }}</span>
+          <span class="card-body">{{ f.text }}</span>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isRecord }}" hint-placeholder-val="{{ false }}">
+    <section class="card" style="display:grid;gap:12px;max-width:640px;">
+      <span class="card-kicker">Recorder</span>
+      <span class="card-body">Recording is not connected yet. This tab will capture an operator session as a journey file, export it, and send it to Redis-RAPTOR for regression tests. Until then the room only shows the tester's own actions.</span>
+      <span class="tag tag-outline" style="justify-self:start;">Not wired</span>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isSoc }}" hint-placeholder-val="{{ false }}">
+    <section style="display:grid;gap:12px;">
+      <span class="card-body" style="opacity:.75;">Mapped from the repo checks the tester runs today: hygiene (secrets, pinned dependencies) to Confidentiality and Security; tests to Processing Integrity; links and README to Availability notes. Other criteria need an audit source the room does not read yet.</span>
+      <table class="table" style="width:100%;">
+        <thead><tr><th>Repo</th><th>Security · Confidentiality</th><th>Processing integrity</th><th>Availability</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ soc }}" as="r" hint-placeholder-count="4">
+            <tr><td>{{ r.id }}</td><td>{{ r.sec }}</td><td>{{ r.proc }}</td><td>{{ r.avail }}</td></tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isImprove }}" hint-placeholder-val="{{ false }}">
+    <section style="display:grid;gap:20px;">
+      <div style="display:grid;gap:8px;">
+        <span class="card-kicker">Open proposals</span>
+        <sc-for list="{{ props }}" as="p" hint-placeholder-count="3">
+          <div class="card" style="display:grid;gap:4px;padding:10px 14px;"><span class="tag tag-outline" style="justify-self:start;">{{ p.who }}</span><span class="card-body">{{ p.text }}</span></div>
+        </sc-for>
+      </div>
+      <div style="display:grid;gap:6px;">
+        <span class="card-kicker">Rounds</span>
+        <table class="table" style="width:100%;">
+          <thead><tr><th>Round</th><th>Passing</th><th>Failing</th><th>Built</th><th>Journeys ok / bad</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ hist }}" as="h" hint-placeholder-count="4">
+              <tr><td>{{ h.i }}</td><td>{{ h.passing }}</td><td>{{ h.failing }}</td><td>{{ h.built }}</td><td>{{ h.e2e }}</td></tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1200, &quot;height&quot;: 900}}">
+class Component extends DCLogic {
+  state = { tab: 'live', s: null, err: '' };
+  componentDidMount() { this.load(); this._t = setInterval(() => this.load(), 3000); }
+  componentWillUnmount() { clearInterval(this._t); }
+  async load() {
+    try {
+      const r = await fetch('/build');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      this.setState({ s: await r.json(), err: '' });
+    } catch (e) {
+      this.setState({ err: 'Cannot reach the tester (/build: ' + e.message + '). Open this room from the tester container.' });
+    }
+  }
+  renderVals() {
+    const s = this.state.s || {}, tab = this.state.tab, st = s.st || {};
+    const t = d => new Date(d).toLocaleTimeString();
+    const rows = Object.entries(st).sort(([a], [b]) => a.localeCompare(b)).map(([id, v]) => {
+      const bar = v.bar || [], h = bar.find(c => c.id === 'hygiene'), tests = v.tests;
+      return {
+        id, status: v.status || 'queued', why: v.why || '',
+        testsLine: tests ? `${tests.passed} passed · ${tests.failed} failed · ${tests.errors} errors` : '—',
+        hygiene: h ? (h.ok ? 'pass' : 'fail: ' + h.why) : '—',
+        sec: h ? (h.ok ? 'pass' : 'fail') : 'not run',
+        proc: tests ? (tests.passed > 0 && !tests.failed && !tests.errors ? 'pass' : 'fail') : 'not run',
+        avail: bar.length ? (bar.find(c => c.id === 'links') || { ok: true }).ok ? 'pass' : 'fail' : 'not run',
+      };
+    });
+    const count = k => rows.filter(r => r.status === k).length;
+    const feed = (s.feed || []).slice(-80).reverse().map((f, i) => ({ key: i, when: t(f.t), who: f.who, arrow: f.to ? ' → ' + f.to : '', text: f.text }));
+    const hist = (s.history || []).slice(-12).reverse().map(h => ({ i: h.i, passing: h.passing, failing: h.failing, built: h.built || 0, e2e: `${h.e2eOk || 0} / ${h.e2eBad || 0}` }));
+    const props = (s.proposals || []).map(p => ({ id: p.id, who: p.who, text: p.text }));
+    const cls = t2 => tab === t2 ? 'btn btn-secondary' : 'btn btn-ghost';
+    const phases = { idle: 'Idle', plan: 'Planning', build: 'Building', test: 'Testing', e2e: 'Walking the site', audit: 'Auditing', paused: 'Paused', done: 'Done' };
+    return {
+      err: this.state.err, hasErr: !!this.state.err,
+      roundLabel: 'Round ' + (s.round || 0) + ' of ' + (s.target || 500),
+      phaseLabel: s.running ? (phases[s.phase] || s.phase || 'Running') : (phases[s.phase] || 'Stopped'),
+      modeLabel: s.mode ? s.mode + (s.edit ? ' · writes on' : ' · read only') : 'No connection',
+      tLive: cls('live'), tTrace: cls('trace'), tRecord: cls('record'), tSoc: cls('soc'), tImprove: cls('improve'),
+      isLive: tab === 'live', isTrace: tab === 'trace', isRecord: tab === 'record', isSoc: tab === 'soc', isImprove: tab === 'improve',
+      goLive: () => this.setState({ tab: 'live' }), goTrace: () => this.setState({ tab: 'trace' }), goRecord: () => this.setState({ tab: 'record' }),
+      goSoc: () => this.setState({ tab: 'soc' }), goImprove: () => this.setState({ tab: 'improve' }),
+      nPass: count('passing'), nFail: count('failing'), nBuilt: count('built'), nQueued: count('queued'),
+      planLine: (s.plan || []).map(p => p.text || p).join(' · ') || 'Nothing planned yet.',
+      rows, feed, feedCount: (s.feed || []).length, hist, props, soc: rows,
+    };
+  }
+}
+</script>
+</body>
+</html>

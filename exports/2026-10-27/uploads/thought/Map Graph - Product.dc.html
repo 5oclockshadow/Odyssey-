@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; } a:hover { color: #fff; } a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; }</style>
+</helmet>
+<div data-screen-label="Product" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.55;">
+  <dc-import name="Map Graph Nav" current="product" hint-size="100%,64px"></dc-import>
+  <header style="padding: clamp(40px, 7vw, 88px) clamp(16px, 4vw, 48px) 48px;"><div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 20px;">
+    <h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(40px, 6.5vw, 84px); line-height: 0.96; letter-spacing: -0.035em; max-width: 900px;">Drop a node. It finds its place. Then it asks you something.</h1>
+    <p style="margin: 0; font-size: 20px; color: #b9c1e0; max-width: 700px;">Map Graph is two engines you can run side by side: Thoughts grows ideas, Atlas maps them in the context you steer.</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;"><a href="Thought%20Graph%20-%20Atlas.dc.html" style="padding: 12px 24px; border-radius: 999px; background: #ff3ea5; color: #0b0e17; font-weight: 600; text-decoration: none;">Open Atlas preview</a><a href="Thought%20Graph%20-%20Studio.dc.html" style="padding: 12px 24px; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 600; text-decoration: none;">Open Thoughts preview</a></div>
+  </div></header>
+
+  <section style="padding: 56px clamp(16px, 4vw, 48px); background: #0e1220; border-top: 1px solid #252c42;"><div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 28px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 48px); color: #ff3ea5; letter-spacing: -0.02em;">Atlas</h2><span style="color: #9aa3c4;">Map what you know, level by level.</span></div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;"><sc-for list="{{ atlas }}" as="f" hint-placeholder-count="6"><div style="padding: 22px; border: 1px solid #252c42; border-radius: 16px; background: #131827; display: grid; gap: 8px;"><div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 21px;">{{ f.t }}</div><div style="color: #b9c1e0;">{{ f.d }}</div></div></sc-for></div>
+  </div></section>
+
+  <section style="padding: 56px clamp(16px, 4vw, 48px);"><div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 22px;">
+    <h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 48px); letter-spacing: -0.02em;">Gestures</h2>
+    <div style="display: grid; border: 1px solid #252c42; border-radius: 16px; overflow: hidden;"><sc-for list="{{ gestures }}" as="g" hint-placeholder-count="10"><div style="display: grid; grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.6fr); gap: 16px; padding: 12px 20px; border-bottom: 1px solid #252c42; background: #131827;"><span style="font-family: 'DM Mono', monospace; color: #27d3ff;">{{ g.k }}</span><span style="color: #c9d0ee;">{{ g.d }}</span></div></sc-for></div>
+  </div></section>
+
+  <section style="padding: 56px clamp(16px, 4vw, 48px); background: #0e1220; border-top: 1px solid #252c42;"><div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 28px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 48px); color: #27d3ff; letter-spacing: -0.02em;">Thoughts</h2><span style="color: #9aa3c4;">Grow ideas from a seed.</span></div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;"><sc-for list="{{ thoughts }}" as="f" hint-placeholder-count="6"><div style="padding: 22px; border: 1px solid #252c42; border-radius: 16px; background: #131827; display: grid; gap: 8px;"><div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 21px;">{{ f.t }}</div><div style="color: #b9c1e0;">{{ f.d }}</div></div></sc-for></div>
+  </div></section>
+
+  <section style="padding: 72px clamp(16px, 4vw, 48px);"><div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 14px; text-align: center; justify-items: center;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 52px); letter-spacing: -0.025em;">Run both. Switch tabs. They keep going.</h2><p style="margin: 0; color: #b9c1e0; max-width: 640px; font-size: 18px;">Auto mode runs on background timers and holds a browser lock, so growth and research continue when the tab is hidden.</p><a href="{{ join }}" style="padding: 14px 28px; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 600; text-decoration: none;">Join the waitlist</a></div></section>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { C: null };
+  async componentDidMount() { const C = await import('./tandem-core.js'); this.setState({ C }); const API = await import('./tandem-api.js'); API.track('page_view', 'product'); }
+  renderVals() { const C = this.state.C; return { atlas: C ? C.ATLAS_FEATURES : [], thoughts: C ? C.THOUGHT_FEATURES : [], gestures: C ? C.GESTURES.map(([k, d]) => ({ k, d })) : [], join: C ? C.pageUrl('home') + '#join' : '#' }; }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div data-screen-label="Dock" style="height: 100%; min-height: 0; overflow: hidden; display: grid; grid-template-rows: minmax(0, 1fr); background: var(--card); color: var(--ink); font-size: 13px;">
+
+<sc-if value="{{ tabChat }}" hint-placeholder-val="{{ true }}">
+<div style="min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto;">
+  <div style="padding: 10px 12px 8px; display: grid; gap: 8px; border-bottom: 1px solid rgba(var(--ink-rgb),0.08);">
+    <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+      <sc-for list="{{ agentChips }}" as="a" hint-placeholder-count="4"><button type="button" onClick="{{ a.pick }}" title="{{ a.title }}" style="{{ a.style }}"><span style="{{ a.dot }}"></span>{{ a.name }}<span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; opacity: 0.7;">{{ a.model }}</span></button></sc-for>
+    </div>
+    <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; color: var(--warn);">Live AI is not available in this viewer. Agents cannot think here, but /tool commands, the MCP tab and the terminal still work.</div></sc-if>
+  </div>
+  <div ref="{{ listRef }}" style="min-height: 0; overflow: auto; padding: 12px; display: grid; gap: 10px; align-content: start;">
+    <sc-if value="{{ chatEmpty }}" hint-placeholder-val="{{ true }}"><div style="display: grid; gap: 10px; color: var(--ink5); font-size: 12.5px; line-height: 1.5;"><div>Give the selected agent a goal. It works on the open map with its tools and shows each step here. Graph edits happen straight away and can be undone. File and terminal actions wait for your approval.</div><div style="display: flex; flex-wrap: wrap; gap: 6px;"><sc-for list="{{ quick }}" as="q" hint-placeholder-count="4"><button type="button" onClick="{{ q.go }}" style="{{ k.ghost }}">{{ q.label }}</button></sc-for></div></div></sc-if>
+    <sc-for list="{{ chat }}" as="m" hint-placeholder-count="3">
+      <div style="display: grid; gap: 4px;">
+        <sc-if value="{{ m.hasText }}" hint-placeholder-val="{{ true }}"><div style="display: grid; gap: 3px; justify-items: start;"><div style="display: flex; gap: 8px; align-items: baseline;"><span style="{{ m.nameStyle }}">{{ m.who }}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--ink6);">{{ m.t }}</span></div><div style="{{ m.bubble }}">{{ m.text }}</div></div></sc-if>
+        <sc-if value="{{ m.isTool }}" hint-placeholder-val="{{ false }}"><div style="margin-left: 10px; padding: 7px 9px; border-radius: 8px; background: var(--bg); border: 1px solid rgba(var(--ink-rgb),0.07); display: grid; gap: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;"><div style="{{ m.toolStyle }}">{{ m.tool }} <span style="color: var(--ink6);">{{ m.args }}</span></div><div style="color: var(--ink5); white-space: pre-wrap; word-break: break-word;">{{ m.result }}</div></div></sc-if>
+      </div>
+    </sc-for>
+    <sc-for list="{{ approvals }}" as="a" hint-placeholder-count="0"><div style="padding: 10px; border-radius: 10px; border: 1px solid var(--warn); background: rgba(229,196,111,0.08); display: grid; gap: 7px;"><div style="font-size: 12px;"><b>{{ a.who }}</b> wants to run <span style="font-family: 'IBM Plex Mono', monospace;">{{ a.tool }}</span></div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink4); white-space: pre-wrap; word-break: break-word; max-height: 120px; overflow: auto;">{{ a.args }}</div><div style="display: flex; gap: 6px;"><button type="button" onClick="{{ a.approve }}" style="{{ k.btn }}">Approve</button><button type="button" onClick="{{ a.deny }}" style="{{ k.ghost }}">Deny</button></div></div></sc-for>
+    <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><div style="display: flex; align-items: center; gap: 8px; color: var(--ink5); font-size: 12px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: var(--good); animation: mg-pulse 1.1s infinite;"></span>{{ busyText }}<button type="button" onClick="{{ stop }}" style="{{ k.ghost }}">Stop</button></div></sc-if>
+  </div>
+  <form onSubmit="{{ send }}" style="padding: 10px 12px 12px; display: grid; gap: 6px; border-top: 1px solid rgba(var(--ink-rgb),0.08);">
+    <textarea value="{{ text }}" onChange="{{ onText }}" onKeyDown="{{ onTextKey }}" rows="2" aria-label="Message the agent" placeholder="{{ placeholder }}" style="{{ k.ta }}"></textarea>
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;"><span style="font-size: 11px; color: var(--ink6);">Enter sends · Shift+Enter for a new line · /help</span><button type="submit" style="{{ k.btn }}">Send</button></div>
+  </form>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabNodes }}" hint-placeholder-val="{{ false }}">
+<div style="min-height: 0; overflow: auto; padding: 12px; display: grid; gap: 12px; align-content: start;">
+  <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ k.card }}">
+      <div style="{{ k.cap }}">Selected thought</div>
+      <input value="{{ eLabel }}" onChange="{{ onELabel }}" aria-label="Label" style="{{ k.inp }}">
+      <textarea value="{{ eDetail }}" onChange="{{ onEDetail }}" rows="3" aria-label="Detail" style="{{ k.ta }}"></textarea>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px;"><button type="button" onClick="{{ saveNode }}" style="{{ k.btn }}">Save</button><button type="button" onClick="{{ expandNode }}" style="{{ k.ghost }}">Grow it</button><button type="button" onClick="{{ delNode }}" style="{{ k.danger }}">Delete</button></div>
+    </div>
+    <div style="{{ k.card }}">
+      <div style="{{ k.cap }}">Links · {{ edgeCount }}</div>
+      <sc-for list="{{ edges }}" as="e" hint-placeholder-count="2"><div style="display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 6px; align-items: center;"><span style="color: var(--ink6); font-size: 11px;">{{ e.dir }}</span><button type="button" onClick="{{ e.go }}" style="border: 0; background: transparent; color: var(--ink); text-align: left; cursor: pointer; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0;">{{ e.other }}</button><select value="{{ e.rel }}" onChange="{{ e.setRel }}" aria-label="Relation" style="height: 26px; border-radius: 6px; border: 1px solid rgba(var(--ink-rgb),0.12); background: var(--bg); color: var(--ink); font-size: 11.5px;"><sc-for list="{{ relations }}" as="r" hint-placeholder-count="4"><option value="{{ r }}">{{ r }}</option></sc-for></select><button type="button" onClick="{{ e.del }}" title="Remove link" style="{{ k.ghost }}">×</button></div></sc-for>
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px;"><input value="{{ linkQ }}" onChange="{{ onLinkQ }}" placeholder="Link to another thought: type to find it" style="{{ k.inp }}"><select value="{{ linkRel }}" onChange="{{ onLinkRel }}" aria-label="New link relation" style="height: 30px; border-radius: 7px; border: 1px solid rgba(var(--ink-rgb),0.12); background: var(--bg); color: var(--ink); font-size: 11.5px;"><sc-for list="{{ relations }}" as="r" hint-placeholder-count="4"><option value="{{ r }}">{{ r }}</option></sc-for></select></div>
+      <sc-for list="{{ linkHits }}" as="h" hint-placeholder-count="0"><button type="button" onClick="{{ h.link }}" style="{{ k.ghost }}; text-align: left; justify-self: stretch;">Link to “{{ h.label }}”</button></sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{ noSel }}" hint-placeholder-val="{{ true }}"><div style="color: var(--ink5); font-size: 12.5px; line-height: 1.5;">Click a thought on the map to edit it and its links here.</div></sc-if>
+  <div style="{{ k.card }}">
+    <div style="{{ k.cap }}">{{ addCap }}</div>
+    <input value="{{ nLabel }}" onChange="{{ onNLabel }}" placeholder="Label" style="{{ k.inp }}">
+    <textarea value="{{ nDetail }}" onChange="{{ onNDetail }}" rows="2" placeholder="Detail, with the source if there is one" style="{{ k.ta }}"></textarea>
+    <div><button type="button" onClick="{{ addNode }}" style="{{ k.btn }}">Add thought</button></div>
+  </div>
+  <sc-if value="{{ noSel }}" hint-placeholder-val="{{ true }}"><div style="display: grid; gap: 4px;"><div style="{{ k.cap }}">Latest thoughts</div><sc-for list="{{ recent }}" as="r" hint-placeholder-count="5"><button type="button" onClick="{{ r.go }}" style="text-align: left; padding: 6px 8px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); cursor: pointer; font-size: 12.5px;" style-hover="background: var(--hover);">{{ r.label }}</button></sc-for></div></sc-if>
+  <sc-if value="{{ msg }}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; color: var(--warn);">{{ msg }}</div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabSearch }}" hint-placeholder-val="{{ false }}">
+<div style="min-height: 0; overflow: auto; padding: 12px; display: grid; gap: 10px; align-content: start;">
+  <form onSubmit="{{ runSearch }}" style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px;"><input value="{{ sq }}" onChange="{{ onSq }}" placeholder="Search the map and the world" aria-label="Search" style="{{ k.inp }}"><button type="submit" style="{{ k.btn }}">{{ sBtn }}</button></form>
+  <div style="display: flex; flex-wrap: wrap; gap: 5px;"><sc-for list="{{ srcChips }}" as="c" hint-placeholder-count="9"><button type="button" onClick="{{ c.toggle }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div>
+  <sc-if value="{{ noResults }}" hint-placeholder-val="{{ true }}"><div style="color: var(--ink5); font-size: 12.5px; line-height: 1.5;">Results from the sources you pick appear here. “Add” puts a result on the map as a thought, under the selected one, with its source in the detail.</div></sc-if>
+  <sc-for list="{{ results }}" as="r" hint-placeholder-count="0"><div style="padding: 8px 10px; border-radius: 9px; background: var(--card3); border: 1px solid rgba(var(--ink-rgb),0.07); display: grid; gap: 5px;"><div style="{{ k.cap }}">{{ r.src }}</div><div style="font-size: 12.5px; line-height: 1.45; word-break: break-word;">{{ r.text }}</div><sc-if value="{{ r.ok }}" hint-placeholder-val="{{ true }}"><div><button type="button" onClick="{{ r.act }}" style="{{ k.ghost }}">{{ r.actLabel }}</button></div></sc-if></div></sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabMcp }}" hint-placeholder-val="{{ false }}">
+<div style="min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr);">
+  <div style="display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid rgba(var(--ink-rgb),0.08);"><sc-for list="{{ mcpPills }}" as="p" hint-placeholder-count="3"><button type="button" onClick="{{ p.pick }}" style="{{ p.style }}">{{ p.label }}</button></sc-for></div>
+  <div style="min-height: 0; overflow: auto; padding: 12px; display: grid; gap: 10px; align-content: start;">
+    <sc-if value="{{ subTools }}" hint-placeholder-val="{{ true }}">
+      <div style="color: var(--ink5); font-size: 12px; line-height: 1.5;">{{ toolTotal }} tools. Run any of them yourself here. Agents use the same tools, within the permissions on the Agents tab.</div>
+      <sc-for list="{{ packs }}" as="p" hint-placeholder-count="4"><div style="display: grid; gap: 4px;"><div style="{{ k.cap }}">{{ p.name }}</div>
+        <sc-for list="{{ p.tools }}" as="t" hint-placeholder-count="3"><div style="border-radius: 9px; background: var(--card3); border: 1px solid rgba(var(--ink-rgb),0.07); overflow: hidden;">
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 9px;"><button type="button" onClick="{{ t.open }}" style="border: 0; background: transparent; color: var(--ink); text-align: left; cursor: pointer; padding: 0; display: grid; gap: 1px; min-width: 0;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px;">{{ t.name }}</span><span style="font-size: 11.5px; color: var(--ink5); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.desc }}</span></button><div style="display: flex; gap: 6px; align-items: center;"><span style="{{ t.polStyle }}">{{ t.pol }}</span><button type="button" onClick="{{ t.toggle }}" title="Switch on or off" style="{{ t.onStyle }}">{{ t.onLabel }}</button></div></div>
+          <sc-if value="{{ t.isOpen }}" hint-placeholder-val="{{ false }}"><div style="padding: 0 9px 9px; display: grid; gap: 6px;"><textarea value="{{ argsText }}" onChange="{{ onArgs }}" rows="3" aria-label="Arguments as JSON" style="{{ k.mono }}"></textarea><div style="display: flex; gap: 6px; align-items: center;"><button type="button" onClick="{{ runTool }}" style="{{ k.btn }}">Run</button><span style="font-size: 11px; color: var(--ink6);">Runs as you, so no approval is asked.</span></div><sc-if value="{{ hasOut }}" hint-placeholder-val="{{ false }}"><pre style="margin: 0; padding: 8px; border-radius: 7px; background: var(--bg); font-family: 'IBM Plex Mono', monospace; font-size: 11px; white-space: pre-wrap; word-break: break-word; max-height: 220px; overflow: auto; color: var(--ink4);">{{ out }}</pre></sc-if></div></sc-if>
+        </div></sc-for></div></sc-for>
+    </sc-if>
+    <sc-if value="{{ subMarket }}" hint-placeholder-val="{{ false }}">
+      <div style="{{ k.cap }}">Built-in tool packs</div>
+      <sc-for list="{{ packCards }}" as="p" hint-placeholder-count="4"><div style="{{ k.card }}"><div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;"><b style="font-size: 13px;">{{ p.name }}</b><button type="button" onClick="{{ p.toggle }}" style="{{ p.style }}">{{ p.label }}</button></div><div style="font-size: 12px; color: var(--ink5);">{{ p.desc }} · {{ p.count }} tools</div></div></sc-for>
+      <div style="{{ k.cap }}">External servers</div>
+      <sc-for list="{{ servers }}" as="s" hint-placeholder-count="0"><div style="{{ k.card }}"><div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;"><b style="font-size: 13px;">{{ s.name }}</b><span style="{{ s.dot }}">{{ s.status }}</span></div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink5); word-break: break-all;">{{ s.url }}</div><sc-if value="{{ s.error }}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; color: var(--bad);">{{ s.error }}</div></sc-if><div style="font-size: 12px; color: var(--ink5);">{{ s.tools }}</div><div style="display: flex; gap: 6px;"><button type="button" onClick="{{ s.connect }}" style="{{ k.ghost }}">Connect</button><button type="button" onClick="{{ s.edit }}" style="{{ k.ghost }}">Edit</button><button type="button" onClick="{{ s.remove }}" style="{{ k.danger }}">Remove</button></div></div></sc-for>
+      <div style="{{ k.card }}"><div style="{{ k.cap }}">{{ srvCap }}</div><input value="{{ mName }}" onChange="{{ onMName }}" placeholder="Name" style="{{ k.inp }}"><input value="{{ mUrl }}" onChange="{{ onMUrl }}" placeholder="https://… (or http://localhost…)" style="{{ k.inp }}"><input value="{{ mTok }}" onChange="{{ onMTok }}" type="password" placeholder="Access token, if the server needs one" style="{{ k.inp }}"><div><button type="button" onClick="{{ saveServer }}" style="{{ k.btn }}">{{ srvBtn }}</button></div><div style="font-size: 11.5px; color: var(--ink6); line-height: 1.45;">The token stays on this device and is sent only to that server. The server must allow requests from this page.</div></div>
+      <div style="{{ k.cap }}">Public examples</div>
+      <sc-for list="{{ market }}" as="m" hint-placeholder-count="2"><div style="{{ k.card }}"><div style="display: flex; justify-content: space-between; gap: 8px; align-items: center;"><b style="font-size: 13px;">{{ m.name }}</b><span style="font-size: 10px; color: var(--ink6); font-family: 'IBM Plex Mono', monospace;">{{ m.cat }}</span></div><div style="font-size: 12px; color: var(--ink5); line-height: 1.45;">{{ m.desc }}</div><div><button type="button" onClick="{{ m.use }}" style="{{ k.ghost }}">Use this address</button></div></div></sc-for>
+    </sc-if>
+    <sc-if value="{{ subMake }}" hint-placeholder-val="{{ false }}">
+      <div style="color: var(--ink5); font-size: 12px; line-height: 1.5;">Make your own tool from JavaScript. It runs in a sandbox with no network or storage. <span style="font-family: 'IBM Plex Mono', monospace;">args</span> holds the call arguments, <span style="font-family: 'IBM Plex Mono', monospace;">map</span> the graph, and <span style="font-family: 'IBM Plex Mono', monospace;">log()</span> prints the result. Agents can use it too, and can make tools themselves.</div>
+      <sc-for list="{{ customs }}" as="c" hint-placeholder-count="0"><div style="{{ k.card }}"><div style="display: flex; justify-content: space-between; align-items: center;"><b style="font-family: 'IBM Plex Mono', monospace; font-size: 12px;">{{ c.name }}</b><div style="display: flex; gap: 6px;"><button type="button" onClick="{{ c.edit }}" style="{{ k.ghost }}">Edit</button><button type="button" onClick="{{ c.remove }}" style="{{ k.danger }}">Delete</button></div></div><div style="font-size: 12px; color: var(--ink5);">{{ c.desc }}</div></div></sc-for>
+      <div style="{{ k.card }}"><div style="{{ k.cap }}">New or edited tool</div><input value="{{ cName }}" onChange="{{ onCName }}" placeholder="name_like_this" style="{{ k.inp }}"><input value="{{ cDesc }}" onChange="{{ onCDesc }}" placeholder="What it does" style="{{ k.inp }}"><textarea value="{{ cCode }}" onChange="{{ onCCode }}" rows="6" placeholder="log(map.nodes.length + ' thoughts');" style="{{ k.mono }}"></textarea><div><button type="button" onClick="{{ saveCustom }}" style="{{ k.btn }}">Save tool</button></div></div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabAgents }}" hint-placeholder-val="{{ false }}">
+<div style="min-height: 0; overflow: auto; padding: 12px; display: grid; gap: 12px; align-content: start;">
+  <div style="{{ k.card }}"><div style="{{ k.cap }}">What agents may do alone</div>
+    <sc-for list="{{ policies }}" as="p" hint-placeholder-count="7"><div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center;"><span style="font-size: 12.5px;">{{ p.label }}</span><div style="display: flex; gap: 3px;"><sc-for list="{{ p.opts }}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div></div></sc-for>
+  </div>
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;"><div title="{{ ledger }}" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--ink6); text-transform: uppercase;">Agents · {{ ledger }}</div><button type="button" onClick="{{ addAgent }}" style="flex: none; white-space: nowrap; height: 28px; padding: 0 12px; border: 1px solid var(--acc-line); border-radius: 7px; background: var(--acc-bg); color: var(--acc-ink); font-size: 12px; font-weight: 500; cursor: pointer;">New agent</button></div>
+  <sc-for list="{{ agentCards }}" as="a" hint-placeholder-count="4"><div style="{{ k.card }}">
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px;"><input value="{{ a.name }}" onChange="{{ a.setName }}" aria-label="Agent name" style="{{ k.inp }}"><div style="display: flex; gap: 3px;"><sc-for list="{{ a.models }}" as="m" hint-placeholder-count="2"><button type="button" onClick="{{ m.pick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for></div></div>
+    <textarea value="{{ a.directive }}" onChange="{{ a.setDirective }}" rows="4" aria-label="Directive" style="{{ k.ta }}"></textarea>
+    <div style="display: flex; flex-wrap: wrap; gap: 4px;"><sc-for list="{{ a.packs }}" as="p" hint-placeholder-count="9"><button type="button" onClick="{{ p.toggle }}" style="{{ p.style }}">{{ p.label }}</button></sc-for></div>
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;"><label style="font-size: 12px; color: var(--ink5); display: flex; gap: 6px; align-items: center;">Steps per goal <input type="number" min="1" max="20" value="{{ a.steps }}" onChange="{{ a.setSteps }}" style="width: 56px; height: 26px; border-radius: 6px; border: 1px solid rgba(var(--ink-rgb),0.12); background: var(--bg); color: var(--ink); padding: 0 6px;"></label><button type="button" onClick="{{ a.remove }}" style="{{ k.danger }}">Remove</button></div>
+  </div></sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabSessions }}" hint-placeholder-val="{{ false }}">
+<div style="min-height: 0; overflow: auto; padding: 12px; display: grid; gap: 12px; align-content: start;">
+  <div style="color: var(--ink5); font-size: 12px; line-height: 1.5;">A session is a whole working state: the map, the agent brain, the workspace files, the chat and the log. Save one to come back to it, or open a saved one to carry on where it stopped.</div>
+  <div style="{{ k.card }}"><div style="{{ k.cap }}">Save what is open now</div><input value="{{ sesName }}" onChange="{{ onSesName }}" placeholder="Name this session" style="{{ k.inp }}"><div><button type="button" onClick="{{ saveSession }}" style="{{ k.btn }}">Save session</button></div></div>
+  <sc-if value="{{ noSessions }}" hint-placeholder-val="{{ true }}"><div style="font-size: 12.5px; color: var(--ink6); line-height: 1.5;">Nothing saved yet. The four simulated walkthroughs — a six-year-old, a PhD student, a law student and a surgeon — are built and saved by the session tests.</div></sc-if>
+  <sc-for list="{{ sessions }}" as="x" hint-placeholder-count="0"><div style="{{ k.card }}">
+    <div style="display: flex; justify-content: space-between; gap: 8px; align-items: baseline;"><b style="font-size: 13px;">{{ x.name }}</b><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink6);">{{ x.when }}</span></div>
+    <div style="font-size: 11.5px; color: var(--ink5); line-height: 1.45;">{{ x.who }}</div>
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink6); line-height: 1.5;">{{ x.meta }}</div>
+    <div style="display: flex; gap: 6px;"><button type="button" onClick="{{ x.open }}" style="{{ k.btn }}">Open and continue</button><button type="button" onClick="{{ x.drop }}" style="{{ k.danger }}">Discard</button></div>
+  </div></sc-for>
+  <div><a href="Mega Graph - Session Tests.dc.html" style="font-size: 12.5px;">Run the four simulated sessions →</a></div>
+  <sc-if value="{{ sesMsg }}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; color: var(--warn);">{{ sesMsg }}</div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabBrain }}" hint-placeholder-val="{{ false }}">
+<div style="min-height: 0; overflow: auto; padding: 12px; display: grid; gap: 10px; align-content: start;">
+  <div style="color: var(--ink5); font-size: 12px; line-height: 1.5;">The agents' own graph: goals, plans, tools, memories and skills. Links that get used together grow stronger, and unused ones fade. It is separate from your map, and memories point back to your thoughts.</div>
+  <div style="position: relative; height: 250px; border-radius: 10px; background: #1b1d2c; border: 1px solid rgba(var(--ink-rgb),0.08); overflow: hidden;"><canvas ref="{{ brainRef }}" onPointerDown="{{ brainDown }}" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block;"></canvas><sc-if value="{{ brainEmpty }}" hint-placeholder-val="{{ true }}"><div style="position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink6); font-size: 12.5px; padding: 20px; text-align: center;">Nothing here yet. Give an agent a goal and it fills in.</div></sc-if></div>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; font-size: 11px; color: var(--ink5);"><sc-for list="{{ legend }}" as="l" hint-placeholder-count="5"><span style="display: flex; gap: 5px; align-items: center;"><span style="{{ l.dot }}"></span>{{ l.label }}</span></sc-for></div>
+  <sc-if value="{{ brSelOn }}" hint-placeholder-val="{{ false }}"><div style="{{ k.card }}"><div style="display: flex; justify-content: space-between; gap: 8px;"><b style="font-size: 13px;">{{ brSel.label }}</b><span style="{{ k.cap }}">{{ brSel.kind }} · used {{ brSel.uses }}×</span></div><div style="font-size: 12px; color: var(--ink4); white-space: pre-wrap; line-height: 1.45;">{{ brSel.detail }}</div><div style="display: flex; flex-wrap: wrap; gap: 5px;"><sc-for list="{{ brSel.refs }}" as="r" hint-placeholder-count="0"><button type="button" onClick="{{ r.go }}" style="{{ k.ghost }}">{{ r.label }}</button></sc-for><button type="button" onClick="{{ brSel.forget }}" style="{{ k.danger }}">Forget</button></div></div></sc-if>
+  <input value="{{ brQ }}" onChange="{{ onBrQ }}" placeholder="Recall: search the brain" aria-label="Search the brain" style="{{ k.inp }}">
+  <div style="display: grid; gap: 2px;"><sc-for list="{{ brList }}" as="b" hint-placeholder-count="5"><button type="button" onClick="{{ b.pick }}" style="display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 8px; align-items: center; text-align: left; padding: 6px 8px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); cursor: pointer; font-size: 12.5px;" style-hover="background: var(--hover);"><span style="{{ b.dot }}"></span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ b.label }}</span><span style="font-size: 10px; color: var(--ink6); font-family: 'IBM Plex Mono', monospace;">{{ b.kind }}</span></button></sc-for></div>
+  <div><button type="button" onClick="{{ brainClear }}" style="{{ k.danger }}">Clear the brain</button></div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:380,&quot;height&quot;:720},&quot;tab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;chat&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;chat&quot;,&quot;nodes&quot;,&quot;search&quot;,&quot;mcp&quot;,&quot;agents&quot;,&quot;brain&quot;,&quot;sessions&quot;]}}">
+const KIND = { goal: 'var(--warn)', plan: 'var(--purple)', tool: 'var(--blue)', memory: 'var(--good)', skill: 'var(--bad)' };
+const BORDER = '1px solid rgba(var(--ink-rgb),0.12)';
+const inp = { width: '100%', height: 30, padding: '0 9px', border: BORDER, borderRadius: 7, background: 'var(--bg)', color: 'var(--ink)', fontSize: 12.5 };
+const ta = { width: '100%', minHeight: 56, padding: '7px 9px', border: BORDER, borderRadius: 7, background: 'var(--bg)', color: 'var(--ink)', fontSize: 12.5, resize: 'vertical', lineHeight: 1.45 };
+const ghost = { height: 26, padding: '0 9px', border: BORDER, borderRadius: 7, background: 'transparent', color: 'var(--ink4)', fontSize: 11.5, cursor: 'pointer' };
+const K = { inp, ta, ghost,
+  mono: { ...ta, fontFamily: "'IBM Plex Mono', monospace", fontSize: 11.5 },
+  btn: { height: 28, padding: '0 12px', border: '1px solid var(--acc-line)', borderRadius: 7, background: 'var(--acc-bg)', color: 'var(--acc-ink)', fontSize: 12, fontWeight: 500, cursor: 'pointer' },
+  danger: { ...ghost, color: 'var(--bad)', borderColor: 'rgba(232,149,111,0.4)' },
+  card: { padding: 10, border: '1px solid rgba(var(--ink-rgb),0.08)', borderRadius: 10, background: 'var(--card3)', display: 'grid', gap: 8 },
+  cap: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', color: 'var(--ink6)', textTransform: 'uppercase' } };
+const chip = (on, c) => ({ height: 26, padding: '0 9px', border: '1px solid ' + (on ? (c || 'var(--acc-line)') : 'rgba(var(--ink-rgb),0.12)'), borderRadius: 13, background: on ? 'rgba(145,132,217,0.18)' : 'transparent', color: on ? 'var(--acc-ink)' : 'var(--ink5)', fontSize: 11.5, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 });
+const val = e => (e && e.target ? e.target.value : e);
+const first = s => String(s).split(/ \| | — /)[0].slice(0, 90);
+const QUICK = ['Summarise the map and say what to do next', 'Find sources for the selected thought', 'Challenge the weakest claim on the map', 'Reuse a saved pattern to structure this topic'];
+
+class Component extends DCLogic {
+  state = { agent: 'scout', text: '', sub: 'tools', openTool: null, argsText: '{}', out: '', eFor: null, eLabel: '', eDetail: '', nLabel: '', nDetail: '', linkQ: '', linkRel: 'supports', msg: '', sq: '', sBusy: false, results: [], srcs: { map: true, wikipedia: true, pubmed: true }, editSrv: null, mName: '', mUrl: '', mTok: '', cName: '', cDesc: '', cCode: '', brSel: null, brQ: '' };
+  listRef = React.createRef(); brainRef = React.createRef(); bp = new Map();
+
+  async componentDidMount() {
+    this.M = await import('./mega-agent.js'); this.off = this.M.on(() => this.sched());
+    this.poll = setInterval(() => { const h = this.M.S.host, s = h && h.sel(); if (s !== this._sel) { this._sel = s; this.forceUpdate(); } }, 400);
+    this.forceUpdate(); this.loop();
+  }
+  componentWillUnmount() { this.dead = true; if (this.off) this.off(); clearInterval(this.poll); cancelAnimationFrame(this.raf); clearTimeout(this._t); }
+  componentDidUpdate() { const l = this.listRef.current; if (l && this.props.tab === 'chat') { const near = l.scrollHeight - l.scrollTop - l.clientHeight < 140; if (near || this._chatN !== this.M.S.chat.length) l.scrollTop = l.scrollHeight; this._chatN = this.M.S.chat.length; } }
+  sched() { if (this._t) return; this._t = setTimeout(() => { this._t = null; if (!this.dead) this.forceUpdate(); }, 140); }
+  say(msg) { this.setState({ msg }); }
+  async tool(name, args) { try { const r = await this.M.callTool(name, args, { direct: true, who: 'You' }); this.setState({ msg: '' }); return r; } catch (e) { this.setState({ msg: e.message }); return null; } }
+
+  loop = () => {
+    if (this.dead) return; this.raf = requestAnimationFrame(this.loop);
+    const c = this.brainRef.current; if (!c || this.props.tab !== 'brain' || !this.M) return;
+    const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(2, window.devicePixelRatio || 1); if (!w || !h) return; if (c.width !== Math.round(w * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const B = this.M.S.brain, P = this.bp, ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+    for (const n of B.nodes) if (!P.has(n.id)) P.set(n.id, { x: w / 2 + (Math.random() - 0.5) * 60, y: h / 2 + (Math.random() - 0.5) * 60, vx: 0, vy: 0 });
+    for (const id of [...P.keys()]) if (!B.nodes.some(n => n.id === id)) P.delete(id);
+    for (let i = 0; i < B.nodes.length; i++) { const a = P.get(B.nodes[i].id); for (let j = i + 1; j < B.nodes.length; j++) { const b = P.get(B.nodes[j].id); let dx = a.x - b.x, dy = a.y - b.y; const d2 = dx * dx + dy * dy + 1, d = Math.sqrt(d2), f = 500 / d2; dx /= d; dy /= d; a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f; } a.vx += (w / 2 - a.x) * 0.004; a.vy += (h / 2 - a.y) * 0.004; }
+    for (const e of B.edges) { const a = P.get(e.a), b = P.get(e.b); if (!a || !b) continue; const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, f = (d - 55) * 0.02 * (0.4 + e.w); a.vx += dx / d * f; a.vy += dy / d * f; b.vx -= dx / d * f; b.vy -= dy / d * f; }
+    for (const p of P.values()) { p.x = Math.max(12, Math.min(w - 12, p.x + Math.max(-6, Math.min(6, p.vx)) * 0.5)); p.y = Math.max(12, Math.min(h - 12, p.y + Math.max(-6, Math.min(6, p.vy)) * 0.5)); p.vx *= 0.65; p.vy *= 0.65; }
+    for (const e of B.edges) { const a = P.get(e.a), b = P.get(e.b); if (!a || !b) continue; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.strokeStyle = 'rgba(233,233,237,' + (0.08 + e.w * 0.5) + ')'; ctx.lineWidth = 0.6 + e.w * 2.4; ctx.stroke(); }
+    ctx.font = '10px Inter, sans-serif'; for (const n of B.nodes) { const p = P.get(n.id), r = 4 + Math.min(7, Math.sqrt(n.uses || 1) * 2), sel = this.state.brSel === n.id; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 7); ctx.fillStyle = KIND[n.kind] || '#9184d9'; ctx.fill(); if (sel) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); } if ((n.refs || []).length) { ctx.beginPath(); ctx.arc(p.x + r, p.y - r, 2.5, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); } if (sel || B.nodes.length < 18) { ctx.fillStyle = 'rgba(233,233,237,0.75)'; ctx.fillText(n.label.slice(0, 22), p.x + r + 3, p.y + 3); } }
+  };
+  brainDown = e => { const r = e.currentTarget.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; let best = null, bd = 18; for (const n of this.M.S.brain.nodes) { const p = this.bp.get(n.id); if (!p) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = n.id; } } this.setState({ brSel: best }); };
+
+  async runSearch(e) {
+    if (e && e.preventDefault) e.preventDefault(); const q = this.state.sq.trim(); if (!q || !this.M) return; const sel = this.M.S.host && this.M.S.host.sel();
+    this.setState({ sBusy: true, results: [] }); const tools = { wikipedia: 'wikipedia_search', wikidata: 'wikidata_search', crossref: 'crossref_search', pubmed: 'pubmed_search', europepmc: 'europepmc_search', papers: 'papers_local', pubchem: 'pubchem_lookup', uniprot: 'uniprot_search' }, names = { map: 'Map', wikipedia: 'Wikipedia', wikidata: 'Wikidata', crossref: 'Crossref', pubmed: 'PubMed', europepmc: 'Europe PMC', papers: 'Paper index', pubchem: 'PubChem', uniprot: 'UniProt' };
+    const rows = []; const jobs = Object.keys(this.state.srcs).filter(k => this.state.srcs[k]).map(async k => {
+      try { const out = await this.M.callTool(k === 'map' ? 'node_search' : tools[k], k === 'pubchem' ? { name: q } : { query: q }, { direct: true, who: 'You' }); for (const line of String(out).split('\n').filter(Boolean)) rows.push({ src: names[k], map: k === 'map', text: line }); }
+      catch (er) { rows.push({ src: names[k], text: 'Could not search: ' + er.message, bad: true }); }
+    });
+    await Promise.all(jobs); if (this.dead) return;
+    const order = Object.keys(names); rows.sort((a, b) => order.indexOf(Object.keys(names).find(k => names[k] === a.src)) - order.indexOf(Object.keys(names).find(k => names[k] === b.src)));
+    this.setState({ sBusy: false, results: rows.map(r => ({ ...r, ok: !r.bad, actLabel: r.map ? 'Select on map' : 'Add to map', act: () => r.map ? (this.M.S.host.select(r.text.split(' | ')[0].trim())) : this.tool('node_add', { label: first(r.text), detail: r.text + '\n(via ' + r.src + ', search “' + q + '”)', parent: sel || undefined, grounding: 0.6 }) })) });
+  }
+
+  renderVals() {
+    const M = this.M, st = this.state, tab = this.props.tab || 'chat', out = { k: K, tabChat: tab === 'chat', tabNodes: tab === 'nodes', tabSearch: tab === 'search', tabMcp: tab === 'mcp', tabAgents: tab === 'agents', tabBrain: tab === 'brain', tabSessions: tab === 'sessions' };
+    if (!M) return { ...out, agentChips: [], chat: [], approvals: [], quick: [], packs: [], edges: [], relations: [], linkHits: [], recent: [], results: [], srcChips: [], mcpPills: [], packCards: [], servers: [], market: [], customs: [], policies: [], agentCards: [], legend: [], brList: [], brSel: {}, chatEmpty: true };
+    const S = M.S, h = S.host, g = h && h.g(), sel = h && h.sel(), n = sel && g ? g.byId.get(sel) : null, E = h && h.E;
+    // chat
+    const ag = S.agents.find(a => a.id === st.agent) || S.agents[0], busy = !!S.busy, run = S.agents.find(a => a.id === S.busy);
+    Object.assign(out, {
+      agentChips: S.agents.map(a => ({ name: a.name, model: a.model === 'sonnet' ? 'Sonnet' : 'Haiku', title: a.directive.slice(0, 160), pick: () => this.setState({ agent: a.id }), style: chip(a.id === ag.id, a.color), dot: { width: 7, height: 7, borderRadius: '50%', background: a.color } })),
+      chat: S.chat.slice(-80).map(m => { const a = S.agents.find(x => x.id === m.agent), c = m.who === 'You' ? 'var(--ink)' : (a ? a.color : 'var(--ink5)'); return { who: m.who, t: m.t, text: m.text, hasText: !!m.text, isTool: !!m.tool && !m.text, tool: m.tool, args: m.args, result: m.result || '', nameStyle: { fontSize: 12, fontWeight: 600, color: c }, bubble: { fontSize: 13, lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: m.final ? 'var(--ink)' : (m.who === 'You' ? 'var(--ink)' : 'var(--ink4)'), padding: m.who === 'You' ? '7px 10px' : 0, borderRadius: 9, background: m.who === 'You' ? 'var(--acc-bg)' : 'transparent', maxWidth: '100%' }, toolStyle: { color: m.bad ? 'var(--bad)' : 'var(--good)' } }; }),
+      chatEmpty: !S.chat.length, approvals: S.approvals.map(a => ({ who: a.who, tool: a.tool, args: JSON.stringify(a.args, null, 1).slice(0, 700), approve: () => a.res(true), deny: () => a.res(false) })),
+      busy, busyText: run ? run.name + ' is working' : '', stop: () => M.stop(), offline: !(typeof window !== 'undefined' && window.claude && window.claude.complete),
+      text: st.text, onText: e => this.setState({ text: val(e) }), placeholder: 'Goal for ' + ag.name + (n ? ' (selected: ' + String(n.label).slice(0, 30) + ')' : ''),
+      onTextKey: e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.send(); } }, send: e => { if (e && e.preventDefault) e.preventDefault(); this.send(); },
+      quick: QUICK.map(q => ({ label: q, go: () => M.ask(q, st.agent) })),
+    });
+    // nodes
+    const rels = E ? E.RELATIONS : ['supports', 'contradicts'], eds = n && g ? g.edges.filter(e => e.a === n.id || e.b === n.id).slice(0, 30) : [];
+    const hits = n && E && st.linkQ.trim().length > 1 ? E.similar(g, st.linkQ, 6).filter(x => x.node.id !== n.id).map(x => ({ label: String(x.node.label).slice(0, 60), link: () => { this.tool('edge_add', { a: n.id, b: x.node.id, relation: st.linkRel }); this.setState({ linkQ: '' }); } })) : [];
+    Object.assign(out, {
+      hasSel: !!n, noSel: !n, relations: rels, edgeCount: eds.length, msg: st.msg, linkQ: st.linkQ, linkRel: st.linkRel, linkHits: hits,
+      eLabel: n ? (st.eFor === n.id ? st.eLabel : n.label) : '', eDetail: n ? (st.eFor === n.id ? st.eDetail : (n.detail || '')) : '',
+      onELabel: e => n && this.setState({ eFor: n.id, eLabel: val(e), eDetail: st.eFor === n.id ? st.eDetail : (n.detail || '') }), onEDetail: e => n && this.setState({ eFor: n.id, eDetail: val(e), eLabel: st.eFor === n.id ? st.eLabel : n.label }),
+      saveNode: async () => { if (n && st.eFor === n.id) { await this.tool('node_update', { id: n.id, label: st.eLabel, detail: st.eDetail }); this.setState({ eFor: null }); } },
+      expandNode: () => n && this.tool('node_expand', { id: n.id }), delNode: () => n && this.tool('node_delete', { id: n.id }),
+      edges: eds.map(e => { const oid = e.a === n.id ? e.b : e.a, o = g.byId.get(oid); return { dir: e.a === n.id ? '→' : '←', other: o ? o.label : oid, rel: E.edgeRelation(e), go: () => h.select(oid), setRel: ev => this.tool('edge_update', { id: e.id, relation: val(ev) }), del: () => this.tool('edge_delete', { id: e.id }) }; }),
+      onLinkQ: e => this.setState({ linkQ: val(e) }), onLinkRel: e => this.setState({ linkRel: val(e) }),
+      nLabel: st.nLabel, nDetail: st.nDetail, onNLabel: e => this.setState({ nLabel: val(e) }), onNDetail: e => this.setState({ nDetail: val(e) }), addCap: n ? 'Add a thought under “' + String(n.label).slice(0, 30) + '”' : 'Add a thought',
+      addNode: async () => { if (!st.nLabel.trim()) return; const r = await this.tool('node_add', { label: st.nLabel, detail: st.nDetail, parent: n ? n.id : undefined }); if (r) this.setState({ nLabel: '', nDetail: '' }); },
+      recent: g ? g.nodes.filter(x => !x.dormant).slice(-12).reverse().map(x => ({ label: x.label, go: () => h.select(x.id) })) : [],
+    });
+    // search
+    const SRC = [['map', 'This map'], ['wikipedia', 'Wikipedia'], ['wikidata', 'Wikidata'], ['crossref', 'Crossref'], ['pubmed', 'PubMed'], ['europepmc', 'Europe PMC'], ['papers', 'Paper index'], ['pubchem', 'PubChem'], ['uniprot', 'UniProt']];
+    Object.assign(out, { sq: st.sq, onSq: e => this.setState({ sq: val(e) }), runSearch: e => this.runSearch(e), sBtn: st.sBusy ? 'Searching…' : 'Search', srcChips: SRC.map(([id, label]) => ({ label, style: chip(!!st.srcs[id]), toggle: () => this.setState({ srcs: { ...st.srcs, [id]: !st.srcs[id] } }) })), results: st.results, noResults: !st.results.length && !st.sBusy });
+    // mcp
+    const tl = M.toolList(), PK = M.PACKS, polLabel = { auto: 'auto', ask: 'asks', deny: 'blocked' };
+    const sub = st.sub; Object.assign(out, {
+      mcpPills: [['tools', 'Tools'], ['market', 'Market'], ['make', 'Make']].map(([id, label]) => ({ label, pick: () => this.setState({ sub: id }), style: chip(sub === id) })), subTools: sub === 'tools', subMarket: sub === 'market', subMake: sub === 'make', toolTotal: tl.length,
+      packs: [...Object.keys(PK), 'custom'].map(pk => ({ name: pk === 'custom' ? 'Custom' : PK[pk][0], tools: tl.filter(t => t.pack === pk).map(t => { const op = st.openTool === t.name, on = M.toolOn(t), pol = M.polOf(t); return { name: t.name, desc: t.desc, pol: polLabel[pol], polStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 9.5, color: pol === 'auto' ? 'var(--good)' : pol === 'ask' ? 'var(--warn)' : 'var(--bad)' }, isOpen: op, onLabel: on ? 'On' : 'Off', onStyle: chip(on), toggle: () => M.toggleOff(t.name), open: () => this.setState({ openTool: op ? null : t.name, out: '', argsText: JSON.stringify(Object.fromEntries(Object.keys(t.args || {}).map(k => [k, ''])), null, 1) }) }; }) })).filter(p => p.tools.length),
+      argsText: st.argsText, onArgs: e => this.setState({ argsText: val(e) }), out: st.out, hasOut: !!st.out,
+      runTool: async () => { let a = {}; try { a = JSON.parse(st.argsText || '{}'); } catch (e) { this.setState({ out: 'The arguments are not valid JSON.' }); return; } this.setState({ out: 'Running…' }); try { this.setState({ out: await M.callTool(st.openTool, a, { direct: true, who: 'You' }) }); } catch (e) { this.setState({ out: 'Error: ' + e.message }); } },
+      packCards: Object.keys(PK).map(pk => { const on = !S.disabled.includes(pk); return { name: PK[pk][0], desc: PK[pk][1], count: tl.filter(t => t.pack === pk).length, label: on ? 'Installed' : 'Off', style: chip(on), toggle: () => M.toggleOff(pk) }; }),
+      servers: S.mcps.map(s => { const c = S.conns[s.id]; return { name: s.name, url: s.url, status: s.status || 'not connected', error: s.error || '', tools: c ? c.tools.length + ' tools: ' + c.tools.map(t => t.name).slice(0, 8).join(', ') : '', dot: { fontSize: 11, color: s.status === 'connected' ? 'var(--good)' : s.status === 'error' ? 'var(--bad)' : 'var(--ink5)' }, connect: () => M.mcpConnect(s.id), edit: () => this.setState({ editSrv: s.id, mName: s.name, mUrl: s.url, mTok: s.token || '' }), remove: () => M.mcpRemove(s.id) }; }),
+      market: M.MARKET.map(m => ({ ...m, use: () => this.setState({ mName: m.id === 'custom' ? '' : m.name, mUrl: m.url, editSrv: null }) })),
+      mName: st.mName, mUrl: st.mUrl, mTok: st.mTok, onMName: e => this.setState({ mName: val(e) }), onMUrl: e => this.setState({ mUrl: val(e) }), onMTok: e => this.setState({ mTok: val(e) }), srvCap: st.editSrv ? 'Edit server' : 'Connect a server', srvBtn: st.editSrv ? 'Save and reconnect' : 'Connect',
+      saveServer: async () => { if (!st.mUrl.trim()) return; if (st.editSrv) { M.mcpUpdate(st.editSrv, { name: st.mName || st.mUrl, url: st.mUrl.trim(), token: st.mTok }); await M.mcpConnect(st.editSrv); } else await M.mcpAdd(st.mName.trim(), st.mUrl.trim(), st.mTok); this.setState({ editSrv: null, mName: '', mUrl: '', mTok: '' }); },
+      customs: S.custom.map(c => ({ name: c.name, desc: c.desc, edit: () => this.setState({ cName: c.name.replace(/^custom_/, ''), cDesc: c.desc, cCode: c.code }), remove: () => this.tool('tool_delete', { name: c.name }) })),
+      cName: st.cName, cDesc: st.cDesc, cCode: st.cCode, onCName: e => this.setState({ cName: val(e) }), onCDesc: e => this.setState({ cDesc: val(e) }), onCCode: e => this.setState({ cCode: val(e) }),
+      saveCustom: async () => { if (!st.cName.trim() || !st.cCode.trim()) return; await this.tool('tool_create', { name: st.cName, desc: st.cDesc, code: st.cCode }); this.setState({ cName: '', cDesc: '', cCode: '' }); },
+    });
+    // agents
+    const L = S.ledger; Object.assign(out, {
+      ledger: L.haiku + ' Haiku · ' + L.sonnet + ' Sonnet calls · ' + L.tools + ' tool runs',
+      policies: M.POLICY_KEYS.map(([k, label]) => ({ label, opts: [['auto', 'Auto'], ['ask', 'Ask'], ['deny', 'Never']].map(([v, l]) => ({ label: l, pick: () => M.setPolicy(k, v), style: chip(S.policy[k] === v, v === 'deny' ? 'var(--bad)' : v === 'ask' ? 'var(--warn)' : 'var(--good)') })) })),
+      addAgent: () => M.addAgent(),
+      agentCards: S.agents.map(a => ({ name: a.name, directive: a.directive, steps: a.maxSteps, setName: e => M.patchAgent(a.id, { name: val(e) }), setDirective: e => M.patchAgent(a.id, { directive: val(e) }), setSteps: e => M.patchAgent(a.id, { maxSteps: Math.max(1, Math.min(20, +val(e) || 8)) }), remove: () => M.removeAgent(a.id), models: [['haiku', 'Haiku'], ['sonnet', 'Sonnet']].map(([v, l]) => ({ label: l, pick: () => M.patchAgent(a.id, { model: v }), style: chip(a.model === v, a.color) })), packs: Object.keys(PK).map(pk => ({ label: PK[pk][0], style: chip(a.packs.includes(pk)), toggle: () => M.patchAgent(a.id, { packs: a.packs.includes(pk) ? a.packs.filter(x => x !== pk) : [...a.packs, pk] }) })) })),
+    });
+    // sessions
+    Object.assign(out, {
+      sesName: st.sesName || '', onSesName: e => this.setState({ sesName: val(e) }), sesMsg: st.sesMsg || '', noSessions: !S.sessions.length,
+      saveSession: async () => { if (!g) { this.setState({ sesMsg: 'No map is open.' }); return; } const name = (st.sesName || '').trim() || (String(g.seed).slice(0, 40) + ' · ' + new Date().toLocaleDateString()); let mode = ''; try { mode = localStorage.getItem('mega-mode') || ''; } catch (e) {} try { await M.saveSession({ name, mode, who: g.nodes.length + ' thoughts, ' + g.edges.length + ' links', note: 'Saved by you' }, h.E.serialize(g)); this.setState({ sesName: '', sesMsg: 'Saved “' + name + '”.' }); } catch (e) { this.setState({ sesMsg: e.message }); } },
+      sessions: S.sessions.map(x => ({ name: x.name, who: x.who || '', meta: (x.size || 0) + ' thoughts' + (x.links ? ', ' + x.links + ' links' : '') + (x.kb ? ' · ' + x.kb + ' KB' : '') + (x.counts ? ' · ' + x.counts : ''), when: new Date(x.at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }), drop: () => M.deleteSession(x.id), open: async () => { try { await M.openSession(x.id); location.reload(); } catch (e) { this.setState({ sesMsg: e.message }); } } })),
+    });
+    // brain
+    const B = S.brain, bs = B.nodes.find(x => x.id === st.brSel), q = st.brQ.trim(), list = (q ? M.brain.recall(q, 30) : B.nodes.slice().sort((a, b) => b.t - a.t).slice(0, 40));
+    Object.assign(out, {
+      brainRef: this.brainRef, brainDown: this.brainDown, brainEmpty: !B.nodes.length, legend: Object.entries(KIND).map(([k, c]) => ({ label: k, dot: { width: 8, height: 8, borderRadius: '50%', background: c } })),
+      brSelOn: !!bs, brSel: bs ? { label: bs.label, kind: bs.kind, uses: bs.uses || 1, detail: bs.detail || '', refs: (bs.refs || []).map(id => { const x = g && g.byId.get(id); return { label: x ? String(x.label).slice(0, 28) : id, go: () => h.select(id) }; }), forget: () => { M.brain.remove(bs.id); this.setState({ brSel: null }); } } : { refs: [] },
+      brQ: st.brQ, onBrQ: e => this.setState({ brQ: val(e) }), brList: list.map(b => ({ label: b.label, kind: b.kind, dot: { width: 8, height: 8, borderRadius: '50%', background: KIND[b.kind] || 'var(--acc)' }, pick: () => this.setState({ brSel: b.id }) })), brainClear: () => M.brain.clear(),
+    });
+    return out;
+  }
+  send() { const t = this.state.text; if (!t.trim() || !this.M) return; this.setState({ text: '' }); this.M.ask(t, this.state.agent); }
+}
+</script>
+</body>
+</html>

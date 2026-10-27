@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent); text-decoration: none; } a:hover { color: var(--color-accent-300); text-decoration: underline; text-underline-offset: 3px; }
+  </style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#161826"/><rect x="22" y="30" width="24" height="40" rx="3" fill="none" stroke="#9184d9" stroke-width="3"/><rect x="54" y="30" width="24" height="40" rx="3" fill="none" stroke="#9184d9" stroke-width="3"/><path d="M46 50h8" stroke="#9184d9" stroke-width="3"/></svg></template>
+</helmet>
+
+<div data-screen-label="Stack" style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);padding:var(--space-8) clamp(16px,4vw,56px) 72px;display:grid;gap:56px;max-width:1180px;align-content:start;">
+
+<header style="display:grid;gap:var(--space-4);max-width:820px;">
+  <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);"><span>The Threshold Institute</span><span style="color:var(--color-neutral-600);">/</span><span>the stack · v0.2.0</span><span style="color:var(--color-neutral-600);">/</span><span>2 October 2026</span></div>
+  <h1 style="margin:0;font-size:clamp(34px,4.6vw,46px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Everything, and where it runs.</h1>
+  <p style="margin:0;font-size:16px;line-height:1.6;color:var(--color-neutral-300);max-width:720px;">Four containers on the top layer: the site and the agent, each with its own docker. Everything else the agent depends on (Phoenix, Redis, the MCP hub, every sandbox run) it starts inside its own docker. The agent is the company: one Signature, one graph, and every span, log line, incident and shipped app is written into that same graph, so when something breaks the graph already knows where. Your day is a terminal.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);font-size:12px;align-items:center;">
+    <span class="tag tag-neutral">runs now</span>
+    <span class="tag tag-outline">needs keys or docker</span>
+    <span class="tag tag-accent">needs the repository</span>
+    <a href="../../ops/src/Space.dc.html" class="btn btn-primary" style="margin-left:var(--space-3);">Open the agent space</a>
+    <a href="../../site/src/Institute.dc.html" class="btn btn-secondary">Open the site</a>
+  </div>
+</header>
+
+<section style="display:grid;gap:var(--space-6);">
+  <div style="display:grid;gap:var(--space-2);"><h2 style="margin:0;font-size:24px;font-weight:500;letter-spacing:-0.01em;">Topology</h2><p style="margin:0;font-size:14px;color:var(--color-neutral-400);max-width:720px;">docker-compose.yml. The site talks to the agent over one network; the agent reaches into the site's docker only to ship. Nothing else crosses.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:var(--space-6);align-items:stretch;">
+    <div style="display:grid;gap:var(--space-4);padding:var(--space-6);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);background:var(--color-surface);align-content:start;">
+      <div style="display:flex;justify-content:space-between;gap:var(--space-3);align-items:baseline;"><span style="font-size:17px;font-weight:500;">web</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--color-neutral-500);">nginx · :80</span></div>
+      <div style="display:grid;gap:var(--space-1);font-size:13px;color:var(--color-neutral-300);line-height:1.55;">
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">/</span> the site, one self-contained file</span>
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">/terminal</span> the owner's day; login through the site</span>
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">/api/</span> → agent:8000, same origin, so the owner cookie just works</span>
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">/a/&lt;port&gt;/</span> → web-dind, every app the agent ships</span>
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">/apps/apps.json</span> the registry the agent writes</span>
+      </div>
+      <div style="display:grid;gap:var(--space-2);padding:var(--space-4);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);background:var(--color-bg);margin-top:var(--space-2);">
+        <div style="display:flex;justify-content:space-between;gap:var(--space-3);align-items:baseline;"><span style="font-weight:500;">web-dind</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--color-neutral-500);">docker:27-dind</span></div>
+        <span style="font-size:13px;color:var(--color-neutral-300);line-height:1.55;">Inside the site. <span style="font-family:ui-monospace,Menlo,monospace;">app-&lt;name&gt;</span> containers on 8100–8199, restart: always, health-checked every five minutes, relaunched when they stop. The agent loads the image here after tests pass in its own docker.</span>
+      </div>
+    </div>
+    <div style="display:grid;gap:var(--space-4);padding:var(--space-6);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);background:var(--color-surface);align-content:start;">
+      <div style="display:flex;justify-content:space-between;gap:var(--space-3);align-items:baseline;"><span style="font-size:17px;font-weight:500;">agent</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--color-neutral-500);">uvicorn serve:app · :8000</span></div>
+      <div style="display:grid;gap:var(--space-1);font-size:13px;color:var(--color-neutral-300);line-height:1.55;">
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">round</span> one Signature, ReAct, Hebbian merge, the record</span>
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">observe</span> spans → Phoenix and the graph; logs → the graph; signed functions → code nodes</span>
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">heal</span> incident → locate → repair round → sandbox tests → pull request (a shipped app is rebuilt instead); never applied to itself</span>
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">sandbox</span> run any language, build, ship to web-dind, registry</span>
+        <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-text);">reflect · day · auth</span> the Q-table and the nightly reflection; the owner's day; the owner's login</span>
+      </div>
+      <div style="display:grid;gap:var(--space-2);padding:var(--space-4);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);background:var(--color-bg);margin-top:var(--space-2);">
+        <div style="display:flex;justify-content:space-between;gap:var(--space-3);align-items:baseline;"><span style="font-weight:500;">agent-dind</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--color-neutral-500);">docker:27-dind · :6006</span></div>
+        <span style="font-size:13px;color:var(--color-neutral-300);line-height:1.55;">Inside the agent, started by the engine at boot: Phoenix :6006 (every span, over OTLP), Redis :6379 (dedupe, post caps, pending work that survives restarts), and the MCP hub :8765 with filesystem (read-only repo), GitHub, Slack, Wolfram, Apify, a terminal and the MCP market. Sandbox runs in python, node, typescript, go, rust, bash, ruby and c, or any image, with no network.</span>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;gap:var(--space-1);font-size:13px;color:var(--color-neutral-400);line-height:1.6;">
+    <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-300);">web → agent</span> network <span style="font-family:ui-monospace,Menlo,monospace;">institute</span>: chat, contact, the owner's day, actions</span>
+    <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-300);">agent → web-dind</span> network <span style="font-family:ui-monospace,Menlo,monospace;">web-inner</span>: load image, run, health-check, write the registry</span>
+    <span><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-300);">agent → agent-dind</span> network <span style="font-family:ui-monospace,Menlo,monospace;">agent-inner</span>: sandbox, builds, Phoenix</span>
+  </div>
+</section>
+
+<section style="display:grid;gap:var(--space-4);">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);flex-wrap:wrap;"><h2 style="margin:0;font-size:24px;font-weight:500;letter-spacing:-0.01em;">Your day</h2><a href="../../terminal/src/Terminal.dc.html" style="font-size:13px;">The owner workspace renders this live →</a></div>
+  <p style="margin:0;font-size:14px;color:var(--color-neutral-400);max-width:720px;">Eight phases from institute.yaml. The agent does the work in the left column; the right column is the whole of your job. Everything that waits on you is in one strip at the top of the terminal.</p>
+  <div style="display:grid;">
+    <sc-for list="{{ dayRows }}" as="r" hint-placeholder-count="8">
+      <div style="display:grid;grid-template-columns:56px minmax(0,1fr);gap:var(--space-4);padding:var(--space-4) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-neutral-500);padding-top:2px;">{{ r.at }}</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:var(--space-2) var(--space-8);align-items:start;">
+          <div style="display:grid;gap:var(--space-1);"><span style="font-weight:500;font-size:14px;">{{ r.title }}</span><span style="font-size:13px;line-height:1.55;color:var(--color-neutral-300);">{{ r.agent }}</span></div>
+          <div style="display:grid;gap:var(--space-1);"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">you</span><span style="font-size:13px;line-height:1.55;color:var(--color-neutral-300);">{{ r.you }}</span></div>
+          <a href="{{ r.href }}" style="font-size:12px;font-family:ui-monospace,Menlo,monospace;">{{ r.where }}</a>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="display:grid;gap:var(--space-4);">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);flex-wrap:wrap;"><h2 style="margin:0;font-size:24px;font-weight:500;letter-spacing:-0.01em;">The agent's loops</h2><a href="../../engine/institute.yaml" style="font-size:13px;">institute.yaml →</a></div>
+  <div style="display:grid;">
+    <sc-for list="{{ loops }}" as="l" hint-placeholder-count="6">
+      <div style="display:grid;grid-template-columns:56px minmax(0,1fr);gap:var(--space-4);padding:var(--space-4) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+        <span style="font-weight:500;font-size:14px;padding-top:1px;">{{ l.name }}</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:var(--space-2) var(--space-8);align-items:start;">
+          <div style="display:grid;gap:var(--space-1);"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-500);">trigger</span><span style="font-size:13px;line-height:1.55;color:var(--color-neutral-300);">{{ l.trigger }}</span></div>
+          <div style="display:grid;gap:var(--space-1);"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-500);">what happens</span><span style="font-size:13px;line-height:1.55;color:var(--color-neutral-300);">{{ l.what }}</span></div>
+          <div style="display:grid;gap:var(--space-2);align-content:start;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-500);">gate</span><span style="font-size:13px;line-height:1.55;color:var(--color-neutral-300);">{{ l.gate }}</span><div style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;"><span class="{{ l.cls }}">{{ l.status }}</span><a href="{{ l.href }}" style="font-size:12px;font-family:ui-monospace,Menlo,monospace;">{{ l.where }}</a></div></div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="display:grid;gap:var(--space-4);">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);flex-wrap:wrap;"><h2 style="margin:0;font-size:24px;font-weight:500;letter-spacing:-0.01em;">The visitor's journey</h2><a href="../../site/src/The Threshold Institute.dc.html" style="font-size:13px;">Open the site →</a></div>
+  <div style="display:grid;">
+    <sc-for list="{{ visitor }}" as="s" hint-placeholder-count="6">
+      <div style="display:grid;grid-template-columns:56px minmax(0,1fr);gap:var(--space-4);padding:var(--space-4) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-neutral-500);padding-top:2px;">{{ s.n }}</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:var(--space-2) var(--space-8);align-items:start;">
+          <div style="display:grid;gap:var(--space-1);"><span style="font-weight:500;font-size:14px;">{{ s.title }}</span><span style="font-size:13px;line-height:1.55;color:var(--color-neutral-300);">{{ s.text }}</span></div>
+          <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;align-content:start;"><span class="{{ s.cls }}">{{ s.status }}</span><a href="{{ s.href }}" style="font-size:12px;font-family:ui-monospace,Menlo,monospace;">{{ s.where }}</a></div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:var(--space-8);align-items:start;">
+  <div style="display:grid;gap:var(--space-3);">
+    <h2 style="margin:0;font-size:24px;font-weight:500;letter-spacing:-0.01em;">Where everything lives</h2>
+    <pre style="margin:0;padding:var(--space-4) var(--space-6);border-radius:var(--radius-md);background:var(--color-surface);font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;color:var(--color-neutral-300);white-space:pre;overflow-x:auto;">apps/
+  site/       src/ the public site (Home, Research, Academy, Signals, Apps, Ask, Tiers…)
+  terminal/   src/ the owner workspace: Today · Incidents · Ships · Sandbox · Research · Publish · Graph · prompt
+  hub/        src/ this page
+  web/        the gateway: Dockerfile · nginx.conf · dist/ (index, terminal, stack, apps.json, fixtures)
+  engine/     institute.yaml  the company
+              signature.py    the one Signature
+              round.py        slice → ReAct → merge · the graph (merge + observe write paths)
+              tools.py        web_search · fetch_url · graph_query · run_tests · publish · sandbox_run · ship_app
+              observe.py      Phoenix · spans, logs, code signatures → graph · any error → incident
+              heal.py         incident → locate → repair → sandbox tests → PR / live / relaunch
+              sandbox.py      agent-dind runs · build · ship to web-dind · registry · Phoenix
+              reflect.py      Q-table · nightly reflection · tomorrow's plan
+              day.py          the owner's day, from the record
+              auth.py         the owner's login
+              main.py         the care loop · serve.py  the door · test_engine.py  41 tests
+              fixtures/day.json   what the terminal replays offline
+              state/          graph.json · record.jsonl · incidents.jsonl · q.json · reflections.jsonl · apps/
+research/     reports/ (three reports, 69 sources) · notes.md
+marketing/    linkedin/ · x/ · reddit/ · schedule.yaml · outbox/ (drafts → sent/ · declined/)
+.github/      ci.yml · release.yml
+docker-compose.yml · Dockerfile · .env.example · CHANGELOG.md · archive/</pre>
+  </div>
+  <div style="display:grid;gap:var(--space-3);">
+    <h2 style="margin:0;font-size:24px;font-weight:500;letter-spacing:-0.01em;">Run it</h2>
+    <pre style="margin:0;padding:var(--space-4) var(--space-6);border-radius:var(--radius-md);background:var(--color-surface);font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;color:var(--color-neutral-300);white-space:pre;overflow-x:auto;">cp .env.example .env     # model key · OWNER_PASSWORD · SESSION_SECRET
+docker compose up -d     # web + agent, each with its own docker-in-docker
+open http://localhost/terminal      # sign in; your day
+open http://localhost:6006          # Phoenix: every span of every round
+
+# without docker (no sandbox, no apps, no Phoenix)
+cd apps/engine && pip install -r requirements.txt
+pytest -q                           # 41 tests, no model, no network
+uvicorn serve:app --port 8000</pre>
+    <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);margin-top:var(--space-2);">Launch order</span>
+    <ol style="margin:0;padding-left:18px;display:grid;gap:var(--space-2);font-size:13px;line-height:1.55;color:var(--color-neutral-300);">
+      <li>Connect GitHub; set <span style="font-family:ui-monospace,Menlo,monospace;">github.repo</span>; first push; tag <span style="font-family:ui-monospace,Menlo,monospace;">v0.2.0</span>. Repairs become pull requests from then on.</li>
+      <li>Decide the entity and jurisdiction. Billing and the signals framing wait on it.</li>
+      <li>Hand out the ten tester codes from the dashboard.</li>
+      <li>Approve the launch posts from the terminal in the order <span style="font-family:ui-monospace,Menlo,monospace;">schedule.yaml</span> gives.</li>
+    </ol>
+  </div>
+</section>
+
+<footer style="font-size:12px;color:var(--color-neutral-500);display:flex;flex-wrap:wrap;gap:var(--space-4);"><a href="../../../README.md">README</a><span>·</span><a href="../../../CHANGELOG.md">Changelog</a><span>·</span><a href="../../../docker-compose.yml">docker-compose.yml</a><span>·</span><a href="../../../archive/">Superseded designs are in archive/</a></footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CLS = { now: 'tag tag-neutral', keys: 'tag tag-outline', repo: 'tag tag-accent' };
+const STATUS = { now: 'runs now', keys: 'needs keys or docker', repo: 'needs the repository' };
+const SITE = '../../site/src/Institute.dc.html';
+const TERM = '../../ops/src/Console.dc.html';
+const day = (at, title, agent, you, where, href) => ({ at, title, agent, you, where, href });
+const DAY = [
+  day('06:00', 'Night report', 'What happened 22:00–06:00: research rounds, re-examinations, incidents it fixed, apps it shipped, posts it drafted.', 'Read it. Two minutes.', 'terminal → night', TERM),
+  day('07:30', 'Morning brief', 'Energy trend since midnight, the weakest edges it will re-examine, and everything that waits on you in one strip.', 'Decide nothing yet.', 'terminal → brief', TERM),
+  day('09:00', 'Inbox and approvals', 'Contact messages are already answered through the one Signature. Pull requests with passing sandbox tests and drafted posts wait here.', 'Approve, decline, retry, or type a reply at the prompt.', 'terminal → needs you', TERM),
+  day('11:00', 'Incidents', 'Every error anywhere became an incident node; the graph located it (code → file → line, the spans and logs of the same trace); a repair round wrote a diff; the sandbox ran the tests.', 'Merge the PR, or let heal.apply: live do it and watch the engine come back.', 'heal.py · Phoenix', '../../engine/heal.py'),
+  day('13:00', 'Ship', 'Apps it wrote, tested in agent-dind, running in web-dind at /a/<port>/. Every five minutes the queue is shipped and anything that stopped is relaunched.', 'Open one. Relaunch or remove from the terminal.', 'sandbox.py · site → Apps', '../../engine/sandbox.py'),
+  day('15:00', 'Research', 'The queue, chat first. Topics from institute.yaml, re-ranked each night by what lowered the energy. The weakest edges are re-examined every minute.', 'Add a topic to the yaml, or ask at the prompt.', 'institute.yaml', '../../engine/institute.yaml'),
+  day('17:00', 'Publish', "Today's cadence from schedule.yaml. Drafts wait in the outbox; approving posts it; declining files it.", 'Approve from the terminal.', 'marketing/', '../../../marketing/schedule.yaml'),
+  day('22:00', 'Reflection', 'It reads its own day, decays the telemetry, updates the Q-table, writes tomorrow\'s plan and one thing to stop doing.', 'Read it tomorrow at 06:00.', 'reflect.py', '../../engine/reflect.py'),
+];
+const loop = (name, trigger, what, gate, where, href, k) => ({ name, trigger, what, gate, where, href, cls: CLS[k], status: STATUS[k] });
+const LOOPS = [
+  loop('Research', 'research.every_seconds, the topics, chat first', 'queue → round → merge with Hebbian weights → record; the three weakest edges are re-examined each cycle', 'the model key', 'main.py · round.py', '../../engine/round.py', 'keys'),
+  loop('Repair', 'any ERROR log, any failed span, any uncaught exception, any app that stopped', 'incident node → locate via the graph → repair round → diff tested in the sandbox → pull request, live fix + relaunch, or app rebuilt and relaunched', 'tests must pass; a PR needs your approval; three attempts per incident', 'observe.py · heal.py', '../../engine/heal.py', 'keys'),
+  loop('Ship', 'the ship_app tool, or state/apps/queue, every five minutes', 'tests in agent-dind → build → image moved to web-dind → run → health → registry → live on the site', 'a test file is required; the health check must pass', 'sandbox.py · nginx.conf', '../../web/nginx.conf', 'keys'),
+  loop('Publish', 'schedule.yaml cadence', 'draft to the outbox → you approve from the terminal → posted with the disclosure line', 'human, for the first 30 days', 'tools.py · schedule.yaml', '../../../marketing/schedule.yaml', 'keys'),
+  loop('Reflect', 'day.reflect_at, nightly', 'one reflect round over the day → Q-table updates → telemetry decays and prunes → tomorrow\'s plan', 'none; it is read, not approved', 'reflect.py', '../../engine/reflect.py', 'keys'),
+  loop('Release', 'a tag', 'CI runs the tests and checks the three bundles; the release attaches them with the yaml and the compose file', 'branch protection', '.github/', '../../../.github/workflows/release.yml', 'repo'),
+];
+const step = (n, title, text, where, href, k) => ({ n, title, text, where, href, cls: CLS[k], status: STATUS[k] });
+const VISITOR = [
+  step('1', 'Land', 'The warning stated measured, the tally, the four-step strip: read, learn, certify, subscribe.', 'site → home', SITE, 'now'),
+  step('2', 'Read', 'Four published notes; three full reports behind them, 69 sources live-checked.', 'site → research', '../../../research/reports/Graph Intelligence Report v3.dc.html', 'now'),
+  step('3', 'Learn', 'Five modules, about two hours. Progress stored in the browser.', 'site → academy', SITE, 'now'),
+  step('4', 'Certify', 'Ten questions, eight to pass; unlocks Signals and the Lab.', 'site → exam', SITE, 'now'),
+  step('5', 'Subscribe', 'Signals as published research, $39 a month. Recorded locally until billing exists.', 'site → tiers', SITE, 'keys'),
+  step('6', 'Talk', 'Every message is one round through the one Signature into the live graph; contact takes the same path and lands in your terminal.', 'site → talk', SITE, 'now'),
+];
+class Component extends DCLogic {
+  renderVals() { return { dayRows: DAY, loops: LOOPS, visitor: VISITOR }; }
+}
+</script>
+</body>
+</html>

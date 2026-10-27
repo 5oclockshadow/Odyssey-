@@ -1,0 +1,2867 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>SelfWire Workbench</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2305070a'/%3E%3Cpath d='M3 11 6 5l3 6 3-6' fill='none' stroke='%2339ff88' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #05070a;
+  --panel: #0a0e14;
+  --panel-2: #0f141c;
+  --panel-3: #151c27;
+  --line: #1b2431;
+  --line-2: #2a3647;
+  --text: #dbe4ee;
+  --text-2: #a9b6c6;
+  --muted: #8291a5;
+  --green: #39ff88;
+  --green-dim: #1f8f50;
+  --cyan: #00e5ff;
+  --magenta: #ff2ec4;
+  --amber: #ffd23f;
+  --red: #ff4d5e;
+  --red-bg: #2a0d12;
+  --green-bg: #0a2216;
+  --amber-bg: #2a2408;
+  --cyan-bg: #062430;
+  --glow-green: 0 0 0 1px rgba(57,255,136,.35), 0 0 12px rgba(57,255,136,.35);
+  --glow-red: 0 0 0 1px rgba(255,77,94,.4), 0 0 12px rgba(255,77,94,.35);
+  --font: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
+  --fs: 13px;
+  --fs-sm: 12px;
+  --fs-xs: 11px;
+  --lh: 1.5;
+  --code-lh: 20px;
+  --radius: 4px;
+  --gut: 10px;
+  --tap: 30px;
+  --dock-h: 36vh;
+  --explorer-w: 260px;
+  --chat-w: 390px;
+  --header-h: 46px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--fs)/var(--lh) var(--font);
+  display: grid;
+  grid-template-rows: var(--header-h) minmax(0, 1fr) 7px minmax(120px, var(--dock-h));
+  grid-template-columns: minmax(0, 1fr);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+a { color: var(--cyan); }
+::selection { background: rgba(0,229,255,.28); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+[hidden] { display: none !important; }
+
+/* ---------- controls ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: var(--tap); padding: 0 10px;
+  background: var(--panel-2); border: 1px solid var(--line-2); border-radius: var(--radius);
+  color: var(--text); cursor: pointer; white-space: nowrap; font-size: var(--fs-sm);
+}
+.btn:hover:not(:disabled) { border-color: var(--muted); background: var(--panel-3); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { border-color: var(--green-dim); color: var(--green); background: var(--green-bg); }
+.btn.primary:hover:not(:disabled) { border-color: var(--green); }
+.btn.danger { border-color: #7a2630; color: #ff8a95; background: var(--red-bg); }
+.btn.danger:hover:not(:disabled) { border-color: var(--red); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--text-2); }
+.btn.ghost:hover:not(:disabled) { background: var(--panel-3); border-color: var(--line-2); color: var(--text); }
+.btn.icon { width: var(--tap); padding: 0; }
+.btn svg, .ico { width: 14px; height: 14px; flex: none; }
+.input, .textarea, select.input {
+  min-height: var(--tap); width: 100%;
+  background: var(--bg); border: 1px solid var(--line-2); border-radius: var(--radius);
+  padding: 4px 8px; color: var(--text);
+}
+.textarea { resize: vertical; line-height: var(--lh); }
+.input:focus-visible, .textarea:focus-visible { outline: 2px solid var(--cyan); outline-offset: 0; border-color: transparent; }
+.input::placeholder, .textarea::placeholder { color: var(--muted); }
+label.field { display: grid; gap: 4px; font-size: var(--fs-sm); color: var(--text-2); }
+.hint { color: var(--muted); font-size: var(--fs-xs); }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px;
+  border: 1px solid var(--line-2); border-radius: 999px; font-size: var(--fs-xs); color: var(--text-2);
+  background: var(--panel); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+}
+.pill.ok { color: var(--green); border-color: var(--green-dim); }
+.pill.warn { color: var(--amber); border-color: #6d5a12; }
+.pill.bad { color: var(--red); border-color: #7a2630; }
+.pill.info { color: var(--cyan); border-color: #0b5868; }
+.badge { display: inline-block; padding: 0 6px; border-radius: 3px; font-size: var(--fs-xs); line-height: 18px; border: 1px solid var(--line-2); color: var(--text-2); }
+.empty { color: var(--muted); padding: 18px var(--gut); }
+.empty b { color: var(--text-2); font-weight: 600; }
+.mono-scroll { overflow: auto; overscroll-behavior: contain; }
+.mono-scroll::-webkit-scrollbar, textarea::-webkit-scrollbar, .pane ::-webkit-scrollbar { width: 10px; height: 10px; }
+.pane ::-webkit-scrollbar-thumb, textarea::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 6px; border: 2px solid var(--panel); }
+.pane ::-webkit-scrollbar-track, textarea::-webkit-scrollbar-track { background: transparent; }
+.pane ::-webkit-scrollbar-corner, textarea::-webkit-scrollbar-corner { background: transparent; }
+
+/* ---------- header ---------- */
+.top {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 var(--gut);
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.brand h1 { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .01em; white-space: nowrap; }
+.brand h1 .w { color: var(--green); }
+.brand .ver { color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
+.top .spacer { flex: 1; }
+.top .status { display: flex; align-items: center; gap: 8px; min-width: 0; }
+#lmStatus { cursor: pointer; max-width: 260px; display: inline-block; line-height: 20px; }
+.conn { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--text-2); white-space: nowrap; }
+.conn i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); display: inline-block; }
+.conn[data-state="live"] i { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.conn[data-state="live"] { color: var(--green); }
+.conn[data-state="connecting"] i { background: var(--amber); }
+.conn[data-state="connecting"] { color: var(--amber); }
+.conn[data-state="down"] i { background: var(--red); box-shadow: 0 0 8px var(--red); }
+.conn[data-state="down"] { color: var(--red); }
+/* signal trace: lights when an event arrives over the wire */
+.trace { position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: transparent; overflow: hidden; pointer-events: none; }
+.trace::after { content: ""; position: absolute; top: 0; bottom: 0; left: -30%; width: 30%; background: linear-gradient(90deg, transparent, var(--trace-c, var(--green)), transparent); opacity: 0; }
+.trace.pulse::after { animation: trace 700ms ease-out; }
+@keyframes trace { 0% { left: -30%; opacity: 1; } 100% { left: 100%; opacity: .2; } }
+
+/* ---------- workspace ---------- */
+#ws {
+  display: grid; min-height: 0; min-width: 0;
+  grid-template-columns: var(--explorer-w) minmax(0, 1fr) var(--chat-w);
+}
+.pane { display: flex; flex-direction: column; min-height: 0; min-width: 0; background: var(--panel); }
+#explorer { border-right: 1px solid var(--line); }
+#chat { border-left: 1px solid var(--line); }
+#editor { background: var(--bg); }
+.pane-head {
+  display: flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 var(--gut);
+  border-bottom: 1px solid var(--line); flex: none;
+}
+.pane-head h2 { margin: 0; font-size: var(--fs-sm); font-weight: 600; color: var(--text-2); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* explorer */
+.filter { padding: 8px var(--gut); border-bottom: 1px solid var(--line); flex: none; }
+#tree { flex: 1; padding: 4px 0 12px; font-size: var(--fs-sm); }
+#tree ul { list-style: none; margin: 0; padding: 0; }
+.row {
+  display: flex; align-items: center; gap: 6px; width: 100%; min-height: 26px;
+  padding: 0 var(--gut) 0 calc(var(--gut) + var(--depth, 0) * 14px);
+  background: none; border: 0; text-align: left; cursor: pointer; color: var(--text-2);
+}
+.row:hover { background: var(--panel-3); color: var(--text); }
+.row .nm { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .caret { width: 10px; flex: none; color: var(--muted); transition: transform 120ms; }
+.row[aria-expanded="true"] .caret { transform: rotate(90deg); }
+.row.dir { color: var(--text); }
+.row.file .dot { width: 10px; flex: none; display: inline-flex; justify-content: center; }
+.row.file .dot::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--line-2); }
+.row.active { background: var(--cyan-bg); color: var(--cyan); }
+.row.active .dot::before { background: var(--cyan); }
+.row.locked { color: var(--muted); }
+.row .lock { color: var(--amber); width: 12px; height: 12px; flex: none; }
+.row mark { background: none; color: var(--green); }
+.tree-meta { color: var(--muted); font-size: var(--fs-xs); padding: 6px var(--gut); border-top: 1px solid var(--line); flex: none; }
+
+/* editor */
+.tabs { display: flex; min-height: 36px; border-bottom: 1px solid var(--line); background: var(--panel); overflow-x: auto; overflow-y: hidden; flex: none; scrollbar-width: thin; }
+.tab {
+  display: flex; align-items: center; gap: 4px; padding: 0 4px 0 12px; max-width: 220px; flex: none;
+  border-right: 1px solid var(--line); color: var(--text-2); font-size: var(--fs-sm); cursor: pointer; background: none;
+  border-top: 2px solid transparent; border-left: 0; border-bottom: 0;
+}
+.tab .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tab[aria-selected="true"] { background: var(--bg); color: var(--text); border-top-color: var(--green); }
+.tab .dirty { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex: none; }
+.tab .x { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 3px; color: var(--muted); border: 0; background: none; cursor: pointer; }
+.tab .x:hover { background: var(--panel-3); color: var(--text); }
+.ed-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px var(--gut); border-bottom: 1px solid var(--line); flex: none; background: var(--panel); }
+.ed-bar .path { flex: 1 1 200px; min-width: 0; color: var(--text-2); font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: rtl; text-align: left; }
+.ed-bar .path bdi { direction: ltr; }
+.ed-bar .meta { color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
+.ed-bar .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px var(--gut); font-size: var(--fs-sm); border-bottom: 1px solid var(--line); flex: none; }
+.banner.warn { background: var(--amber-bg); color: var(--amber); }
+.banner.lock { background: var(--panel-2); color: var(--amber); }
+.banner.bad { background: var(--red-bg); color: #ff8a95; }
+.banner .msg { flex: 1 1 200px; }
+.ed-body { flex: 1; display: flex; min-height: 0; position: relative; }
+.gutter {
+  flex: none; min-width: 48px; padding: 10px 8px 30px 6px; text-align: right; color: #4c5a6d;
+  font: var(--fs)/var(--code-lh) var(--font); overflow: hidden; user-select: none; white-space: pre;
+  border-right: 1px solid var(--line); background: var(--bg);
+}
+#code {
+  flex: 1; min-width: 0; margin: 0; border: 0; resize: none; padding: 10px 12px 10px 10px;
+  background: var(--bg); color: var(--text); font: var(--fs)/var(--code-lh) var(--font);
+  white-space: pre; overflow: auto; tab-size: 4; -moz-tab-size: 4; caret-color: var(--green);
+}
+#code:focus-visible { outline: none; box-shadow: inset 0 0 0 1px #0b5868; }
+#code[readonly] { color: var(--text-2); }
+.ed-empty { flex: 1; display: grid; place-content: center; text-align: center; color: var(--muted); padding: 24px; gap: 8px; }
+.ed-empty .big { font-size: 15px; color: var(--text-2); }
+.ed-empty kbd, kbd { border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 3px; padding: 0 5px; font: inherit; font-size: var(--fs-xs); color: var(--text-2); }
+
+/* chat */
+#msgs { flex: 1; padding: 10px var(--gut) 16px; display: flex; flex-direction: column; gap: 10px; }
+.msg { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; background: var(--panel-2); max-width: 100%; min-width: 0; }
+.msg.user { background: #0b1a24; border-color: #12394a; align-self: flex-end; max-width: 92%; }
+.msg.system { background: transparent; border-style: dashed; color: var(--text-2); }
+.msg.pending { opacity: .7; }
+.msg.failed { border-color: #7a2630; }
+.msg .meta { display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--muted); margin-bottom: 4px; }
+.msg .meta .who { color: var(--text-2); font-weight: 600; }
+.msg.user .meta .who { color: var(--cyan); }
+.msg.assistant .meta .who { color: var(--green); }
+.msg .meta time { margin-left: auto; }
+.badge.k-command { color: var(--cyan); border-color: #0b5868; }
+.badge.k-agent { color: var(--green); border-color: var(--green-dim); }
+.badge.k-help { color: var(--amber); border-color: #6d5a12; }
+.badge.k-error { color: var(--red); border-color: #7a2630; }
+.msg .body { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.msg .body code { background: var(--bg); border: 1px solid var(--line); border-radius: 3px; padding: 0 3px; color: var(--cyan); }
+.msg .body pre, pre.block {
+  white-space: pre; overflow: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 4px;
+  padding: 8px 10px; margin: 6px 0; max-height: 360px; font-size: var(--fs-sm); line-height: 1.45;
+}
+.msg .body pre .lang { display: block; color: var(--muted); font-size: var(--fs-xs); margin-bottom: 4px; }
+details.steps, details.data { margin-top: 6px; border-top: 1px solid var(--line); padding-top: 6px; font-size: var(--fs-sm); }
+details summary { cursor: pointer; color: var(--text-2); min-height: 22px; }
+details summary:hover { color: var(--text); }
+.step { border-left: 2px solid var(--line-2); padding: 4px 0 4px 10px; margin: 6px 0; }
+.step .sh { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.step .at { color: var(--magenta); }
+.step .tn { color: var(--cyan); }
+.step .ra { color: var(--text-2); margin: 2px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.step pre { max-height: 220px; }
+.chips { display: flex; gap: 6px; padding: 6px var(--gut) 0; overflow-x: auto; flex: none; scrollbar-width: none; }
+.chip { flex: none; min-height: 26px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--panel-2); color: var(--text-2); cursor: pointer; font-size: var(--fs-xs); }
+.chip:hover { color: var(--green); border-color: var(--green-dim); }
+.composer { display: flex; gap: 6px; align-items: flex-end; padding: 8px var(--gut) 10px; flex: none; }
+.composer .textarea { resize: none; max-height: 160px; min-height: 38px; }
+.typing { color: var(--muted); font-size: var(--fs-xs); padding: 0 var(--gut); min-height: 16px; flex: none; }
+
+/* dock */
+#dockResize { cursor: row-resize; background: var(--panel); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); position: relative; touch-action: none; }
+#dockResize::after { content: ""; position: absolute; left: 50%; top: 2px; width: 40px; height: 1px; margin-left: -20px; background: var(--line-2); box-shadow: 0 2px 0 var(--line-2); }
+#dockResize:hover, #dockResize:focus-visible { background: var(--panel-3); }
+#dock { border-top: 0; }
+.dock-tabs { display: flex; align-items: stretch; gap: 0; border-bottom: 1px solid var(--line); overflow-x: auto; flex: none; scrollbar-width: none; padding: 0 calc(var(--gut) - 6px); }
+.dock-tabs::-webkit-scrollbar { display: none; }
+.dtab {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; background: none; border: 0; border-bottom: 2px solid transparent;
+  color: var(--text-2); cursor: pointer; font-size: var(--fs-sm); flex: none;
+}
+.dtab:hover { color: var(--text); }
+.dtab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--green); }
+.dtab .cnt { font-size: var(--fs-xs); min-width: 16px; height: 16px; border-radius: 8px; padding: 0 4px; background: var(--panel-3); color: var(--text-2); display: inline-flex; align-items: center; justify-content: center; }
+.dtab .cnt.run { background: var(--amber-bg); color: var(--amber); }
+.dtab .cnt.bad { background: var(--red-bg); color: var(--red); }
+.dtab .cnt.ok { background: var(--green-bg); color: var(--green); }
+.dpanel { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.dgrid { display: grid; gap: 0; height: 100%; min-height: 0; }
+.dcol { min-width: 0; min-height: 0; overflow: auto; padding: 10px var(--gut); border-right: 1px solid var(--line); overscroll-behavior: contain; }
+.dcol:last-child { border-right: 0; }
+.dcol h3 { margin: 0 0 8px; font-size: var(--fs-sm); color: var(--text-2); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.dcol h3 .sp { flex: 1; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+.toolbar .input { width: auto; flex: 1 1 140px; min-width: 0; }
+
+/* tests */
+.g-tests { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
+.g-tests .logcol { display: flex; flex-direction: column; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.pills .pill.ok.lit { box-shadow: var(--glow-green); }
+.pills .pill.bad.lit { box-shadow: var(--glow-red); }
+#testLog {
+  flex: 1; min-height: 120px; margin: 0; background: var(--bg); border: 1px solid var(--line); border-radius: 4px;
+  padding: 6px 8px; font-size: var(--fs-xs); line-height: 1.5; white-space: pre; overflow: auto;
+}
+#testLog .l-pass { color: var(--green); }
+#testLog .l-fail { color: var(--red); }
+#testLog .l-skip { color: var(--amber); }
+#testLog .l-sep { color: var(--cyan); }
+#testLog .l-head { color: var(--text); font-weight: 600; }
+.fail { border: 1px solid #4a1820; border-radius: 4px; margin-bottom: 6px; background: var(--red-bg); }
+.fail summary { padding: 4px 8px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.fail .nodeid { background: none; border: 0; padding: 0; color: #ff8a95; cursor: pointer; text-align: left; text-decoration: underline; text-underline-offset: 2px; overflow-wrap: anywhere; min-height: 22px; }
+.fail .fmsg { color: var(--text-2); font-size: var(--fs-xs); overflow-wrap: anywhere; flex-basis: 100%; }
+.fail pre { margin: 0; border-radius: 0 0 4px 4px; border: 0; border-top: 1px solid #4a1820; max-height: 300px; }
+
+/* audit */
+.g-audit { grid-template-columns: 230px minmax(0, 1.6fr) minmax(0, 1fr); }
+.gauge { display: grid; place-items: center; margin: 4px 0 10px; }
+.gauge svg { width: 132px; height: 132px; }
+.gauge .num { font-size: 30px; font-weight: 700; fill: currentColor; }
+.gauge .lbl { font-size: 10px; fill: var(--muted); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: var(--fs-sm); margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; text-align: right; color: var(--text); }
+.untested { margin: 8px 0 0; padding: 0; list-style: none; font-size: var(--fs-xs); }
+.untested li { margin: 2px 0; }
+.linkish { background: none; border: 0; padding: 0; color: var(--cyan); cursor: pointer; text-align: left; overflow-wrap: anywhere; font: inherit; }
+.linkish:hover { text-decoration: underline; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.tbl th, .tbl td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl th { color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--panel); z-index: 1; white-space: nowrap; }
+.tbl th button { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; padding: 0; display: inline-flex; gap: 4px; min-height: 22px; align-items: center; }
+.tbl th button:hover { color: var(--text); }
+.tbl td.msgc { overflow-wrap: anywhere; color: var(--text-2); }
+.tbl tr:hover td { background: var(--panel-2); }
+.sev { display: inline-block; min-width: 54px; text-align: center; border-radius: 3px; font-size: var(--fs-xs); line-height: 18px; border: 1px solid; }
+.sev.high { color: var(--red); border-color: #7a2630; background: var(--red-bg); }
+.sev.medium { color: var(--amber); border-color: #6d5a12; background: var(--amber-bg); }
+.sev.low { color: var(--cyan); border-color: #0b5868; background: var(--cyan-bg); }
+.sev.info { color: var(--text-2); border-color: var(--line-2); }
+.plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.plan li { border: 1px solid var(--line); border-radius: 4px; padding: 8px; background: var(--panel-2); }
+.plan .pt { display: flex; gap: 8px; align-items: baseline; }
+.plan .pr { color: var(--magenta); font-size: var(--fs-xs); flex: none; }
+.plan .ti { font-weight: 600; flex: 1; overflow-wrap: anywhere; }
+.plan .de { color: var(--text-2); font-size: var(--fs-sm); margin: 4px 0 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.plan .ps { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: var(--fs-xs); margin-bottom: 6px; }
+
+/* improve */
+.g-improve { grid-template-columns: 320px minmax(0, 1fr); }
+.lm-off { border: 1px dashed #6d5a12; color: var(--amber); padding: 8px; border-radius: 4px; font-size: var(--fs-sm); margin-top: 8px; display: grid; gap: 6px; justify-items: start; }
+.timeline { list-style: none; margin: 0; padding: 0; }
+.attempt { margin-bottom: 12px; }
+.attempt > h4 { margin: 0 0 4px; font-size: var(--fs-sm); color: var(--text-2); font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.attempt > h4 .out { margin-left: auto; }
+.ev { display: grid; grid-template-columns: 22px 74px minmax(0, 1fr); gap: 6px; align-items: start; padding: 3px 0; position: relative; }
+.ev::before { content: ""; position: absolute; left: 10px; top: 22px; bottom: -4px; width: 1px; background: var(--line-2); }
+.ev:last-child::before { display: none; }
+.ev .pi { width: 22px; height: 22px; border-radius: 50%; border: 1px solid currentColor; display: grid; place-items: center; background: var(--panel); position: relative; z-index: 1; }
+.ev .pi svg { width: 12px; height: 12px; }
+.ev .pn { color: currentColor; font-size: var(--fs-xs); line-height: 22px; }
+.ev .pm { color: var(--text); overflow-wrap: anywhere; white-space: pre-wrap; font-size: var(--fs-sm); line-height: 1.5; padding-top: 2px; }
+.ev .pm time { color: var(--muted); font-size: var(--fs-xs); margin-left: 6px; }
+.ev details { grid-column: 3; font-size: var(--fs-xs); }
+.ph-audit, .ph-plan { color: var(--cyan); }
+.ph-apply { color: var(--magenta); }
+.ph-test { color: var(--amber); }
+.ph-commit, .ph-done { color: var(--green); }
+.ph-rollback { color: #ff8a95; }
+.ph-error { color: var(--red); }
+.result { border: 1px solid var(--line-2); border-radius: 6px; padding: 10px; margin-top: 8px; background: var(--panel-2); }
+.result.committed { border-color: var(--green-dim); box-shadow: var(--glow-green); }
+.result.failed, .result.rolled_back { border-color: #7a2630; }
+.result h4 { margin: 0 0 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: var(--fs); }
+.result .att { border-top: 1px solid var(--line); padding-top: 6px; margin-top: 6px; font-size: var(--fs-sm); }
+.result .att .rs { color: var(--text-2); white-space: pre-wrap; overflow-wrap: anywhere; }
+.result .chg { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 4px; font-size: var(--fs-xs); }
+
+/* git */
+.g-git { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); }
+.changes { list-style: none; margin: 0 0 10px; padding: 0; font-size: var(--fs-sm); }
+.changes li { display: flex; gap: 8px; padding: 2px 0; }
+.changes .st { width: 24px; flex: none; color: var(--amber); }
+.commits { list-style: none; margin: 0; padding: 0; }
+.commit { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 4px 10px; padding: 6px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.commit .sha { color: var(--amber); font-size: var(--fs-sm); }
+.commit .cm { overflow-wrap: anywhere; min-width: 0; }
+.commit .cm .when { display: block; color: var(--muted); font-size: var(--fs-xs); }
+.commit .tags { display: inline-flex; gap: 4px; flex-wrap: wrap; margin-left: 6px; }
+.commit .tag { font-size: var(--fs-xs); color: var(--cyan); border: 1px solid #0b5868; border-radius: 3px; padding: 0 4px; }
+.commit .head { color: var(--green); border-color: var(--green-dim); }
+.commit .ca { display: flex; gap: 4px; }
+
+/* jobs */
+.st-queued { color: var(--text-2); }
+.st-running { color: var(--amber); }
+.st-succeeded { color: var(--green); }
+.st-failed { color: var(--red); }
+.st-cancelled { color: var(--muted); }
+
+/* skills */
+.g-skills { grid-template-columns: 260px minmax(0, 1fr); }
+.skill-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.skill-list button { width: 100%; text-align: left; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; cursor: pointer; display: grid; gap: 2px; min-height: var(--tap); }
+.skill-list button:hover { border-color: var(--line-2); }
+.skill-list button[aria-current="true"] { border-color: var(--green-dim); }
+.skill-list .sn { color: var(--green); }
+.skill-list .sd { color: var(--text-2); font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.skill-ed { display: flex; flex-direction: column; height: 100%; gap: 8px; }
+.skill-ed textarea { flex: 1; min-height: 160px; font: var(--fs-sm)/var(--code-lh) var(--font); white-space: pre; resize: none; }
+
+/* graph */
+.g-graph { grid-template-columns: minmax(0, 1fr) 280px; }
+.graph-wrap { position: relative; padding: 0; overflow: hidden; }
+#graphCanvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; background: radial-gradient(ellipse at center, #08101a 0%, var(--bg) 70%); }
+#graphCanvas:active { cursor: grabbing; }
+.legend { position: absolute; left: 10px; bottom: 8px; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: var(--fs-xs); color: var(--text-2); pointer-events: none; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+.graph-tip { position: absolute; top: 8px; left: 10px; font-size: var(--fs-xs); color: var(--text-2); pointer-events: none; background: rgba(5,7,10,.8); padding: 4px 8px; border: 1px solid var(--line); border-radius: 4px; }
+.graph-help { position: absolute; top: 8px; right: 10px; font-size: var(--fs-xs); color: var(--muted); pointer-events: none; }
+
+/* dialogs */
+dialog {
+  background: var(--panel); color: var(--text); border: 1px solid var(--line-2); border-radius: 8px; padding: 0;
+  width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+dialog::backdrop { background: rgba(2,3,5,.72); }
+dialog form, .dlg { display: flex; flex-direction: column; max-height: calc(100dvh - 48px); }
+.dlg-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.dlg-head h2 { margin: 0; font-size: 14px; flex: 1; }
+.dlg-body { padding: 14px; display: grid; gap: 12px; overflow: auto; }
+.dlg-body p { margin: 0; color: var(--text-2); white-space: pre-wrap; overflow-wrap: anywhere; }
+.dlg-foot { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.dlg-foot .left { margin-right: auto; }
+#dlgDiff { width: min(1100px, calc(100vw - 32px)); height: calc(100dvh - 64px); }
+#dlgDiff .dlg { height: 100%; }
+#diffView { flex: 1; margin: 0; border: 0; border-radius: 0; max-height: none; background: var(--bg); font-size: var(--fs-sm); line-height: 1.45; padding: 8px 0; }
+#diffView div { padding: 0 14px; min-height: 1.45em; }
+#diffView .d-add { color: var(--green); background: rgba(57,255,136,.06); }
+#diffView .d-del { color: #ff7a87; background: rgba(255,77,94,.07); }
+#diffView .d-hunk { color: var(--cyan); }
+#diffView .d-file { color: var(--amber); font-weight: 700; border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
+#diffView .d-meta { color: var(--muted); }
+
+/* toasts */
+#toasts { position: fixed; right: 12px; bottom: 12px; display: grid; gap: 8px; z-index: 50; width: min(420px, calc(100vw - 24px)); pointer-events: none; }
+.toast { pointer-events: auto; display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--panel-2); font-size: var(--fs-sm); box-shadow: 0 8px 24px rgba(0,0,0,.5); animation: tin 160ms ease-out; }
+.toast .tm { flex: 1; overflow-wrap: anywhere; white-space: pre-wrap; }
+.toast.error { border-color: #7a2630; background: var(--red-bg); color: #ffb3ba; }
+.toast.ok { border-color: var(--green-dim); background: var(--green-bg); color: #b4ffd2; }
+.toast.warn { border-color: #6d5a12; background: var(--amber-bg); color: #ffe89a; }
+.toast button { background: none; border: 0; color: inherit; cursor: pointer; padding: 0 2px; min-width: 22px; min-height: 22px; }
+@keyframes tin { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+#scrim { display: none; }
+#tabbar { display: none; }
+.only-tablet { display: none !important; }
+
+/* ---------- tablet: explorer becomes a drawer ---------- */
+@media (max-width: 1099px) {
+  :root { --chat-w: 340px; }
+  #ws { grid-template-columns: minmax(0, 1fr) var(--chat-w); }
+  .only-tablet { display: inline-flex !important; }
+  #explorer {
+    position: fixed; z-index: 30; left: 0; top: var(--header-h); bottom: 0; width: min(320px, 86vw);
+    transform: translateX(-102%); transition: transform 160ms ease-out; box-shadow: 10px 0 40px rgba(0,0,0,.5);
+    visibility: hidden;
+  }
+  body.drawer-open #explorer { transform: none; visibility: visible; }
+  body.drawer-open #scrim { display: block; position: fixed; inset: var(--header-h) 0 0 0; background: rgba(2,3,5,.55); z-index: 29; }
+  .g-audit { grid-template-columns: 200px minmax(0, 1fr); }
+  .g-audit .plancol { grid-column: 1 / -1; border-top: 1px solid var(--line); }
+  .g-tests { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
+  .g-improve { grid-template-columns: 280px minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .g-tests, .g-git, .g-skills, .g-improve, .g-graph, .g-audit { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .dcol { border-right: 0; border-bottom: 1px solid var(--line); overflow: visible; }
+  .g-audit .plancol { grid-column: auto; }
+  .graph-wrap { height: 340px; }
+  .g-tests .logcol #testLog { max-height: 50vh; }
+  .skill-ed textarea { min-height: 280px; }
+}
+
+/* ---------- phone: one pane at a time + bottom tab bar ---------- */
+@media (max-width: 700px) {
+  :root { --gut: 16px; --tap: 40px; --header-h: 50px; }
+  body { grid-template-rows: var(--header-h) minmax(0, 1fr) auto; }
+  #ws { grid-row: 2; grid-template-columns: minmax(0, 1fr); }
+  #dock { grid-row: 2; display: none; }
+  #dockResize { display: none; }
+  #explorer, #editor, #chat { display: none; }
+  body[data-pane="files"] #explorer { display: flex; }
+  body[data-pane="editor"] #editor { display: flex; }
+  body[data-pane="chat"] #chat { display: flex; }
+  body[data-pane="dock"] #ws { display: none; }
+  body[data-pane="dock"] #dock { display: flex; }
+  #explorer { position: static; transform: none; visibility: visible; width: auto; box-shadow: none; transition: none; border-right: 0; }
+  #chat { border-left: 0; }
+  body.drawer-open #scrim { display: none; }
+  .only-tablet { display: none !important; }
+  .brand .ver { display: none; }
+  .brand h1 { font-size: 13px; }
+  #lmStatus { max-width: 120px; height: 40px; line-height: 38px; border-radius: 6px; }
+  .linkish { min-height: 40px; display: inline-flex; align-items: center; }
+  #impJobSel { min-height: 40px !important; }
+  .conn .ct { display: none; }
+  .top { gap: 8px; }
+  .row { min-height: 40px; }
+  .tab { min-height: 40px; }
+  .tab .x { width: 36px; height: 36px; }
+  .dtab { min-height: 42px; }
+  .chip { min-height: 36px; }
+  .gutter { min-width: 36px; padding-right: 6px; padding-left: 16px; box-sizing: content-box; }
+  #code { padding-right: 16px; }
+  .ed-bar .path { flex-basis: 100%; }
+  .ed-body { margin: 0; }
+  .msg.user { max-width: 100%; }
+  .commit { grid-template-columns: 64px minmax(0, 1fr); }
+  .commit .ca { grid-column: 1 / -1; justify-content: flex-start; }
+  .tbl th, .tbl td { padding: 6px 6px; }
+  .fail .nodeid { min-height: 40px; }
+  .ev { grid-template-columns: 22px minmax(0, 1fr); }
+  .ev .pn { display: none; }
+  .ev details { grid-column: 2; }
+  .jobs-wrap { overflow-x: auto; }
+  #tabbar {
+    display: grid; grid-row: 3; grid-template-columns: repeat(4, 1fr); background: var(--panel); border-top: 1px solid var(--line);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  #tabbar button { min-height: 52px; background: none; border: 0; color: var(--text-2); display: grid; place-items: center; gap: 2px; font-size: var(--fs-xs); cursor: pointer; border-top: 2px solid transparent; padding: 4px 0; }
+  #tabbar button svg { width: 18px; height: 18px; }
+  #tabbar button[aria-current="page"] { color: var(--green); border-top-color: var(--green); }
+  #tabbar .tb-dot { position: relative; }
+  #tabbar .tb-dot::after { content: ""; position: absolute; top: -2px; right: -6px; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+  #toasts { bottom: 64px; left: 12px; right: 12px; width: auto; }
+  dialog { width: calc(100vw - 32px); }
+  #dlgDiff { width: calc(100vw - 16px); height: calc(100dvh - 32px); max-height: calc(100dvh - 32px); }
+}
+@media (pointer: coarse) {
+  :root { --tap: 40px; }
+  .row { min-height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body data-pane="editor">
+
+<header class="top">
+  <button class="btn icon ghost only-tablet" id="btnDrawer" type="button" aria-label="Show files" aria-controls="explorer" aria-expanded="false">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <div class="brand">
+    <h1><span class="w">Self</span>Wire Workbench</h1>
+    <span class="ver" id="ver">connecting</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="status">
+    <button class="pill" id="lmStatus" type="button" title="Language model status. Click to change settings.">checking model</button>
+    <span class="conn" id="sseStatus" data-state="connecting" role="status" aria-live="polite" title="Live event stream"><i aria-hidden="true"></i><span class="ct">connecting</span></span>
+    <button class="btn icon ghost" id="btnSettings" type="button" aria-label="Settings" title="Settings">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg>
+    </button>
+  </div>
+  <div class="trace" id="trace" aria-hidden="true"></div>
+</header>
+
+<main id="ws">
+  <aside class="pane" id="explorer" aria-label="File explorer">
+    <div class="pane-head">
+      <h2>Files</h2>
+      <button class="btn icon ghost" id="btnNewFile" type="button" aria-label="New file" title="New file">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+      </button>
+      <button class="btn icon ghost" id="btnTreeRefresh" type="button" aria-label="Refresh file tree" title="Refresh">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.5-3.6M13 2.5v3h-3"/></svg>
+      </button>
+    </div>
+    <div class="filter"><input class="input" id="treeFilter" type="search" placeholder="Filter files" aria-label="Filter files" autocomplete="off" spellcheck="false"></div>
+    <div id="tree" class="mono-scroll" role="tree" aria-label="Workspace files"></div>
+    <div class="tree-meta" id="treeMeta"></div>
+  </aside>
+
+  <section class="pane" id="editor" aria-label="Editor">
+    <div class="tabs" id="tabs" role="tablist" aria-label="Open files"></div>
+    <div class="ed-bar" id="edBar" hidden>
+      <div class="path" id="edPath"><bdi></bdi></div>
+      <span class="meta" id="edMeta"></span>
+      <div class="acts">
+        <button class="btn primary" id="btnSave" type="button" title="Save (Ctrl/Cmd+S)">Save</button>
+        <button class="btn" id="btnReload" type="button">Reload</button>
+        <button class="btn" id="btnRename" type="button">Rename</button>
+        <button class="btn danger" id="btnDelete" type="button">Delete</button>
+      </div>
+    </div>
+    <div id="edBanner"></div>
+    <div class="ed-body" id="edBody" hidden>
+      <div class="gutter" id="gutter" aria-hidden="true">1</div>
+      <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="File content"></textarea>
+    </div>
+    <div class="ed-empty" id="edEmpty">
+      <div class="big">No file open</div>
+      <div>Pick a file in the explorer, or ask the agent to write one.</div>
+      <div><kbd>Ctrl</kbd> <kbd>S</kbd> saves the open file.</div>
+    </div>
+  </section>
+
+  <section class="pane" id="chat" aria-label="Chat with the agent">
+    <div class="pane-head">
+      <h2>Agent chat</h2>
+      <button class="btn ghost" id="btnChatReload" type="button" title="Reload chat history">Reload</button>
+    </div>
+    <div id="msgs" class="mono-scroll" role="log" aria-live="polite" aria-relevant="additions"></div>
+    <div class="typing" id="typing" aria-live="polite"></div>
+    <div class="chips" id="chips" aria-label="Quick commands">
+      <button class="chip" type="button" data-cmd="/help" data-send="1">/help</button>
+      <button class="chip" type="button" data-cmd="/test" data-send="1">/test</button>
+      <button class="chip" type="button" data-cmd="/audit" data-send="1">/audit</button>
+      <button class="chip" type="button" data-cmd="/diff" data-send="1">/diff</button>
+      <button class="chip" type="button" data-cmd="/log" data-send="1">/log</button>
+      <button class="chip" type="button" data-cmd="/improve ">/improve</button>
+    </div>
+    <form class="composer" id="chatForm" autocomplete="off">
+      <textarea class="textarea" id="chatInput" rows="1" placeholder="Message the agent, or type /help" aria-label="Message" spellcheck="false"></textarea>
+      <button class="btn primary" id="btnSend" type="submit">Send</button>
+    </form>
+  </section>
+</main>
+
+<div id="dockResize" role="separator" aria-orientation="horizontal" aria-label="Resize bottom panel" tabindex="0"></div>
+
+<section class="pane" id="dock" aria-label="Tools">
+  <div class="dock-tabs" role="tablist" id="dockTabs" aria-label="Tool panels">
+    <button class="dtab" role="tab" id="dt-tests" aria-controls="dp-tests" data-tab="tests" aria-selected="true">Tests <span class="cnt" id="cntTests" hidden></span></button>
+    <button class="dtab" role="tab" id="dt-audit" aria-controls="dp-audit" data-tab="audit" aria-selected="false" tabindex="-1">Audit <span class="cnt" id="cntAudit" hidden></span></button>
+    <button class="dtab" role="tab" id="dt-improve" aria-controls="dp-improve" data-tab="improve" aria-selected="false" tabindex="-1">Improve <span class="cnt" id="cntImprove" hidden></span></button>
+    <button class="dtab" role="tab" id="dt-git" aria-controls="dp-git" data-tab="git" aria-selected="false" tabindex="-1">Git <span class="cnt" id="cntGit" hidden></span></button>
+    <button class="dtab" role="tab" id="dt-jobs" aria-controls="dp-jobs" data-tab="jobs" aria-selected="false" tabindex="-1">Jobs <span class="cnt" id="cntJobs" hidden></span></button>
+    <button class="dtab" role="tab" id="dt-skills" aria-controls="dp-skills" data-tab="skills" aria-selected="false" tabindex="-1">Skills</button>
+    <button class="dtab" role="tab" id="dt-graph" aria-controls="dp-graph" data-tab="graph" aria-selected="false" tabindex="-1">Graph</button>
+  </div>
+
+  <!-- Tests -->
+  <div class="dpanel" role="tabpanel" id="dp-tests" aria-labelledby="dt-tests">
+    <div class="dgrid g-tests">
+      <div class="dcol logcol">
+        <form class="toolbar" id="testForm">
+          <button class="btn primary" type="button" id="btnTestAll">Run all</button>
+          <input class="input" id="testSel" placeholder="Selector, e.g. tests/test_registry.py" aria-label="Test selector" spellcheck="false">
+          <input class="input" id="testK" placeholder="-k expression" aria-label="Keyword expression" spellcheck="false">
+          <button class="btn" type="submit" id="btnTestSel">Run selected</button>
+          <button class="btn ghost" type="button" id="btnTestClear">Clear log</button>
+        </form>
+        <div class="pills" id="testPills"></div>
+        <pre id="testLog" tabindex="0" aria-label="Live test output"></pre>
+      </div>
+      <div class="dcol">
+        <h3>Failures <span class="sp"></span><span class="hint" id="testWhen"></span></h3>
+        <div id="testFails"><div class="empty">Run the tests to see failures here.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit -->
+  <div class="dpanel" role="tabpanel" id="dp-audit" aria-labelledby="dt-audit" hidden>
+    <div class="dgrid g-audit">
+      <div class="dcol">
+        <div class="toolbar"><button class="btn primary" type="button" id="btnAudit">Run audit</button><span class="hint" id="auditWhen"></span></div>
+        <div class="gauge" id="auditGauge"></div>
+        <dl class="kv" id="auditMetrics"></dl>
+        <div id="auditUntested"></div>
+      </div>
+      <div class="dcol">
+        <h3>Findings <span class="sp"></span><span class="hint" id="auditCount"></span></h3>
+        <div id="auditFindings"><div class="empty">Run an audit to scan the codebase.</div></div>
+      </div>
+      <div class="dcol plancol">
+        <h3>Plan</h3>
+        <div id="auditPlan"><div class="empty">The audit proposes a ranked fix plan here.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Improve -->
+  <div class="dpanel" role="tabpanel" id="dp-improve" aria-labelledby="dt-improve" hidden>
+    <div class="dgrid g-improve">
+      <div class="dcol">
+        <form id="improveForm" style="display:grid;gap:10px">
+          <div class="lm-off" style="margin-top:0" id="impLmOff" hidden>
+            <span>Start needs a language model. Set a model and API key in Settings.</span>
+            <button class="btn" type="button" id="btnImpSettings">Open settings</button>
+          </div>
+          <label class="field">Goal
+            <textarea class="textarea" id="impGoal" rows="5" placeholder="Describe one change, e.g. Add tests for selfwire/registry.py edge cases" spellcheck="false"></textarea>
+          </label>
+          <label class="field">Max attempts
+            <input class="input" id="impMax" type="number" min="1" max="10" value="3" style="width:100px">
+          </label>
+          <div class="toolbar" style="margin:0">
+            <button class="btn primary" type="submit" id="btnImprove">Start</button>
+            <span class="hint">Each attempt is checkpointed and kept only if tests pass.</span>
+          </div>
+        </form>
+      </div>
+      <div class="dcol">
+        <h3>
+          <span>Run</span>
+          <select class="input" id="impJobSel" aria-label="Improvement run" style="width:auto;min-height:28px;max-width:60%;min-width:0"></select>
+          <span class="sp"></span>
+          <span id="impJobStatus"></span>
+          <button class="btn" type="button" id="btnImpCancel" hidden>Cancel</button>
+        </h3>
+        <div id="impTimeline"><div class="empty">Start an improvement run. Each phase appears here as it happens.</div></div>
+        <div id="impResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Git -->
+  <div class="dpanel" role="tabpanel" id="dp-git" aria-labelledby="dt-git" hidden>
+    <div class="dgrid g-git">
+      <div class="dcol">
+        <h3><span id="gitBranch">Working tree</span><span class="sp"></span><button class="btn" type="button" id="btnGitDiff">View diff</button><button class="btn ghost" type="button" id="btnGitRefresh">Refresh</button></h3>
+        <ul class="changes" id="gitChanges"></ul>
+        <form class="toolbar" id="commitForm">
+          <input class="input" id="commitMsg" placeholder="Commit message" aria-label="Commit message" spellcheck="false">
+          <button class="btn primary" type="submit" id="btnCommit">Commit</button>
+        </form>
+      </div>
+      <div class="dcol">
+        <h3>History</h3>
+        <ul class="commits" id="gitLog"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jobs -->
+  <div class="dpanel" role="tabpanel" id="dp-jobs" aria-labelledby="dt-jobs" hidden>
+    <div class="dcol jobs-wrap" style="border:0">
+      <table class="tbl" id="jobsTbl">
+        <thead><tr><th>Status</th><th>Kind</th><th>Title</th><th>Started</th><th>Duration</th><th><span class="sr-only">Actions</span></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="dpanel" role="tabpanel" id="dp-skills" aria-labelledby="dt-skills" hidden>
+    <div class="dgrid g-skills">
+      <div class="dcol">
+        <h3>Skills <span class="sp"></span><button class="btn" type="button" id="btnSkillNew">New skill</button></h3>
+        <ul class="skill-list" id="skillList"></ul>
+      </div>
+      <div class="dcol">
+        <div class="skill-ed" id="skillEd" hidden>
+          <div class="toolbar" style="margin:0">
+            <strong id="skillName" style="flex:1;min-width:0;overflow-wrap:anywhere"></strong>
+            <span class="badge" id="skillDirty" hidden>unsaved</span>
+            <button class="btn primary" type="button" id="btnSkillSave">Save</button>
+            <button class="btn danger" type="button" id="btnSkillDel">Delete</button>
+          </div>
+          <span class="hint" id="skillPath"></span>
+          <textarea class="textarea" id="skillText" spellcheck="false" aria-label="Skill content"></textarea>
+        </div>
+        <div class="empty" id="skillEmpty">Select a skill to edit it. The agent reads every skill into its context on each turn.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graph -->
+  <div class="dpanel" role="tabpanel" id="dp-graph" aria-labelledby="dt-graph" hidden>
+    <div class="dgrid g-graph">
+      <div class="dcol graph-wrap">
+        <canvas id="graphCanvas" tabindex="0" aria-label="Tool graph. Drag or use arrow keys to rotate."></canvas>
+        <div class="graph-tip" id="graphTip" hidden></div>
+        <div class="graph-help">drag to rotate</div>
+        <div class="legend">
+          <span><i style="background:var(--green)"></i>native</span>
+          <span><i style="background:var(--cyan)"></i>mcp</span>
+          <span><i style="background:var(--magenta)"></i>exec</span>
+          <span><i style="background:var(--amber)"></i>own server</span>
+        </div>
+      </div>
+      <div class="dcol">
+        <h3>Tools <span class="sp"></span><button class="btn ghost" type="button" id="btnGraphRefresh">Refresh</button></h3>
+        <div id="toolList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<nav id="tabbar" aria-label="Sections">
+  <button type="button" data-pane="files"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 4.5h4l1.5 1.5H14V13H2z"/></svg>Files</button>
+  <button type="button" data-pane="editor" aria-current="page"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5.5 4 2 8l3.5 4M10.5 4 14 8l-3.5 4"/></svg>Editor</button>
+  <button type="button" data-pane="chat"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2.5 3h11v7.5H7L4 13v-2.5H2.5z"/></svg>Chat</button>
+  <button type="button" data-pane="dock"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 3h12v10H2zM2 9h12"/></svg><span id="tbDock">Dock</span></button>
+</nav>
+<div id="scrim"></div>
+
+<dialog id="dlgSettings" aria-labelledby="setTitle">
+  <form method="dialog" id="setForm" class="dlg">
+    <div class="dlg-head"><h2 id="setTitle">Settings</h2><button class="btn icon ghost" type="button" data-close-dialog aria-label="Close">&#x2715;</button></div>
+    <div class="dlg-body">
+      <label class="field">Model
+        <input class="input" id="setModel" list="modelList" placeholder="anthropic/claude-sonnet-4-5" spellcheck="false" autocomplete="off">
+        <span class="hint">Any litellm model id.</span>
+      </label>
+      <datalist id="modelList">
+        <option value="anthropic/claude-sonnet-4-5"></option>
+        <option value="anthropic/claude-haiku-4-5"></option>
+        <option value="openai/gpt-4o-mini"></option>
+        <option value="openai/gpt-4o"></option>
+        <option value="ollama/llama3.1"></option>
+      </datalist>
+      <label class="field">API key
+        <input class="input" id="setKey" type="password" autocomplete="new-password" placeholder="Paste a key to set it" spellcheck="false">
+        <span class="hint" id="setKeyHint">Held in server memory only. Never shown again.</span>
+      </label>
+      <label class="field">API base
+        <input class="input" id="setBase" placeholder="Leave blank for the provider default" spellcheck="false" autocomplete="off">
+      </label>
+      <label class="field">Max agent iterations
+        <input class="input" id="setIters" type="number" min="1" max="200" style="width:120px">
+      </label>
+      <label class="field" style="display:flex;gap:10px;align-items:flex-start;min-height:40px">
+        <input type="checkbox" id="setUnsafe" style="width:20px;height:20px;margin-top:2px;accent-color:var(--amber, #ffd23f)">
+        <span>Allow unsafe levers (python exec + launching MCP servers)
+          <span class="hint" style="display:block">Lets the agent run arbitrary code inside the server, which can bypass the test gate. Leave off unless you are watching.</span>
+        </span>
+      </label>
+      <div class="hint">Dashboard edits the agent makes show at <a href="/preview" target="_blank" rel="noopener noreferrer">/preview</a> (rendered with no API access) and take effect here after a restart.</div>
+      <div class="hint" id="setServer"></div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn danger left" type="button" id="btnRestart">Restart server</button>
+      <button class="btn" type="button" data-close-dialog>Cancel</button>
+      <button class="btn primary" type="submit" value="save" id="btnSetSave">Save settings</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgConfirm" aria-labelledby="cfTitle">
+  <form method="dialog" class="dlg">
+    <div class="dlg-head"><h2 id="cfTitle">Confirm</h2></div>
+    <div class="dlg-body"><p id="cfMsg"></p></div>
+    <div class="dlg-foot">
+      <button class="btn" value="no" id="cfNo">Cancel</button>
+      <button class="btn primary" value="yes" id="cfYes">Confirm</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgPrompt" aria-labelledby="prTitle">
+  <form method="dialog" class="dlg" id="prForm">
+    <div class="dlg-head"><h2 id="prTitle">Enter a value</h2></div>
+    <div class="dlg-body">
+      <label class="field"><span id="prLabel">Value</span><input class="input" id="prInput" spellcheck="false" autocomplete="off"></label>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn" type="button" data-close-dialog="no">Cancel</button>
+      <button class="btn primary" type="submit" value="yes" id="prOk">OK</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgDiff" aria-labelledby="dfTitle">
+  <div class="dlg">
+    <div class="dlg-head"><h2 id="dfTitle">Diff</h2><span class="hint" id="dfStat"></span><button class="btn icon ghost" type="button" id="dfClose" aria-label="Close diff">&#x2715;</button></div>
+    <pre id="diffView" class="block mono-scroll" tabindex="0"></pre>
+  </div>
+</dialog>
+
+<div id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+'use strict';
+/* ======================================================================
+   SelfWire Workbench UI. Vanilla ES2020, no network dependencies.
+   Contract: docs/WORKBENCH_API.md (v0.3.0)
+   ====================================================================== */
+
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const enc = encodeURIComponent;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const REDUCED = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  if (attrs) {
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k === 'html') el.innerHTML = v; /* trusted static markup only */
+      else if (k === 'dataset') Object.assign(el.dataset, v);
+      else if (k === 'style') el.setAttribute('style', v);
+      else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+      else if (v === true) el.setAttribute(k, '');
+      else el.setAttribute(k, String(v));
+    }
+  }
+  for (const kid of kids.flat(Infinity)) {
+    if (kid == null || kid === false) continue;
+    el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  }
+  return el;
+}
+
+function fmtTime(ts) {
+  if (ts == null || ts === '') return '';
+  let d;
+  if (typeof ts === 'number') d = new Date(ts < 1e12 ? ts * 1000 : ts);
+  else d = new Date(ts);
+  if (isNaN(d.getTime())) return String(ts);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  const t = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: sameDay ? '2-digit' : undefined });
+  return sameDay ? t : d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + t;
+}
+function fmtAgo(ts) {
+  if (ts == null) return '';
+  const d = typeof ts === 'number' ? new Date(ts < 1e12 ? ts * 1000 : ts) : new Date(ts);
+  if (isNaN(d.getTime())) return String(ts);
+  const s = Math.round((Date.now() - d.getTime()) / 1000);
+  if (s < 0) return fmtTime(ts);
+  if (s < 60) return s + 's ago';
+  if (s < 3600) return Math.round(s / 60) + 'm ago';
+  if (s < 86400) return Math.round(s / 3600) + 'h ago';
+  return Math.round(s / 86400) + 'd ago';
+}
+function fmtDur(sec) {
+  if (sec == null || !isFinite(sec)) return '';
+  if (sec < 1) return Math.round(sec * 1000) + 'ms';
+  if (sec < 60) return sec.toFixed(1) + 's';
+  return Math.floor(sec / 60) + 'm ' + Math.round(sec % 60) + 's';
+}
+function fmtBytes(n) {
+  if (n == null) return '';
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+  return (n / 1048576).toFixed(1) + ' MB';
+}
+function stripAnsi(s) { return String(s).replace(/\x1b\[[0-9;?]*[A-Za-z]/g, ''); }
+function jsonPretty(v) { try { return JSON.stringify(v, null, 2); } catch (e) { return String(v); } }
+
+/* ---------------- token ---------------- */
+let TOKEN = '';
+(function readToken() {
+  try {
+    const q = new URLSearchParams(location.search).get('token');
+    if (q) {
+      TOKEN = q;
+      try { sessionStorage.setItem('selfwire.token', q); } catch (e) { /* storage unavailable */ }
+    } else {
+      try { TOKEN = sessionStorage.getItem('selfwire.token') || ''; } catch (e) { TOKEN = ''; }
+    }
+  } catch (e) { TOKEN = ''; }
+})();
+
+/* ---------------- toasts ---------------- */
+function toast(msg, kind = 'info', ms) {
+  const box = $('#toasts');
+  const el = h('div', { class: 'toast ' + kind, role: kind === 'error' ? 'alert' : 'status' },
+    h('span', { class: 'tm', text: msg }),
+    h('button', { type: 'button', 'aria-label': 'Dismiss', onclick: () => el.remove(), text: '✕' }));
+  box.append(el);
+  while (box.children.length > 5) box.firstElementChild.remove();
+  setTimeout(() => el.remove(), ms || (kind === 'error' ? 9000 : 4000));
+}
+function toastErr(err) {
+  let msg = (err && (err.detail || err.message)) || 'Request failed';
+  if (err && err.status === 409) msg = 'A job of this kind is already running. Wait for it to finish, or cancel it in Jobs.\n' + msg;
+  else if (err && err.status === 401) msg = 'The server rejected the token. Reopen the page with ?token=<workbench token>.\n' + msg;
+  toast(msg, 'error');
+}
+
+/* ---------------- api ---------------- */
+class ApiError extends Error {
+  constructor(status, detail) { super(detail); this.status = status; this.detail = detail; }
+}
+async function api(method, path, body, opts) {
+  const quiet = !!(opts && opts.quiet);
+  const headers = { Accept: 'application/json' };
+  if (TOKEN) headers['X-Selfwire-Token'] = TOKEN;
+  const init = { method, headers, cache: 'no-store' };
+  if (body !== undefined) { headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(body); }
+  let res;
+  try { res = await fetch(path, init); }
+  catch (e) {
+    const err = new ApiError(0, 'Cannot reach the workbench server (' + (e && e.message ? e.message : e) + ').');
+    if (!quiet) toastErr(err);
+    throw err;
+  }
+  const text = await res.text();
+  let data = null;
+  if (text) { try { data = JSON.parse(text); } catch (e) { data = text; } }
+  if (!res.ok) {
+    let detail = data && typeof data === 'object' && 'detail' in data ? data.detail : (typeof data === 'string' && data ? data.slice(0, 400) : (res.statusText || 'HTTP ' + res.status));
+    if (typeof detail !== 'string') {
+      detail = Array.isArray(detail) ? detail.map((d) => (d && d.msg ? (d.loc ? d.loc.join('.') + ': ' : '') + d.msg : JSON.stringify(d))).join('; ') : JSON.stringify(detail);
+    }
+    const err = new ApiError(res.status, detail);
+    if (!quiet) toastErr(err);
+    throw err;
+  }
+  return data;
+}
+
+/* ---------------- state ---------------- */
+const S = {
+  health: null,
+  settings: null,
+  tree: { root: '', files: [], protected: [] },
+  expanded: new Set(),
+  treeInit: false,
+  open: new Map(),     /* path -> {path, content, orig, mtime, size, dirty, banner, sel, scroll} */
+  order: [],
+  active: null,
+  msgIds: new Set(),
+  pendingUser: [],     /* {text, el, t} */
+  pendingReply: [],    /* POST replies without message_id: {text, el, t} */
+  recentSse: [],       /* assistant messages rendered from SSE: {text, t, claimed} */
+  jobs: new Map(),
+  testLogJob: null,
+  testLines: 0,
+  report: null,
+  audit: null,
+  auditSort: { key: 'severity', dir: 1 },
+  improve: new Map(),  /* job_id -> [events] */
+  impView: null,
+  impPinned: false,
+  git: { status: null, commits: [] },
+  skills: [],
+  skill: null,         /* {name, path, content, orig, isNew} */
+  graph: null,
+  tools: null,
+  dockTab: 'tests',
+  hadHello: false,
+  lastEventAt: 0,
+};
+const isMobile = () => window.matchMedia('(max-width: 700px)').matches;
+const isTablet = () => window.matchMedia('(max-width: 1099px)').matches && !isMobile();
+
+function isProtected(path) {
+  return (S.tree.protected || []).some((p) => p && (path === p || path.startsWith(p) || path === p.replace(/\/+$/, '')));
+}
+
+/* ---------------- header / health ---------------- */
+async function loadHealth() {
+  try {
+    S.health = await api('GET', '/api/health', undefined, { quiet: true });
+  } catch (e) {
+    S.health = null;
+    if (e.status === 401) toastErr(e);
+  }
+  renderHealth();
+  return S.health;
+}
+function renderHealth() {
+  const hh = S.health;
+  const lm = $('#lmStatus');
+  if (!hh) {
+    $('#ver').textContent = 'server offline';
+    lm.textContent = 'server offline';
+    lm.className = 'pill bad';
+  } else {
+    $('#ver').textContent = 'v' + hh.version + (hh.python ? '  py ' + String(hh.python).split(' ')[0] : '');
+    $('#ver').title = 'Workspace: ' + (hh.root || '');
+    if (hh.lm_configured) { lm.textContent = hh.model || 'model ready'; lm.className = 'pill ok'; lm.title = 'Model: ' + (hh.model || '') + '. Click to change.'; }
+    else { lm.textContent = hh.model ? hh.model + ' (no key)' : 'no model'; lm.className = 'pill warn'; lm.title = 'No language model configured. Slash commands still work. Click to configure.'; }
+  }
+  const lmOk = !!(hh && hh.lm_configured);
+  $('#btnImprove').disabled = !lmOk || improveBusy();
+  $('#impLmOff').hidden = lmOk;
+  $('#btnImprove').title = lmOk ? '' : 'Configure a language model in Settings first';
+}
+
+/* ---------------- connection indicator ---------------- */
+function setConn(state, label) {
+  const el = $('#sseStatus');
+  el.dataset.state = state;
+  const txt = label || (state === 'live' ? 'live' : state === 'connecting' ? 'connecting' : 'offline');
+  $('.ct', el).textContent = txt;
+  el.title = 'Live event stream: ' + txt;
+}
+let traceTimer = 0;
+function pulseTrace(color) {
+  if (REDUCED.matches) return;
+  const t = $('#trace');
+  t.style.setProperty('--trace-c', color || 'var(--green)');
+  t.classList.remove('pulse');
+  void t.offsetWidth;
+  t.classList.add('pulse');
+  clearTimeout(traceTimer);
+  traceTimer = setTimeout(() => t.classList.remove('pulse'), 800);
+}
+
+/* ---------------- SSE ---------------- */
+let es = null, sseRetry = 0, sseTimer = 0, sseWatch = 0;
+const SSE_TYPES = ['hello', 'job', 'test_line', 'test_report', 'improve', 'chat', 'file', 'git', 'ping'];
+function connectSSE() {
+  clearTimeout(sseTimer);
+  if (es) { try { es.close(); } catch (e) { /* closed */ } es = null; }
+  setConn('connecting');
+  const url = '/api/events' + (TOKEN ? '?token=' + enc(TOKEN) : '');
+  let src;
+  try { src = new EventSource(url); } catch (e) { setConn('down'); scheduleReconnect(); return; }
+  es = src;
+  src.onopen = () => { if (es !== src) return; S.lastEventAt = Date.now(); setConn('live'); sseRetry = 0; };
+  src.onerror = () => {
+    if (es !== src) return;
+    try { src.close(); } catch (e) { /* closed */ }
+    es = null;
+    setConn('down', 'offline, retrying');
+    scheduleReconnect();
+  };
+  for (const t of SSE_TYPES) {
+    src.addEventListener(t, (ev) => {
+      if (es !== src) return;
+      S.lastEventAt = Date.now();
+      if ($('#sseStatus').dataset.state !== 'live') { setConn('live'); sseRetry = 0; }
+      let d = null;
+      try { d = ev.data ? JSON.parse(ev.data) : null; } catch (e) { return; }
+      const fn = HANDLERS[t];
+      if (fn) {
+        try { fn(d || {}); } catch (e) { reportBug('event ' + t, e); }
+      }
+      if (t !== 'ping') pulseTrace(t === 'test_report' && d && d.report && !d.report.ok ? 'var(--red)' : t === 'improve' || t === 'git' ? 'var(--magenta)' : t === 'chat' ? 'var(--cyan)' : 'var(--green)');
+    });
+  }
+  clearInterval(sseWatch);
+  sseWatch = setInterval(() => {
+    if (es && es.readyState === 1 && Date.now() - S.lastEventAt > 45000) {
+      try { es.close(); } catch (e) { /* closed */ }
+      es = null;
+      setConn('down', 'stalled, retrying');
+      scheduleReconnect();
+    }
+  }, 5000);
+}
+function scheduleReconnect() {
+  clearTimeout(sseTimer);
+  const delay = Math.min(30000, 1000 * Math.pow(2, sseRetry)) + Math.floor(Math.random() * 400);
+  sseRetry = Math.min(sseRetry + 1, 6);
+  sseTimer = setTimeout(connectSSE, delay);
+}
+function reportBug(where, e) {
+  /* Surface handler bugs without throwing out of the event loop */
+  toast('UI error in ' + where + ': ' + (e && e.message ? e.message : e), 'error');
+}
+
+const HANDLERS = {
+  hello(d) {
+    if (S.hadHello) resyncAfterReconnect();
+    S.hadHello = true;
+    if (d.version && S.health) { S.health.version = d.version; renderHealth(); }
+  },
+  ping() { /* keepalive */ },
+  job(j) { upsertJob(j); },
+  test_line(d) { appendTestLine(d.job_id, d.line); },
+  test_report(d) {
+    if (!d.report) return;
+    S.report = d.report;
+    renderTestReport();
+    const r = d.report;
+    if (r.ok) toast('Tests passed: ' + r.passed + '/' + r.total, 'ok');
+    else toast('Tests failed: ' + (r.failed || 0) + ' failed, ' + (r.errors || 0) + ' errors', 'error');
+  },
+  improve(d) { addImproveEvent(d); },
+  chat(m) { addMessage(m, { fromSse: true }); },
+  file(d) { onFileEvent(d); },
+  git(d) { onGitEvent(d); },
+};
+
+async function resyncAfterReconnect() {
+  await Promise.allSettled([loadHealth(), loadTree(), loadChatHistory(true), loadJobs(), loadTestsLast(), loadGit()]);
+  await refreshOpenFiles();
+}
+
+/* ======================================================================
+   File explorer
+   ====================================================================== */
+async function loadTree() {
+  try {
+    const t = await api('GET', '/api/tree', undefined, { quiet: S.treeInit });
+    S.tree = { root: t.root || '', files: Array.isArray(t.files) ? t.files : [], protected: Array.isArray(t.protected) ? t.protected : [] };
+  } catch (e) { return; }
+  if (!S.treeInit) {
+    S.treeInit = true;
+    for (const f of S.tree.files) { const i = f.path.indexOf('/'); if (i > 0) S.expanded.add(f.path.slice(0, i)); }
+  }
+  renderTree();
+  updateEditorChrome();
+}
+let treeTimer = 0;
+function loadTreeSoon() { clearTimeout(treeTimer); treeTimer = setTimeout(loadTree, 250); }
+
+function buildTree(files) {
+  const root = { name: '', path: '', dirs: new Map(), files: [] };
+  for (const f of files) {
+    const parts = f.path.split('/');
+    let node = root;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const name = parts[i];
+      if (!node.dirs.has(name)) node.dirs.set(name, { name, path: parts.slice(0, i + 1).join('/'), dirs: new Map(), files: [] });
+      node = node.dirs.get(name);
+    }
+    node.files.push(Object.assign({}, f, { name: parts[parts.length - 1] }));
+  }
+  return root;
+}
+const LOCK_SVG = '<svg class="lock" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>';
+const CARET_SVG = '<svg class="caret" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M3 1.5 7.5 5 3 8.5z"/></svg>';
+
+function highlight(name, q) {
+  if (!q) return [name];
+  const i = name.toLowerCase().indexOf(q);
+  if (i < 0) return [name];
+  return [name.slice(0, i), h('mark', { text: name.slice(i, i + q.length) }), name.slice(i + q.length)];
+}
+function renderTree() {
+  const box = $('#tree');
+  const q = $('#treeFilter').value.trim().toLowerCase();
+  const files = q ? S.tree.files.filter((f) => f.path.toLowerCase().includes(q)) : S.tree.files;
+  const root = buildTree(files);
+  const scroll = box.scrollTop;
+  box.textContent = '';
+  if (!S.tree.files.length) {
+    box.append(h('div', { class: 'empty' }, S.treeInit ? 'The workspace has no files yet. Create one with the + button.' : 'Loading files'));
+  } else if (!files.length) {
+    box.append(h('div', { class: 'empty' }, 'No files match ', h('b', { text: q }), '.'));
+  } else {
+    box.append(renderNode(root, 0, q));
+  }
+  box.scrollTop = scroll;
+  const prot = S.tree.protected.length;
+  $('#treeMeta').textContent = files.length + (q ? ' of ' + S.tree.files.length : '') + ' files' + (prot ? ', ' + prot + ' protected path' + (prot > 1 ? 's' : '') : '');
+}
+function renderNode(node, depth, q) {
+  const ul = h('ul', { role: depth ? 'group' : null });
+  const dirs = Array.from(node.dirs.values()).sort((a, b) => a.name.localeCompare(b.name));
+  const files = node.files.slice().sort((a, b) => a.name.localeCompare(b.name));
+  for (const d of dirs) {
+    const open = !!q || S.expanded.has(d.path);
+    const locked = isProtected(d.path + '/');
+    const btn = h('button', {
+      type: 'button', class: 'row dir' + (locked ? ' locked' : ''), role: 'treeitem', 'aria-expanded': String(open),
+      dataset: { dir: d.path }, style: '--depth:' + depth, title: d.path + (locked ? ' (protected, read-only)' : ''),
+    });
+    btn.insertAdjacentHTML('beforeend', CARET_SVG);
+    btn.append(h('span', { class: 'nm' }, highlight(d.name, q)));
+    if (locked) btn.insertAdjacentHTML('beforeend', LOCK_SVG);
+    const li = h('li', null, btn);
+    if (open) li.append(renderNode(d, depth + 1, q));
+    ul.append(li);
+  }
+  for (const f of files) {
+    const locked = isProtected(f.path);
+    const btn = h('button', {
+      type: 'button', class: 'row file' + (locked ? ' locked' : '') + (S.active === f.path ? ' active' : ''), role: 'treeitem',
+      dataset: { path: f.path }, style: '--depth:' + depth,
+      title: f.path + '  ' + fmtBytes(f.size) + (locked ? '  (protected, read-only)' : ''),
+      'aria-current': S.active === f.path ? 'true' : null,
+    }, h('span', { class: 'dot', 'aria-hidden': 'true' }), h('span', { class: 'nm' }, highlight(f.name, q)));
+    if (locked) { btn.insertAdjacentHTML('beforeend', LOCK_SVG); btn.setAttribute('aria-label', f.path + ', read-only'); }
+    ul.append(h('li', null, btn));
+  }
+  return ul;
+}
+$('#tree').addEventListener('click', (e) => {
+  const row = e.target.closest('.row');
+  if (!row) return;
+  if (row.dataset.dir) {
+    const p = row.dataset.dir;
+    if (S.expanded.has(p)) S.expanded.delete(p); else S.expanded.add(p);
+    if (!$('#treeFilter').value.trim()) renderTree();
+    const again = $('#tree .row[data-dir="' + CSS.escape(p) + '"]');
+    if (again) again.focus();
+  } else if (row.dataset.path) {
+    openFile(row.dataset.path);
+  }
+});
+$('#tree').addEventListener('keydown', (e) => {
+  if (!['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  const rows = $$('#tree .row');
+  const i = rows.indexOf(document.activeElement);
+  if (i < 0) return;
+  e.preventDefault();
+  const row = rows[i];
+  if (e.key === 'ArrowDown' && rows[i + 1]) rows[i + 1].focus();
+  else if (e.key === 'ArrowUp' && rows[i - 1]) rows[i - 1].focus();
+  else if (row.dataset.dir && ((e.key === 'ArrowRight') !== S.expanded.has(row.dataset.dir))) row.click();
+});
+$('#treeFilter').addEventListener('input', renderTree);
+$('#btnTreeRefresh').addEventListener('click', loadTree);
+$('#btnNewFile').addEventListener('click', async () => {
+  const base = S.active && S.active.includes('/') ? S.active.slice(0, S.active.lastIndexOf('/') + 1) : '';
+  const path = await promptDlg('New file', 'Path relative to the workspace', base, 'Create file');
+  if (!path) return;
+  const p = path.trim().replace(/^\/+/, '');
+  if (!p || p.endsWith('/')) { toast('Enter a file path, not a folder.', 'error'); return; }
+  if (S.tree.files.some((f) => f.path === p)) { openFile(p); return; }
+  try { await api('PUT', '/api/file', { path: p, content: '' }); } catch (e) { return; }
+  toast('Created ' + p, 'ok');
+  await loadTree();
+  openFile(p);
+});
+
+/* ======================================================================
+   Editor
+   ====================================================================== */
+const code = $('#code');
+const gutter = $('#gutter');
+let gutterLines = 0;
+
+function updateGutter(force) {
+  const n = (code.value.match(/\n/g) || []).length + 1;
+  if (n === gutterLines && !force) return;
+  gutterLines = n;
+  let s = '';
+  for (let i = 1; i <= n; i++) s += i + '\n';
+  gutter.textContent = s;
+  gutter.style.minWidth = (String(n).length + 2) + 'ch';
+  gutter.scrollTop = code.scrollTop;
+}
+code.addEventListener('scroll', () => { gutter.scrollTop = code.scrollTop; });
+code.addEventListener('input', () => {
+  const f = S.open.get(S.active);
+  if (!f) return;
+  f.content = code.value;
+  const was = f.dirty;
+  f.dirty = f.content !== f.orig;
+  updateGutter();
+  if (was !== f.dirty) { renderTabs(); updateEditorChrome(); }
+});
+code.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab' && !e.ctrlKey && !e.metaKey && !e.altKey && !code.readOnly) {
+    if (code.dataset.escaped === '1') { code.dataset.escaped = ''; return; } /* Esc then Tab leaves the editor */
+    e.preventDefault();
+    const s = code.selectionStart, en = code.selectionEnd;
+    if (e.shiftKey) {
+      const ls = code.value.lastIndexOf('\n', s - 1) + 1;
+      const m = /^( {1,4}|\t)/.exec(code.value.slice(ls));
+      if (m) { code.setRangeText('', ls, ls + m[0].length, 'preserve'); }
+    } else {
+      code.setRangeText('    ', s, en, 'end');
+    }
+    code.dispatchEvent(new Event('input'));
+  } else if (e.key === 'Escape') {
+    code.dataset.escaped = '1';
+  } else {
+    code.dataset.escaped = '';
+  }
+});
+
+function snapshotActive() {
+  const f = S.open.get(S.active);
+  if (!f) return;
+  f.content = code.value;
+  f.sel = [code.selectionStart, code.selectionEnd];
+  f.scroll = [code.scrollTop, code.scrollLeft];
+}
+async function fetchFile(path) {
+  return api('GET', '/api/file?path=' + enc(path));
+}
+async function openFile(path, opts) {
+  opts = opts || {};
+  if (isTablet()) closeDrawer();
+  if (isMobile()) setPane('editor');
+  if (!S.open.has(path)) {
+    let d;
+    try { d = await fetchFile(path); } catch (e) { return; }
+    S.open.set(path, { path, content: d.content, orig: d.content, mtime: d.mtime, size: d.size, dirty: false, banner: null, sel: [0, 0], scroll: [0, 0] });
+    S.order.push(path);
+  }
+  activate(path);
+  if (opts.line) gotoLine(opts.line);
+}
+function activate(path) {
+  if (S.active && S.active !== path) snapshotActive();
+  S.active = path;
+  const f = S.open.get(path);
+  if (f) {
+    code.value = f.content;
+    updateGutter(true);
+    code.readOnly = isProtected(path);
+    try { code.setSelectionRange(f.sel[0], f.sel[1]); } catch (e) { /* ignore */ }
+    code.scrollTop = f.scroll[0]; code.scrollLeft = f.scroll[1];
+    gutter.scrollTop = code.scrollTop;
+  }
+  renderTabs();
+  updateEditorChrome();
+  $$('#tree .row.file').forEach((r) => { const on = r.dataset.path === path; r.classList.toggle('active', on); if (on) r.setAttribute('aria-current', 'true'); else r.removeAttribute('aria-current'); });
+}
+function gotoLine(line) {
+  const lines = code.value.split('\n');
+  const n = Math.max(1, Math.min(lines.length, line | 0));
+  let off = 0;
+  for (let i = 0; i < n - 1; i++) off += lines[i].length + 1;
+  code.focus();
+  code.setSelectionRange(off, off + lines[n - 1].length);
+  const lh = parseFloat(getComputedStyle(code).lineHeight) || 20;
+  code.scrollTop = Math.max(0, (n - 1) * lh - code.clientHeight / 3);
+  gutter.scrollTop = code.scrollTop;
+}
+function renderTabs() {
+  const box = $('#tabs');
+  box.textContent = '';
+  for (const p of S.order) {
+    const f = S.open.get(p);
+    if (!f) continue;
+    const name = p.split('/').pop();
+    const tab = h('div', {
+      class: 'tab', role: 'tab', 'aria-selected': String(p === S.active), tabindex: p === S.active ? '0' : '-1', title: p,
+      dataset: { path: p },
+    },
+      f.dirty ? h('span', { class: 'dirty', title: 'Unsaved changes', 'aria-label': 'unsaved' }) : null,
+      h('span', { class: 'nm', text: name }),
+      isProtected(p) ? h('span', { class: 'sr-only', text: ' read-only' }) : null,
+      h('button', { class: 'x', type: 'button', 'aria-label': 'Close ' + name, title: 'Close', dataset: { close: p }, text: '✕' }));
+    box.append(tab);
+  }
+  const act = box.querySelector('[aria-selected="true"]');
+  if (act && act.scrollIntoView) act.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  updateTabbarDot();
+}
+$('#tabs').addEventListener('click', (e) => {
+  const x = e.target.closest('[data-close]');
+  if (x) { e.stopPropagation(); closeTab(x.dataset.close); return; }
+  const t = e.target.closest('.tab');
+  if (t) activate(t.dataset.path);
+});
+$('#tabs').addEventListener('keydown', (e) => {
+  const tabs = $$('#tabs .tab');
+  const i = tabs.indexOf(document.activeElement);
+  if (i < 0) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+    activate(n.dataset.path);
+    const again = $('#tabs .tab[data-path="' + CSS.escape(n.dataset.path) + '"]');
+    if (again) again.focus();
+  } else if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault(); activate(tabs[i].dataset.path); code.focus();
+  } else if (e.key === 'Delete') {
+    closeTab(tabs[i].dataset.path);
+  }
+});
+async function closeTab(path, force) {
+  const f = S.open.get(path);
+  if (!f) return;
+  if (path === S.active) snapshotActive();
+  if (f.dirty && !force) {
+    const ok = await confirmDlg('Close ' + path + ' and discard unsaved changes?', { title: 'Discard changes', ok: 'Discard', danger: true });
+    if (!ok) return;
+  }
+  S.open.delete(path);
+  const idx = S.order.indexOf(path);
+  S.order.splice(idx, 1);
+  if (S.active === path) {
+    S.active = null;
+    const next = S.order[Math.min(idx, S.order.length - 1)];
+    if (next) { activate(next); return; }
+  }
+  renderTabs();
+  updateEditorChrome();
+  if (!S.active) $$('#tree .row.active').forEach((r) => r.classList.remove('active'));
+}
+function updateEditorChrome() {
+  const f = S.active ? S.open.get(S.active) : null;
+  $('#edBar').hidden = !f;
+  $('#edBody').hidden = !f;
+  $('#edEmpty').hidden = !!f;
+  const banner = $('#edBanner');
+  banner.textContent = '';
+  if (!f) return;
+  const ro = isProtected(f.path);
+  code.readOnly = ro;
+  $('bdi', $('#edPath')).textContent = f.path;
+  $('#edPath').title = f.path;
+  $('#edMeta').textContent = (f.dirty ? 'modified  ' : '') + fmtBytes(f.size) + (f.mtime ? '  saved ' + fmtAgo(f.mtime) : '');
+  $('#btnSave').disabled = ro || !f.dirty;
+  $('#btnDelete').disabled = ro;
+  $('#btnRename').disabled = ro;
+  if (ro) banner.append(h('div', { class: 'banner lock', role: 'note' }, h('span', { class: 'msg', text: 'Read-only. This path is protected by the server and cannot be written, moved or deleted.' })));
+  if (f.banner === 'changed') {
+    banner.append(h('div', { class: 'banner warn', role: 'alert' },
+      h('span', { class: 'msg', text: 'This file changed on disk while you were editing it.' }),
+      h('button', { class: 'btn', type: 'button', onclick: () => reloadActive(true), text: 'Load disk version' }),
+      h('button', { class: 'btn ghost', type: 'button', onclick: () => { f.banner = null; updateEditorChrome(); }, text: 'Keep my edits' })));
+  } else if (f.banner === 'deleted') {
+    banner.append(h('div', { class: 'banner bad', role: 'alert' },
+      h('span', { class: 'msg', text: 'This file was deleted on disk. Save to recreate it, or close the tab.' }),
+      h('button', { class: 'btn ghost', type: 'button', onclick: () => closeTab(f.path, true), text: 'Close tab' })));
+  }
+}
+async function saveActive() {
+  const f = S.open.get(S.active);
+  if (!f) return;
+  if (isProtected(f.path)) { toast(f.path + ' is protected and read-only.', 'warn'); return; }
+  f.content = code.value;
+  const content = f.content;
+  $('#btnSave').disabled = true;
+  let r;
+  try { r = await api('PUT', '/api/file', { path: f.path, content }); }
+  catch (e) { updateEditorChrome(); return; }
+  f.orig = content;
+  f.dirty = f.content !== f.orig;
+  f.banner = null;
+  f.size = r && r.size != null ? r.size : f.size;
+  f.mtime = Date.now() / 1000;
+  renderTabs();
+  updateEditorChrome();
+  toast('Saved ' + f.path, 'ok', 2200);
+  loadTreeSoon();
+  if (S.dockTab === 'git') loadGitSoon();
+}
+async function reloadActive(force) {
+  const f = S.open.get(S.active);
+  if (!f) return;
+  if (f.dirty && !force) {
+    const ok = await confirmDlg('Reload ' + f.path + ' from disk and discard your unsaved changes?', { title: 'Reload file', ok: 'Discard and reload', danger: true });
+    if (!ok) return;
+  }
+  let d;
+  try { d = await fetchFile(f.path); } catch (e) { return; }
+  applyDisk(f, d);
+}
+function applyDisk(f, d) {
+  f.orig = d.content; f.content = d.content; f.mtime = d.mtime; f.size = d.size; f.dirty = false; f.banner = null;
+  if (f.path === S.active) {
+    if (code.value !== d.content) {
+      const sel = [code.selectionStart, code.selectionEnd], sc = code.scrollTop;
+      code.value = d.content;
+      try { code.setSelectionRange(Math.min(sel[0], d.content.length), Math.min(sel[1], d.content.length)); } catch (e) { /* ignore */ }
+      code.scrollTop = sc;
+      updateGutter(true);
+    }
+  }
+  renderTabs();
+  if (f.path === S.active) updateEditorChrome();
+}
+/* re-read one open file from disk: reload if clean, banner if dirty */
+async function syncOpenFile(path) {
+  const f = S.open.get(path);
+  if (!f) return;
+  if (path === S.active) f.content = code.value;
+  let d;
+  try { d = await api('GET', '/api/file?path=' + enc(path), undefined, { quiet: true }); }
+  catch (e) {
+    if (e.status === 404) {
+      if (!f.dirty) { await closeTab(path, true); toast(path + ' was deleted on disk.', 'warn'); }
+      else { f.banner = 'deleted'; if (path === S.active) updateEditorChrome(); }
+    }
+    return;
+  }
+  if (!f.dirty) { applyDisk(f, d); return; }
+  if (d.content !== f.orig) { f.banner = 'changed'; f.diskPending = d; if (path === S.active) updateEditorChrome(); renderTabs(); }
+}
+async function refreshOpenFiles() {
+  await Promise.allSettled(Array.from(S.open.keys()).map(syncOpenFile));
+}
+function revealPath(p) {
+  // expand every ancestor folder so a file the agent just created is visible
+  if (!p) return;
+  const parts = p.split('/');
+  for (let i = 1; i < parts.length; i++) S.expanded.add(parts.slice(0, i).join('/'));
+}
+function onFileEvent(d) {
+  if (d.op === 'write') revealPath(d.path);
+  if (d.op === 'move') revealPath(d.dst);
+  loadTreeSoon();
+  if (S.dockTab === 'git') loadGitSoon();
+  if (d.op === 'move' && d.dst && S.open.has(d.path)) {
+    const f = S.open.get(d.path);
+    if (!f.dirty) { rekeyOpen(d.path, d.dst); }
+    else { f.banner = 'deleted'; if (d.path === S.active) updateEditorChrome(); }
+    return;
+  }
+  if (S.open.has(d.path)) syncOpenFile(d.path);
+}
+function rekeyOpen(src, dst) {
+  const f = S.open.get(src);
+  if (!f) return;
+  if (src === S.active) snapshotActive();
+  S.open.delete(src);
+  f.path = dst;
+  S.open.set(dst, f);
+  S.order = S.order.map((p) => (p === src ? dst : p));
+  if (S.active === src) S.active = dst;
+  renderTabs();
+  updateEditorChrome();
+}
+$('#btnSave').addEventListener('click', saveActive);
+$('#btnReload').addEventListener('click', () => reloadActive(false));
+$('#btnDelete').addEventListener('click', async () => {
+  const f = S.open.get(S.active);
+  if (!f) return;
+  const ok = await confirmDlg('Delete ' + f.path + ' from the workspace?\nCommitted versions stay in git history.', { title: 'Delete file', ok: 'Delete file', danger: true });
+  if (!ok) return;
+  try { await api('DELETE', '/api/file?path=' + enc(f.path)); } catch (e) { return; }
+  toast('Deleted ' + f.path, 'ok');
+  await closeTab(f.path, true);
+  loadTree();
+});
+$('#btnRename').addEventListener('click', async () => {
+  const f = S.open.get(S.active);
+  if (!f) return;
+  const dst = await promptDlg('Rename or move', 'New path for ' + f.path, f.path, 'Move file');
+  if (!dst) return;
+  const p = dst.trim().replace(/^\/+/, '');
+  if (!p || p === f.path) return;
+  if (f.dirty) {
+    const ok = await confirmDlg('This file has unsaved changes. Save them before moving?', { title: 'Unsaved changes', ok: 'Save and move' });
+    if (!ok) return;
+    await saveActive();
+    if (f.dirty) return;
+  }
+  try { await api('POST', '/api/file/move', { src: f.path, dst: p }); } catch (e) { return; }
+  toast('Moved to ' + p, 'ok');
+  rekeyOpen(f.path, p);
+  loadTree();
+});
+
+/* ======================================================================
+   Chat
+   ====================================================================== */
+const msgsBox = $('#msgs');
+function renderText(text) {
+  const frag = document.createDocumentFragment();
+  const s = String(text == null ? '' : text);
+  const re = /```([^\n`]*)\n?([\s\S]*?)(```|$)/g;
+  let last = 0, m;
+  while ((m = re.exec(s))) {
+    if (m.index > last) frag.append(inlineText(s.slice(last, m.index)));
+    const pre = h('pre');
+    if (m[1].trim()) pre.append(h('span', { class: 'lang', text: m[1].trim() }));
+    pre.append(document.createTextNode(m[2].replace(/\n$/, '')));
+    frag.append(pre);
+    last = m.index + m[0].length;
+    if (m[0].length === 0) re.lastIndex++;
+  }
+  if (last < s.length) frag.append(inlineText(s.slice(last)));
+  return frag;
+}
+function inlineText(s) {
+  const frag = document.createDocumentFragment();
+  const parts = s.replace(/^\n+|\n+$/g, (x) => (x.length > 1 ? '\n' : '')).split(/(`[^`\n]+`)/);
+  for (const p of parts) {
+    if (p.length > 2 && p[0] === '`' && p[p.length - 1] === '`') frag.append(h('code', { text: p.slice(1, -1) }));
+    else if (p) frag.append(document.createTextNode(p));
+  }
+  return frag;
+}
+function renderSteps(steps) {
+  const det = h('details', { class: 'steps' }, h('summary', { text: steps.length + ' step' + (steps.length === 1 ? '' : 's') }));
+  steps.forEach((st, i) => {
+    if (!st || typeof st !== 'object') { det.append(h('div', { class: 'step' }, h('pre', { text: String(st) }))); return; }
+    const known = ['action_type', 'tool_name', 'rationale', 'observation', 'thought', 'tool_args', 'args'];
+    const div = h('div', { class: 'step' },
+      h('div', { class: 'sh' },
+        h('span', { class: 'hint', text: '#' + (i + 1) }),
+        st.action_type ? h('span', { class: 'at', text: st.action_type }) : null,
+        st.tool_name ? h('span', { class: 'tn', text: st.tool_name }) : null),
+      st.rationale || st.thought ? h('div', { class: 'ra', text: st.rationale || st.thought }) : null);
+    const args = st.tool_args || st.args;
+    if (args != null && (typeof args !== 'object' || Object.keys(args).length)) div.append(h('pre', { text: typeof args === 'string' ? args : jsonPretty(args) }));
+    if (st.observation != null && st.observation !== '') div.append(h('pre', { text: typeof st.observation === 'string' ? st.observation : jsonPretty(st.observation) }));
+    const extra = Object.keys(st).filter((k) => !known.includes(k));
+    if (extra.length) { const o = {}; extra.forEach((k) => (o[k] = st[k])); div.append(h('pre', { text: jsonPretty(o) })); }
+    det.append(div);
+  });
+  return det;
+}
+function renderMsg(m, cls) {
+  const role = m.role === 'user' || m.role === 'system' ? m.role : 'assistant';
+  const el = h('article', { class: 'msg ' + role + (cls ? ' ' + cls : ''), dataset: m.id ? { id: m.id } : null },
+    h('div', { class: 'meta' },
+      h('span', { class: 'who', text: role === 'user' ? 'you' : role === 'system' ? 'system' : 'selfwire' }),
+      m.kind ? h('span', { class: 'badge k-' + m.kind, text: m.kind }) : null,
+      h('time', { text: fmtTime(m.ts || Date.now() / 1000) })),
+    h('div', { class: 'body' }, renderText(m.text)));
+  if (Array.isArray(m.steps) && m.steps.length) el.append(renderSteps(m.steps));
+  if (m.data != null && typeof m.data === 'object' && Object.keys(m.data).length) {
+    el.append(h('details', { class: 'data' }, h('summary', { text: 'data' }), h('pre', { class: 'block', text: jsonPretty(m.data) })));
+  }
+  const stick = msgsBox.scrollHeight - msgsBox.scrollTop - msgsBox.clientHeight < 80;
+  const empty = $('.empty', msgsBox);
+  if (empty) empty.remove();
+  msgsBox.append(el);
+  if (stick || role === 'user') msgsBox.scrollTop = msgsBox.scrollHeight;
+  updateTabbarDot();
+  return el;
+}
+function claim(list, text) {
+  const now = Date.now();
+  for (let i = list.length - 1; i >= 0; i--) if (now - list[i].t > 600000) list.splice(i, 1);
+  const i = list.findIndex((p) => p.text === text && !p.claimed);
+  if (i < 0) return null;
+  return list.splice(i, 1)[0];
+}
+function addMessage(m, opts) {
+  if (!m || typeof m !== 'object') return;
+  const fromSse = !!(opts && opts.fromSse);
+  if (m.id != null && S.msgIds.has(String(m.id))) return;
+  if (fromSse && m.role === 'user') {
+    const p = claim(S.pendingUser, m.text);
+    if (p) { if (m.id != null) { S.msgIds.add(String(m.id)); p.el.dataset.id = m.id; } p.el.classList.remove('pending'); return; }
+  }
+  if (fromSse && m.role === 'assistant') {
+    const p = claim(S.pendingReply, m.text);
+    if (p) { if (m.id != null) { S.msgIds.add(String(m.id)); p.el.dataset.id = m.id; } return; }
+  }
+  if (m.id != null) S.msgIds.add(String(m.id));
+  renderMsg(m);
+  if (fromSse && m.role === 'assistant') S.recentSse.push({ text: m.text, t: Date.now() });
+}
+async function loadChatHistory(merge) {
+  let d;
+  try { d = await api('GET', '/api/chat/history', undefined, { quiet: !!merge }); } catch (e) { if (!merge) showChatEmpty(); return; }
+  const list = (d && d.messages) || [];
+  if (!merge) { msgsBox.textContent = ''; S.msgIds.clear(); }
+  for (const m of list) addMessage(m, { fromSse: true });
+  if (!msgsBox.children.length) showChatEmpty();
+  msgsBox.scrollTop = msgsBox.scrollHeight;
+}
+function showChatEmpty() {
+  if (msgsBox.children.length) return;
+  msgsBox.append(h('div', { class: 'empty' }, 'Ask the agent to change its own code, or try ', h('b', { text: '/help' }), ' for commands that work without a model.'));
+}
+let chatBusy = 0;
+async function sendChat(text) {
+  text = String(text || '');
+  if (!text.trim()) return;
+  const el = renderMsg({ role: 'user', text, ts: Date.now() / 1000 }, 'pending');
+  const pending = { text, el, t: Date.now() };
+  S.pendingUser.push(pending);
+  chatBusy++;
+  $('#typing').textContent = 'selfwire is working';
+  let r;
+  try { r = await api('POST', '/api/chat', { message: text }); }
+  catch (e) {
+    el.classList.remove('pending'); el.classList.add('failed');
+    const i = S.pendingUser.indexOf(pending); if (i >= 0) S.pendingUser.splice(i, 1);
+    renderMsg({ role: 'system', kind: 'error', text: 'Message not delivered: ' + (e.detail || e.message), ts: Date.now() / 1000 });
+    return;
+  } finally {
+    chatBusy--;
+    if (!chatBusy) $('#typing').textContent = '';
+  }
+  el.classList.remove('pending');
+  if (!r) return;
+  const id = r.message_id != null ? String(r.message_id) : null;
+  if (id && S.msgIds.has(id)) return;              /* SSE already rendered it */
+  if (!id && claim(S.recentSse, r.reply)) return;   /* SSE already rendered identical reply */
+  const msg = { id, role: 'assistant', text: r.reply, kind: r.kind, steps: r.steps, data: r.data, ts: Date.now() / 1000 };
+  if (id) S.msgIds.add(id);
+  const out = renderMsg(msg);
+  if (!id) S.pendingReply.push({ text: r.reply, el: out, t: Date.now() });
+  if (r.kind === 'command' || r.kind === 'agent') { loadTreeSoon(); if (S.dockTab === 'git') loadGitSoon(); }
+}
+const chatInput = $('#chatInput');
+function autoGrow() { chatInput.style.height = 'auto'; chatInput.style.height = Math.min(160, chatInput.scrollHeight + 2) + 'px'; }
+chatInput.addEventListener('input', autoGrow);
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('#chatForm').requestSubmit(); }
+});
+$('#chatForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const t = chatInput.value;
+  if (!t.trim()) return;
+  chatInput.value = '';
+  autoGrow();
+  sendChat(t);
+});
+$('#chips').addEventListener('click', (e) => {
+  const c = e.target.closest('.chip');
+  if (!c) return;
+  if (c.dataset.send) { sendChat(c.dataset.cmd); return; }
+  chatInput.value = c.dataset.cmd;
+  autoGrow();
+  chatInput.focus();
+  chatInput.setSelectionRange(chatInput.value.length, chatInput.value.length);
+});
+$('#btnChatReload').addEventListener('click', () => loadChatHistory(false));
+
+/* ======================================================================
+   Jobs
+   ====================================================================== */
+const TERMINAL = new Set(['succeeded', 'failed', 'cancelled']);
+async function loadJobs() {
+  let d;
+  try { d = await api('GET', '/api/jobs', undefined, { quiet: true }); } catch (e) { return; }
+  for (const j of (d && d.jobs) || []) S.jobs.set(j.id, j);
+  renderJobs();
+  renderImproveJobs();
+  updateTestControls();
+}
+function upsertJob(j) {
+  if (!j || !j.id) return;
+  const prev = S.jobs.get(j.id);
+  S.jobs.set(j.id, j);
+  if (S.jobs.size > 80) {
+    const sorted = Array.from(S.jobs.values()).sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+    for (const old of sorted.slice(80)) if (TERMINAL.has(old.status)) S.jobs.delete(old.id);
+  }
+  renderJobsSoon();
+  if (j.kind === 'improve') {
+    if (!S.improve.has(j.id)) S.improve.set(j.id, []);
+    if (!S.impPinned && (!S.impView || !prev)) S.impView = j.id;
+    renderImproveJobs();
+    if (S.impView === j.id) renderImprove();
+    if (TERMINAL.has(j.status) && (!prev || !TERMINAL.has(prev.status))) {
+      const st = j.result && j.result.status;
+      toast('Improvement run ' + (st ? st.replace('_', ' ') : j.status), st === 'committed' ? 'ok' : j.status === 'failed' || st === 'failed' ? 'error' : 'warn');
+      loadGitSoon();
+    }
+  }
+  if (j.kind === 'tests') updateTestControls();
+  if (j.kind === 'audit' && j.status === 'succeeded' && j.result && typeof j.result === 'object' && 'score' in j.result) { S.audit = j.result; renderAudit(); }
+  if (j.kind === 'tests' && j.status === 'running' && (!prev || prev.status !== 'running') && S.testLogJob !== j.id) {
+    /* separator is written by the first line */
+  }
+  renderHealth();
+}
+let jobsRaf = 0;
+function renderJobsSoon() { if (!jobsRaf) jobsRaf = requestAnimationFrame(() => { jobsRaf = 0; renderJobs(); }); }
+function jobDur(j) {
+  if (!j.started_at) return '';
+  const end = j.finished_at || Date.now() / 1000;
+  return fmtDur(end - j.started_at) + (j.finished_at ? '' : '+');
+}
+function renderJobs() {
+  const tb = $('#jobsTbl tbody');
+  const jobs = Array.from(S.jobs.values()).sort((a, b) => (b.created_at || 0) - (a.created_at || 0)).slice(0, 50);
+  tb.textContent = '';
+  if (!jobs.length) tb.append(h('tr', null, h('td', { colspan: '6', class: 'hint', text: 'No jobs yet. Test runs, audits and improvement runs show up here.' })));
+  for (const j of jobs) {
+    const live = j.status === 'queued' || j.status === 'running';
+    tb.append(h('tr', null,
+      h('td', { class: 'st-' + j.status, text: j.status }),
+      h('td', { text: j.kind }),
+      h('td', { class: 'msgc' }, j.title || j.id, j.error ? h('div', { class: 'hint', style: 'color:var(--red)', text: j.error }) : null),
+      h('td', { class: 'hint', text: fmtTime(j.started_at || j.created_at) }),
+      h('td', { class: 'hint', text: jobDur(j) }),
+      h('td', null, live ? h('button', { class: 'btn danger', type: 'button', onclick: () => cancelJob(j.id), text: 'Cancel' })
+        : j.kind === 'improve' ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { S.impView = j.id; S.impPinned = true; renderImproveJobs(); renderImprove(); setDockTab('improve'); }, text: 'View' }) : null)));
+  }
+  const running = jobs.filter((j) => j.status === 'running' || j.status === 'queued').length;
+  const c = $('#cntJobs');
+  c.hidden = !running; c.textContent = running; c.className = 'cnt run';
+  updateTabbarDot();
+}
+async function cancelJob(id) {
+  let r;
+  try { r = await api('POST', '/api/jobs/' + enc(id) + '/cancel'); } catch (e) { return; }
+  toast(r && r.ok ? 'Cancel requested' : 'The job could not be cancelled (it may have finished).', r && r.ok ? 'ok' : 'warn');
+}
+
+/* ======================================================================
+   Tests
+   ====================================================================== */
+const testLog = $('#testLog');
+const TEST_CAP = 3000;
+let testQueue = [], testRaf = 0;
+function appendTestLine(jobId, line) {
+  if (jobId && jobId !== S.testLogJob) {
+    S.testLogJob = jobId;
+    const j = S.jobs.get(jobId);
+    testQueue.push({ cls: 'l-sep', text: '--- ' + (j && j.title ? j.title : 'test run ' + jobId) + ' ---' });
+  }
+  const clean = stripAnsi(line == null ? '' : line).replace(/\r?\n$/, '');
+  let cls = '';
+  if (/\b(PASSED|passed)\b/.test(clean) && !/\bfailed\b/.test(clean)) cls = 'l-pass';
+  if (/\b(FAILED|ERROR|failed|error)\b/.test(clean) || /^E\s/.test(clean)) cls = 'l-fail';
+  else if (/\b(SKIPPED|XFAIL|skipped)\b/.test(clean)) cls = 'l-skip';
+  if (/^=+ .* =+$/.test(clean) && !cls) cls = 'l-head';
+  testQueue.push({ cls, text: clean });
+  if (!testRaf) testRaf = requestAnimationFrame(flushTestLog);
+}
+function flushTestLog() {
+  testRaf = 0;
+  if (!testQueue.length) return;
+  const atBottom = testLog.scrollHeight - testLog.scrollTop - testLog.clientHeight < 24;
+  const frag = document.createDocumentFragment();
+  for (const l of testQueue) frag.append(l.cls ? h('span', { class: l.cls, text: l.text + '\n' }) : document.createTextNode(l.text + '\n'));
+  S.testLines += testQueue.length;
+  testQueue = [];
+  testLog.append(frag);
+  let excess = S.testLines - TEST_CAP;
+  while (excess > 0 && testLog.firstChild) { testLog.firstChild.remove(); excess--; S.testLines--; }
+  if (atBottom) testLog.scrollTop = testLog.scrollHeight;
+}
+function testsRunning() { return Array.from(S.jobs.values()).some((j) => j.kind === 'tests' && (j.status === 'running' || j.status === 'queued')); }
+function updateTestControls() {
+  const run = testsRunning();
+  $('#btnTestAll').disabled = run;
+  $('#btnTestSel').disabled = run;
+  $('#btnTestAll').textContent = run ? 'Running' : 'Run all';
+  renderTestPills();
+}
+async function runTests(selector, keyword) {
+  const body = {};
+  if (selector) body.selector = selector;
+  if (keyword) body.keyword = keyword;
+  let r;
+  try { r = await api('POST', '/api/tests/run', body); } catch (e) { return; }
+  if (r && r.job_id) {
+    if (!S.jobs.has(r.job_id)) S.jobs.set(r.job_id, { id: r.job_id, kind: 'tests', title: 'pytest ' + (selector || '') + (keyword ? ' -k ' + keyword : ''), status: 'queued', created_at: Date.now() / 1000 });
+    renderJobsSoon();
+    updateTestControls();
+  }
+  setDockTab('tests');
+}
+async function loadTestsLast() {
+  try { S.report = await api('GET', '/api/tests/last', undefined, { quiet: true }); } catch (e) { return; }
+  renderTestReport();
+  if (S.report && S.report.output_tail && !S.testLines) {
+    S.testLogJob = 'last';
+    testQueue.push({ cls: 'l-sep', text: '--- last run, ' + fmtTime(S.report.finished_at) + ' ---' });
+    for (const l of String(S.report.output_tail).split('\n')) appendTestLine('last', l);
+  }
+}
+function renderTestPills() {
+  const box = $('#testPills');
+  box.textContent = '';
+  const r = S.report;
+  if (testsRunning()) box.append(h('span', { class: 'pill warn', text: 'running' }));
+  if (!r) { if (!box.children.length) box.append(h('span', { class: 'pill', text: 'no run yet' })); return; }
+  box.append(
+    h('span', { class: 'pill ' + (r.ok ? 'ok lit' : 'bad lit'), text: r.ok ? 'passing' : 'failing' }),
+    h('span', { class: 'pill ok', text: (r.passed || 0) + ' passed' }),
+    h('span', { class: 'pill ' + (r.failed ? 'bad' : ''), text: (r.failed || 0) + ' failed' }),
+    h('span', { class: 'pill ' + (r.errors ? 'bad' : ''), text: (r.errors || 0) + ' errors' }),
+    h('span', { class: 'pill ' + (r.skipped ? 'warn' : ''), text: (r.skipped || 0) + ' skipped' }),
+    h('span', { class: 'pill info', text: fmtDur(r.duration) }),
+  );
+  if (r.selector || r.keyword) box.append(h('span', { class: 'pill', text: (r.selector || 'all') + (r.keyword ? ' -k ' + r.keyword : '') }));
+}
+function renderTestReport() {
+  renderTestPills();
+  const r = S.report;
+  const c = $('#cntTests');
+  if (r) { c.hidden = false; c.textContent = r.ok ? r.passed : (r.failed || 0) + (r.errors || 0); c.className = 'cnt ' + (r.ok ? 'ok' : 'bad'); }
+  $('#testWhen').textContent = r && r.finished_at ? fmtAgo(r.finished_at) : '';
+  const box = $('#testFails');
+  box.textContent = '';
+  if (!r) { box.append(h('div', { class: 'empty', text: 'Run the tests to see failures here.' })); return; }
+  const fails = r.failures || [];
+  if (!fails.length) {
+    box.append(h('div', { class: 'empty' }, r.ok ? h('span', { style: 'color:var(--green)', text: 'All ' + r.total + ' tests passed.' }) : 'No failure details were reported. Check the log, exit code ' + r.exit_code + '.'));
+    return;
+  }
+  for (const f of fails) {
+    const nodeid = f.nodeid || '';
+    const file = nodeid.split('::')[0];
+    const det = h('details', { class: 'fail' },
+      h('summary', null,
+        h('button', { class: 'nodeid', type: 'button', title: 'Open ' + file, onclick: (e) => { e.preventDefault(); openTestFile(nodeid, f.text); }, text: nodeid }),
+        f.message ? h('span', { class: 'fmsg', text: f.message }) : null),
+      h('pre', { class: 'block', text: f.text || f.message || '' }));
+    box.append(det);
+  }
+}
+function openTestFile(nodeid, tb) {
+  const file = nodeid.split('::')[0];
+  let line = 0;
+  if (tb) {
+    const esc = file.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const m = new RegExp(esc + ':(\\d+)').exec(tb);
+    if (m) line = parseInt(m[1], 10);
+  }
+  if (!line) {
+    const fn = (nodeid.split('::').pop() || '').replace(/\[.*$/, '');
+    openFile(file).then(() => {
+      if (!fn || S.active !== file) return;
+      const idx = code.value.split('\n').findIndex((l) => new RegExp('def\\s+' + fn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b').test(l));
+      if (idx >= 0) gotoLine(idx + 1);
+    });
+    return;
+  }
+  openFile(file, { line });
+}
+$('#btnTestAll').addEventListener('click', () => runTests('', ''));
+$('#testForm').addEventListener('submit', (e) => { e.preventDefault(); runTests($('#testSel').value.trim(), $('#testK').value.trim()); });
+$('#btnTestClear').addEventListener('click', () => { testLog.textContent = ''; S.testLines = 0; S.testLogJob = null; });
+
+/* ======================================================================
+   Audit
+   ====================================================================== */
+const SEV = { high: 0, medium: 1, low: 2, info: 3 };
+async function loadAuditLast() {
+  try { S.audit = await api('GET', '/api/audit/last', undefined, { quiet: true }); } catch (e) { return; }
+  renderAudit();
+}
+async function runAudit() {
+  const b = $('#btnAudit');
+  b.disabled = true; b.textContent = 'Auditing';
+  try { S.audit = await api('POST', '/api/audit'); toast('Audit finished: score ' + S.audit.score, 'ok'); }
+  catch (e) { /* toasted */ }
+  finally { b.disabled = false; b.textContent = 'Run audit'; }
+  renderAudit();
+}
+function gaugeSvg(score) {
+  const s = Math.max(0, Math.min(100, Number(score) || 0));
+  const r = 52, c = 2 * Math.PI * r;
+  const col = s >= 80 ? 'var(--green)' : s >= 60 ? 'var(--amber)' : 'var(--red)';
+  const glow = s >= 80 ? 'drop-shadow(0 0 6px rgba(57,255,136,.55))' : s < 60 ? 'drop-shadow(0 0 6px rgba(255,77,94,.55))' : 'none';
+  return '<svg viewBox="0 0 132 132" role="img" aria-label="Audit score ' + s + ' out of 100">' +
+    '<circle cx="66" cy="66" r="' + r + '" fill="none" stroke="#1b2431" stroke-width="10"/>' +
+    '<circle cx="66" cy="66" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + (c * s / 100).toFixed(1) + ' ' + c.toFixed(1) + '" transform="rotate(-90 66 66)" style="filter:' + glow + '"/>' +
+    '<text x="66" y="70" text-anchor="middle" class="num" style="fill:' + col + '">' + s + '</text>' +
+    '<text x="66" y="90" text-anchor="middle" class="lbl">of 100</text></svg>';
+}
+function renderAudit() {
+  const a = S.audit;
+  const c = $('#cntAudit');
+  if (!a) {
+    $('#auditGauge').innerHTML = gaugeSvg(0).replace('aria-label="Audit score 0 out of 100"', 'aria-label="No audit yet"').replace('>0</text>', '>--</text>');
+    $('#auditMetrics').textContent = '';
+    c.hidden = true;
+    return;
+  }
+  c.hidden = false; c.textContent = a.score; c.className = 'cnt ' + (a.score >= 80 ? 'ok' : a.score >= 60 ? 'run' : 'bad');
+  $('#auditGauge').innerHTML = gaugeSvg(a.score);
+  $('#auditWhen').textContent = a.generated_at ? fmtAgo(a.generated_at) : '';
+  const dl = $('#auditMetrics');
+  dl.textContent = '';
+  const mt = a.metrics || {};
+  const rows = [['files scanned', a.files_scanned]];
+  for (const [k, v] of Object.entries(mt)) if (!Array.isArray(v) && (typeof v !== 'object' || v === null)) rows.push([k.replace(/_/g, ' '), v]);
+  for (const [k, v] of rows) dl.append(h('dt', { text: k }), h('dd', { text: typeof v === 'number' ? v.toLocaleString() : String(v) }));
+  const un = $('#auditUntested');
+  un.textContent = '';
+  const um = mt.untested_modules || [];
+  if (um.length) {
+    un.append(h('h3', { style: 'margin-top:12px', text: 'Untested modules (' + um.length + ')' }));
+    const ul = h('ul', { class: 'untested' });
+    um.forEach((p) => ul.append(h('li', null, h('button', { class: 'linkish', type: 'button', onclick: () => openFile(p), text: p }))));
+    un.append(ul);
+  }
+  renderFindings();
+  renderPlan();
+}
+function renderFindings() {
+  const a = S.audit;
+  const box = $('#auditFindings');
+  box.textContent = '';
+  const list = (a && a.findings) || [];
+  $('#auditCount').textContent = list.length ? list.length + ' total' : '';
+  if (!list.length) { box.append(h('div', { class: 'empty', text: a ? 'No findings. The codebase is clean.' : 'Run an audit to scan the codebase.' })); return; }
+  const { key, dir } = S.auditSort;
+  const val = (f) => (key === 'severity' ? (SEV[f.severity] != null ? SEV[f.severity] : 9) : key === 'line' ? (f.line || 0) : String(f[key] || '').toLowerCase());
+  const sorted = list.slice().sort((x, y) => {
+    const a1 = val(x), b1 = val(y);
+    if (a1 < b1) return -dir; if (a1 > b1) return dir;
+    return String(x.path).localeCompare(String(y.path)) || (x.line || 0) - (y.line || 0);
+  });
+  const th = (k, label) => {
+    const on = key === k;
+    return h('th', { 'aria-sort': on ? (dir > 0 ? 'ascending' : 'descending') : 'none' },
+      h('button', { type: 'button', onclick: () => { S.auditSort = { key: k, dir: on ? -dir : 1 }; renderFindings(); } }, label, h('span', { 'aria-hidden': 'true', text: on ? (dir > 0 ? '▴' : '▾') : '' })));
+  };
+  const tbl = h('table', { class: 'tbl' },
+    h('thead', null, h('tr', null, th('severity', 'Severity'), th('rule', 'Rule'), th('path', 'Location'), h('th', { text: 'Message' }))));
+  const tb = h('tbody');
+  for (const f of sorted) {
+    tb.append(h('tr', null,
+      h('td', null, h('span', { class: 'sev ' + (SEV[f.severity] != null ? f.severity : 'info'), text: f.severity || 'info' })),
+      h('td', { text: f.rule || '' }),
+      h('td', null, f.path ? h('button', { class: 'linkish', type: 'button', onclick: () => openFile(f.path, { line: f.line }), text: f.path + (f.line ? ':' + f.line : '') }) : ''),
+      h('td', { class: 'msgc', text: f.message || '' })));
+  }
+  tbl.append(tb);
+  box.append(tbl);
+}
+function renderPlan() {
+  const a = S.audit;
+  const box = $('#auditPlan');
+  box.textContent = '';
+  const plan = ((a && a.plan) || []).slice().sort((x, y) => (x.priority || 99) - (y.priority || 99));
+  if (!plan.length) { box.append(h('div', { class: 'empty', text: a ? 'Nothing to plan. No changes proposed.' : 'The audit proposes a ranked fix plan here.' })); return; }
+  const ol = h('ol', { class: 'plan' });
+  const lmOk = !!(S.health && S.health.lm_configured);
+  for (const p of plan) {
+    ol.append(h('li', null,
+      h('div', { class: 'pt' }, h('span', { class: 'pr', text: 'P' + (p.priority != null ? p.priority : '?') }), h('span', { class: 'ti', text: p.title || '' })),
+      p.detail ? h('div', { class: 'de', text: p.detail }) : null,
+      p.paths && p.paths.length ? h('div', { class: 'ps' }, p.paths.map((x) => h('button', { class: 'linkish', type: 'button', onclick: () => openFile(x), text: x }))) : null,
+      h('button', {
+        class: 'btn primary', type: 'button', disabled: !lmOk || improveBusy(), title: lmOk ? 'Start a test-gated improvement run for this item' : 'Configure a language model in Settings first',
+        onclick: () => startImprove((p.title || '') + '\n' + (p.detail || ''), Number($('#impMax').value) || 3),
+      }, 'Improve this')));
+  }
+  box.append(ol);
+}
+$('#btnAudit').addEventListener('click', runAudit);
+
+/* ======================================================================
+   Improve
+   ====================================================================== */
+const PHASE_ICON = {
+  audit: '<circle cx="7" cy="7" r="4"/><path d="m10 10 3.5 3.5"/>',
+  plan: '<path d="M3 4h10M3 8h10M3 12h6"/>',
+  apply: '<path d="m3 13 .8-3L11 2.8 13.2 5 6 12.2z"/>',
+  test: '<path d="M6 2h4M7 2v4.5L3.4 12.6c-.4.7.1 1.4.8 1.4h7.6c.7 0 1.2-.7.8-1.4L9 6.5V2"/>',
+  commit: '<circle cx="8" cy="8" r="2.6"/><path d="M1.5 8h3.9M10.6 8h3.9"/>',
+  rollback: '<path d="M4 3v3.5h3.5"/><path d="M4.3 6.3A5 5 0 1 1 3.2 9.5"/>',
+  done: '<path d="m3 8.5 3 3 7-7"/>',
+  error: '<path d="M4 4l8 8M12 4l-8 8"/>',
+};
+function phaseIcon(phase) {
+  return '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (PHASE_ICON[phase] || '<circle cx="8" cy="8" r="2"/>') + '</svg>';
+}
+function improveBusy() { return Array.from(S.jobs.values()).some((j) => j.kind === 'improve' && (j.status === 'running' || j.status === 'queued')); }
+function addImproveEvent(d) {
+  if (!d || !d.job_id) return;
+  if (!S.improve.has(d.job_id)) S.improve.set(d.job_id, []);
+  const list = S.improve.get(d.job_id);
+  list.push(Object.assign({ t: Date.now() / 1000 }, d));
+  if (list.length > 1000) list.splice(0, list.length - 1000);
+  if (!S.impPinned || !S.impView) S.impView = d.job_id;
+  if (!S.jobs.has(d.job_id)) S.jobs.set(d.job_id, { id: d.job_id, kind: 'improve', title: 'improve', status: 'running', created_at: Date.now() / 1000 });
+  renderImproveJobs();
+  if (S.impView === d.job_id) renderImprove();
+  const c = $('#cntImprove');
+  c.hidden = false; c.textContent = d.phase; c.className = 'cnt ' + (d.phase === 'error' || d.phase === 'rollback' ? 'bad' : d.phase === 'done' || d.phase === 'commit' ? 'ok' : 'run');
+}
+function renderImproveJobs() {
+  const sel = $('#impJobSel');
+  const ids = new Set();
+  const jobs = Array.from(S.jobs.values()).filter((j) => j.kind === 'improve').sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+  jobs.forEach((j) => ids.add(j.id));
+  for (const id of S.improve.keys()) if (!ids.has(id)) jobs.push({ id, title: id, status: '' });
+  const cur = S.impView;
+  sel.textContent = '';
+  if (!jobs.length) { sel.append(h('option', { value: '', text: 'no runs yet' })); sel.disabled = true; }
+  else {
+    sel.disabled = false;
+    for (const j of jobs) sel.append(h('option', { value: j.id, text: (j.title || j.id).slice(0, 60) + (j.status ? '  [' + j.status + ']' : '') }));
+    sel.value = cur && jobs.some((j) => j.id === cur) ? cur : jobs[0].id;
+    if (!cur) S.impView = sel.value;
+  }
+  renderHealth();
+}
+$('#impJobSel').addEventListener('change', (e) => { S.impView = e.target.value; S.impPinned = true; renderImprove(); });
+function renderImprove() {
+  const id = S.impView;
+  const job = id ? S.jobs.get(id) : null;
+  const evs = (id && S.improve.get(id)) || [];
+  const st = $('#impJobStatus');
+  st.textContent = '';
+  if (job && job.status) st.append(h('span', { class: 'pill ' + (job.status === 'succeeded' ? 'ok' : job.status === 'failed' ? 'bad' : job.status === 'running' ? 'warn' : ''), text: job.status }));
+  $('#btnImpCancel').hidden = !(job && (job.status === 'running' || job.status === 'queued'));
+  const box = $('#impTimeline');
+  box.textContent = '';
+  if (!evs.length) {
+    box.append(h('div', { class: 'empty', text: !job ? 'Start an improvement run. Each phase appears here as it happens.' : TERMINAL.has(job.status) ? 'This run finished before the page connected, so its live phases were not captured. The final result is below.' : 'Waiting for the first phase of this run.' }));
+  } else {
+    const groups = new Map();
+    for (const e of evs) {
+      const k = e.attempt == null || e.attempt === 0 ? 0 : e.attempt;
+      if (!groups.has(k)) groups.set(k, []);
+      groups.get(k).push(e);
+    }
+    const keys = Array.from(groups.keys()).sort((a, b) => a - b);
+    const result = job && job.result;
+    for (const k of keys) {
+      const list = groups.get(k);
+      const att = result && Array.isArray(result.attempts) ? result.attempts.find((a) => a.n === k) : null;
+      let outcome = att ? att.outcome : null;
+      if (!outcome) { const ph = list.map((e) => e.phase); outcome = ph.includes('commit') ? 'committed' : ph.includes('rollback') ? 'rolled_back' : null; }
+      const sec = h('section', { class: 'attempt' },
+        h('h4', null, k === 0 ? 'Baseline' : 'Attempt ' + k, outcome ? h('span', { class: 'out pill ' + (outcome === 'committed' ? 'ok' : 'bad'), text: outcome.replace('_', ' ') }) : null));
+      const ul = h('ol', { class: 'timeline' });
+      for (const e of list) {
+        const ph = String(e.phase || '');
+        const li = h('li', { class: 'ev ph-' + ph });
+        const pi = h('span', { class: 'pi', title: ph });
+        pi.innerHTML = phaseIcon(ph);
+        li.append(pi, h('span', { class: 'pn', text: ph }), h('div', { class: 'pm' }, e.message || '', h('time', { text: fmtTime(e.t) })));
+        if (e.data != null && !(typeof e.data === 'object' && !Object.keys(e.data).length)) {
+          li.append(h('details', null, h('summary', { text: 'details' }), h('pre', { class: 'block', text: typeof e.data === 'string' ? e.data : jsonPretty(e.data) })));
+        }
+        ul.append(li);
+      }
+      sec.append(ul);
+      box.append(sec);
+    }
+  }
+  renderImproveResult(job);
+}
+function renderImproveResult(job) {
+  const box = $('#impResult');
+  box.textContent = '';
+  if (!job) return;
+  if (job.status === 'failed' && !job.result) {
+    box.append(h('div', { class: 'result failed' }, h('h4', null, h('span', { class: 'pill bad', text: 'failed' })), h('div', { class: 'rs', text: job.error || 'The run failed without a result.' })));
+    return;
+  }
+  const r = job.result;
+  if (!r || typeof r !== 'object' || !r.status) return;
+  const card = h('div', { class: 'result ' + r.status },
+    h('h4', null,
+      h('span', { class: 'pill ' + (r.status === 'committed' ? 'ok lit' : r.status === 'no_change' ? 'warn' : 'bad'), text: r.status.replace('_', ' ') }),
+      r.commit_sha ? h('button', { class: 'linkish', type: 'button', onclick: () => showDiff(r.commit_sha), text: 'commit ' + String(r.commit_sha).slice(0, 10) }) : null,
+      r.baseline ? h('span', { class: 'hint', text: 'baseline ' + r.baseline.passed + '/' + r.baseline.total + ' passing' }) : null));
+  if (job.error) card.append(h('div', { class: 'rs', style: 'color:var(--red)', text: job.error }));
+  for (const a of r.attempts || []) {
+    const t = a.test || {};
+    const div = h('div', { class: 'att' },
+      h('div', null,
+        h('strong', { text: 'Attempt ' + a.n + ' ' }),
+        h('span', { class: 'pill ' + (a.outcome === 'committed' ? 'ok' : 'bad'), text: String(a.outcome || '').replace('_', ' ') }),
+        a.test ? h('span', { class: 'hint', text: '  tests ' + (t.passed != null ? t.passed : '?') + '/' + (t.total != null ? t.total : '?') + (t.failed ? ', ' + t.failed + ' failed' : '') }) : null),
+      a.rationale ? h('div', { class: 'rs', text: a.rationale }) : null,
+      a.reason ? h('div', { class: 'rs hint', text: a.reason }) : null,
+      a.changes && a.changes.length ? h('div', { class: 'chg' }, a.changes.map((c) => h('span', null, h('span', { class: 'hint', text: c.op + ' ' }), h('button', { class: 'linkish', type: 'button', onclick: () => openFile(c.path), text: c.path })))) : null);
+    card.append(div);
+  }
+  box.append(card);
+}
+async function startImprove(goal, maxAttempts) {
+  goal = String(goal || '').trim();
+  if (!goal) { toast('Describe the goal for the improvement run.', 'warn'); $('#impGoal').focus(); return; }
+  if (!(S.health && S.health.lm_configured)) { toast('Configure a language model in Settings before starting an improvement run.', 'warn'); return; }
+  const body = { goal };
+  if (maxAttempts) body.max_attempts = Math.max(1, Math.min(10, maxAttempts | 0));
+  let r;
+  try { r = await api('POST', '/api/improve', body); } catch (e) { return; }
+  if (r && r.job_id) {
+    if (!S.jobs.has(r.job_id)) S.jobs.set(r.job_id, { id: r.job_id, kind: 'improve', title: goal.split('\n')[0].slice(0, 80), status: 'queued', created_at: Date.now() / 1000 });
+    if (!S.improve.has(r.job_id)) S.improve.set(r.job_id, []);
+    S.impView = r.job_id; S.impPinned = false;
+    renderImproveJobs(); renderImprove(); renderJobsSoon();
+    toast('Improvement run started', 'ok');
+  }
+  setDockTab('improve');
+}
+$('#improveForm').addEventListener('submit', (e) => { e.preventDefault(); startImprove($('#impGoal').value, Number($('#impMax').value) || 3); });
+$('#btnImpSettings').addEventListener('click', openSettings);
+$('#btnImpCancel').addEventListener('click', () => { if (S.impView) cancelJob(S.impView); });
+
+/* ======================================================================
+   Git
+   ====================================================================== */
+async function loadGit() {
+  const [st, lg] = await Promise.allSettled([
+    api('GET', '/api/git/status', undefined, { quiet: true }),
+    api('GET', '/api/git/log?limit=30', undefined, { quiet: true }),
+  ]);
+  if (st.status === 'fulfilled') S.git.status = st.value;
+  if (lg.status === 'fulfilled') S.git.commits = (lg.value && lg.value.commits) || [];
+  if (st.status === 'rejected' && lg.status === 'rejected') S.git.error = st.reason && st.reason.detail;
+  else S.git.error = null;
+  renderGit();
+}
+let gitTimer = 0;
+function loadGitSoon() { clearTimeout(gitTimer); gitTimer = setTimeout(loadGit, 300); }
+function renderGit() {
+  const s = S.git.status;
+  $('#gitBranch').textContent = s ? (s.branch || 'detached') + (s.head ? ' at ' + String(s.head).slice(0, 7) : '') : 'Working tree';
+  const ul = $('#gitChanges');
+  ul.textContent = '';
+  const changes = (s && s.changes) || [];
+  const c = $('#cntGit');
+  c.hidden = !changes.length; c.textContent = changes.length; c.className = 'cnt run';
+  if (S.git.error) ul.append(h('li', { class: 'hint', style: 'color:var(--red)', text: S.git.error }));
+  else if (!s) ul.append(h('li', { class: 'hint', text: 'Loading status' }));
+  else if (!changes.length) ul.append(h('li', { class: 'hint', text: 'Working tree clean. Nothing to commit.' }));
+  for (const ch of changes) ul.append(h('li', null, h('span', { class: 'st', text: ch.status }), h('button', { class: 'linkish', type: 'button', onclick: () => openFile(ch.path), text: ch.path })));
+  $('#btnCommit').disabled = !!s && !changes.length && !s.dirty;
+  const log = $('#gitLog');
+  log.textContent = '';
+  if (!S.git.commits.length) log.append(h('li', { class: 'hint', text: S.git.error ? '' : 'No commits yet.' }));
+  const head = s && s.head ? String(s.head) : '';
+  for (const cm of S.git.commits) {
+    const isHead = head && (cm.sha === head || cm.sha.startsWith(head) || head.startsWith(cm.short || '\0'));
+    log.append(h('li', { class: 'commit' },
+      h('span', { class: 'sha', title: cm.sha, text: cm.short || String(cm.sha).slice(0, 7) }),
+      h('div', { class: 'cm' },
+        h('span', { text: cm.message }),
+        h('span', { class: 'tags' }, isHead ? h('span', { class: 'tag head', text: 'HEAD' }) : null, (cm.tags || []).map((t) => h('span', { class: 'tag', text: t }))),
+        h('span', { class: 'when', text: (cm.author ? cm.author + ', ' : '') + fmtAgo(cm.date) })),
+      h('div', { class: 'ca' },
+        h('button', { class: 'btn', type: 'button', onclick: () => showDiff(cm.sha, cm.short + ' ' + cm.message), text: 'Diff' }),
+        h('button', { class: 'btn danger', type: 'button', disabled: isHead && !(s && s.dirty), onclick: () => rollbackTo(cm), text: 'Rollback to here' }))));
+  }
+}
+async function rollbackTo(cm) {
+  const dirtyOpen = Array.from(S.open.values()).filter((f) => f.dirty).length;
+  const ok = await confirmDlg(
+    'Roll back the workspace to ' + (cm.short || cm.sha.slice(0, 7)) + ' "' + cm.message + '"?\n\n' +
+    'Tracked files are hard-reset to that commit and untracked files are deleted. Commits after it stay reachable only by sha.' +
+    (dirtyOpen ? '\n\n' + dirtyOpen + ' open file' + (dirtyOpen > 1 ? 's have' : ' has') + ' unsaved edits; they stay in the editor.' : ''),
+    { title: 'Roll back workspace', ok: 'Roll back', danger: true });
+  if (!ok) return;
+  let r;
+  try { r = await api('POST', '/api/git/rollback', { sha: cm.sha }); } catch (e) { return; }
+  toast('Rolled back. HEAD is now ' + String((r && r.head) || cm.sha).slice(0, 10), 'ok');
+  await Promise.allSettled([loadGit(), loadTree()]);
+  refreshOpenFiles();
+}
+function onGitEvent(d) {
+  loadGitSoon();
+  loadTreeSoon();
+  refreshOpenFiles();
+  if (d && d.op === 'rollback') toast('Rolled back to ' + String(d.sha || '').slice(0, 10) + (d.message ? ': ' + d.message : ''), 'warn');
+  else if (d && d.op === 'commit') toast('Committed ' + String(d.sha || '').slice(0, 10) + (d.message ? ': ' + d.message : ''), 'ok', 3000);
+}
+async function showDiff(ref, label) {
+  let d;
+  try { d = await api('GET', '/api/git/diff' + (ref ? '?ref=' + enc(ref) : '')); } catch (e) { return; }
+  const text = (d && d.diff) || '';
+  $('#dfTitle').textContent = ref ? 'Commit ' + (label || String(ref).slice(0, 10)) : 'Working tree vs HEAD';
+  const view = $('#diffView');
+  view.textContent = '';
+  let add = 0, del = 0;
+  const lines = text.split('\n');
+  const max = 20000;
+  const frag = document.createDocumentFragment();
+  lines.slice(0, max).forEach((l) => {
+    let cls = '';
+    if (l.startsWith('diff --git')) cls = 'd-file';
+    else if (l.startsWith('+++') || l.startsWith('---') || l.startsWith('index ') || l.startsWith('new file') || l.startsWith('deleted file') || l.startsWith('similarity') || l.startsWith('rename ')) cls = 'd-meta';
+    else if (l.startsWith('@@')) cls = 'd-hunk';
+    else if (l.startsWith('+')) { cls = 'd-add'; add++; }
+    else if (l.startsWith('-')) { cls = 'd-del'; del++; }
+    frag.append(h('div', { class: cls, text: l || ' ' }));
+  });
+  if (lines.length > max) frag.append(h('div', { class: 'd-meta', text: '... ' + (lines.length - max) + ' more lines not shown' }));
+  if (!text.trim()) frag.append(h('div', { class: 'd-meta', text: ref ? 'This commit has no textual changes.' : 'No changes against HEAD.' }));
+  view.append(frag);
+  $('#dfStat').textContent = text.trim() ? '+' + add + '  -' + del : '';
+  openDialog($('#dlgDiff'));
+  view.scrollTop = 0;
+  view.focus();
+}
+$('#btnGitDiff').addEventListener('click', () => showDiff(''));
+$('#btnGitRefresh').addEventListener('click', loadGit);
+$('#dfClose').addEventListener('click', () => $('#dlgDiff').close());
+$('#commitForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('#commitMsg').value.trim();
+  if (!msg) { toast('Write a commit message first.', 'warn'); $('#commitMsg').focus(); return; }
+  const dirty = Array.from(S.open.values()).filter((f) => f.dirty).map((f) => f.path);
+  if (dirty.length) {
+    const ok = await confirmDlg('Unsaved edits in ' + dirty.join(', ') + ' will not be part of this commit. Commit anyway?', { title: 'Unsaved edits', ok: 'Commit anyway' });
+    if (!ok) return;
+  }
+  let r;
+  try { r = await api('POST', '/api/git/commit', { message: msg }); } catch (e2) { return; }
+  $('#commitMsg').value = '';
+  toast('Committed ' + String((r && r.sha) || '').slice(0, 10), 'ok');
+  loadGit();
+});
+
+/* ======================================================================
+   Skills
+   ====================================================================== */
+async function loadSkills() {
+  let d;
+  try { d = await api('GET', '/api/skills', undefined, { quiet: true }); } catch (e) { return; }
+  S.skills = (d && d.skills) || [];
+  renderSkills();
+}
+function renderSkills() {
+  const ul = $('#skillList');
+  ul.textContent = '';
+  if (!S.skills.length) ul.append(h('li', { class: 'hint', text: 'No skills yet. Create one to give the agent standing instructions.' }));
+  for (const s of S.skills) {
+    ul.append(h('li', null, h('button', { type: 'button', 'aria-current': S.skill && S.skill.name === s.name ? 'true' : null, onclick: () => openSkill(s.name) },
+      h('span', { class: 'sn', text: s.name }), s.description ? h('span', { class: 'sd', text: s.description }) : null)));
+  }
+}
+async function confirmSkillDiscard() {
+  if (S.skill && $('#skillText').value !== S.skill.orig) {
+    return confirmDlg('Discard unsaved changes to skill ' + S.skill.name + '?', { title: 'Discard changes', ok: 'Discard', danger: true });
+  }
+  return true;
+}
+async function openSkill(name) {
+  if (!(await confirmSkillDiscard())) return;
+  let d;
+  try { d = await api('GET', '/api/skills/' + enc(name)); } catch (e) { return; }
+  S.skill = { name: d.name, path: d.path, content: d.content, orig: d.content, isNew: false };
+  showSkill();
+}
+function showSkill() {
+  const s = S.skill;
+  $('#skillEd').hidden = !s;
+  $('#skillEmpty').hidden = !!s;
+  renderSkills();
+  if (!s) return;
+  $('#skillName').textContent = s.name;
+  $('#skillPath').textContent = s.path || 'skills/' + s.name + '/SKILL.md (not saved yet)';
+  $('#skillText').value = s.content;
+  $('#btnSkillDel').disabled = s.isNew;
+  skillDirty();
+}
+function skillDirty() {
+  const s = S.skill;
+  const d = !!s && $('#skillText').value !== s.orig;
+  $('#skillDirty').hidden = !d;
+  $('#btnSkillSave').disabled = !s || (!d && !s.isNew);
+}
+$('#skillText').addEventListener('input', skillDirty);
+async function saveSkill() {
+  const s = S.skill;
+  if (!s) return;
+  const content = $('#skillText').value;
+  let r;
+  try { r = await api('PUT', '/api/skills/' + enc(s.name), { content }); } catch (e) { return; }
+  s.orig = content; s.content = content; s.isNew = false; s.path = (r && r.path) || s.path;
+  toast('Saved skill ' + s.name, 'ok');
+  await loadSkills();
+  showSkill();
+  loadTreeSoon();
+}
+$('#btnSkillSave').addEventListener('click', saveSkill);
+$('#btnSkillDel').addEventListener('click', async () => {
+  const s = S.skill;
+  if (!s) return;
+  if (!(await confirmDlg('Delete skill ' + s.name + '? The agent stops reading it on the next turn.', { title: 'Delete skill', ok: 'Delete skill', danger: true }))) return;
+  try { await api('DELETE', '/api/skills/' + enc(s.name)); } catch (e) { return; }
+  toast('Deleted skill ' + s.name, 'ok');
+  S.skill = null;
+  await loadSkills();
+  showSkill();
+  loadTreeSoon();
+});
+$('#btnSkillNew').addEventListener('click', async () => {
+  if (!(await confirmSkillDiscard())) return;
+  const raw = await promptDlg('New skill', 'Skill name (letters, digits, - and _)', '', 'Create skill');
+  if (!raw) return;
+  const name = raw.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '');
+  if (!name) { toast('Use letters, digits, dashes or underscores for the skill name.', 'error'); return; }
+  if (S.skills.some((s) => s.name === name)) { openSkill(name); return; }
+  const tpl = '---\nname: ' + name + '\ndescription: One line on when the agent should use this skill\n---\n\n# ' + name + '\n\nInstructions for the agent.\n';
+  S.skill = { name, path: '', content: tpl, orig: '', isNew: true };
+  showSkill();
+  $('#skillText').focus();
+});
+
+/* ======================================================================
+   Graph (3D projection on canvas)
+   ====================================================================== */
+const G = { nodes: [], edges: [], ax: -0.35, ay: 0.4, drag: null, raf: 0, hover: -1, proj: [], maxW: 1, labels: new Set() };
+const canvas = $('#graphCanvas');
+const ctx2 = canvas.getContext('2d');
+function nodeColor(src) {
+  const s = String(src || '');
+  if (s === 'native' || s === 'workbench' || s === 'builtin') return '#39ff88';
+  if (s.startsWith('mcp')) return '#00e5ff';
+  if (s === 'exec' || s.startsWith('exec')) return '#ff2ec4';
+  if (s === 'own_server' || s.startsWith('own')) return '#ffd23f';
+  return '#8291a5';
+}
+async function loadGraph() {
+  const [g, t] = await Promise.allSettled([
+    api('GET', '/api/graph', undefined, { quiet: true }),
+    api('GET', '/api/tools', undefined, { quiet: true }),
+  ]);
+  if (g.status === 'fulfilled') setGraph(g.value || { nodes: [], edges: [] });
+  if (t.status === 'fulfilled') { S.tools = (t.value && t.value.tools) || {}; renderTools(); }
+  drawGraph();
+}
+function setGraph(data) {
+  const nodes = (data.nodes || []).map((n) => Object.assign({}, n));
+  const finite = nodes.length && nodes.every((n) => [n.x, n.y, n.z].every((v) => typeof v === 'number' && isFinite(v)));
+  if (finite) {
+    const cx = nodes.reduce((a, n) => a + n.x, 0) / nodes.length;
+    const cy = nodes.reduce((a, n) => a + n.y, 0) / nodes.length;
+    const cz = nodes.reduce((a, n) => a + n.z, 0) / nodes.length;
+    let r = 0;
+    for (const n of nodes) { n.px = n.x - cx; n.py = n.y - cy; n.pz = n.z - cz; r = Math.max(r, Math.hypot(n.px, n.py, n.pz)); }
+    if (r > 0) for (const n of nodes) { n.px /= r; n.py /= r; n.pz /= r; }
+    else layoutSphere(nodes);
+  } else layoutSphere(nodes);
+  const idx = new Map(nodes.map((n, i) => [String(n.id), i]));
+  const edges = [];
+  let maxW = 1;
+  for (const e of data.edges || []) {
+    const a = idx.get(String(e.source)), b = idx.get(String(e.target));
+    if (a == null || b == null) continue;
+    const w = Number(e.weight) || 1;
+    maxW = Math.max(maxW, w);
+    edges.push({ a, b, w });
+  }
+  G.nodes = nodes; G.edges = edges; G.maxW = maxW;
+  G.labels = new Set(nodes.map((n, i) => [i, n.calls || 0]).sort((x, y) => y[1] - x[1]).slice(0, 10).map((x) => x[0]));
+  S.graph = data;
+}
+function layoutSphere(nodes) {
+  const n = nodes.length, ga = Math.PI * (3 - Math.sqrt(5));
+  nodes.forEach((nd, i) => {
+    const y = n === 1 ? 0 : 1 - (i / (n - 1)) * 2, r = Math.sqrt(1 - y * y), th = ga * i;
+    nd.px = Math.cos(th) * r; nd.py = y; nd.pz = Math.sin(th) * r;
+  });
+}
+function graphVisible() { return S.dockTab === 'graph' && !$('#dp-graph').hidden && canvas.offsetParent !== null && !document.hidden; }
+function sizeCanvas() {
+  const r = canvas.getBoundingClientRect();
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = Math.max(1, Math.round(r.width * dpr)), hh = Math.max(1, Math.round(r.height * dpr));
+  if (canvas.width !== w || canvas.height !== hh) { canvas.width = w; canvas.height = hh; }
+  return { w: r.width, h: r.height, dpr };
+}
+function drawGraph() {
+  if (!graphVisible()) return;
+  const { w, h: hh, dpr } = sizeCanvas();
+  const c = ctx2;
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, w, hh);
+  if (!G.nodes.length) {
+    c.fillStyle = '#8291a5'; c.font = '12px ' + getComputedStyle(document.body).fontFamily; c.textAlign = 'center';
+    c.fillText('No tools in the graph yet. Tools appear as the agent registers and calls them.', w / 2, hh / 2);
+    return;
+  }
+  const cyA = Math.cos(G.ay), syA = Math.sin(G.ay), cxA = Math.cos(G.ax), sxA = Math.sin(G.ax);
+  const sc = Math.min(w, hh) * 0.36, D = 3.2;
+  G.proj = G.nodes.map((n) => {
+    const x1 = n.px * cyA + n.pz * syA, z1 = -n.px * syA + n.pz * cyA;
+    const y2 = n.py * cxA - z1 * sxA, z2 = n.py * sxA + z1 * cxA;
+    const p = D / (D - z2);
+    return { x: w / 2 + x1 * sc * p, y: hh / 2 + y2 * sc * p, z: z2, p };
+  });
+  c.lineWidth = 1;
+  for (const e of G.edges) {
+    const a = G.proj[e.a], b = G.proj[e.b];
+    const depth = ((a.z + b.z) / 2 + 1) / 2;
+    const hl = G.hover === e.a || G.hover === e.b;
+    c.strokeStyle = hl ? 'rgba(0,229,255,.85)' : 'rgba(120,150,190,' + (0.08 + 0.35 * (e.w / G.maxW) * (0.4 + 0.6 * depth)).toFixed(3) + ')';
+    c.lineWidth = hl ? 1.5 : 0.5 + 1.2 * (e.w / G.maxW);
+    c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+  }
+  const order = G.proj.map((p, i) => i).sort((i, j) => G.proj[i].z - G.proj[j].z);
+  const font = getComputedStyle(document.body).fontFamily;
+  for (const i of order) {
+    const n = G.nodes[i], p = G.proj[i];
+    const r = (3 + Math.log2(1 + (n.calls || 0)) * 1.4) * p.p;
+    const col = nodeColor(n.source);
+    const depth = (p.z + 1) / 2;
+    c.globalAlpha = 0.45 + 0.55 * depth;
+    if (G.hover === i) { c.shadowColor = col; c.shadowBlur = 14; }
+    c.fillStyle = col;
+    c.beginPath(); c.arc(p.x, p.y, Math.max(2, r), 0, Math.PI * 2); c.fill();
+    c.shadowBlur = 0;
+    if (G.hover === i || (G.labels.has(i) && depth > 0.35)) {
+      c.fillStyle = G.hover === i ? '#ffffff' : 'rgba(219,228,238,.8)';
+      c.font = (G.hover === i ? '12px ' : '11px ') + font;
+      c.textAlign = 'left';
+      c.fillText(String(n.id), p.x + r + 4, p.y + 4);
+    }
+    c.globalAlpha = 1;
+  }
+}
+function graphLoop() {
+  G.raf = 0;
+  if (!graphVisible()) return;
+  if (!G.drag && !REDUCED.matches) G.ay += 0.0035;
+  drawGraph();
+  if (!REDUCED.matches) G.raf = requestAnimationFrame(graphLoop);
+}
+function startGraphLoop() { if (!G.raf) G.raf = requestAnimationFrame(graphLoop); }
+canvas.addEventListener('pointerdown', (e) => { G.drag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', (e) => {
+  if (G.drag) {
+    G.ay += (e.clientX - G.drag.x) * 0.01;
+    G.ax = Math.max(-1.5, Math.min(1.5, G.ax + (e.clientY - G.drag.y) * 0.01));
+    G.drag = { x: e.clientX, y: e.clientY };
+    if (REDUCED.matches) drawGraph();
+    return;
+  }
+  const r = canvas.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  let best = -1, bd = 196;
+  G.proj.forEach((p, i) => { const d = (p.x - mx) ** 2 + (p.y - my) ** 2; if (d < bd) { bd = d; best = i; } });
+  if (best !== G.hover) {
+    G.hover = best;
+    const tip = $('#graphTip');
+    if (best >= 0) {
+      const n = G.nodes[best];
+      const deg = G.edges.filter((x) => x.a === best || x.b === best).length;
+      tip.hidden = false;
+      tip.textContent = n.id + '  source ' + (n.source || '?') + '  calls ' + (n.calls || 0) + '  links ' + deg;
+    } else tip.hidden = true;
+    if (REDUCED.matches) drawGraph();
+  }
+});
+const endDrag = () => { G.drag = null; };
+canvas.addEventListener('pointerup', endDrag);
+canvas.addEventListener('pointercancel', endDrag);
+canvas.addEventListener('pointerleave', () => { if (!G.drag && G.hover !== -1) { G.hover = -1; $('#graphTip').hidden = true; if (REDUCED.matches) drawGraph(); } });
+canvas.addEventListener('keydown', (e) => {
+  const k = { ArrowLeft: [0, -0.15], ArrowRight: [0, 0.15], ArrowUp: [-0.15, 0], ArrowDown: [0.15, 0] }[e.key];
+  if (!k) return;
+  e.preventDefault();
+  G.ax = Math.max(-1.5, Math.min(1.5, G.ax + k[0])); G.ay += k[1];
+  drawGraph();
+});
+if (window.ResizeObserver) new ResizeObserver(() => drawGraph()).observe(canvas);
+function renderTools() {
+  const box = $('#toolList');
+  box.textContent = '';
+  const entries = Object.entries(S.tools || {});
+  if (!entries.length) { box.append(h('div', { class: 'empty', text: 'No tools registered.' })); return; }
+  entries.sort((a, b) => (b[1].call_count || 0) - (a[1].call_count || 0));
+  const tbl = h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', { text: 'Tool' }), h('th', { text: 'Calls' }), h('th', { text: 'Errors' }))));
+  const tb = h('tbody');
+  for (const [name, t] of entries) {
+    tb.append(h('tr', null,
+      h('td', null, h('span', { style: 'display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:' + nodeColor(t.source) }), name,
+        h('div', { class: 'hint', text: (t.source || '') + (t.version != null ? '  v' + t.version : '') })),
+      h('td', { text: t.call_count || 0 }),
+      h('td', { style: t.error_count ? 'color:var(--red)' : '', text: t.error_count || 0 })));
+  }
+  tbl.append(tb);
+  box.append(tbl);
+}
+$('#btnGraphRefresh').addEventListener('click', loadGraph);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.dockTab === 'graph') startGraphLoop(); });
+
+/* ======================================================================
+   Dock tabs, resize, phone panes, drawer
+   ====================================================================== */
+const TAB_LOADERS = { git: loadGit, jobs: loadJobs, skills: loadSkills, graph: loadGraph };
+function setDockTab(name, focus) {
+  S.dockTab = name;
+  for (const t of $$('#dockTabs .dtab')) {
+    const on = t.dataset.tab === name;
+    t.setAttribute('aria-selected', String(on));
+    t.tabIndex = on ? 0 : -1;
+    $('#' + t.getAttribute('aria-controls')).hidden = !on;
+    if (on && focus) t.focus();
+  }
+  try { localStorage.setItem('selfwire.dockTab', name); } catch (e) { /* storage unavailable */ }
+  if (TAB_LOADERS[name]) TAB_LOADERS[name]();
+  if (name === 'improve') renderImprove();
+  if (name === 'graph') { requestAnimationFrame(() => { drawGraph(); startGraphLoop(); }); }
+}
+$('#dockTabs').addEventListener('click', (e) => { const t = e.target.closest('.dtab'); if (t) setDockTab(t.dataset.tab); });
+$('#dockTabs').addEventListener('keydown', (e) => {
+  const tabs = $$('#dockTabs .dtab');
+  const i = tabs.indexOf(document.activeElement);
+  if (i < 0) return;
+  let n = -1;
+  if (e.key === 'ArrowRight') n = (i + 1) % tabs.length;
+  else if (e.key === 'ArrowLeft') n = (i - 1 + tabs.length) % tabs.length;
+  else if (e.key === 'Home') n = 0;
+  else if (e.key === 'End') n = tabs.length - 1;
+  if (n >= 0) { e.preventDefault(); setDockTab(tabs[n].dataset.tab, true); }
+});
+
+(function dockResize() {
+  const handle = $('#dockResize');
+  const apply = (px) => {
+    const max = Math.max(160, window.innerHeight - 220);
+    const v = Math.max(120, Math.min(max, px));
+    document.documentElement.style.setProperty('--dock-h', v + 'px');
+    return v;
+  };
+  try { const saved = Number(localStorage.getItem('selfwire.dockH')); if (saved) apply(saved); } catch (e) { /* storage unavailable */ }
+  const save = () => { try { localStorage.setItem('selfwire.dockH', String($('#dock').getBoundingClientRect().height | 0)); } catch (e) { /* storage unavailable */ } };
+  let startY = 0, startH = 0, dragging = false;
+  handle.addEventListener('pointerdown', (e) => { dragging = true; startY = e.clientY; startH = $('#dock').getBoundingClientRect().height; handle.setPointerCapture(e.pointerId); e.preventDefault(); });
+  handle.addEventListener('pointermove', (e) => { if (dragging) { apply(startH + (startY - e.clientY)); drawGraph(); } });
+  const end = () => { if (dragging) { dragging = false; save(); } };
+  handle.addEventListener('pointerup', end);
+  handle.addEventListener('pointercancel', end);
+  handle.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+    e.preventDefault();
+    apply($('#dock').getBoundingClientRect().height + (e.key === 'ArrowUp' ? 30 : -30));
+    save();
+  });
+})();
+
+function setPane(p) {
+  document.body.dataset.pane = p;
+  for (const b of $$('#tabbar button')) { if (b.dataset.pane === p) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); }
+  if (p === 'chat') msgsBox.scrollTop = msgsBox.scrollHeight;
+  if (p === 'dock' && S.dockTab === 'graph') requestAnimationFrame(() => { drawGraph(); startGraphLoop(); });
+  updateTabbarDot();
+}
+$('#tabbar').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setPane(b.dataset.pane); });
+function updateTabbarDot() {
+  const busy = testsRunning() || improveBusy();
+  const span = $('#tbDock');
+  if (span) span.classList.toggle('tb-dot', busy && document.body.dataset.pane !== 'dock');
+}
+
+function closeDrawer() { document.body.classList.remove('drawer-open'); $('#btnDrawer').setAttribute('aria-expanded', 'false'); }
+$('#btnDrawer').addEventListener('click', () => {
+  const open = !document.body.classList.contains('drawer-open');
+  document.body.classList.toggle('drawer-open', open);
+  $('#btnDrawer').setAttribute('aria-expanded', String(open));
+  if (open) setTimeout(() => $('#treeFilter').focus(), 50);
+});
+$('#scrim').addEventListener('click', closeDrawer);
+
+/* ======================================================================
+   Dialogs
+   ====================================================================== */
+function openDialog(dlg) {
+  if (dlg.open) return;
+  if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+}
+function confirmDlg(message, o) {
+  o = o || {};
+  const dlg = $('#dlgConfirm');
+  $('#cfTitle').textContent = o.title || 'Confirm';
+  $('#cfMsg').textContent = message;
+  const yes = $('#cfYes');
+  yes.textContent = o.ok || 'Confirm';
+  yes.className = 'btn ' + (o.danger ? 'danger' : 'primary');
+  dlg.returnValue = '';
+  return new Promise((resolve) => {
+    const done = () => { dlg.removeEventListener('close', done); resolve(dlg.returnValue === 'yes'); };
+    dlg.addEventListener('close', done);
+    openDialog(dlg);
+    (o.danger ? $('#cfNo') : yes).focus();
+  });
+}
+function promptDlg(title, label, value, okLabel) {
+  const dlg = $('#dlgPrompt');
+  $('#prTitle').textContent = title;
+  $('#prLabel').textContent = label;
+  $('#prOk').textContent = okLabel || 'OK';
+  const inp = $('#prInput');
+  inp.value = value || '';
+  dlg.returnValue = '';
+  return new Promise((resolve) => {
+    const done = () => { dlg.removeEventListener('close', done); resolve(dlg.returnValue === 'yes' ? inp.value : null); };
+    dlg.addEventListener('close', done);
+    openDialog(dlg);
+    inp.focus();
+    inp.setSelectionRange(inp.value.length, inp.value.length);
+  });
+}
+/* buttons that close their dialog without submitting */
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-close-dialog]');
+  if (!b) return;
+  const dlg = b.closest('dialog');
+  if (dlg && dlg.open) dlg.close(b.dataset.closeDialog || 'cancel');
+});
+/* Enter in the prompt input submits with "yes" even without a submitter */
+$('#prForm').addEventListener('submit', (e) => {
+  if (!e.submitter || e.submitter.value !== 'yes') { e.preventDefault(); $('#dlgPrompt').close('yes'); }
+});
+
+/* ---------------- settings ---------------- */
+async function openSettings() {
+  try { S.settings = await api('GET', '/api/settings'); } catch (e) { S.settings = S.settings || null; }
+  const s = S.settings || {};
+  $('#setModel').value = s.model || '';
+  $('#setKey').value = '';
+  $('#setKey').placeholder = s.has_key ? 'A key is set. Leave blank to keep it.' : 'Paste a key to set it';
+  $('#setKeyHint').textContent = (s.has_key ? 'Key status: set in server memory.' : 'Key status: no key set.') + ' Keys are never written to disk or shown again.';
+  $('#setBase').value = s.api_base || '';
+  $('#setIters').value = s.max_iters != null ? s.max_iters : '';
+  $('#setUnsafe').checked = !!s.allow_unsafe_levers;
+  const hh = S.health;
+  $('#setServer').textContent = hh ? 'Server v' + hh.version + ', workspace ' + (hh.root || '') + (hh.python ? ', Python ' + String(hh.python).split(' ')[0] : '') : 'Server is not responding.';
+  openDialog($('#dlgSettings'));
+  $('#setModel').focus();
+}
+$('#btnSettings').addEventListener('click', openSettings);
+$('#lmStatus').addEventListener('click', openSettings);
+$('#setForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const s = S.settings || {};
+  const body = {};
+  const model = $('#setModel').value.trim();
+  if (model !== (s.model || '')) body.model = model || null;
+  const key = $('#setKey').value;
+  if (key.trim()) body.api_key = key.trim();
+  const base = $('#setBase').value.trim();
+  if (base !== (s.api_base || '')) body.api_base = base || null;
+  const it = $('#setIters').value.trim();
+  if (it !== '' && Number(it) !== s.max_iters) {
+    const n = parseInt(it, 10);
+    if (!(n >= 1)) { toast('Max agent iterations must be a whole number of at least 1.', 'error'); return; }
+    body.max_iters = n;
+  }
+  const unsafe = $('#setUnsafe').checked;
+  if (unsafe !== !!s.allow_unsafe_levers) body.allow_unsafe_levers = unsafe;
+  if (!Object.keys(body).length) { $('#dlgSettings').close(); toast('No settings changed.', 'info', 2000); return; }
+  const btn = $('#btnSetSave');
+  btn.disabled = true;
+  try { S.settings = await api('POST', '/api/settings', body); }
+  catch (e2) { btn.disabled = false; return; }
+  btn.disabled = false;
+  $('#setKey').value = '';
+  $('#dlgSettings').close();
+  toast('Settings saved' + (S.settings && S.settings.has_key ? '. API key is set.' : '.'), 'ok');
+  await loadHealth();
+  renderPlan();
+});
+$('#btnRestart').addEventListener('click', restartServer);
+async function restartServer() {
+  const ok = await confirmDlg('Restart the workbench server? It re-executes the process so backend code edits and dashboard edits take effect (preview dashboard edits at /preview first). Running jobs are interrupted. Unsaved editor changes stay in this page.', { title: 'Restart server', ok: 'Restart', danger: true });
+  if (!ok) return;
+  try { await api('POST', '/api/restart'); } catch (e) { return; } /* detail toasted */
+  if ($('#dlgSettings').open) $('#dlgSettings').close();
+  toast('Restarting server', 'warn', 3000);
+  setConn('connecting', 'restarting');
+  const t0 = Date.now();
+  await sleep(1200);
+  while (Date.now() - t0 < 60000) {
+    try {
+      const hh = await api('GET', '/api/health', undefined, { quiet: true });
+      if (hh && hh.ok) {
+        S.health = hh;
+        renderHealth();
+        toast('Server is back (v' + hh.version + ')', 'ok');
+        sseRetry = 0;
+        connectSSE();
+        await reloadAll();
+        return;
+      }
+    } catch (e) { /* still down */ }
+    await sleep(700);
+  }
+  toast('The server did not come back within 60 seconds. Check the terminal that runs it.', 'error');
+}
+
+/* ---------------- global keys ---------------- */
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 's' || e.key === 'S')) {
+    e.preventDefault();
+    if (document.activeElement === $('#skillText')) saveSkill();
+    else if (S.active) saveActive();
+    return;
+  }
+  if (e.key === 'Escape' && document.body.classList.contains('drawer-open')) closeDrawer();
+});
+window.addEventListener('beforeunload', (e) => {
+  if (Array.from(S.open.values()).some((f) => f.dirty)) { e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ---------------- boot ---------------- */
+async function reloadAll() {
+  await Promise.allSettled([
+    loadHealth(),
+    loadTree(),
+    loadChatHistory(S.msgIds.size > 0),
+    loadJobs(),
+    loadTestsLast(),
+    loadAuditLast(),
+    loadGit(),
+    loadSkills(),
+  ]);
+  await refreshOpenFiles();
+  if (S.dockTab === 'graph') loadGraph();
+}
+(async function boot() {
+  try { const t = localStorage.getItem('selfwire.dockTab'); if (t && $('#dt-' + t)) S.dockTab = t; } catch (e) { /* storage unavailable */ }
+  renderAudit();
+  renderTestPills();
+  renderJobs();
+  renderImproveJobs();
+  renderImprove();
+  setDockTab(S.dockTab);
+  connectSSE();
+  await reloadAll();
+  setInterval(() => { if (S.dockTab === 'jobs') renderJobsSoon(); }, 1000);
+})();
+</script>
+</body>
+</html>

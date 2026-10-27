@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Repro</title><style>iframe{width:1440px;height:900px;border:0}</style></head><body>
+<script>
+// Opens one page, clicks controls by their text, and prints every error with its stack. #page=<path>&click=A|B&w=1440
+const q = new URLSearchParams(location.hash.slice(1)), f = document.createElement('iframe'), wait = ms => new Promise(r => setTimeout(r, ms));
+f.style.width = (q.get('w') || 1440) + 'px';
+f.src = '../' + q.get('page').split('/').map(encodeURIComponent).join('/');
+document.body.appendChild(f);
+const t = setInterval(() => { try { const w = f.contentWindow; if (!w || w.__h || w.location.href === 'about:blank') return; w.__h = 1;
+  w.addEventListener('error', e => console.log('[repro] ERROR ' + e.message + '\n' + (e.error && e.error.stack || '')));
+  w.addEventListener('unhandledrejection', e => console.log('[repro] REJECTION ' + (e.reason && e.reason.message) + '\n' + (e.reason && e.reason.stack || '')));
+  const ce = w.console.error.bind(w.console); w.console.error = (...a) => { console.log('[repro] CONSOLE ' + a.map(x => x && x.stack ? x.stack : String(x)).join(' ')); ce(...a); };
+} catch (e) {} }, 4);
+(async () => {
+  await new Promise(r => f.onload = r); await wait(3000);
+  const d = f.contentWindow.document;
+  for (const label of (q.get('click') || '').split('|').filter(Boolean)) {
+    const el = [...d.querySelectorAll('button,label,[role=tab]')].find(x => (x.textContent || '').replace(/\s+/g, ' ').trim() === label);
+    console.log('[repro] click ' + label + (el ? '' : ' (not found)')); if (el) el.click(); await wait(1500);
+  }
+  console.log('[repro] DONE');
+  if (q.get('unnamed')) [...d.querySelectorAll('button,a[href]')].filter(b => !(b.textContent || '').trim() && !b.getAttribute('aria-label') && !b.title).slice(0, 12).forEach(b => console.log('[repro] UNNAMED ' + b.outerHTML.slice(0, 260)));
+  if (q.get('wide')) { const iw = f.contentWindow.innerWidth; [...d.querySelectorAll('body *')].filter(el => { const r = el.getBoundingClientRect(); return r.width && r.right > iw + 2; }).sort((a, b) => a.getBoundingClientRect().width - b.getBoundingClientRect().width).slice(0, 6).forEach(el => { const r = el.getBoundingClientRect(); console.log('[repro] WIDE ' + Math.round(r.left) + '..' + Math.round(r.right) + ' ' + el.tagName + ' style="' + (el.getAttribute('style') || '').slice(0, 200) + '" text="' + (el.textContent || '').trim().slice(0, 40) + '"'); }); }
+})();
+</script></body></html>

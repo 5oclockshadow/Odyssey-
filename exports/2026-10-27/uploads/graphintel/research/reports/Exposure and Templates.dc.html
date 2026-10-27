@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-300); text-decoration-color: var(--color-accent-700); text-underline-offset: 3px; }
+    a:hover { color: var(--color-accent-200); text-decoration-color: var(--color-accent); }
+  </style>
+</helmet>
+<article style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);padding:0 0 120px;">
+<div style="max-width:1200px;padding:56px clamp(20px,5vw,72px) 0;display:flex;flex-direction:column;gap:64px;">
+
+<header data-screen-label="Masthead" style="display:grid;gap:18px;max-width:900px;">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);"><span>Companion D to the Seeded Substrate paper</span><span style="color:var(--color-neutral-600);">/</span><span>Exposure and templates</span><span style="color:var(--color-neutral-600);">/</span><span>15 October 2026</span></div>
+  <h1 style="font-size:clamp(36px,5vw,52px);line-height:1.05;letter-spacing:-0.02em;font-weight:500;margin:0;">If we are right: who is exposed, and what one prompt can rebuild</h1>
+  <p style="font-size:clamp(18px,2vw,21px);line-height:1.45;margin:0;color:var(--color-neutral-300);max-width:840px;">Part 1 takes 50 companies in the AI stack and asks what happens to each if H0 holds and seeded small models deliver frontier quality on CPU. Part 2 groups {{ total }} current software companies into {{ nArch }} archetypes, each covered by one prompt and one PRD.</p>
+  <div class="card" style="display:grid;gap:6px;max-width:860px;">
+    <div class="card-kicker">Read this as a scenario, not a forecast</div>
+    <p class="card-body" style="margin:0;">Every row below is conditional on H0, which is unproven (<a href="Cheap Brain Evidence.dc.html">Companion A</a>). Exposure and timing are our judgement from each company's business model; no balance sheets were checked. "Stress window" means when the scenario would pressure margins or funding, not a prediction of insolvency.</p>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:14px;font-size:14px;"><a href="Seeded Substrate Plan v4.dc.html">Core paper</a><a href="Cheap Brain Evidence.dc.html">A · Evidence</a><a href="AI Era Bubble.dc.html">B · AI-era bubble</a><a href="Institute Blueprint v3.dc.html">C · Blueprint</a></div>
+</header>
+
+<section data-screen-label="01 Exposure" style="display:grid;gap:18px;">
+  <div style="display:grid;gap:12px;max-width:800px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 1 · 50 companies</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Profit thesis and exposure if H0 holds</h2>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-300);">Exposure 5 means the profit thesis depends on scarce, expensive model compute and the company funds it with outside capital. Exposure 1 or below means the scenario helps.</p>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+    <sc-for list="{{ segs }}" as="s" hint-placeholder-count="8"><button class="btn {{ s.cls }}" style="font-size:12px;white-space:nowrap;" onClick="{{ s.pick }}">{{ s.name }}</button></sc-for>
+    <button class="btn btn-ghost" style="font-size:12px;" onClick="{{ toggleSort }}">Sort: {{ sortLabel }}</button>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:1120px;">
+      <thead><tr><th>Company</th><th>Segment</th><th>Profit thesis today</th><th>Why H0 hurts or helps</th><th>Exposure</th><th>Stress window</th><th>What survives</th></tr></thead>
+      <tbody>
+        <sc-for list="{{ cos }}" as="c" hint-placeholder-count="12">
+          <tr><td style="font-weight:500;">{{ c.n }}</td><td>{{ c.s }}</td><td>{{ c.t }}</td><td>{{ c.x }}</td><td><span class="{{ c.tag }}">{{ c.e }}</span></td><td>{{ c.w }}</td><td>{{ c.v }}</td></tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;">
+    <sc-for list="{{ bands }}" as="b" hint-placeholder-count="5">
+      <div class="card" style="display:grid;gap:4px;padding:12px 14px;"><span class="card-kicker">{{ b.w }}</span><span style="font-size:22px;font-weight:500;">{{ b.n }}</span><span class="card-meta" style="font-size:12px;">{{ b.d }}</span></div>
+    </sc-for>
+  </div>
+</section>
+
+<section data-screen-label="02 Templates" style="display:grid;gap:18px;">
+  <div style="display:grid;gap:12px;max-width:820px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 2 · {{ total }} companies, {{ nArch }} templates</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">One prompt and one PRD per archetype</h2>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-300);">Companies in the same archetype share the same core objects and flows, so one well-specified PRD covers their software. What a prompt cannot rebuild is listed for each: networks, licences, data and distribution. Templatability is the share of the product a prompt and PRD would reproduce (our estimate). Select an archetype to read its prompt and PRD.</p>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+    <input class="input" style="max-width:320px;" placeholder="Search company or archetype" value="{{ q }}" onChange="{{ onQ }}"></input>
+    <span style="font-size:13px;color:var(--color-neutral-400);">{{ shownCos }} companies in {{ shownArch }} archetypes</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:18px;align-items:start;">
+    <div style="display:grid;gap:10px;">
+      <sc-for list="{{ arch }}" as="a" hint-placeholder-count="8">
+        <div class="card" style="display:grid;gap:8px;cursor:pointer;{{ a.ring }}" onClick="{{ a.pick }}">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;"><span style="font-size:15px;font-weight:500;">{{ a.name }}</span><span class="tag tag-neutral" style="font-size:10px;padding:1px 7px;">{{ a.score }}% · {{ a.count }}</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--color-neutral-300);"><sc-for list="{{ a.cos }}" as="c" hint-placeholder-count="10"><span style="white-space:nowrap;">{{ c }}</span></sc-for></div>
+        </div>
+      </sc-for>
+    </div>
+    <div class="card elev-md" style="display:grid;gap:14px;position:sticky;top:16px;">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;"><span class="card-kicker">{{ sel.name }}</span><span class="tag tag-accent" style="font-size:10px;padding:1px 7px;">{{ sel.score }}% templatable</span></div>
+      <div style="display:grid;gap:6px;"><span style="font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-neutral-400);">The prompt</span>
+        <pre style="margin:0;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.55;color:var(--color-neutral-100);background:var(--color-neutral-900);padding:12px;border-radius:var(--radius-md);">{{ sel.prompt }}</pre>
+        <button class="btn btn-secondary" style="justify-self:start;font-size:12px;" onClick="{{ copy }}">{{ copyLabel }}</button>
+      </div>
+      <div style="display:grid;gap:8px;"><span style="font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-neutral-400);">PRD</span>
+        <sc-for list="{{ sel.prd }}" as="p" hint-placeholder-count="7">
+          <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;font-size:13px;line-height:1.5;"><span style="color:var(--color-accent-300);">{{ p.k }}</span><span>{{ p.v }}</span></div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</article>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+// [name, segment, profit thesis, why H0 hurts/helps, exposure -1..5, stress window, survives]
+const C = [
+['Nvidia','Chips','Data-centre GPU margins near monopoly levels, CUDA lock-in','Cheaper models on CPU cut the premium buyers pay for top GPUs',3,'Margin squeeze · 2–4 yrs','CUDA, gaming, edge, robotics'],
+['AMD','Chips','GPU share gains plus server CPUs','GPU upside shrinks; EPYC CPUs gain from CPU inference',1,'Mixed','Server CPUs'],
+['Broadcom','Chips','Custom AI accelerators and networking for hyperscalers','Custom-chip orders track hyperscaler capex',3,'Margin squeeze · 2–4 yrs','Networking, software (VMware)'],
+['Micron','Memory','HBM demand from GPUs','HBM premium falls if fewer large GPUs ship',3,'Cyclical downturn · 1–3 yrs','Commodity DRAM, NAND'],
+['SK Hynix','Memory','Leading HBM supplier','Same as Micron, more concentrated in HBM',3,'Cyclical downturn · 1–3 yrs','DRAM'],
+['TSMC','Foundry','Makes nearly every advanced chip','Builds CPUs and edge chips too; volume shifts, not demand',1,'Low risk','Everything it fabs'],
+['Super Micro','Servers','AI server assembly at volume, thin margins','Thin margins plus inventory if GPU orders stop',4,'Inventory stress · 12–24 mo','General servers'],
+['Arista','Networking','AI cluster networking','Fewer giant clusters to wire',2,'Slower growth','Cloud networking'],
+['Vertiv','Power & cooling','Liquid cooling and power for AI halls','Order book tied to new AI data centres',3,'Order cliff · 1–3 yrs','Conventional data centres'],
+['Arm','Chips','Royalties on CPU designs','CPU and edge inference raise royalty volume',-1,'Gains','All of it'],
+['Intel','Chips','Turnaround on CPUs and foundry','CPU inference is a new use for its core product',0,'Gains, if execution holds','x86 base'],
+['Qualcomm','Chips','Mobile and PC chips with NPUs','On-device models become good enough',-1,'Gains','Edge AI'],
+['Apple','Devices','Hardware margins, on-device AI','Small seeded models suit on-device privacy',-1,'Gains','Ecosystem'],
+['CoreWeave','Neocloud','Leases GPU capacity, financed with debt, few large customers','Rental prices fall while debt is fixed',5,'Refinancing stress · 1–3 yrs','Contracted capacity, if counterparties pay'],
+['Nebius','Neocloud','GPU cloud built out with equity and debt','Same squeeze, smaller customer base',5,'Funding stress · 1–3 yrs','Platform software'],
+['Lambda','Neocloud','GPU cloud for developers and labs','Developer demand moves to cheaper rungs',4,'Funding stress · 1–3 yrs','Developer brand'],
+['Crusoe','Neocloud','Energy-sited AI data centres','Long-term site bets on GPU demand',4,'Funding stress · 2–4 yrs','Power sites'],
+['Applied Digital','Neocloud','HPC hosting on long leases','Lease renewals reprice',4,'Refinancing stress · 1–3 yrs','Sites and power'],
+['IREN','Neocloud','Bitcoin miner turned AI cloud','Second pivot under falling GPU rents',4,'Funding stress · 1–3 yrs','Power capacity'],
+['Core Scientific','Hosting','Hosts GPUs for neoclouds','Exposed to its tenants\' health',4,'Counterparty stress · 1–3 yrs','Power capacity'],
+['Oracle','Cloud','Debt-funded OCI build-out on large AI contracts','Contract value depends on a few labs\' funding',3,'Leverage stress · 2–4 yrs','Database and apps'],
+['Equinix','Data centres','Interconnection and colocation','Diversified tenants; CPU inference still needs racks',1,'Low risk','Interconnection'],
+['Microsoft','Hyperscaler','Azure AI, Copilot, OpenAI stake','Capex written down faster; software margins hold',2,'Write-downs · 2–4 yrs','Office, Azure, Windows'],
+['Alphabet','Hyperscaler','Search ads, Cloud, Gemini, TPUs','Owns its chips and models; capex overhang',2,'Write-downs · 2–4 yrs','Search, YouTube'],
+['Amazon','Hyperscaler','AWS AI services, Trainium','Rents what customers want, including CPUs',1,'Write-downs · 2–4 yrs','AWS, retail'],
+['Meta','Hyperscaler','AI for ad targeting; open Llama models','Benefits from cheap models; capex overhang',1,'Write-downs · 2–4 yrs','Ads'],
+['OpenAI','Frontier lab','Subscriptions and API on frontier models; large compute commitments','Customers move routine work to cheap seeded models',5,'Funding-dependent · 12–36 mo','Brand, consumer reach'],
+['Anthropic','Frontier lab','API and enterprise on frontier models','Same pressure on API pricing for routine tasks',4,'Funding-dependent · 1–3 yrs','Enterprise and coding use'],
+['xAI','Frontier lab','Frontier models with very large owned clusters','Owns the most expensive version of the bet',5,'Funding-dependent · 12–36 mo','Distribution via X'],
+['Mistral','Lab','Efficient open and commercial models, EU focus','Already sells small models; less exposed',2,'Price pressure','EU sovereignty deals'],
+['Cohere','Lab','Enterprise models and retrieval','Retrieval business aligns with the thesis',2,'Price pressure','Enterprise contracts'],
+['Groq','Inference chips','Fast inference on custom silicon','Speed premium shrinks if CPUs suffice',4,'Funding stress · 1–3 yrs','Low-latency niche'],
+['Cerebras','Inference chips','Wafer-scale training and inference','Large-model niche shrinks',4,'Funding stress · 1–3 yrs','Scientific computing'],
+['SambaNova','Inference chips','Enterprise AI hardware and cloud','Same as Groq',4,'Funding stress · 1–3 yrs','On-prem installs'],
+['Fireworks AI','Inference API','Serves open models fast and cheap','Small-model serving is its business',2,'Price pressure','Serving platform'],
+['Together AI','Inference API','Open-model cloud on leased GPUs','GPU leases are the exposure',3,'Margin squeeze · 1–3 yrs','Training tools'],
+['Perplexity','AI app','Answer engine; subscriptions and ads on bought inference','Inference costs fall; the product is easier to copy',2,'Competition · 1–3 yrs','Brand, index'],
+['Character.AI','AI app','Consumer companion chat','Easy to rebuild on cheap models',4,'Competition · 1–2 yrs','User base'],
+['Jasper','AI app','Marketing copy on third-party models','A prompt and PRD rebuild it',5,'Competition · 12–24 mo','Enterprise workflows'],
+['Cursor (Anysphere)','AI app','AI code editor; pays model vendors per use','Cheaper models widen margin; copy risk rises',1,'Gains on cost, competition on product','Developer habit'],
+['Harvey','AI app','Legal AI for large firms','Legal reasoning on seeded graphs is cheaper to replicate',3,'Competition · 2–3 yrs','Firm relationships'],
+['Glean','AI app','Enterprise search over company data','Graph-seeded search is the thesis itself',3,'Competition · 2–3 yrs','Connectors, trust'],
+['Neo4j','Graph','Graph database positioned as AI knowledge layer','Graph becomes the valuable layer',-1,'Gains','Install base'],
+['TigerGraph','Graph','Scalable graph analytics','Same tailwind, and a competitor to Bridago',-1,'Gains','Analytics base'],
+['Pinecone','Vector DB','Managed vector search for RAG','Typed graphs may displace flat vectors',3,'Competition · 1–3 yrs','Managed service'],
+['Databricks','Data platform','Lakehouse plus AI tooling','Sells the data layer whatever the model size',1,'Low risk','Lakehouse'],
+['Snowflake','Data platform','Cloud data warehouse','Same as Databricks',1,'Low risk','Warehouse'],
+['Scale AI','Data labelling','Human data for frontier training','Less frontier training means less labelling',4,'Demand cliff · 1–3 yrs','Government contracts'],
+['Constellation Energy','Power','Nuclear power under long contracts for data centres','Contracts fixed; new deals slow',2,'Slower growth','Baseload power'],
+['Vistra','Power','Gas and nuclear for data-centre load','Merchant power prices fall with demand',2,'Price pressure · 2–4 yrs','Grid supply'],
+];
+const TAGS = { '-1': 'tag tag-accent', 0: 'tag tag-accent', 1: 'tag tag-neutral', 2: 'tag tag-neutral', 3: 'tag tag-outline', 4: 'tag tag-outline', 5: 'tag tag-outline' };
+
+// [archetype, core objects, flows, integrations, what a prompt can't rebuild, templatability %, companies]
+const A = [
+['CRM and sales pipeline','contacts, companies, deals, stages, activities','capture lead → qualify → move deal → forecast','email, calendar, phone, enrichment','data network, enterprise contracts',85,'Salesforce,HubSpot,Pipedrive,Close,Copper,Freshworks,Zoho CRM,Attio,Folk,Insightly,Nutshell,Capsule,Keap,Less Annoying CRM,Streak,Nimble,Agile CRM,monday CRM,Salesflare,Apollo.io,Outreach,Salesloft,Gong,Clari,ZoomInfo'],
+['Help desk and support','tickets, customers, agents, macros, SLAs','receive → triage → answer → resolve → survey','email, chat widget, Slack, CRM','enterprise trust, telephony',85,'Zendesk,Intercom,Freshdesk,Help Scout,Front,Gorgias,Kustomer,Gladly,Re:amaze,Groove,HappyFox,Zoho Desk,LiveAgent,Tidio,Crisp,Drift,LiveChat,Olark,Kayako,Hiver,Richpanel,Dixa,Ada,Forethought,Sierra'],
+['Project and work management','projects, tasks, assignees, views, comments','plan → assign → track → report','calendar, chat, Git, files','team habit, templates library',90,'Asana,monday.com,ClickUp,Trello,Wrike,Smartsheet,Notion,Basecamp,Teamwork,Linear,Height,Jira,Airtable,Coda,Todoist,TickTick,Things,Hive,Nifty,Zoho Projects,ProofHub,TeamGantt,Plane,Shortcut,Productboard'],
+['Scheduling and booking','services, staff, slots, bookings, reminders','publish availability → book → remind → pay → review','calendar, payments, SMS','consumer marketplace demand',90,'Calendly,Cal.com,Acuity Scheduling,SavvyCal,Doodle,YouCanBook.me,Chili Piper,Setmore,SimplyBook.me,Square Appointments,Vagaro,Mindbody,Booksy,Fresha,Zocdoc,OpenTable,Resy,Tock,SevenRooms,Mangomint,Boulevard,GlossGenius,Jane App,Schedulicity,Reclaim.ai'],
+['Accounting, spend and invoicing','ledgers, invoices, bills, cards, receipts','invoice → collect → reconcile → close','banks, payments, tax','money-transmission licences, bank partners',60,'QuickBooks,Xero,FreshBooks,Wave,Zoho Books,Sage,NetSuite,Bench,Pilot,Puzzle,Digits,Kashoo,Bonsai,Invoice Ninja,Harvest,Melio,Bill.com,Tipalti,Ramp,Brex,Expensify,Navan,Airbase,Mercury,Divvy'],
+['Payroll and HR','employees, pay runs, benefits, time off, reviews','hire → onboard → pay → review → offboard','banks, tax agencies, benefits carriers','tax filing liability, multi-country entities',55,'Gusto,Rippling,Deel,Remote,Oyster,Justworks,BambooHR,Paylocity,Paycom,Paychex,ADP,Namely,Personio,HiBob,Factorial,Lattice,Culture Amp,15Five,Leapsome,Workday,UKG,Dayforce,Papaya Global,Multiplier,TriNet'],
+['Recruiting and job boards','jobs, candidates, stages, interviews, offers','post → source → screen → interview → offer','job boards, calendar, email','candidate network and traffic',80,'Greenhouse,Lever,Ashby,Workable,SmartRecruiters,iCIMS,JazzHR,Breezy HR,Recruitee,Teamtailor,Gem,Dover,HireVue,Paradox,Eightfold,Beamery,Hired,Wellfound,Indeed,ZipRecruiter,Handshake,Jobvite,Pinpoint,Manatal,Bullhorn'],
+['Email and newsletters','lists, subscribers, campaigns, automations','grow list → write → send → measure','sending infrastructure, store, payments','deliverability reputation, creator audience',80,'Mailchimp,Klaviyo,Kit,Beehiiv,Substack,Brevo,ActiveCampaign,Constant Contact,Campaign Monitor,MailerLite,Omnisend,Drip,AWeber,GetResponse,Moosend,Customer.io,Iterable,Braze,Loops,Buttondown,Ghost,Postmark,SendGrid,Mailgun,EmailOctopus'],
+['Social media management','accounts, posts, calendar, approvals, analytics','draft → approve → schedule → publish → report','platform APIs','API access agreements',85,'Hootsuite,Buffer,Sprout Social,Later,Sprinklr,Agorapulse,SocialPilot,Loomly,Planoly,Tailwind,Publer,Metricool,Sendible,CoSchedule,Brandwatch,Meltwater,Typefully,Hypefury,Taplio,Iconosquare,Emplifi,Khoros,Vista Social,Zoho Social,Postiz'],
+['Forms, surveys and research','forms, questions, responses, panels','build → share → collect → analyse','webhooks, sheets, CRM','respondent panels',95,'Typeform,Jotform,SurveyMonkey,Tally,Fillout,Formstack,Wufoo,Cognito Forms,Qualtrics,Alchemer,Paperform,123FormBuilder,Zoho Forms,Hotjar,Sprig,Maze,UserTesting,Dovetail,Formbricks,Medallia,Delighted,Survicate,Pollfish,Formsite,Google Forms'],
+['Website builders','sites, pages, blocks, themes, domains','pick template → edit → publish → measure','domains, analytics, forms','hosting scale, template marketplace',90,'Squarespace,Wix,Webflow,Framer,Carrd,Duda,Weebly,Strikingly,Durable,Hostinger,GoDaddy,Jimdo,Super.so,Softr,Typedream,Universe,Dorik,Unicorn Platform,Tilda,Readymag,Bubble,Glide,Adalo,Bolt.new,Lovable'],
+['E-commerce storefronts','products, variants, carts, orders, customers','list → sell → fulfil → refund','payments, shipping, tax','payments network, app ecosystem',70,'Shopify,BigCommerce,WooCommerce,Ecwid,Volusion,Shift4Shop,Gumroad,Lemon Squeezy,Payhip,Sellfy,Big Cartel,Etsy,Faire,Swell,Saleor,Medusa,Vendure,commercetools,Salla,Zid,Tiendanube,Jumpseller,PrestaShop,Magento,Squarespace Commerce'],
+['Courses, memberships and creators','courses, lessons, members, tiers, posts','publish → sell → deliver → engage','payments, video, email','creator audiences',90,'Teachable,Thinkific,Kajabi,Podia,LearnWorlds,Skool,Circle,Mighty Networks,Patreon,Ko-fi,Buy Me a Coffee,Memberful,Maven,Udemy,Coursera,Skillshare,MasterClass,Domestika,Disco,Heartbeat,Bettermode,Uscreen,Passion.io,Whop,Stan'],
+['Legal practice and contracts','matters, documents, clauses, signatures, time','draft → negotiate → sign → store → bill','e-signature, billing, DMS','bar rules, liability, precedent data',70,'DocuSign,PandaDoc,Ironclad,Juro,ContractPodAi,LegalZoom,Rocket Lawyer,Clio,MyCase,PracticePanther,Smokeball,Filevine,Spellbook,Evisort,LinkSquares,SpotDraft,Dropbox Sign,Adobe Acrobat Sign,Lawmatics,LawPay,Luminance,Robin AI,CaseFox,Rocket Matter,Docketwise'],
+['Real estate and property','listings, units, leases, tenants, work orders','list → show → lease → collect rent → maintain','MLS, payments, screening','MLS access, listing inventory',65,'Zillow,Redfin,Opendoor,Compass,Realtor.com,AppFolio,Buildium,Yardi,RealPage,Entrata,DoorLoop,TenantCloud,Rentec Direct,Avail,Apartments.com,Follow Up Boss,kvCORE,Lofty,Sierra Interactive,ShowingTime,Dotloop,SkySlope,Homebot,Roofstock,Arrived'],
+['Restaurants and hospitality','menus, orders, tables, rooms, rates, staff','take order → fulfil → pay → schedule staff','POS hardware, payments, channels','hardware install base, payments',65,'Toast,Square,Clover,Lightspeed,TouchBistro,SpotOn,Revel Systems,Owner.com,ChowNow,Olo,7shifts,Homebase,MarginEdge,Restaurant365,BentoBox,Popmenu,Cloudbeds,Mews,Guesty,Hostaway,Lodgify,Hospitable,SiteMinder,Little Hotelier,Canary Technologies'],
+['Field services and trades','jobs, quotes, technicians, routes, invoices','quote → schedule → dispatch → complete → invoice','maps, payments, accounting','consumer lead networks',85,'ServiceTitan,Jobber,Housecall Pro,FieldEdge,Workiz,ServiceM8,Kickserv,FieldPulse,Service Fusion,Fergus,simPRO,Tradify,GorillaDesk,Arborgold,LMN,Aspire,BuildOps,Joist,Markate,Thumbtack,Angi,Taskrabbit,Handy,Yelp,Frontdoor'],
+['Construction management','projects, drawings, RFIs, submittals, logs','plan → bid → build → inspect → close out','drawings, accounting, takeoff','job-site adoption',75,'Procore,Autodesk Construction Cloud,Buildertrend,JobTread,Fieldwire,Raken,Builder Prime,Contractor Foreman,STACK,Togal.AI,Bluebeam,Houzz Pro,Knowify,eSUB,Viewpoint,OpenSpace,Document Crunch,CoConstruct,Hammr,Siteline,Briq,Kojo,Handle,Rhumbix,Jobsite'],
+['Clinic and practice software','patients, appointments, notes, claims, payments','book → intake → chart → bill → follow up','EHR, payers, labs','HIPAA, certification, payer contracts',55,'athenahealth,Epic,DrChrono,Tebra,SimplePractice,TherapyNotes,Practice Better,Healthie,Elation Health,Canvas Medical,Doximity,Phreesia,Weave,NexHealth,Solutionreach,Luma Health,Klara,Spruce Health,OptiMantra,ChartLogic,Practice Fusion,Nextech,ModMed,Carbon Health,One Medical'],
+['Consumer health and telehealth','members, visits, plans, prescriptions, devices','sign up → assess → visit → prescribe → track','pharmacies, clinicians, wearables','licensed clinicians, pharmacy network',45,'Hims & Hers,Ro,Teladoc,Amwell,MDLIVE,Noom,Calm,Headspace,BetterHelp,Talkspace,Cerebral,Done,Nurx,Thirty Madison,Found,Calibrate,Omada,Hinge Health,Sword Health,Oura,Whoop,Flo,Clue,Lark,Virta'],
+['Consumer finance and investing','accounts, transactions, budgets, goals, holdings','link accounts → categorise → advise → invest','bank aggregation, brokerage','charters, broker-dealer licences, custody',45,'Robinhood,Acorns,Stash,Betterment,Wealthfront,Chime,Current,Dave,MoneyLion,Brigit,Albert,Cleo,Rocket Money,Monarch Money,YNAB,Copilot Money,Credit Karma,NerdWallet,SoFi,Public,Webull,M1 Finance,Empower,Origin,Revolut'],
+['Insurance','policies, quotes, claims, risks, payments','quote → bind → service → claim','carriers, payments, data vendors','risk capital, licences, loss history',40,'Lemonade,Root,Hippo,Policygenius,Next Insurance,Pie Insurance,Clearcover,Kin,Openly,Ethos,Ladder,Bestow,Haven Life,Coalition,At-Bay,Vouch,Embroker,Newfront,The Zebra,EverQuote,SelectQuote,GoHealth,Oscar Health,Clover Health,Branch'],
+['Travel','trips, bookings, itineraries, prices, reviews','search → compare → book → travel → review','supplier inventories, payments','supplier contracts, traffic',55,'Expedia,Booking.com,Airbnb,Vrbo,Hopper,Kayak,Skyscanner,Tripadvisor,Trip.com,TravelPerk,Spotnana,Wanderlog,TripIt,Going,Kiwi.com,Omio,Rome2Rio,GetYourGuide,Viator,Klook,Hostelworld,Sonder,Agoda,Priceline,Despegar'],
+['Food delivery and grocery','merchants, menus, orders, couriers, subscriptions','browse → order → dispatch → deliver → rate','maps, payments, courier fleet','courier liquidity, merchant network',35,'DoorDash,Uber Eats,Instacart,Grubhub,Gopuff,HelloFresh,Blue Apron,Factor,Home Chef,Wonder,ezCater,Deliveroo,Just Eat Takeaway,Glovo,Wolt,Swiggy,Zomato,Getir,Misfits Market,Thrive Market,Weee!,Daily Harvest,Too Good To Go,Talabat,Rappi'],
+['Talent marketplaces','profiles, gigs, proposals, contracts, payouts','post → match → contract → deliver → pay','payments, identity, messaging','two-sided liquidity',40,'Upwork,Fiverr,Toptal,Contra,Malt,Freelancer.com,99designs,Dribbble,Behance,Catalant,Braintrust,A.Team,Arc.dev,Turing,Andela,Gun.io,Lemon.io,Codementor,Superprof,Wyzant,Preply,italki,Cambly,Care.com,Rover'],
+['Analytics and BI','events, metrics, dashboards, queries, cohorts','track → model → query → share','warehouses, SDKs','warehouse integrations, trust',85,'Tableau,Looker,Power BI,Mode,Metabase,Hex,Sigma Computing,ThoughtSpot,Domo,Qlik,Sisense,Preset,Lightdash,Omni,Amplitude,Mixpanel,Heap,PostHog,Pendo,FullStory,Plausible,Fathom Analytics,Matomo,June,Count'],
+['Developer platforms','projects, deploys, databases, keys, logs','push → build → deploy → observe → roll back','Git, cloud, DNS','infrastructure scale, uptime record',60,'Vercel,Netlify,Render,Railway,Fly.io,Heroku,DigitalOcean,Supabase,PlanetScale,Neon,Convex,Appwrite,Clerk,Auth0,WorkOS,Stytch,Sentry,Datadog,LaunchDarkly,Statsig,CircleCI,Buildkite,GitLab,Postman,Firebase'],
+['AI writing and SEO','documents, briefs, keywords, rankings, brand voice','brief → draft → optimise → publish → rank','CMS, search data','proprietary search index data',95,'Jasper,Copy.ai,Writesonic,Rytr,Anyword,Grammarly,QuillBot,Wordtune,Hypotenuse,Frase,Surfer SEO,Clearscope,MarketMuse,Semrush,Ahrefs,Moz,SE Ranking,Ubersuggest,Lex,Sudowrite,NovelAI,Tome,Gamma,Beautiful.ai,Writer'],
+['AI media generation','assets, prompts, projects, voices, renders','prompt → generate → edit → export','storage, social, stock','trained media models, licensed data',50,'Midjourney,Runway,Pika,Luma AI,Synthesia,HeyGen,Descript,ElevenLabs,Murf,Play.ht,Resemble AI,Captions,Opus Clip,Veed,Kapwing,InVideo,Canva,Picsart,Lensa,Leonardo.ai,Ideogram,Krea,Stability AI,Suno,Udio'],
+['Meetings, notes and PKM','meetings, transcripts, notes, links, tasks','record → transcribe → summarise → link → act','calendar, video, CRM','habit, note archives',95,'Otter.ai,Fireflies.ai,Fathom,Grain,tl;dv,Avoma,Read.ai,Granola,Krisp,Supernormal,Sembly,MeetGeek,Airgram,Jamie,Bluedot,Loom,Mem,Reflect,Obsidian,Craft,Bear,Evernote,Roam Research,Tana,Capacities'],
+['Knowledge, docs and search','pages, spaces, sources, answers, permissions','write → organise → search → answer','SSO, connectors','connector breadth, permissions trust',85,'Glean,Guru,Confluence,Slab,Tettra,Document360,GitBook,ReadMe,Mintlify,Archbee,Slite,Nuclino,Bloomfire,Coveo,Algolia,Elastic,Lucidworks,Yext,Vectara,You.com,Kagi,Brave Search,Phind,Dashworks,Qatalog'],
+['Customer success and community','accounts, health scores, posts, members, feedback','collect → prioritise → engage → renew','CRM, product analytics, SSO','community members',85,'Canny,UserVoice,Featurebase,Frill,Upvoty,Discourse,Orbit,Common Room,Hivebrite,Higher Logic,Vanilla Forums,inSided,Gainsight,ChurnZero,Totango,Vitally,Planhat,Catalyst,Custify,ClientSuccess,Bevy,Tribe,Commsor,Threado,Savio'],
+['Documents, decks and whiteboards','files, pages, boards, shapes, comments','create → collaborate → present → share','storage, SSO','real-time collaboration at scale',85,'Smallpdf,iLovePDF,pdfFiller,Foxit,Nitro,Kami,Hypothesis,Scribd,Issuu,DocSend,Pitch,Prezi,Visme,Piktochart,Venngage,Lucidchart,Miro,Mural,Whimsical,Excalidraw,tldraw,Milanote,Scrintal,Heptabase,Figma'],
+['Logistics and shipping','shipments, rates, labels, routes, returns','rate → label → track → deliver → return','carriers, marketplaces, telematics','carrier contracts, fleet, warehouses',55,'Flexport,ShipBob,ShipStation,Shippo,EasyPost,Easyship,Sendle,Route,Narvar,AfterShip,Loop Returns,Happy Returns,Uber Freight,Samsara,Motive,project44,FourKites,Transfix,Freightos,Veho,Onfleet,Bringg,Circuit,Shipwell,Stord'],
+['Learning and tutoring','learners, lessons, exercises, progress, classes','enrol → learn → practise → assess','school SIS, payments','content library, school contracts',80,'Duolingo,Quizlet,Chegg,Course Hero,Brainly,Kahoot!,Nearpod,ClassDojo,Seesaw,Remind,Edpuzzle,Pear Deck,Prodigy,IXL,Outschool,Varsity Tutors,Photomath,Brilliant,Codecademy,DataCamp,Elevate,Speak,Babbel,Busuu,Memrise'],
+['Dating and social','profiles, matches, messages, events, safety reports','sign up → match → chat → meet','identity, payments','network density, safety operations',45,'Tinder,Hinge,Bumble,Grindr,Coffee Meets Bagel,Feeld,Raya,The League,OkCupid,Match,eHarmony,Badoo,Happn,Meetup,Nextdoor,BeReal,Lapse,Locket,Yubo,Wizz,Peanut,Timeleft,Pie,Geneva,Partiful'],
+['Reviews, messaging and local marketing','reviews, contacts, campaigns, conversations','request review → respond → message → convert','SMS, Google Business, POS','review volume, carrier registrations',85,'Birdeye,Podium,Reputation,Grade.us,NiceJob,Broadly,Thryv,Vendasta,BrightLocal,Whitespark,Signpost,ReviewTrackers,Trustpilot,G2,Capterra,Clutch,Swell CX,GatherUp,Textedly,SimpleTexting,EZ Texting,Attentive,Postscript,Yotpo,Okendo'],
+['Nonprofits, churches and associations','donors, gifts, campaigns, members, events','campaign → give → receipt → steward','payments, email, accounting','donor data, tax-receipt compliance',85,'Blackbaud,Bloomerang,Givebutter,Classy,GoFundMe,Donorbox,Network for Good,Neon One,Little Green Light,DonorPerfect,Kindful,Virtuous,Planning Center,Tithe.ly,Pushpay,Subsplash,Breeze ChMS,Wild Apricot,MemberClicks,YourMembership,Fonteva,Raklet,Every.org,Fundraise Up,Zeffy'],
+['Fitness and studios','members, classes, programmes, workouts, passes','sign up → book class → train → track','wearables, payments','content libraries, hardware',80,'ClassPass,Peloton,Strava,Zwift,Tonal,Future,Ladder,Fitbod,Trainerize,TrueCoach,Exercise.com,Zen Planner,Wodify,Glofox,PushPress,Momence,Arbox,TeamUp,WellnessLiving,bsport,Walla,MyFitnessPal,Hevy,Alo Moves,Centr'],
+['Security and compliance','controls, evidence, vendors, policies, secrets','scope → collect evidence → audit → monitor','cloud, HR, identity providers','auditor relationships, threat data',65,'Vanta,Drata,Secureframe,Sprinto,Thoropass,Hyperproof,AuditBoard,OneTrust,TrustArc,Osano,Termly,iubenda,1Password,Bitwarden,Dashlane,Keeper,Kolide,Abnormal Security,Material Security,Snyk,Semgrep,Socket,Wiz,Orca Security,Tines'],
+['Automotive and mobility','vehicles, listings, trips, riders, repairs','list → find → book → ride or buy → service','maps, payments, dealers','fleets, regulation, driver supply',40,'Carvana,CarGurus,Cars.com,TrueCar,Autotrader,CDK Global,Tekion,DealerSocket,Turo,Getaround,Lime,Bird,Tier,Voi,Zipcar,Lyft,Uber,Bolt,Cabify,RepairPal,Openbay,YourMechanic,Cox Automotive,Carwow,Cazoo'],
+['Pets and veterinary','pets, owners, appointments, records, subscriptions','sign up → book → treat → refill → remind','labs, pharmacies, payments','vet licences, supply chain',70,'Chewy,BarkBox,Wag!,Fi,Whistle,Ollie,The Farmer\'s Dog,Nom Nom,Spot & Tango,Pawp,Vetster,Dutch,Airvet,PetDesk,ezyVet,Vetspire,Covetrus,Trupanion,Embrace,Pumpkin,Petco,Petlabco,Fetch Pet,Bond Vet,Modern Animal'],
+];
+const SEEN = new Set();
+const ARCH = A.map(([name, objects, flows, integr, moat, score, list]) => {
+  const cos = list.split(',').map(s => s.trim()).filter(c => !SEEN.has(c) && SEEN.add(c));
+  const prompt = `Build a production-grade ${name.toLowerCase()} product.\n\nCore objects: ${objects}.\nPrimary flow: ${flows}.\nIntegrations (behind adapters, mocked in tests): ${integr}.\n\nSeed a Bridago graph of this domain first: object types, required relations and the rules each flow must satisfy, as constraints. Every screen reads from and writes to that graph. Ask one clarifying question before choosing defaults that change pricing or permissions.\n\nShip: typed API, web app, roles (owner, staff, customer), audit log, tests that run in Docker with no network, one-command deploy, seed data for a demo account.`;
+  const prd = [
+    { k: 'Problem', v: `Teams running ${name.toLowerCase()} pay per seat for software whose core is the same objects and flows across vendors.` },
+    { k: 'Users', v: 'Owner, staff, end customer; one admin per workspace.' },
+    { k: 'Core objects', v: objects },
+    { k: 'Flows', v: flows },
+    { k: 'Integrations', v: integr },
+    { k: 'Out of scope', v: `What a prompt cannot rebuild: ${moat}. Partner or license it.` },
+    { k: 'Success', v: 'Primary flow completes in under 2 minutes for a new user; tests pass in CI; runs on a CPU-only small model behind Bridago.' },
+  ];
+  return { name, score, cos, prompt, prd, hay: (name + ' ' + cos.join(' ')).toLowerCase() };
+});
+const TOTAL = ARCH.reduce((n, a) => n + a.cos.length, 0);
+const SEGS = ['All', ...new Set(C.map(c => c[1]))];
+
+class Component extends DCLogic {
+  state = { seg: 'All', bySev: true, q: '', sel: 0, copied: false };
+  renderVals() {
+    const s = this.state;
+    let cos = C.filter(c => s.seg === 'All' || c[1] === s.seg);
+    if (s.bySev) cos = [...cos].sort((a, b) => b[4] - a[4]);
+    const q = s.q.trim().toLowerCase();
+    const arch = ARCH.map((a, i) => ({ ...a, i })).filter(a => !q || a.hay.includes(q));
+    const sel = ARCH[s.sel];
+    const band = (lo, hi) => C.filter(c => c[4] >= lo && c[4] <= hi).length;
+    return {
+      total: TOTAL, nArch: ARCH.length,
+      segs: SEGS.map(name => ({ name, cls: s.seg === name ? 'btn-primary' : 'btn-ghost', pick: () => this.setState({ seg: name }) })),
+      sortLabel: s.bySev ? 'exposure' : 'segment', toggleSort: () => this.setState({ bySev: !s.bySev }),
+      cos: cos.map(c => ({ n: c[0], s: c[1], t: c[2], x: c[3], e: c[4] < 0 ? 'gains' : String(c[4]), tag: TAGS[c[4]], w: c[5], v: c[6] })),
+      bands: [
+        { w: 'Exposure 5', n: band(5, 5), d: 'Funding- or debt-dependent on scarce compute' },
+        { w: 'Exposure 4', n: band(4, 4), d: 'Funding stress or demand cliff' },
+        { w: 'Exposure 3', n: band(3, 3), d: 'Margin squeeze or cyclical downturn' },
+        { w: 'Exposure 1–2', n: band(1, 2), d: 'Write-downs or price pressure; core business holds' },
+        { w: 'Gains', n: band(-1, 0), d: 'CPU, edge, graph and on-device players' },
+      ],
+      q: s.q, onQ: e => this.setState({ q: e.target.value }),
+      shownArch: arch.length, shownCos: arch.reduce((n, a) => n + (q ? a.cos.filter(c => c.toLowerCase().includes(q) || a.name.toLowerCase().includes(q)).length : a.cos.length), 0),
+      arch: arch.map(a => ({ name: a.name, score: a.score, count: a.cos.length, cos: q && !a.name.toLowerCase().includes(q) ? a.cos.filter(c => c.toLowerCase().includes(q)) : a.cos,
+        ring: a.i === s.sel ? 'border-color:var(--color-accent);box-shadow:0 0 0 1px var(--color-accent-700);' : '', pick: () => this.setState({ sel: a.i, copied: false }) })),
+      sel, copyLabel: s.copied ? 'Copied' : 'Copy prompt',
+      copy: () => { navigator.clipboard && navigator.clipboard.writeText(sel.prompt); this.setState({ copied: true }); },
+    };
+  }
+}
+</script>
+</body>
+</html>

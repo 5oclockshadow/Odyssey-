@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=Archivo+Black&family=JetBrains+Mono:wght@400;600&family=Instrument+Serif:ital@0;1&family=Newsreader:wght@400;500&family=Syne:wght@600;800&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Manrope:wght@500;700;800&family=Inter:wght@400;500&display=swap">
+  <style>body { margin: 0; background: #d9d6cf; } a { color: #111; } a:hover { color: #e30613; } ::-webkit-scrollbar { display: none; }</style>
+</helmet>
+<div data-screen-label="Anima app" style="min-height:100vh;display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:flex-start;padding:40px clamp(16px,4vw,56px) 72px;font-family:'Archivo',sans-serif;color:#111;">
+
+  <aside style="flex:1 1 320px;max-width:440px;display:grid;gap:22px;">
+    <div style="display:grid;gap:8px;"><span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;">Anima Institute · phone app</span>
+      <h1 style="margin:0;font:800 54px/0.92 'Archivo',sans-serif;letter-spacing:-0.045em;">Phone UI Studio</h1>
+      <p style="margin:0;font-size:15px;line-height:1.5;color:#444;">Tell the agent how the app should look or what it should show. It restyles, and it also hides, reorders, renames and re-presents sections, adds notes, stats and buttons, pulls widgets between screens, and creates or removes tabs and screens. Press Edit on the phone for direct controls. Everything is undoable and saved in your browser.</p></div>
+    <div style="display:grid;gap:10px;padding:14px;border:2px solid #111;background:#fff;">
+      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Design agent</span><span style="font:600 11px 'JetBrains Mono',monospace;color:#666;">{{ agentStatus }}</span></div>
+      <div style="display:flex;gap:6px;"><input value="{{ agentIn }}" onChange="{{ onAgentIn }}" onKeyDown="{{ onAgentKey }}" placeholder="calm serif dark · hide fires · move chart to top · new screen Funding" style="flex:1;min-width:0;min-height:44px;padding:0 12px;border:2px solid #111;font:500 13px 'JetBrains Mono',monospace;outline:none;"></input><button onClick="{{ askNow }}" style="{{ pbtnDark }}">Ask</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ intents }}" as="i" hint-placeholder-count="8"><button onClick="{{ i.fn }}" style="{{ i.style }}">{{ i.label }}</button></sc-for></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ cintents }}" as="i" hint-placeholder-count="6"><button onClick="{{ i.fn }}" style="{{ i.style }}">{{ i.label }}</button></sc-for></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;"><span style="font:600 10px 'JetBrains Mono',monospace;color:#666;text-transform:uppercase;">Keep</span><sc-for list="{{ locks }}" as="l" hint-placeholder-count="3"><button onClick="{{ l.fn }}" style="{{ l.style }}">{{ l.label }}</button></sc-for></div>
+      <div style="display:grid;gap:6px;max-height:220px;overflow-y:auto;"><sc-for list="{{ agentLog }}" as="m" hint-placeholder-count="1"><div style="{{ m.style }}"><span>{{ m.text }}</span><sc-if value="{{ m.hasFx }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.fx }}" style="{{ pbtn }}margin-top:6px;">{{ m.fxLabel }}</button></sc-if></div></sc-for></div>
+      <sc-for list="{{ proposals }}" as="p" hint-placeholder-count="0"><div onMouseEnter="{{ p.enter }}" onMouseLeave="{{ p.leave }}" style="display:grid;gap:6px;padding:10px 12px;border:2px solid #111;background:#fffbe0;"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><b style="font:800 15px 'Archivo',sans-serif;">{{ p.name }}</b><span style="display:flex;gap:4px;"><span style="{{ p.sw1 }}"></span><span style="{{ p.sw2 }}"></span><span style="{{ p.sw3 }}"></span></span></div><span style="font-size:13px;line-height:1.4;">{{ p.why }}</span><span style="font:500 11px 'JetBrains Mono',monospace;color:#555;">{{ p.tags }}</span><div style="display:flex;gap:6px;"><button onClick="{{ p.apply }}" style="{{ pbtnDark }}">Apply</button><button onClick="{{ p.save }}" style="{{ pbtn }}">Save preset</button></div></div></sc-for>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;"><button onClick="{{ undoCfg }}" style="{{ pbtn }}">Undo</button><button onClick="{{ redoCfg }}" style="{{ pbtn }}">Redo</button><button onClick="{{ critiqueNow }}" style="{{ pbtn }}">Check contrast</button><button onClick="{{ saveNow }}" style="{{ pbtn }}">Save this</button><button onClick="{{ resetUi }}" style="{{ pbtn }}">Reset layout</button></div>
+      <sc-if value="{{ hasPresets }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;"><span style="font:600 10px 'JetBrains Mono',monospace;color:#666;text-transform:uppercase;">Saved</span><sc-for list="{{ presets }}" as="r" hint-placeholder-count="0"><span style="display:inline-flex;"><button onClick="{{ r.load }}" style="{{ r.style }}">{{ r.label }}</button><button onClick="{{ r.del }}" style="{{ r.style }}border-left:0;">×</button></span></sc-for></div></sc-if>
+    </div>
+    <div style="display:grid;gap:6px;"><span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Tier</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"><sc-for list="{{ roles }}" as="r" hint-placeholder-count="4"><button onClick="{{ r.pick }}" style="{{ r.style }}">{{ r.name }}</button></sc-for></div></div>
+    <details style="display:grid;gap:10px;border:2px solid #111;background:#fff;padding:10px 12px;"><summary style="cursor:pointer;min-height:32px;display:flex;align-items:center;font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Manual controls · look, mix, layout</summary><div style="display:grid;gap:14px;margin-top:8px;"><div style="display:grid;gap:6px;"><span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Look</span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ skins }}" as="s" hint-placeholder-count="10"><button onClick="{{ s.pick }}" style="{{ s.style }}">{{ s.name }}</button></sc-for></div></div>
+    <div style="display:grid;gap:8px;padding:12px;border:2px solid #111;background:#fff;"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Mix your own</span><button onClick="{{ resetOv }}" style="{{ pbtn }}">Reset</button></div>
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="6"><div style="display:grid;gap:4px;"><span style="font:600 10px 'JetBrains Mono',monospace;color:#666;text-transform:uppercase;letter-spacing:0.08em;">{{ g.label }}</span><div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.pick }}" aria-label="{{ o.aria }}" aria-pressed="{{ o.on }}" style="{{ o.style }}">{{ o.name }}</button></sc-for></div></div></sc-for></div>
+    <div style="display:grid;gap:6px;"><span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Layout</span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ layouts }}" as="s" hint-placeholder-count="5"><button onClick="{{ s.pick }}" style="{{ s.style }}">{{ s.name }}</button></sc-for></div>
+      <div style="display:flex;gap:6px;align-items:center;"><button onClick="{{ prevP }}" style="{{ pbtn }}">‹</button><span style="font:600 12px 'JetBrains Mono',monospace;flex:1;text-align:center;">Pattern {{ pNum }} of {{ nPat }} · {{ pName }}</span><button onClick="{{ nextP }}" style="{{ pbtn }}">›</button><button onClick="{{ shuffleP }}" style="{{ pbtn }}">Shuffle</button></div></div>
+    </div></details>
+    <div style="display:grid;gap:2px;"><span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Screens</span>
+      <sc-for list="{{ tabRows }}" as="l" hint-placeholder-count="6"><div style="{{ l.wrap }}"><button onClick="{{ l.go }}" style="{{ l.style }}"><span style="font:600 11px 'JetBrains Mono',monospace;width:28px;">{{ l.id }}</span><span style="font-size:14px;">{{ l.title }}</span></button><button onClick="{{ l.up }}" style="{{ pbtn }}min-height:30px;padding:0 8px;">↑</button><button onClick="{{ l.down }}" style="{{ pbtn }}min-height:30px;padding:0 8px;">↓</button><button onClick="{{ l.rm }}" style="{{ pbtn }}min-height:30px;padding:0 8px;">×</button></div></sc-for>
+      <select value="" onChange="{{ addTabSel }}" style="{{ pbtn }}margin-top:6px;"><option value="">+ add an existing screen as a tab…</option><sc-for list="{{ tabOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+      <div style="display:flex;gap:6px;margin-top:4px;"><input value="{{ newName }}" onChange="{{ onNewName }}" placeholder="New screen name" style="flex:1;min-width:0;min-height:36px;padding:0 10px;border:2px solid #111;font:500 12px 'JetBrains Mono',monospace;"></input><button onClick="{{ makeScreen }}" style="{{ pbtnDark }}min-height:36px;">Create</button></div></div>
+    <div style="display:grid;gap:5px;padding:12px 14px;border:2px solid #111;background:#fff;"><span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;color:#e30613;">Web parity · {{ cur.id }}</span><span style="font-size:14px;line-height:1.45;"><b>On the web:</b> {{ cur.web }}</span><span style="font-size:14px;line-height:1.45;color:#555;"><b>On the phone:</b> {{ cur.diff }}</span></div>
+  </aside>
+
+  <div style="flex:0 0 auto;max-width:410px;display:grid;gap:10px;justify-items:center;text-align:center;{{ phoneZoom }}">
+    <div style="width:390px;height:844px;border-radius:50px;padding:10px;background:#111;box-shadow:0 24px 60px rgba(0,0,0,0.35);">
+      <div style="{{ k.page }}">
+        <header style="{{ k.head }}">
+          <div style="display:flex;justify-content:space-between;align-items:center;{{ k.mono }}font-size:11px;"><span>9:41</span><span style="display:flex;gap:8px;align-items:center;"><button onClick="{{ toggleEdit }}" style="{{ k.mini }}min-height:26px;">{{ editLabel }}</button><span style="color:{{ k.accC }};">{{ roleName }}</span></span></div>
+          <span style="{{ k.kick }}">{{ cur.id }} · {{ cur.kicker }}</span>
+          <h2 style="{{ k.h }}">{{ cur.title }}</h2>
+        </header>
+
+        <main style="{{ k.main }}">
+          <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="4">
+            <div style="display:grid;gap:8px;">
+              <sc-if value="{{ b.isH }}" hint-placeholder-val="{{ false }}"><span style="{{ k.kick }}margin-top:6px;">{{ b.text }}</span></sc-if>
+              <sc-if value="{{ b.isP }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:14.5px;line-height:1.5;">{{ b.text }}</p></sc-if>
+              <sc-if value="{{ b.isMark }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:14.5px;line-height:1.55;"><span style="background:{{ k.hiC }};padding:0 2px;">{{ b.text }}</span> {{ b.rest }}</p></sc-if>
+              <sc-if value="{{ b.isInput }}" hint-placeholder-val="{{ false }}"><input value="{{ b.value }}" onChange="{{ b.on }}" placeholder="{{ b.ph }}" style="{{ k.input }}"></input></sc-if>
+              <sc-if value="{{ b.isChips }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ b.items }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div></sc-if>
+              <sc-if value="{{ b.isStats }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><sc-for list="{{ b.items }}" as="s" hint-placeholder-count="4"><div style="{{ k.card }}"><span style="{{ k.num }}color:{{ s.c }};">{{ s.v }}</span><span style="font-size:11px;line-height:1.3;color:{{ k.mutC }};">{{ s.k }}</span></div></sc-for></div></sc-if>
+              <sc-if value="{{ b.isRows }}" hint-placeholder-val="{{ false }}"><div style="{{ b.wrapSt }}"><sc-for list="{{ b.items }}" as="r" hint-placeholder-count="4"><div onClick="{{ r.open }}" style="{{ r.cardSt }}"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;"><span style="font-size:15px;font-weight:600;line-height:1.25;min-width:0;">{{ r.t }}</span><span style="{{ r.tagSt }}">{{ r.tag }}</span></div><span style="{{ r.subSt }}">{{ r.s }}</span><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ r.acts }}" as="a" hint-placeholder-count="0"><button onClick="{{ a.fn }}" style="{{ a.st }}">{{ a.label }}</button></sc-for></div></div></sc-for></div></sc-if>
+              <sc-if value="{{ b.isBars }}" hint-placeholder-val="{{ false }}"><div style="{{ k.card }}"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:78px minmax(0,1fr) 58px;gap:8px;align-items:center;{{ k.mono }}font-size:11px;"><span>{{ x.k }}</span><div style="height:10px;border:1px solid {{ k.lineC }};border-radius:999px;overflow:hidden;"><div style="height:100%;width:{{ x.w }};background:{{ x.c }};"></div></div><span style="text-align:right;">{{ x.label }}</span></div></sc-for></div></sc-if>
+              <sc-if value="{{ b.isCode }}" hint-placeholder-val="{{ false }}"><pre style="margin:0;white-space:pre-wrap;padding:10px 12px;border-radius:{{ k.radC }}px;border:1px solid {{ k.lineC }};background:{{ b.bg }};color:{{ b.fg }};font:500 11px/1.55 'JetBrains Mono',monospace;">{{ b.text }}</pre></sc-if>
+              <sc-if value="{{ b.isButton }}" hint-placeholder-val="{{ false }}"><button onClick="{{ b.fn }}" style="{{ k.btn }}min-height:46px;font-size:15px;">{{ b.text }}</button></sc-if>
+              <sc-if value="{{ b.isToggles }}" hint-placeholder-val="{{ false }}"><div style="{{ k.card }}padding:2px 12px;"><sc-for list="{{ b.items }}" as="g" hint-placeholder-count="3"><button onClick="{{ g.fn }}" style="width:100%;min-height:44px;display:flex;justify-content:space-between;align-items:center;background:none;border:0;border-bottom:1px solid {{ k.lineC }};font:inherit;font-size:14px;color:inherit;cursor:pointer;text-align:left;"><span>{{ g.k }}</span><span style="width:38px;height:22px;border:1.5px solid {{ k.lineC }};border-radius:999px;position:relative;background:{{ g.bg }};"><span style="position:absolute;top:2px;left:{{ g.x }};width:14px;height:14px;border-radius:50%;background:{{ k.inkC }};"></span></span></button></sc-for></div></sc-if>
+              <sc-if value="{{ b.isTiers }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ b.items }}" as="t" hint-placeholder-count="3"><div style="{{ t.cardSt }}"><div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="{{ k.num }}">{{ t.name }}</span><span style="{{ k.mono }}font-size:12px;">{{ t.price }}</span></div><sc-for list="{{ t.feats }}" as="f" hint-placeholder-count="3"><span style="font-size:12.5px;line-height:1.4;">+ {{ f }}</span></sc-for><button onClick="{{ t.fn }}" style="{{ t.st }}">{{ t.cta }}</button></div></sc-for></sc-if>
+              <sc-if value="{{ b.isBar }}" hint-placeholder-val="{{ false }}"><div style="{{ k.bar }}opacity:{{ b.op }};"><input value="{{ b.label }}" onChange="{{ b.rn }}" style="{{ k.input }}min-height:30px;flex:1 1 90px;min-width:0;padding:0 8px;font-size:12px;"></input><button onClick="{{ b.up }}" style="{{ k.mini }}">↑</button><button onClick="{{ b.down }}" style="{{ k.mini }}">↓</button><sc-if value="{{ b.hasView }}" hint-placeholder-val="{{ false }}"><button onClick="{{ b.cycle }}" style="{{ k.mini }}">{{ b.viewLabel }}</button></sc-if><button onClick="{{ b.hide }}" style="{{ k.mini }}">{{ b.hideLabel }}</button><sc-if value="{{ b.custom }}" hint-placeholder-val="{{ false }}"><button onClick="{{ b.del }}" style="{{ k.mini }}">×</button></sc-if></div></sc-if>
+              <sc-if value="{{ b.isAdd }}" hint-placeholder-val="{{ false }}"><div style="{{ k.bar }}"><sc-for list="{{ b.chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.fn }}" style="{{ k.mini }}">{{ c.label }}</button></sc-for><select value="{{ b.sel }}" onChange="{{ b.add }}" style="{{ k.mini }}flex:1;min-width:0;"><option value="">+ widget from another screen…</option><sc-for list="{{ b.opts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div></sc-if>
+              <sc-if value="{{ b.isChat }}" hint-placeholder-val="{{ false }}">
+                <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="2"><div style="{{ m.style }}">{{ m.text }}</div></sc-for>
+                <sc-if value="{{ clarify }}" hint-placeholder-val="{{ false }}"><div style="{{ k.card }}border-style:dashed;"><span style="{{ k.kick }}">One question first</span><span style="font-size:14px;">{{ clarifyQ }}</span><sc-for list="{{ clarifyOpts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.fn }}" style="{{ k.btn2 }}justify-content:flex-start;text-align:left;">{{ o.label }}</button></sc-for></div></sc-if>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.fn }}" style="{{ k.chip }}">{{ c.label }}</button></sc-for></div>
+                <input value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Ask the institute…" style="{{ k.input }}"></input>
+                <button onClick="{{ sendDraft }}" style="{{ k.btn }}min-height:42px;">Send</button>
+              </sc-if>
+            </div>
+          </sc-for>
+        </main>
+
+        <sc-if value="{{ showSugg }}" hint-placeholder-val="{{ false }}"><div style="{{ k.pop }}"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="{{ k.kick }}">Suggestion</span><button onClick="{{ dismiss }}" style="min-height:32px;background:none;border:0;color:inherit;font:600 11px 'JetBrains Mono',monospace;cursor:pointer;">dismiss ×</button></div><span style="font-size:14px;line-height:1.35;">{{ sugg.text }}</span><button onClick="{{ sugg.go }}" style="{{ k.btn }}justify-self:start;">{{ sugg.cta }} →</button></div></sc-if>
+        <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="{{ k.toast }}"><span>{{ toastText }}</span><sc-if value="{{ canUndo }}" hint-placeholder-val="{{ false }}"><button onClick="{{ undo }}" style="min-height:34px;padding:0 12px;background:none;border:1.5px solid currentColor;border-radius:999px;color:inherit;font:inherit;cursor:pointer;">Undo</button></sc-if></div></sc-if>
+
+        <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;z-index:20;display:grid;align-items:end;background:rgba(0,0,0,0.5);">
+            <div onClick="{{ stop }}" style="{{ k.sheet }}">
+              <span style="{{ k.kick }}">{{ sheet.kicker }}</span><span style="{{ k.num }}font-size:22px;line-height:1.15;">{{ sheet.title }}</span>
+              <sc-for list="{{ sheet.rows }}" as="r" hint-placeholder-count="3"><div style="display:grid;gap:2px;padding-top:8px;border-top:1px solid {{ k.lineC }};"><span style="{{ k.mono }}font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:{{ k.mutC }};">{{ r.k }}</span><span style="font-size:13.5px;line-height:1.5;">{{ r.v }}</span></div></sc-for>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;"><sc-for list="{{ sheet.links }}" as="l" hint-placeholder-count="1"><a href="{{ l.to }}" target="_blank" style="{{ k.btn }}text-decoration:none;display:inline-flex;align-items:center;">{{ l.label }}</a></sc-for><button onClick="{{ closeSheet }}" style="{{ k.btn2 }}">Close</button></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <nav style="{{ k.nav }}"><sc-for list="{{ tabs }}" as="t" hint-placeholder-count="6"><button onClick="{{ t.fn }}" style="{{ t.style }}">{{ t.label }}</button></sc-for></nav>
+      </div>
+    </div>
+    <span style="font:400 12px 'JetBrains Mono',monospace;color:#555;">{{ hint }}</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1100,&quot;height&quot;:960}}">
+const R = '../../research/reports/';
+const ROLES = [['owner', 'Owner'], ['research', 'Researcher'], ['api', 'API'], ['sub', 'Subscriber']];
+const SKINS = [
+  ['Nocturne', { dark: 1, bg: '#161826', surf: '#1e2133', ink: '#e9e9ed', mut: '#9a9db5', line: '#2c3050', acc: '#9184d9', on: '#161826', hi: '#3a3470', warn: '#ff8a7a', ok: '#7fe0a0', rad: 8, bw: 1, sh: 'none', fh: "'Inter',sans-serif", fb: "'Inter',sans-serif", hw: 500, hs: 32, ls: '-0.02em' }],
+  ['Swiss', { bg: '#fff', surf: '#fff', ink: '#111', mut: '#555', line: '#111', acc: '#e30613', on: '#fff', hi: '#ffe6e8', warn: '#e30613', ok: '#1f7a46', rad: 0, bw: 2, sh: 'none', fh: "'Archivo',sans-serif", fb: "'Archivo',sans-serif", hw: 800, hs: 40, ls: '-0.05em' }],
+  ['Terminal', { dark: 1, bg: '#0b0f0a', surf: '#0f160d', ink: '#9dff8a', mut: '#5f7a58', line: '#2c4a27', acc: '#ffd84a', on: '#0b0f0a', hi: '#27401f', warn: '#ff9d5c', ok: '#9dff8a', rad: 0, bw: 1, sh: 'none', fh: "'JetBrains Mono',monospace", fb: "'JetBrains Mono',monospace", hw: 600, hs: 26, ls: '-0.02em' }],
+  ['Editorial', { bg: '#f3eee3', surf: '#f8f4ea', ink: '#1d1a16', mut: '#6b6358', line: '#1d1a16', acc: '#a3341f', on: '#fff', hi: '#ffe9a8', warn: '#a3341f', ok: '#2f6b3f', rad: 0, bw: 1, sh: 'none', fh: "'Instrument Serif',serif", fb: "'Newsreader',serif", hw: 400, hs: 44, ls: '-0.01em', it: 1 }],
+  ['Bento', { dark: 1, bg: '#121212', surf: '#1f1f1f', ink: '#fff', mut: '#a8a8a8', line: '#1f1f1f', acc: '#c6ff3d', on: '#121212', hi: '#3a4a10', warn: '#ff6bd6', ok: '#c6ff3d', rad: 22, bw: 0, sh: 'none', fh: "'Syne',sans-serif", fb: "'Syne',sans-serif", hw: 800, hs: 36, ls: '-0.04em' }],
+  ['Stack', { bg: '#ebe7ff', surf: '#fff', ink: '#1c1640', mut: '#5b5580', line: '#d6cffb', acc: '#6b4dff', on: '#fff', hi: '#d9d0ff', warn: '#d6336c', ok: '#1f7a46', rad: 20, bw: 1, sh: '0 10px 24px rgba(28,22,64,0.10)', fh: "'DM Sans',sans-serif", fb: "'DM Sans',sans-serif", hw: 700, hs: 32, ls: '-0.03em' }],
+  ['Timeline', { bg: '#fff', surf: '#fff', ink: '#141a26', mut: '#5c667a', line: '#d5dbe8', acc: '#0050ff', on: '#fff', hi: '#d9e4ff', warn: '#d92d20', ok: '#1f7a46', rad: 10, bw: 1, sh: 'none', fh: "'IBM Plex Sans',sans-serif", fb: "'IBM Plex Sans',sans-serif", hw: 600, hs: 30, ls: '-0.02em' }],
+  ['Graph', { dark: 1, bg: '#0d1030', surf: '#1a1f55', ink: '#eef0ff', mut: '#aab0e6', line: '#3a4080', acc: '#ff7a59', on: '#0d1030', hi: '#4a3a70', warn: '#ff7a59', ok: '#7fe0a0', rad: 14, bw: 1, sh: 'none', fh: "'Space Grotesk',sans-serif", fb: "'Space Grotesk',sans-serif", hw: 700, hs: 32, ls: '-0.03em' }],
+  ['Brutalist', { bg: '#ffde00', surf: '#fff', ink: '#000', mut: '#333', line: '#000', acc: '#000', on: '#ffde00', hi: '#fff', warn: '#e30613', ok: '#0a7a3c', rad: 0, bw: 3, sh: '4px 4px 0 #000', fh: "'Archivo Black',sans-serif", fb: "'Archivo',sans-serif", hw: 400, hs: 30, ls: '-0.03em', up: 1 }],
+  ['Chat', { bg: '#f5f5f2', surf: '#fff', ink: '#141414', mut: '#777', line: '#e2e2dc', acc: '#2c6bff', on: '#fff', hi: '#dfe8ff', warn: '#d92d20', ok: '#1f7a46', rad: 16, bw: 1, sh: 'none', fh: "'Manrope',sans-serif", fb: "'Manrope',sans-serif", hw: 800, hs: 30, ls: '-0.03em' }],
+  ['Blueprint', { dark: 1, bg: '#0b2a5b', surf: '#103572', ink: '#e8f1ff', mut: '#9fc0f0', line: '#7fb4ff', acc: '#ffd84a', on: '#0b2a5b', hi: '#1f4a94', warn: '#ff9d7a', ok: '#8be8b0', rad: 0, bw: 1, sh: 'none', fh: "'JetBrains Mono',monospace", fb: "'JetBrains Mono',monospace", hw: 600, hs: 26, ls: '-0.03em', up: 1 }],
+  ['Pastel', { bg: '#fdf1f4', surf: '#fff', ink: '#3a1d2a', mut: '#8a6678', line: '#f3cfdb', acc: '#ff5c8a', on: '#fff', hi: '#ffdbe6', warn: '#d6336c', ok: '#2f8a5a', rad: 24, bw: 1, sh: '0 8px 20px rgba(255,92,138,0.12)', fh: "'DM Sans',sans-serif", fb: "'DM Sans',sans-serif", hw: 700, hs: 32, ls: '-0.03em' }],
+  ['Newsprint', { bg: '#e8e4d8', surf: '#efebe0', ink: '#111', mut: '#5c5a52', line: '#111', acc: '#b00020', on: '#fff', hi: '#d9d3bf', warn: '#b00020', ok: '#2f6b3f', rad: 0, bw: 1, sh: 'none', fh: "'Newsreader',serif", fb: "'Newsreader',serif", hw: 500, hs: 40, ls: '-0.02em' }],
+  ['Amber CRT', { dark: 1, bg: '#120b00', surf: '#1d1200', ink: '#ffb000', mut: '#a87400', line: '#5a3b00', acc: '#ffb000', on: '#120b00', hi: '#3a2500', warn: '#ff6a3d', ok: '#ffd36a', rad: 2, bw: 1, sh: 'none', fh: "'JetBrains Mono',monospace", fb: "'JetBrains Mono',monospace", hw: 600, hs: 24, ls: '0', up: 1 }],
+  ['Glass', { dark: 1, bg: '#1b1130', surf: '#2a1c47', ink: '#f6ecff', mut: '#b9a5da', line: '#47336f', acc: '#ff8bd1', on: '#1b1130', hi: '#4a2d73', warn: '#ff8bd1', ok: '#8be8c0', rad: 20, bw: 1, sh: '0 10px 30px rgba(255,139,209,0.12)', fh: "'Space Grotesk',sans-serif", fb: "'Space Grotesk',sans-serif", hw: 700, hs: 32, ls: '-0.03em' }],
+  ['Forest', { dark: 1, bg: '#10231a', surf: '#173226', ink: '#e6f2e8', mut: '#8fb09a', line: '#2b4a39', acc: '#f2c14e', on: '#10231a', hi: '#2b4a39', warn: '#f29b4e', ok: '#9be8b0', rad: 12, bw: 1, sh: 'none', fh: "'Newsreader',serif", fb: "'DM Sans',sans-serif", hw: 500, hs: 38, ls: '-0.02em' }],
+  ['Sunset', { bg: '#fff3e6', surf: '#fff', ink: '#2b1608', mut: '#8a5a38', line: '#ffd2a8', acc: '#ff5a1f', on: '#fff', hi: '#ffe0c7', warn: '#d92d20', ok: '#2f8a5a', rad: 14, bw: 2, sh: '3px 3px 0 #ff5a1f', fh: "'Syne',sans-serif", fb: "'DM Sans',sans-serif", hw: 800, hs: 34, ls: '-0.04em' }],
+  ['Mono', { bg: '#fff', surf: '#fff', ink: '#000', mut: '#666', line: '#000', acc: '#000', on: '#fff', hi: '#eee', warn: '#d92d20', ok: '#1f7a46', rad: 0, bw: 1, sh: 'none', fh: "'IBM Plex Sans',sans-serif", fb: "'IBM Plex Sans',sans-serif", hw: 600, hs: 30, ls: '-0.03em' }],
+];
+const skinAt = i => SKINS[Math.max(0, Math.min(SKINS.length - 1, Number(i) | 0))];
+const LAYOUTS = ['Bottom bar', 'Top tabs', 'Floating dock', 'Centered masthead', 'Dense', 'Pill tabs', 'Side rail', 'Poster title'];
+function kit(S, L) {
+  const pd = [0.7, 1, 1.35][S.dn ?? 1];
+  const dense = L === 4, pill = L === 5, rail = L === 6, post = L === 7, top = L === 1 || L === 4 || pill, dock = L === 2, ctr = L === 3, hs = Math.round(S.hs * (ctr ? 1.35 : post ? 1.7 : dense ? 0.8 : 1)), bot = top ? 18 : dock ? 84 : 76, lm = rail ? 74 : 12;
+  const mono = "font-family:'JetBrains Mono',monospace;", up = S.up ? 'text-transform:uppercase;' : '', it = S.it ? 'font-style:italic;' : '';
+  const btnB = `min-height:36px;padding:0 14px;border-radius:${S.rad > 12 ? 999 : S.rad}px;cursor:pointer;${mono}font-size:11.5px;font-weight:600;`;
+  return {
+    page: `width:100%;height:100%;border-radius:40px;overflow:hidden;position:relative;${rail ? 'display:grid;grid-template-columns:62px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);' : 'display:flex;flex-direction:column;'}background:${S.bg};color:${S.ink};font-family:${S.fb};`,
+    main: `flex:1;min-height:0;order:2;overflow-y:auto;padding:${dense ? 8 : 12}px ${dense ? 12 : 16}px ${top || rail ? 40 : 128}px ${dense ? 12 : 16}px;${rail ? 'grid-column:2;grid-row:2;' : ''}display:grid;gap:${Math.round((dense ? 6 : 10) * pd)}px;align-content:start;${dense ? 'font-size:13px;' : ''}`,
+    head: `order:0;${rail ? 'grid-column:1/-1;' : ''}display:grid;gap:5px;padding:16px 20px ${dense ? 6 : 10}px;border-bottom:${top ? 0 : S.bw}px solid ${S.line};${ctr ? 'text-align:center;justify-items:center;' : ''}`,
+    h: `margin:0;font-family:${S.fh};font-weight:${S.hw};font-size:${hs}px;line-height:1;letter-spacing:${S.ls};${up}${it}`,
+    num: `font-family:${S.fh};font-weight:${S.hw};font-size:24px;line-height:1.05;letter-spacing:${S.ls};${up}${it}`,
+    kick: `${mono}font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:${S.acc === '#000' ? S.warn : S.acc};`,
+    mono: mono,
+    card: `background:${S.surf};border:${S.bw}px solid ${S.line};border-radius:${S.rad}px;box-shadow:${S.sh};padding:${Math.round((dense ? 6 : 10) * pd)}px ${Math.round((dense ? 10 : 12) * pd)}px;display:grid;gap:${Math.round((dense ? 3 : 5) * pd)}px;`,
+    btn: `${btnB}background:${S.acc};color:${S.on};border:${Math.max(S.bw, 1)}px solid ${S.acc === '#000' ? '#000' : S.acc};`,
+    btn2: `${btnB}background:transparent;color:${S.ink};border:${Math.max(S.bw, 1)}px solid ${S.dark ? S.mut : S.line};`,
+    btnw: `${btnB}background:transparent;color:${S.warn};border:${Math.max(S.bw, 1)}px solid ${S.warn};`,
+    chip: `${btnB}min-height:34px;background:${S.hi};color:${S.ink};border:1px solid ${S.line};`,
+    bar: 'display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:5px;margin-top:6px;border:1.5px dashed ' + (S.acc === '#000' ? S.warn : S.acc) + ';border-radius:' + Math.min(S.rad, 10) + 'px;',
+    mini: 'min-height:30px;min-width:30px;padding:0 8px;border:1px solid ' + S.line + ';border-radius:' + Math.min(S.rad, 8) + 'px;background:transparent;color:' + S.ink + ';' + mono + 'font-size:11px;cursor:pointer;',
+    input: `min-height:44px;padding:0 14px;border:${Math.max(S.bw, 1)}px solid ${S.line};border-radius:${S.rad > 12 ? 999 : S.rad}px;background:${S.surf};color:${S.ink};${mono}font-size:13px;outline:none;`,
+    pop: `position:absolute;left:${lm}px;right:12px;bottom:${bot}px;z-index:6;display:grid;gap:6px;padding:11px 13px;border:${Math.max(S.bw, 1)}px solid ${S.line};border-radius:${S.rad}px;background:${S.hi};color:${S.ink};box-shadow:${S.sh === 'none' ? '0 10px 28px rgba(0,0,0,0.3)' : S.sh};`,
+    toast: `position:absolute;left:${lm}px;right:12px;bottom:${bot}px;z-index:7;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 8px 8px 14px;border-radius:${S.rad > 12 ? 999 : S.rad}px;background:${S.ink};color:${S.bg};${mono}font-size:12px;`,
+    sheet: `max-height:78%;overflow-y:auto;display:grid;gap:10px;padding:16px 18px 28px;background:${S.bg};color:${S.ink};border-top:${S.bw}px solid ${S.line};border-radius:${Math.min(S.rad + 10, 26)}px ${Math.min(S.rad + 10, 26)}px 0 0;`,
+    nav: rail ? `grid-column:1;grid-row:2;min-height:0;z-index:5;display:flex;flex-direction:column;overflow-y:auto;border-right:${S.bw}px solid ${S.line};background:${S.bg};` : pill ? `order:1;display:flex;overflow-x:auto;gap:6px;padding:6px 14px 10px;background:${S.bg};` : dock ? `position:absolute;left:50%;bottom:14px;transform:translateX(-50%);max-width:92%;z-index:5;display:flex;overflow-x:auto;gap:2px;padding:5px;border-radius:999px;background:${S.ink};box-shadow:0 10px 30px rgba(0,0,0,0.4);` : top ? `order:1;display:flex;overflow-x:auto;padding:0 6px;border-bottom:${S.bw}px solid ${S.line};background:${S.bg};` : `order:3;display:flex;overflow-x:auto;padding:4px 6px 20px;border-top:${S.bw}px solid ${S.line};background:${S.bg};`,
+    dock, top, pill, rail,
+    accC: S.acc === '#000' ? S.warn : S.acc, hiC: S.hi, mutC: S.mut, lineC: S.line, inkC: S.ink, radC: S.rad,
+  };
+}
+const FIRES = [
+  ['spend', 80, 'Spend near the monthly cap', 'owner · $412 of $450', ['Raise', 'Throttle'], 'Spend crossed 90% with 14 days left.', 'Agents pause at the cap and rounds are lost.'],
+  ['inc', 74, 'KeyError in round.merge', 'maintainer · patch ready, tests failed once', ['Approve', 'Retry'], 'A merge step fails on empty claims.', 'The Theorist stays noisy and questions stop flowing.'],
+  ['scout', 69, 'Scout is silent', 'overseer · 14 h, expected every 6 h', ['Wake'], 'No round in more than twice its interval.', 'Pipeline A starves: no new sources.'],
+  ['shadow', 45, 'LSTM shadow beats 1–3B for Scout', 'registrar · 0.83 vs 0.81 for 7 days', ['Promote', 'Hold'], 'The cheaper rung has won the 7-day window on the frozen split.', 'Nothing breaks; you keep paying for the larger rung.'],
+];
+const AG = [
+  ['Scout', 'work', '1–3B', 'silent', 'Reads feeds, papers, repos; writes sources and claims', 'fetch, parse, graph write', 'Critic, Overseer'],
+  ['Theorist', 'work', '8B', 'noisy', 'Clusters claims; writes questions with falsifiers', 'graph read/write', 'Critic'],
+  ['Experimenter', 'work', '8B', 'ok', 'Turns questions into harness cells and runs them', 'sandbox, harness', 'Critic, Overseer'],
+  ['Builder', 'work', '30B', 'ok', 'Turns findings into repos, apps and APIs', 'sandbox, ship, GitHub', 'Maintainer'],
+  ['SEXTANT', 'work', '8B', 'ok', 'Talks to visitors and clients', 'published graph only', 'Publisher, Overseer'],
+  ['Critic', 'check', '30B', 'ok', 'Re-runs results with controls; attacks every claim', 'harness, shuffle', 'Overseer'],
+  ['Publisher', 'check', '1–3B', 'ok', 'Proposes public batches and posts through the mindful gate', 'publish, mindful', 'Owner'],
+  ['Maintainer', 'check', '8B', 'ok', 'Incidents, repairs, upgrades, app health', 'heal, upgrades, docker', 'Overseer'],
+  ['Overseer', 'oversee', 'no model', 'ok', 'Watches every agent\'s cadence; ranks fires', 'read-only on everything', 'Owner'],
+  ['Registrar', 'oversee', 'no model', 'ok', 'Keeps the register; proposes promotions and demotions', 'register, frozen split', 'Owner'],
+];
+const PIPES = [['A · Research', [['ingest', 42], ['question', 9], ['cell', 6], ['result', 4], ['attack', 3], ['promote', 1]], 'Scout silent: ingest has stalled 8 h.'], ['B · Build', [['spec', 5], ['code', 3], ['review', 2], ['ship', 1]], 'On time.'], ['C · Publish', [['propose', 2], ['approve', 1], ['label', 12], ['post', 4]], 'One batch waiting on you.'], ['D · Client', [['contact', 7], ['qualify', 3], ['accept', 1], ['seed', 1], ['run', 1], ['deliver', 0]], 'One client waiting on accept for 2 days.']];
+const GR = {
+  H0: { t: 'H0 · Quality holds across the ladder', k: 'hypothesis', x: 'Seeded, every rung from 30B to LSTM stays within 5 points of 30B.', rel: [['depends on', 'H5'], ['depends on', 'H4'], ['uses', 'SEED']] },
+  H4: { t: 'H4 · The LSTM signature', k: 'hypothesis', x: 'The LSTM fails unseeded and passes with the curated seed.', rel: [['sibling of', 'H5'], ['uses', 'SEED'], ['part of', 'H0']] },
+  H5: { t: 'H5 · Shuffled-seed control', k: 'hypothesis', x: 'A degree-preserving shuffle of the seed should remove at least 80% of the gain. Refuted if it keeps more than 20%.', rel: [['part of', 'H0'], ['shuffles', 'SEED'], ['re-run by', 'CRITIC']] },
+  SEED: { t: 'Seed v4', k: 'artifact', x: 'Incidence, types, restriction maps, Horn constraints, energy.', rel: [['used by', 'H0'], ['cites', 'TRM'], ['shuffled in', 'H5']] },
+  TRM: { t: 'TRM on ARC-AGI-1', k: 'source', x: '7M parameters, 44.6%. Recursion in place of size.', rel: [['bears on', 'H0'], ['cited by', 'SEED']] },
+  CRITIC: { t: 'Critic', k: 'agent', x: '30B rung. Re-runs results with controls.', rel: [['re-runs', 'H5'], ['checked by', 'SHADOW']] },
+  SHADOW: { t: 'Substrate shadow results', k: 'private', x: 'LSTM shadow for Scout: 0.83 vs 0.81 over 7 days.', priv: 1, rel: [['bears on', 'H0'], ['produced by', 'CRITIC']] },
+};
+const REPS = [
+  ['Seeded Substrate Plan v4', 'Core paper · 13 Oct', 'The thesis stated so it can fail: one seed, a ladder of five substrates, eight hypotheses with falsifiers, phases P0–P5.', ['One seed file, five blocks', 'One DSPy signature across every substrate', 'Shuffled-seed control separates structure from context']],
+  ['Cheap Brain Evidence', 'Companion A · 15 Oct', 'Grades the public record against the paper\'s hypotheses.', ['Small models on scoped tasks: established', 'Recursion in place of size: established on puzzles', 'A seeded LSTM matching 30B: no published test']],
+  ['AI Era Bubble', 'Companion B · 15 Oct', 'Six links from GPU orders to entry-level job losses, with the case against.', ['Debt share of AI capex 9% → 32%', 'Employment 22–25 in exposed jobs 19% below peers', 'A sector correction is likely; a depression needs more to go wrong']],
+  ['Institute Blueprint v3', 'Companion C · 15 Oct', 'Ten agents, four pipelines, three funnels, the moat.', ['Work, check, oversee', 'Every stage has an exit test and a clock', 'Open the code; keep the seeds']],
+  ['Exposure and Templates', 'Companion D · 15 Oct', '50 companies scored for exposure if H0 holds; about 1,000 grouped into 42 archetypes.', ['Most exposed: debt-funded GPU clouds and frontier labs', 'Gainers: CPU, edge, graph', 'Scenario judgements, not forecasts']],
+];
+const COS = [['CoreWeave', 'Neocloud', 5, '1–3 yrs', 'Debt-funded GPU rentals; rental prices fall while debt is fixed.', 'Contracted capacity'], ['OpenAI', 'Frontier lab', 5, '12–36 mo', 'Large compute commitments funded by outside capital.', 'Brand, consumer reach'], ['xAI', 'Frontier lab', 5, '12–36 mo', 'Owns the most expensive version of the bet.', 'Distribution via X'], ['Jasper', 'AI app', 5, '12–24 mo', 'A prompt and PRD rebuild it.', 'Enterprise workflows'], ['Super Micro', 'Servers', 4, '12–24 mo', 'Thin margins and inventory if GPU orders stop.', 'General servers'], ['Groq', 'Inference chips', 4, '1–3 yrs', 'Speed premium shrinks if CPUs suffice.', 'Low-latency niche'], ['Oracle', 'Cloud', 3, '2–4 yrs', 'Debt-funded build-out on a few labs\' contracts.', 'Database and apps'], ['Nvidia', 'Chips', 3, '2–4 yrs', 'Premium narrows if smaller models suffice.', 'CUDA, gaming, edge'], ['Microsoft', 'Hyperscaler', 2, '2–4 yrs', 'Capex written down faster; software margins hold.', 'Office, Azure'], ['Neo4j', 'Graph', -1, 'gains', 'Graph becomes the valuable layer.', 'Install base'], ['Arm', 'Chips', -1, 'gains', 'CPU and edge inference raise royalty volume.', 'All of it'], ['Apple', 'Devices', -1, 'gains', 'Small seeded models suit on-device privacy.', 'Ecosystem']];
+const EPS = [['POST', '/v1/ask', 'Answer with citations, auto rung', { question: 'Which rung clears depth-4 schemas?', graph: 'public', rung: 'auto', cite: true }, { answer: 'Seeded, the 1–3B rung clears depth 4 in shadow runs; the full grid reads in P4.', rung: '1–3B', cost_usd: 0.0003, cites: ['H6', 'Plan v4 §7'] }], ['POST', '/v1/graph/query', 'Typed hops over the public graph', { from: 'H5', hops: 2, types: ['hypothesis', 'artifact'] }, { nodes: 6, edges: 7, cost_usd: 0.0001, sample: ['H5', 'H0', 'SEED', 'CRITIC'] }], ['POST', '/v1/seed', 'Seed a private graph from your schema', { schema: 'your-domain.json', constraints: 'horn' }, { graph_id: 'g_8f21', nodes: 128, constraints: 41, status: 'ready' }], ['POST', '/v1/harness/run', 'Run a harness cell', { rung: 'lstm', seed: 'Q', depth: 3 }, { row: { rung: 'lstm', seed: 'Q', depth: 3, score: 'withheld until P3 closes' } }], ['GET', '/v1/usage', 'Calls, spend, rung mix', null, { calls: 18420, spend_usd: 86.4, mix: { lstm: 0.41, tiny: 0.22, '1-3b': 0.24, '8b': 0.1, '30b': 0.03 } }]];
+const json = o => JSON.stringify(o, null, 2);
+const stc = (K, s) => ({ ok: K.ok, idle: K.mut, silent: K.warn, noisy: K.warn }[s]);
+
+const SC = {
+  owner: [
+    ['O1', 'Today', 'oversee the overseers', 'Ranked fires', 'Overseer: every fire, filters, batch actions', 'Top fires only; the rest batch', ['4 post drafts pass the mindful gate. Approve them as one batch?', 'Go to Publish', 'O4']],
+    ['O2', 'Agents', 'staffed by the agents it studies', 'Ten agents', 'Console agent panel and the register', 'Tap an agent for its sheet', ['The Theorist is noisy. It feeds every pipeline downstream.', 'See pipelines', 'O3']],
+    ['O3', 'Pipes', 'four pipelines', 'Every stage clocked', 'Blueprint pipelines and live funnels', 'One bar per stage; stuck items below', ['Pipeline D has a client waiting on accept.', 'Back to Today', 'O1']],
+    ['O4', 'Publish', 'nothing goes out without you', 'Approve and publish', 'Public graph batches, outbox, 100-repo waves', 'Approve and reject; editing drafts stays on web', ['Wave 1 has 2 blocked repos. Builder can fix the flaky test.', 'See revenue', 'O5']],
+    ['O5', 'Growth', 'funnels and the coming-out party', 'What is landing', 'Funnel dashboards and repo stats', 'Funnels as bars; wave approvals', ['API signups are strong but only 9 of 12 accounts pay.', 'Open Config', 'O6']],
+    ['O6', 'Config', 'spend, routing, stack', 'Config', 'Settings, Stack (MCP hub), upgrades, Studio, Tmpltz', 'Review and approve; installs stay on web', ['Spend is at 91%. Throttle the 30B rung for the rest of the month?', 'Back to Today', 'O1']],
+  ],
+  research: [
+    ['R1', 'Search', 'the graph', 'Search', 'Public graph search with type filters', 'Same search; private only with clearance', ['Searching for the LSTM? H4 is the test that isolates it.', 'Open H4', 'R3:H4']],
+    ['R2', 'Read', 'five reports', 'Reports', 'Reports with inline citations', 'Pick a report; summary and findings', ['Read A first: it grades the evidence behind the thesis.', 'Ask about it', 'R4']],
+    ['R3', 'Graph', 'node and neighbourhood', 'Graph', '3D graph, 1–3 hop neighbourhoods', 'Tap a relation to move the focus', ['H5 is read in P3. Want a ping when it lands?', 'Notifications', 'R6']],
+    ['R4', 'Chat', 'SEXTANT · cites the graph', 'Ask the institute', 'SEXTANT chat with clarifying questions', 'Full parity', null],
+    ['R5', 'Lab', 'harness grid', 'The experiment', 'Harness grid, shadow scores (Pro)', 'Progress by cell; results withheld until P3 closes', ['Scout\'s LSTM shadow is ahead by 0.02. Read H3 for what that means.', 'Open H4', 'R3:H4']],
+    ['R6', 'Me', 'settings and config', 'Settings', 'Profile, visibility, notifications, plan, keys', 'Full parity', null],
+  ],
+  api: [
+    ['A1', 'Usage', 'acme-labs · October', 'Usage', 'API dashboard: calls, spend, rung mix', 'Full parity', ['Two-thirds of your calls ran on CPU rungs.', 'See prices', 'A4']],
+    ['A2', 'Keys', 'keys', 'Keys', 'Key management', 'Full parity', null],
+    ['A3', 'Try', 'playground', 'Playground', 'Interactive API console', 'Pick an endpoint, run it', ['Seeding a private graph? Try POST /v1/seed.', 'See docs', 'A5']],
+    ['A4', 'Billing', 'pay for the rung that answered', 'Billing', 'Invoices, caps, payment method', 'Edit the hard cap in place', null],
+    ['A5', 'Docs', 'endpoints and SDK', 'Reference', 'API reference', 'Tap an endpoint for curl', ['Metered per call; the cheapest rung that clears your bar answers.', 'See billing', 'A4']],
+    ['A6', 'Status', 'by rung', 'Uptime', 'Status page', 'Full parity', null],
+  ],
+  sub: [
+    ['S1', 'Home', 'this week at the institute', 'This week', 'Public site, hero, weekly digest', 'The hero becomes the experiment card', ['You read Companion A. H5 is the control it says nobody has run.', 'Ask about H5', 'S3']],
+    ['S2', 'Library', 'reports and findings', 'Library', 'Reports index', 'Save and open', null],
+    ['S3', 'Ask', 'SEXTANT · monthly quota', 'Ask', 'SEXTANT chat', 'Quota for Members', ['Pro removes the quota and adds raw result tables.', 'See plans', 'S5']],
+    ['S4', 'Watch', 'who is exposed if H0 holds', 'Exposure watch', 'Companion D tables', 'Filter and tap a company', ['Companion D is a scenario, not a forecast. Read its caveats.', 'Open the report', 'S2']],
+    ['S5', 'Plan', 'tiers', 'Pick your depth', 'Tier pages and checkout', 'Choose a plan', null],
+  ],
+};
+const ALL = {}; Object.entries(SC).forEach(([role, l]) => l.forEach(s => ALL[s[0]] = { role, id: s[0], tab: s[1], kicker: s[2], title: s[3], web: s[4], diff: s[5], sugg: s[6] }));
+const NSC = Object.keys(ALL).length;
+
+const ACCS = ['#e30613', '#ff5a1f', '#ffd84a', '#c6ff3d', '#0a7a3c', '#14b8a6', '#2c6bff', '#9184d9', '#ff5c8a', '#111111'];
+const BGS = ['paper', 'snow', 'slate', 'ink', 'sand', 'mint', 'rose', 'navy'], TYS = ['sans', 'serif', 'mono', 'display', 'round', 'news', 'tech', 'poster'];
+const COLW = { red: '#e30613', orange: '#ff5a1f', yellow: '#ffd84a', gold: '#ffd84a', lime: '#c6ff3d', green: '#0a7a3c', teal: '#14b8a6', blue: '#2c6bff', purple: '#9184d9', violet: '#9184d9', pink: '#ff5c8a', black: '#111111' };
+const LAYW = { dock: 2, floating: 2, rail: 6, side: 6, pill: 5, poster: 7, dense: 4, compact: 4, centered: 3, masthead: 3, 'top tabs': 1, bottom: 0 };
+const MOODS = { calm: { skin: 'Pastel', ov: { bg: 'mint', rad: 22, sh: 'soft', ty: 'round' } }, bold: { skin: 'Brutalist' }, playful: { skin: 'Sunset' }, hacker: { skin: 'Terminal' }, premium: { skin: 'Glass' }, investor: { skin: 'Editorial', layout: 0, ov: { dn: 2 } }, partner: { skin: 'Editorial', layout: 3 }, serious: { skin: 'Swiss' }, technical: { skin: 'Blueprint' }, editorial: { skin: 'Newsprint' }, retro: { skin: 'Amber CRT' }, minimal: { skin: 'Mono' }, warm: { skin: 'Sunset' }, natural: { skin: 'Forest' } };
+const UKEY = 'anima_studio_ui_v1';
+const sv = (u, id, p) => ({ ...u, scr: { ...u.scr, [id]: { ...(u.scr[id] || {}), ...p } } });
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const rgb = c => { let x = c.replace('#', ''); if (x.length === 3) x = x.split('').map(d => d + d).join(''); const n = parseInt(x.slice(0, 6), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
+const lum = c => { const [r, g, b] = rgb(c).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+const PKEY = 'anima_studio_presets_v1';
+class Component extends DCLogic {
+  state = { role: 'owner', scr: 'O1', skin: 0, layout: 0, ov: {}, ui: { scr: {}, tabs: {}, news: [] }, editMode: false, newName: '', agentIn: '', busy: false, pv: null, props: [], undo: [], redo: [], lk: {}, log: [{ who: 'a', text: 'Tell me how it should look, or what it should show. Examples: calm serif dark; hide the fires list; move the chart to top; show agents as tiles; add note Review at 9; new screen Funding; add Companion D as a tab. I can also edit directly: press Edit on the phone.' }], presets: [],  gone: {}, toast: null, sugOff: {}, sugOn: {}, q: '', gnode: 'H5', rep: 0, ep: 0, ran: false, cap: 200, plan: 'Member', quota: 38, saved: {}, flt: 'All', draft: '', sheet: null, spendCap: 450, tg: { 'Show private nodes': true, 'New findings': true, 'Clarifying questions': true, 'Suggestions': true, 'Quiet hours 22–07': true, 'Auto-batch posts': false, 'Page me at score ≥ 70': true }, msgs: [{ me: false, text: 'I answer from the published graph and cite what I use.' }], clarify: null };
+  componentDidMount() { this._rz = () => this.forceUpdate(); window.addEventListener('resize', this._rz); this.arm(this.state.scr); try { this.setState({ presets: JSON.parse(localStorage.getItem(PKEY) || '[]') }); const u = JSON.parse(localStorage.getItem(UKEY) || 'null'); if (u && u.scr) this.setState({ ui: { scr: u.scr, tabs: u.tabs || {}, news: u.news || [] } }); } catch (e) {} }
+  componentDidUpdate() { if (this._pu !== this.state.ui) { this._pu = this.state.ui; try { localStorage.setItem(UKEY, JSON.stringify(this.state.ui)); } catch (e) {} } }
+  cfgNow() { const s = this.state; return { skin: s.skin, layout: s.layout, ov: { ...s.ov } }; }
+  lock(c) { const s = this.state, k = s.lk; return { skin: k.skin ? s.skin : c.skin, layout: k.layout ? s.layout : c.layout, ov: k.ov ? { ...s.ov } : { ...c.ov } }; }
+  say(text, extra) { this.setState(x => ({ log: [...x.log.slice(-7), { who: 'a', text, ...extra }] })); }
+  applyCfg(c, why) { const n = this.lock(c); this.setState(x => ({ undo: [...x.undo, { skin: x.skin, layout: x.layout, ov: x.ov, ui: x.ui }], redo: [], skin: n.skin, layout: n.layout, ov: n.ov, pv: null })); setTimeout(() => this.critique(n, true, why), 0); }
+  critique(c, quiet, why) {
+    const S = this.skinOf(c), t = cr(S.ink, S.bg), b = cr(S.on, S.acc), a = cr(S.acc, S.bg), f = v => v.toFixed(1) + ':1', bad = [];
+    if (t < 4.5) bad.push('text ' + f(t) + ' needs 4.5'); if (b < 4.5) bad.push('button text ' + f(b) + ' needs 4.5'); if (a < 3) bad.push('accent on page ' + f(a) + ' needs 3');
+    const line = 'Checked: text ' + f(t) + ', buttons ' + f(b) + ', accent ' + f(a) + '.';
+    if (!bad.length) return this.say((why ? why + ' ' : '') + line + ' All pass.');
+    const fix = () => { const o = { ...c.ov }; if (a < 3 || b < 4.5) { o.acc = S.dark ? '#ffd84a' : '#2c6bff'; } if (t < 4.5) o.bg = S.dark ? 'ink' : 'snow'; this.applyCfg({ ...c, ov: { ...o } }); };
+    this.say((why ? why + ' ' : '') + line + ' Fails: ' + bad.join('; ') + '.', { hasFx: true, fxLabel: 'Fix it', fx: fix });
+  }
+  ruleParse(text) {
+    const t = text.toLowerCase(), c = { ov: {} }, o = c.ov;
+    SKINS.forEach(([n], i) => { if (t.includes(n.toLowerCase())) c.skin = i; });
+    Object.entries(LAYW).forEach(([k, v]) => { if (t.includes(k)) c.layout = v; });
+    Object.entries(COLW).forEach(([k, v]) => { if (t.includes(k)) o.acc = v; });
+    Object.entries(MOODS).forEach(([k, m]) => { if (t.includes(k)) { if (m.skin) c.skin = SKINS.findIndex(x => x[0] === m.skin); if (m.layout != null) c.layout = m.layout; Object.assign(o, m.ov || {}); } });
+    if (/\bdark\b|night/.test(t)) o.bg = 'slate'; if (/\blight\b|bright/.test(t)) o.bg = 'snow';
+    BGS.forEach(b => { if (t.includes(b)) o.bg = b; });
+    if (/serif|classic/.test(t)) o.ty = 'serif'; if (/\bmono|code/.test(t)) o.ty = 'mono'; if (/display|chunky/.test(t)) o.ty = 'display'; if (/round|friendly/.test(t)) o.ty = 'round'; if (/news|editorial/.test(t)) o.ty = 'news'; if (/tech|geometric/.test(t)) o.ty = 'tech'; if (/\bsans\b/.test(t)) o.ty = 'sans';
+    if (/sharp|square/.test(t)) o.rad = 0; if (/soft corner|softer/.test(t)) o.rad = 8; if (/round|pill|bubbly/.test(t)) o.rad = 22;
+    if (/heavy|thick|bold border/.test(t)) o.bw = 3; if (/thin|hairline/.test(t)) o.bw = 1; if (/borderless|no border/.test(t)) o.bw = 0;
+    if (/flat/.test(t)) o.sh = 'flat'; if (/hard shadow|offset/.test(t)) o.sh = 'hard'; else if (/shadow|depth|elevat/.test(t)) o.sh = 'soft';
+    if (/compact|dense|tight/.test(t)) o.dn = 0; if (/roomy|spacious|airy|calm/.test(t)) o.dn = 2;
+    if (/contrast/.test(t)) { o.bg = 'ink'; o.acc = '#ffd84a'; }
+    return c;
+  }
+  describe(c) { const S = this.skinOf(c), o = c.ov; return skinAt(c.skin)[0] + ' look, ' + LAYOUTS[c.layout].toLowerCase() + ' layout' + (o.ty ? ', ' + o.ty + ' type' : '') + (o.bg ? ', ' + o.bg + ' surface' : '') + (o.rad != null ? ', ' + ['sharp', 'soft', 'round'][[0, 8, 22].indexOf(o.rad)] + ' corners' : '') + (o.dn != null ? ', ' + ['compact', 'regular', 'roomy'][o.dn] : ''); }
+  makeProps(text, base) {
+    const cur = this.cfgNow(), p1 = { skin: base.skin ?? cur.skin, layout: base.layout ?? cur.layout, ov: { ...cur.ov, ...base.ov } };
+    const known = base.skin != null || base.layout != null || Object.keys(base.ov).length;
+    const p2 = { ...p1, layout: pick([0, 1, 2, 3, 5, 6, 7].filter(x => x !== p1.layout)), ov: { ...p1.ov, ty: pick(TYS) } };
+    const p3 = { ...p1, skin: pick(SKINS.map((_, i) => i).filter(i => i !== p1.skin)), ov: { ...p1.ov, acc: pick(ACCS), dn: pick([0, 1, 2]) } };
+    const mk = (name, c, why) => ({ name, cfg: c, why });
+    return known ? [mk('Closest to your words', p1, 'Takes only what you named and keeps the rest.'), mk('Same intent, new layout', p2, 'Keeps your look and swaps layout and type.'), mk('Same intent, new palette', p3, 'Keeps your layout and tries another look and accent.')] : [mk('Direction one', { skin: pick([3, 11, 15]), layout: 0, ov: {} }, 'No style words found, so three distinct starting points.'), mk('Direction two', { skin: pick([1, 8, 18]), layout: 5, ov: {} }, 'High contrast, pill tabs.'), mk('Direction three', { skin: pick([5, 12, 14]), layout: 3, ov: { dn: 2 } }, 'Soft and roomy, centred masthead.')];
+  }
+  async ask(text) {
+    text = (text || '').trim(); if (!text) return;
+    this.setState(x => ({ busy: true, agentIn: '', log: [...x.log.slice(-6), { who: 'u', text }] }));
+    if (this.isContent(text)) return this.askContent(text);
+    let props = null, via = 'rules';
+    try {
+      if (window.claude && window.claude.complete) {
+        const prompt = 'You are a mobile UI design agent. Current: ' + this.describe(this.cfgNow()) + '. Request: "' + text + '". Return ONLY a JSON array of 3 objects {"name":string,"why":string(one sentence),"skin":one of ' + JSON.stringify(SKINS.map(x => x[0])) + ',"layout":one of ' + JSON.stringify(LAYOUTS) + ',"ov":{"acc":one of ' + JSON.stringify(ACCS) + ',"bg":one of ' + JSON.stringify(BGS) + ',"ty":one of ' + JSON.stringify(TYS) + ',"rad":0|8|22,"bw":0|1|3,"sh":"flat"|"soft"|"hard","dn":0|1|2}} (ov keys optional). Three distinct directions.';
+        const r = await Promise.race([window.claude.complete(prompt), new Promise((_, j) => setTimeout(() => j(new Error('t')), 9000))]);
+        const arr = JSON.parse(String(r).slice(String(r).indexOf('['), String(r).lastIndexOf(']') + 1));
+        props = arr.slice(0, 3).map(a => ({ name: a.name, why: a.why, cfg: { skin: Math.max(0, SKINS.findIndex(x => x[0] === a.skin)), layout: Math.max(0, LAYOUTS.indexOf(a.layout)), ov: a.ov || {} } })); via = 'model';
+      }
+    } catch (e) { props = null; }
+    if (!props) props = this.makeProps(text, this.ruleParse(text));
+    this.setState({ busy: false, props });
+    this.say('Three directions (' + via + '). Hover to preview on the phone, Apply to keep.');
+  }
+  surprise() { this.ask('surprise me'); this.setState({ props: this.makeProps('', { ov: {} }) }); }
+  savePreset(c) { const label = skinAt(c.skin)[0] + ' · ' + LAYOUTS[c.layout]; const list = [...this.state.presets, { label, cfg: c }].slice(-8); this.setState({ presets: list }); try { localStorage.setItem(PKEY, JSON.stringify(list)); } catch (e) {} this.toast('Saved: ' + label, null); }
+  delPreset(i) { const list = this.state.presets.filter((_, j) => j !== i); this.setState({ presets: list }); try { localStorage.setItem(PKEY, JSON.stringify(list)); } catch (e) {} }
+  componentWillUnmount() { clearTimeout(this.sT); clearTimeout(this.tT); window.removeEventListener('resize', this._rz); }
+  arm(id) { clearTimeout(this.sT); this.sT = setTimeout(() => this.setState(s => ({ sugOn: { ...s.sugOn, [id]: true } })), 1300); }
+  go(t) { const [id, node] = t.split(':'); const sc = this.scrOf(id); this.setState(s => ({ role: this.tabIds(s.role).includes(id) ? s.role : sc.role, scr: id, sheet: null, toast: null, gnode: node || s.gnode })); this.arm(id); }
+  toast(text, undo) { clearTimeout(this.tT); this.setState({ toast: { text, undo } }); this.tT = setTimeout(() => this.setState({ toast: null }), 3500); }
+  hide(key, label) { this.setState(s => ({ gone: { ...s.gone, [key]: 1 } })); this.toast(label + ': done', key); }
+  sheet(kicker, title, rows, links) { this.setState({ sheet: { kicker, title, rows, links: links || [] } }); }
+  chatAsk(q) {
+    const s = this.state; if (s.role === 'sub' && s.quota <= 0) return this.toast('Quota used. Pro removes it.', null);
+    const add = (msgs, clarify) => this.setState(x => ({ msgs: [...x.msgs, { me: true, text: q }, ...msgs], clarify: clarify || null, quota: x.role === 'sub' ? x.quota - 1 : x.quota, draft: '' }));
+    if (/small|good|cheap|lstm/i.test(q)) return add([], { q: 'Do you mean quality, or cost per answer?', opts: [['Quality', 'Not shown yet. Small models match large ones on scoped tasks when fine-tuned. Whether a seed replaces that training is H7, read in P4.'], ['Cost per answer', 'A 7B model is 10–30× cheaper to serve than 70–175B (Belcak et al.). An LSTM on CPU is cheaper again; H3 sets the bar at 10× below the tiny transformer.']] });
+    if (/bubble|gpu|recession/i.test(q)) return add([], { q: 'The seven indicators, or how it affects your sector?', opts: [['Indicators', 'Debt share of AI capex 32%, AI share of IG issuance 10%, cost per task falling ~13× a year, capex over $690B, neocloud health, entry-level gap 19%, unemployment 4.1%. Companion B.'], ['My sector', 'Companion D scores 50 companies. Debt-funded GPU clouds and frontier labs are most exposed; CPU, edge and graph players gain.']] });
+    if (/engage|work with|partner|study/i.test(q)) return add([{ me: false, text: 'A paid study fits a fixed question and your data: private seeded graph, report and graph delivered. A design partnership co-develops a domain seed, then licenses Bridago on your CPUs.' }]);
+    add([{ me: false, text: 'H5 shuffles the seed while keeping its size. If the shuffled seed keeps more than 20% of the gain, the gain was extra context, not structure. Read in P3. [H5 · Plan v4 §6]' }]);
+  }
+  skinOf(s) {
+    const o = s.ov, S = { ...skinAt(s.skin)[1] };
+    if (o.acc) { S.acc = o.acc; const n = parseInt(o.acc.slice(1), 16), l = ((n >> 16) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11); S.on = l > 150 ? '#111' : '#fff'; S.hi = o.acc + '33'; }
+    if (o.rad != null) S.rad = o.rad;
+    if (o.bw != null) S.bw = o.bw;
+    if (o.dn != null) S.dn = o.dn;
+    if (o.sh) S.sh = o.sh === 'soft' ? '0 8px 20px rgba(0,0,0,0.18)' : o.sh === 'hard' ? '4px 4px 0 ' + (S.dark ? S.mut : S.ink) : 'none';
+    if (o.ty) { const T = { sans: ["'Inter',sans-serif", "'Inter',sans-serif", 600], serif: ["'Instrument Serif',serif", "'Newsreader',serif", 400], mono: ["'JetBrains Mono',monospace", "'JetBrains Mono',monospace", 600], display: ["'Archivo Black',sans-serif", "'Archivo',sans-serif", 400], round: ["'Manrope',sans-serif", "'DM Sans',sans-serif", 800], news: ["'Newsreader',serif", "'Newsreader',serif", 500], tech: ["'Space Grotesk',sans-serif", "'Space Grotesk',sans-serif", 700], poster: ["'Syne',sans-serif", "'DM Sans',sans-serif", 800] }[o.ty]; S.fh = T[0]; S.fb = T[1]; S.hw = T[2]; S.it = o.ty === 'serif' ? 1 : 0; S.up = o.ty === 'display' ? 1 : 0; }
+    if (o.bg) { const B = { paper: ['#f4f1ea', '#fffdf8', '#1d1a16', '#6b6358', '#1d1a16'], snow: ['#fff', '#f4f5f7', '#111', '#666', '#d5d8de'], slate: ['#161826', '#1e2133', '#e9e9ed', '#9a9db5', '#2c3050'], ink: ['#000', '#111', '#fff', '#aaa', '#333'], sand: ['#efe3c8', '#f7edd6', '#2a2113', '#7a6a48', '#2a2113'], mint: ['#e4f5ec', '#f4fcf7', '#10321f', '#4f7a62', '#b5dcc5'], rose: ['#fde7ec', '#fff5f7', '#3a1420', '#8a5566', '#f0bccb'], navy: ['#0b1b3a', '#12285a', '#eaf1ff', '#9fb4e0', '#27407a'] }[o.bg]; Object.assign(S, { bg: B[0], surf: B[1], ink: B[2], mut: B[3], line: B[4], dark: ['slate', 'ink', 'navy'].includes(o.bg) ? 1 : 0 }); }
+    return S;
+  }
+
+  scrOf(id) { const b = ALL[id] || this.state.ui.news.find(n => n.id === id) || ALL.O1, o = this.state.ui.scr[id] || {}; return { ...b, title: o.title || b.title, tab: o.tab || b.tab, kicker: o.kicker || b.kicker }; }
+  curTabs(u, role) { return u.tabs[role] || SC[role].map(x => x[0]); }
+  tabIds(role) { return this.curTabs(this.state.ui, role); }
+  setUi(fn, cb) { this.setState(x => ({ undo: [...x.undo, { skin: x.skin, layout: x.layout, ov: x.ov, ui: x.ui }].slice(-60), redo: [], ui: fn(x.ui) }), cb); }
+  allScreens() { return [...Object.keys(ALL), ...this.state.ui.news.map(n => n.id)].map(id => { const c = this.scrOf(id); return { id, text: c.tab + ' ' + c.title + ' ' + id }; }); }
+  moveTab(role, id, d) { this.setUi(u => { const t = [...this.curTabs(u, role)], i = t.indexOf(id), j = i + d; if (i < 0 || j < 0 || j >= t.length) return u; [t[i], t[j]] = [t[j], t[i]]; return { ...u, tabs: { ...u.tabs, [role]: t } }; }); }
+  rmTab(role, id) { if (this.tabIds(role).length < 2) return this.toast('A tier needs at least one tab', null); this.setUi(u => ({ ...u, tabs: { ...u.tabs, [role]: this.curTabs(u, role).filter(x => x !== id) }, news: u.news.filter(n => n.id !== id) }), () => { if (this.state.scr === id) this.go(this.tabIds(role)[0]); }); }
+  addTab(role, id) { this.setUi(u => { const t = this.curTabs(u, role); return t.includes(id) ? u : { ...u, tabs: { ...u.tabs, [role]: [...t, id] } }; }, () => this.go(id)); }
+  newScreen(role, title) { const id = 'X' + (this.state.ui.news.length + 1) + Math.floor(Math.random() * 90 + 10); this.setUi(u => ({ ...u, news: [...u.news, { id, role, tab: title.slice(0, 10), kicker: 'custom screen', title, web: 'Created in the Studio', diff: 'Phone only', sugg: null }], tabs: { ...u.tabs, [role]: [...this.curTabs(u, role), id] } }), () => this.setState({ editMode: true }, () => this.go(id))); return id; }
+  secs(blocks, id) {
+    const out = []; let cur = null;
+    const kl = b => b.isP || b.isMark ? 'Summary' : b.isInput ? 'Search' : b.isChips ? 'Filters' : b.isStats ? 'Key numbers' : b.isRows ? 'List' : b.isBars ? 'Chart' : b.isCode ? 'Code' : b.isButton ? 'Button' : b.isToggles ? 'Switches' : b.isTiers ? 'Plans' : b.isChat ? 'Conversation' : 'Block';
+    blocks.forEach(b => { if (b.isH) { cur = { blocks: [b], label: b.text }; out.push(cur); } else if (cur) cur.blocks.push(b); else out.push({ blocks: [b], label: kl(b) }); });
+    out.forEach((x, i) => { x.key = id + ':' + i; });
+    return out;
+  }
+  viewsOf(x) { const b = x.blocks; return b.some(y => y.isRows) ? ['cards', 'compact', 'tiles'] : b.some(y => y.isStats) ? ['tiles', 'list'] : b.some(y => y.isBars) ? ['bars', 'list'] : []; }
+  addSec(a, edit, id) {
+    const up = p => this.setUi(u => sv(u, id, { add: (u.scr[id].add || []).map(z => z.key === a.key ? { ...z, ...p } : z) }));
+    const inp = (v, ph, f) => ({ isInput: true, value: v, ph, on: e => up({ [f]: e.target.value }) });
+    if (a.kind === 'ref') { const rid = a.ref.split(':')[0], b = this.secs(this.blocks(rid), rid).find(x => x.key === a.ref); return b ? { key: a.key, label: b.label, custom: 1, blocks: b.blocks } : null; }
+    if (a.kind === 'note') return { key: a.key, label: 'Note', custom: 1, blocks: [edit ? inp(a.text, 'Note', 'text') : { isP: true, text: a.text }] };
+    if (a.kind === 'stat') return { key: a.key, label: 'Stat', custom: 1, blocks: edit ? [inp(a.value, 'Value', 'value'), inp(a.label, 'Label', 'label')] : [{ isStats: true, items: [{ v: a.value, k: a.label, c: this.K.accC }] }] };
+    if (a.kind === 'button') return { key: a.key, label: 'Button', custom: 1, blocks: edit ? [inp(a.text, 'Button label', 'text')] : [{ isButton: true, text: a.text, fn: () => this.go(a.to) }] };
+    return null;
+  }
+  secList(id, edit, ui) {
+    ui = ui || this.state.ui; const ov = ui.scr[id] || {};
+    const all = [...this.secs(this.blocks(id), id), ...(ov.add || []).map(a => this.addSec(a, edit, id)).filter(Boolean)], by = {}; all.forEach(x => { by[x.key] = x; });
+    const o = ov.order || [], ord = [...o.filter(k => by[k]), ...all.map(x => x.key).filter(k => !o.includes(k))];
+    return ord.map(k => { const x = by[k], ttl = (ov.ttl || {})[k]; return { key: k, x, orig: x.label, ttl, label: ttl != null ? ttl : x.label, hid: !!(ov.hide || {})[k], view: (ov.view || {})[k] }; });
+  }
+  applyView(b, v) {
+    const K = this.K;
+    if (b.isRows) return { ...b, wrapSt: v === 'tiles' ? 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;' : v === 'compact' ? 'display:grid;gap:0;' : 'display:grid;gap:8px;', items: b.items.map(r => v === 'compact' ? { ...r, cardSt: 'display:grid;gap:3px;padding:7px 0;border-bottom:1px solid ' + K.lineC + ';cursor:' + (r.hasOpen ? 'pointer' : 'default') + ';', subSt: 'display:none;' } : r) };
+    const asRows = items => ({ isRows: true, wrapSt: 'display:grid;gap:8px;', items });
+    const none = () => {};
+    if (b.isStats && v === 'list') return asRows(b.items.map(i => ({ t: i.v, s: i.k, tag: '', tagSt: 'display:none;', acts: [], open: none, hasOpen: false, cardSt: K.card, subSt: K.mono + 'font-size:11px;color:' + K.mutC + ';' })));
+    if (b.isBars && v === 'list') return asRows(b.items.map(i => ({ t: i.k, s: '', tag: i.label, tagSt: K.mono + 'font-size:12px;', acts: [], open: none, hasOpen: false, cardSt: K.card, subSt: 'display:none;' })));
+    return b;
+  }
+  screenEd(id) {
+    const c = this.scrOf(id), custom = id[0] === 'X', role = this.state.role;
+    return [{ isH: true, text: 'Editing screen ' + id }, { isInput: true, value: c.title, ph: 'Screen title', on: e => this.setUi(u => sv(u, id, { title: e.target.value })) }, { isInput: true, value: c.tab, ph: 'Tab label', on: e => this.setUi(u => sv(u, id, { tab: e.target.value })) }, { isButton: true, text: custom ? 'Delete this screen' : 'Remove this tab', fn: () => this.rmTab(role, id) }];
+  }
+  addBar(id) {
+    const add = a => this.setUi(u => sv(u, id, { add: [...((u.scr[id] || {}).add || []), { key: 'c' + Math.random().toString(36).slice(2, 7), ...a }] }));
+    return { isAdd: true, sel: '', chips: [{ label: '+ Note', fn: () => add({ kind: 'note', text: 'New note' }) }, { label: '+ Stat', fn: () => add({ kind: 'stat', value: '0', label: 'New stat' }) }, { label: '+ Button', fn: () => add({ kind: 'button', text: 'Open', to: this.tabIds(this.state.role)[0] }) }], opts: this.catalog().map(x => ({ v: x.key, l: x.text })), add: e => { if (e.target.value) add({ kind: 'ref', ref: e.target.value }); } };
+  }
+  catalog() { const out = []; Object.keys(ALL).forEach(id => { const c = this.scrOf(id); this.secs(this.blocks(id), id).forEach(x => out.push({ key: x.key, text: c.tab + ' · ' + c.title + ' · ' + x.label })); }); return out; }
+  compose(id) {
+    const edit = this.state.editMode, out = [], L = this.secList(id, edit), ks = L.map(x => x.key);
+    if (edit) out.push(...this.screenEd(id));
+    const upd = f => this.setUi(u => sv(u, id, f(u.scr[id] || {})));
+    const mv = (i, d) => { const j = i + d; if (j < 0 || j >= ks.length) return; const n = [...ks]; [n[i], n[j]] = [n[j], n[i]]; upd(() => ({ order: n })); };
+    L.forEach((x, i) => {
+      const views = this.viewsOf(x.x), v = x.view && views.includes(x.view) ? x.view : views[0];
+      if (x.hid && !edit) return;
+      if (edit) out.push({ isBar: true, label: x.label, op: x.hid ? 0.5 : 1, hideLabel: x.hid ? 'show' : 'hide', hasView: views.length > 1 && !x.hid, viewLabel: v, custom: !!x.x.custom,
+        rn: e => upd(c => ({ ttl: { ...c.ttl, [x.key]: e.target.value } })), up: () => mv(i, -1), down: () => mv(i, 1),
+        cycle: () => upd(c => ({ view: { ...c.view, [x.key]: views[(views.indexOf(v) + 1) % views.length] } })), hide: () => upd(c => ({ hide: { ...c.hide, [x.key]: !x.hid } })),
+        del: () => upd(c => ({ add: (c.add || []).filter(a => a.key !== x.key), order: (c.order || []).filter(k => k !== x.key) })) });
+      if (x.hid) return;
+      let bl = x.x.blocks;
+      if (x.ttl) bl = bl[0].isH ? [{ ...bl[0], text: x.ttl }, ...bl.slice(1)] : [{ isH: true, text: x.ttl }, ...bl];
+      out.push(...bl.map(b => this.applyView(b, v)));
+    });
+    if (edit) out.push(this.addBar(id));
+    return out;
+  }
+  fuzzy(list, q, f) {
+    const q0 = String(q || '').toLowerCase().trim(); let s = q0.replace(/\b(the|a|an|section|widget|chart|card|cards|screen|tab)\b/g, '').replace(/\s+/g, ' ').trim() || q0; if (!s) return null;
+    let best = null, bs = 0;
+    list.forEach(x => { const l = String(typeof f === 'function' ? f(x) : x[f]).toLowerCase(); let sc = l === s ? 100 : l.includes(s) ? 50 + s.length : l && s.includes(l) ? 30 : 0; if (!sc) sc = s.split(' ').filter(w => w.length > 2 && l.includes(w)).length * 10; if (sc > bs) { bs = sc; best = x; } });
+    return best;
+  }
+  isContent(t) { return /\b(hide|remove|delete|drop|add|move|rename|restore|unhide|reorder|tab|tabs|section|reset|simplify|first|last|top|bottom|new screen|note|widget|as tiles|compact|title)\b/i.test(t) || /\bshow\b.*\bas\b/i.test(t) || /\b(put|bring|swap)\b.*\b(top|first|bottom|last|tab)\b/i.test(t); }
+  parseOne(t) {
+    let m;
+    if (/^(reset|restore defaults|undo all)/.test(t)) return { op: 'reset' };
+    if ((m = t.match(/(?:new|create|add)\s+(?:a\s+)?(?:new\s+)?screen\s+(?:called\s+|named\s+)?"?(.+?)"?$/))) return { op: 'newscreen', title: m[1] };
+    if ((m = t.match(/rename\s+(?:the\s+)?tab\s+"?(.+?)"?\s+to\s+"?(.+?)"?$/))) return { op: 'tab', tab: m[1], to: m[2] };
+    if ((m = t.match(/(?:add|put)\s+(?:the\s+)?(.+?)\s+(?:screen\s+)?(?:as\s+)?(?:a\s+)?tab\b/))) return { op: 'addtab', screen: m[1] };
+    if ((m = t.match(/(?:remove|delete|drop)\s+(?:the\s+)?(.+?)\s+tab\b/))) return { op: 'tab', tab: m[1], to: null };
+    if ((m = t.match(/(?:call|title|name|rename)\s+(?:this|the)\s+screen\s+(?:to\s+|as\s+)?"?(.+?)"?$/))) return { op: 'title', to: m[1] };
+    if ((m = t.match(/add\s+(?:a\s+)?note\s*[:\-]?\s*"?(.+?)"?$/))) return { op: 'add', kind: 'note', text: m[1] };
+    if ((m = t.match(/add\s+(?:a\s+)?stat\s+"?([^"\s]+)"?\s+"?(.+?)"?$/))) return { op: 'add', kind: 'stat', value: m[1], label: m[2] };
+    if ((m = t.match(/add\s+(?:a\s+)?button\s+"?(.+?)"?(?:\s+(?:to|for|going to)\s+(.+))?$/))) return { op: 'add', kind: 'button', text: m[1], to: m[2] };
+    if ((m = t.match(/(?:show|display|make|turn|switch|render)\s+(?:the\s+)?(.+?)\s+(?:as|into|to)\s+(?:a\s+|an\s+)?(tiles?|cards?|compact|list|chart|bars?)\b/))) return { op: 'view', target: m[1], view: m[2] };
+    if ((m = t.match(/rename\s+(?:the\s+)?(.+?)\s+to\s+"?(.+?)"?$/))) return { op: 'rename', target: m[1], to: m[2] };
+    if ((m = t.match(/(?:move|put|bring|send)\s+(?:the\s+)?(.+?)\s+(?:to\s+|at\s+)?(?:the\s+)?(top|first|bottom|last|up|down)\b/))) return { op: 'move', target: m[1], to: m[2] };
+    if ((m = t.match(/(?:hide|remove|delete|drop)\s+(?:the\s+)?(.+)$/))) return { op: 'hide', target: m[1] };
+    if ((m = t.match(/(?:show|restore|unhide|bring back)\s+(?:the\s+)?(.+)$/))) return { op: 'show', target: m[1] };
+    if ((m = t.match(/add\s+(?:the\s+)?(.+)$/))) return { op: 'add', kind: 'widget', from: m[1] };
+    return null;
+  }
+  applyOp(w, op, msgs) {
+    const id = this.state.scr, role = this.state.role, L = () => this.secList(id, false, w), upd = f => sv(w, id, f(w.scr[id] || {}));
+    const key = () => 'c' + Math.random().toString(36).slice(2, 7), push = a => upd(c => ({ add: [...(c.add || []), { key: key(), ...a }] }));
+    const sec = () => { const x = op.key ? L().find(y => y.key === op.key) : this.fuzzy(L(), op.target, 'label'); if (!x) msgs.push('No section called "' + op.target + '"'); return x; };
+    if (op.op === 'hide' || op.op === 'show') { const x = sec(); if (!x) return w; msgs.push((op.op === 'hide' ? 'Hid ' : 'Showed ') + x.label); return upd(c => ({ hide: { ...c.hide, [x.key]: op.op === 'hide' } })); }
+    if (op.op === 'move') { const x = sec(); if (!x) return w; const ks = L().map(y => y.key), i = ks.indexOf(x.key), to = String(op.to); ks.splice(i, 1); ks.splice(/top|first/.test(to) ? 0 : /bottom|last/.test(to) ? ks.length : /up/.test(to) ? Math.max(0, i - 1) : Math.min(ks.length, i + 1), 0, x.key); msgs.push('Moved ' + x.label + ' ' + to); return upd(() => ({ order: ks })); }
+    if (op.op === 'rename') { const x = sec(); if (!x) return w; msgs.push('Renamed ' + x.label + ' to ' + op.to); return upd(c => ({ ttl: { ...c.ttl, [x.key]: op.to } })); }
+    if (op.op === 'view') { const x = sec(); if (!x) return w; const vs = this.viewsOf(x.x); let v = String(op.view).toLowerCase().replace(/s$/, ''); v = v === 'tile' ? 'tiles' : v === 'chart' || v === 'bar' ? 'bars' : v === 'card' ? 'cards' : v; if (v === 'list' && vs.includes('compact')) v = 'compact'; if (!vs.includes(v)) { msgs.push(x.label + ' can show as: ' + (vs.join(', ') || 'one way only')); return w; } msgs.push(x.label + ' now ' + v); return upd(c => ({ view: { ...c.view, [x.key]: v } })); }
+    if (op.op === 'title') { msgs.push('Screen title: ' + op.to); return upd(() => ({ title: op.to })); }
+    if (op.op === 'reset') { msgs.push('Reset this screen'); const s2 = { ...w.scr }; delete s2[id]; return { ...w, scr: s2 }; }
+    if (op.op === 'add') {
+      if (op.kind === 'note') { msgs.push('Added a note'); return push({ kind: 'note', text: op.text || 'Note' }); }
+      if (op.kind === 'stat') { msgs.push('Added stat ' + op.value); return push({ kind: 'stat', value: String(op.value || '0'), label: op.label || 'Stat' }); }
+      if (op.kind === 'button') { const t = op.to ? this.fuzzy(this.allScreens(), op.to, 'text') : null; msgs.push('Added button ' + (op.text || 'Open')); return push({ kind: 'button', text: op.text || 'Open', to: t ? t.id : this.tabIds(role)[0] }); }
+      const c = this.fuzzy(this.catalog(), op.from, 'text'); if (!c) { msgs.push('No widget matching "' + op.from + '"'); return w; } msgs.push('Added widget ' + c.text); return push({ kind: 'ref', ref: c.key });
+    }
+    if (op.op === 'newscreen') { const nid = 'X' + (w.news.length + 1) + Math.floor(Math.random() * 90 + 10); this._goto = nid; msgs.push('Created screen ' + op.title); return { ...w, news: [...w.news, { id: nid, role, tab: String(op.title).slice(0, 10), kicker: 'custom screen', title: op.title, web: 'Created in the Studio', diff: 'Phone only', sugg: null }], tabs: { ...w.tabs, [role]: [...this.curTabs(w, role), nid] } }; }
+    if (op.op === 'addtab') { const s = this.fuzzy(this.allScreens(), op.screen, 'text'); if (!s) { msgs.push('No screen matching "' + op.screen + '"'); return w; } msgs.push('Added tab ' + s.id); this._goto = s.id; return { ...w, tabs: { ...w.tabs, [role]: [...new Set([...this.curTabs(w, role), s.id])] } }; }
+    if (op.op === 'tab') { const t = this.fuzzy(this.curTabs(w, role).map(i => ({ id: i, text: (w.scr[i] && w.scr[i].tab) || this.scrOf(i).tab })), op.tab, 'text'); if (!t) { msgs.push('No tab "' + op.tab + '"'); return w; } if (op.to == null) { if (this.curTabs(w, role).length < 2) { msgs.push('Kept the last tab'); return w; } msgs.push('Removed tab ' + t.text); return { ...w, tabs: { ...w.tabs, [role]: this.curTabs(w, role).filter(i => i !== t.id) } }; } msgs.push('Renamed tab ' + t.text + ' to ' + op.to); return sv(w, t.id, { tab: op.to }); }
+    return w;
+  }
+  runOps(ops, reply, via) {
+    if (!ops || !ops.length) return this.say('I could not turn that into a layout change. Try: hide <section>, move <section> to top, show <section> as tiles, add note "…", new screen <name>, add <screen> as a tab.');
+    const msgs = []; let w = this.state.ui; this._goto = null; ops.forEach(o => { w = this.applyOp(w, o, msgs); });
+    this.setUi(() => w, () => { if (this._goto) this.go(this._goto); });
+    this.say((reply ? reply + ' ' : '') + msgs.join('. ') + '.' + (via ? ' (' + via + ')' : ''), { hasFx: true, fxLabel: 'Undo', fx: () => this.undoNow() });
+  }
+  undoNow() { this.setState(x => { if (!x.undo.length) return null; const u = x.undo[x.undo.length - 1]; return { undo: x.undo.slice(0, -1), redo: [...x.redo, { skin: x.skin, layout: x.layout, ov: x.ov, ui: x.ui }], skin: u.skin, layout: u.layout, ov: u.ov, ui: u.ui || x.ui, pv: null }; }); }
+  async askContent(text) {
+    const s = this.state, secs = this.secList(s.scr, false).map(x => x.label), tabs = this.tabIds(s.role).map(i => this.scrOf(i).tab), cat = this.catalog().map(x => x.text);
+    let ops = null, reply = '', via = 'rules';
+    try {
+      if (window.claude && window.claude.complete) {
+        const prompt = 'You edit the layout and content of a phone app for tier "' + s.role + '". Current screen "' + this.scrOf(s.scr).title + '" has sections (in order): ' + JSON.stringify(secs) + '. Tabs: ' + JSON.stringify(tabs) + '. Widgets that can be added from other screens: ' + JSON.stringify(cat) + '. Request: "' + text + '". Return ONLY JSON {"reply":"one short sentence","ops":[...]} where each op is one of {"op":"hide|show","target":label} {"op":"move","target":label,"to":"top|bottom|up|down"} {"op":"rename","target":label,"to":text} {"op":"view","target":label,"view":"cards|compact|tiles|list|bars"} {"op":"add","kind":"note","text":text} {"op":"add","kind":"stat","value":text,"label":text} {"op":"add","kind":"button","text":text,"to":screen name} {"op":"add","kind":"widget","from":widget text} {"op":"title","to":text} {"op":"tab","tab":tab name,"to":new name or null to remove} {"op":"newscreen","title":text} {"op":"addtab","screen":name} {"op":"reset"}. Use the exact labels given. Prefer few, high-value ops.';
+        const r = String(await Promise.race([window.claude.complete(prompt), new Promise((_, j) => setTimeout(() => j(new Error('t')), 9000))])), j = JSON.parse(r.slice(r.indexOf('{'), r.lastIndexOf('}') + 1));
+        if (Array.isArray(j.ops)) { ops = j.ops; reply = j.reply || ''; via = 'model'; }
+      }
+    } catch (e) { ops = null; }
+    if (!ops) ops = text.toLowerCase().split(/\s*(?:;|\bthen\b|\band\s+(?=(?:hide|remove|move|add|show|rename|put|bring)\b))\s*/).map(p => this.parseOne(p.trim())).filter(Boolean);
+    this.setState({ busy: false });
+    this.runOps(ops, reply, via);
+  }
+  quickOps(kind) {
+    const L = this.secList(this.state.scr, false);
+    const ops = kind === 'simplify' ? [...L.slice(3).map(x => ({ op: 'hide', key: x.key, target: x.label })), ...L.filter(x => this.viewsOf(x.x).includes('compact')).map(x => ({ op: 'view', key: x.key, target: x.label, view: 'compact' }))] : kind === 'numbers' ? L.filter(x => x.x.blocks.some(b => b.isStats)).reverse().map(x => ({ op: 'move', key: x.key, target: x.label, to: 'top' })) : kind === 'compact' ? L.filter(x => this.viewsOf(x.x).includes('compact')).map(x => ({ op: 'view', key: x.key, target: x.label, view: 'compact' })) : kind === 'tiles' ? L.filter(x => this.viewsOf(x.x).includes('tiles')).map(x => ({ op: 'view', key: x.key, target: x.label, view: 'tiles' })) : [{ op: 'reset' }];
+    this.runOps(ops, '', '');
+  }
+  blocks(id) {
+    const s = this.state, g = s.gone, K = this.K;
+    const act = (key, labels, extra) => labels.map((l, i) => ({ label: l, st: i ? K.btn2 : K.btn, fn: e => { e.stopPropagation(); this.hide(key, l); extra && extra(l); } }));
+    const row = (t, sub, tag, o) => ({ t, s: sub, tag, tagSt: `${K.mono}font-size:10px;padding:2px 8px;border:1px solid ${(o && o.c) || K.lineC};border-radius:999px;white-space:nowrap;color:${(o && o.c) || 'inherit'};`, acts: (o && o.acts) || [], open: (o && o.open) || (() => {}), cardSt: K.card + (o && o.open ? 'cursor:pointer;' : 'cursor:default;'), hasOpen: !!(o && o.open), subSt: K.mono + 'font-size:11px;line-height:1.4;color:' + K.mutC + ';' });
+    const tog = keys => ({ isToggles: true, items: keys.map(k => ({ k, bg: s.tg[k] ? K.hiC : 'transparent', x: s.tg[k] ? '19px' : '2px', fn: () => this.setState(x => ({ tg: { ...x.tg, [k]: !x.tg[k] } })) })) });
+    const bars = (items, max, c) => ({ isBars: true, items: items.map(([k, v, label]) => ({ k, w: Math.max(2, Math.round(v / max * 100)) + '%', label: label ?? String(v), c: c || K.accC })) });
+    const stats = items => ({ isStats: true, items: items.map(([v, k, c]) => ({ v, k, c: c || K.accC })) });
+    const chips = (items, cur) => ({ isChips: true, items: items.map(([label, fn]) => ({ label, fn, st: label === cur ? K.btn : K.chip })) });
+    const q = s.q.toLowerCase();
+    const B = {
+      O1: () => { const f = FIRES.filter(x => !g[x[0]]); return [{ isP: true, text: f.length ? `${f.length} fires, about ${f.length * 2} minutes. 214 lower items are held back with a reason.` : 'Nothing needs you. The Overseer will page you.' }, { isRows: true, items: f.map(([k, sc, t, sub, a, why, ign]) => row(t, sub, 'score ' + sc, { c: sc >= 70 ? K.warn : null, acts: act(k, a), open: () => this.sheet('Fire · score ' + sc, t, [{ k: 'Why it ranks', v: why }, { k: 'If ignored', v: ign }, { k: 'Raised by', v: sub }]) })) }]; },
+      O2: () => [stats([['10', 'agents on the register'], ['2', 'need you', K.warn], ['2', 'run on rules, no model'], ['1', 'shadow winning', K.ok]]), { isRows: true, items: AG.map(([t, layer, rung, state, does, tools, chk]) => row(t, `${layer} · ${rung}`, state, { c: stc(K, state), acts: state === 'ok' || g['ag' + t] ? [] : act('ag' + t, state === 'silent' ? ['Wake'] : ['Pause', 'Inspect']), open: () => this.sheet(`${layer} layer · ${rung}`, t, [{ k: 'Does', v: does }, { k: 'Tools', v: tools }, { k: 'Checked by', v: chk }, { k: 'State', v: state }], [{ label: 'Blueprint v3', to: R + 'Institute Blueprint v3.dc.html' }]) })) }],
+      O3: () => PIPES.flatMap(([n, st, note]) => [{ isH: true, text: n }, bars(st, Math.max(...st.map(x => x[1]), 1)), { isRows: true, items: [row(note, 'stuck items', note === 'On time.' ? 'ok' : 'late', { c: note === 'On time.' ? K.ok : K.warn, acts: note === 'On time.' || g['pp' + n] ? [] : act('pp' + n, ['Nudge']) })] }]),
+      O4: () => [{ isRows: true, items: (g.batch ? [] : [row('12 nodes turn from grey to labelled', 'publisher · 9 sources · critic re-run passed · 0 private links', 'graph batch', { c: K.warn, acts: act('batch', ['Publish', 'Inspect']) })]) }, { isH: true, text: 'Post drafts · mindful gate passed' }, { isRows: true, items: [['p1', 'x', 'We published the shuffled-seed control before running it.'], ['p2', 'linkedin', 'Seven indicators that tell a correction from a depression.'], ['p3', 'reddit', 'The 30B-to-LSTM ladder: method only, results pending.']].filter(p => !g[p[0]]).map(([k, ch, t]) => row(t, 'caps ✓ quiet hours ✓ spacing ✓ duplicates ✓ disclosure ✓', ch, { acts: act(k, ['Approve', 'Reject']) })) }, { isH: true, text: 'Coming-out party · wave 1 of 5' }, stats([['18', 'of 20 repos clear the bar', K.ok], ['2', 'blocked: licence scan, flaky test', K.warn]])],
+      O5: () => [{ isH: true, text: 'Public funnel · sample' }, bars([['visitors', 12400, '12.4k'], ['members', 245, '245'], ['Pro', 31, '31'], ['partner', 6, '6'], ['accepted', 2, '2']], 12400), { isH: true, text: 'API funnel · sample' }, bars([['signups', 48, '48'], ['keys', 31, '31'], ['paying', 9, '9']], 48), stats([['1,240', 'stars across wave-1 repos'], ['9 / 12', 'API accounts paying'], ['2', 'studies accepted'], ['$3.1k', 'sample monthly API revenue']]), { isRows: true, items: g.w2 ? [] : [row('Wave 2: 20 repos', 'ready in 4 days; 16 clear the bar', 'wave 2', { acts: act('w2', ['Approve wave 2', 'Hold']) })] }],
+      O6: () => [bars([['spend', 412, '$412'], ['cap', s.spendCap, '$' + s.spendCap]], Math.max(s.spendCap, 412), K.warn), chips([['Cap +$50', () => this.setState(x => ({ spendCap: x.spendCap + 50 }))], ['Cap −$50', () => this.setState(x => ({ spendCap: Math.max(100, x.spendCap - 50) }))]]), { isH: true, text: 'Ladder routing · holder → shadow' }, { isRows: true, items: [['Scout', '1–3B → LSTM', 'winning'], ['Publisher', '1–3B → tiny', 'testing'], ['Theorist', '8B → 1–3B', 'testing']].map(([t, sub, tag]) => row(t, sub, tag, { c: tag === 'winning' ? K.ok : null })) }, tog(['Quiet hours 22–07', 'Auto-batch posts', 'Page me at score ≥ 70']), stats([['7', 'MCP servers · 1 audit pending'], ['3', 'upgrades tested'], ['4', 'Studio sites · 1 in review'], ['42', 'Tmpltz archetypes']])],
+      R1: () => { const items = Object.entries(GR).filter(([, n]) => (!n.priv || s.tg['Show private nodes']) && (!q || (n.t + n.k + n.x).toLowerCase().includes(q))); return [{ isInput: true, value: s.q, ph: 'search: lstm, seed, H0…', on: e => this.setState({ q: e.target.value }) }, { isP: true, text: `${items.length} nodes.` }, { isRows: true, items: items.map(([k, n]) => row(n.t, n.x, n.k, { c: n.priv ? K.warn : null, open: () => this.sheet(n.k + ' · ' + (n.priv ? 'private' : 'public'), n.t, [{ k: 'Summary', v: n.x }, { k: 'Relations', v: n.rel.map(r => r[0] + ' ' + GR[r[1]].t).join(' · ') }], []), acts: [{ label: 'Focus in graph', st: K.btn2, fn: e => { e.stopPropagation(); this.go('R3:' + k); } }] })) }]; },
+      R2: () => { const r = REPS[s.rep]; return [chips(REPS.map((x, i) => [['P', 'A', 'B', 'C', 'D'][i], () => this.setState({ rep: i })]), ['P', 'A', 'B', 'C', 'D'][s.rep]), { isH: true, text: r[1] }, { isMark: true, text: r[0] + '.', rest: r[2] }, { isRows: true, items: r[3].map((f, i) => row(f, 'finding ' + (i + 1), 'cited')) }, { isButton: true, text: 'Open the full report', fn: () => window.open(R + r[0] + '.dc.html', '_blank') }]; },
+      R3: () => { const n = GR[s.gnode]; return [chips(Object.keys(GR).filter(k => !GR[k].priv || s.tg['Show private nodes']).map(k => [k, () => this.setState({ gnode: k })]), s.gnode), { isH: true, text: n.k + (n.priv ? ' · private' : ' · public') }, { isP: true, text: n.t + '. ' + n.x }, { isH: true, text: 'Relations · tap to move focus' }, { isRows: true, items: n.rel.filter(([, to]) => !GR[to].priv || s.tg['Show private nodes']).map(([rel, to]) => row(GR[to].t, rel, GR[to].k, { open: () => this.setState({ gnode: to }) })) }]; },
+      R4: () => [{ isChat: true }],
+      R5: () => [{ isP: true, text: 'Cells run of 12 per rung and condition. Scores are withheld until the P3 read, so nothing here can be mistaken for a result.' }, ...[['LSTM', 9, 9, 6], ['tiny', 8, 8, 5], ['1–3B', 10, 10, 7], ['8B', 4, 4, 2], ['30B', 3, 3, 1]].flatMap(([r, a, b, c]) => [{ isH: true, text: r }, bars([['seeded', a, a + '/12'], ['unseeded', b, b + '/12'], ['shuffled', c, c + '/12']], 12)]), { isH: true, text: 'Shadow scores · sample, not the frozen split' }, { isRows: true, items: [row('Scout · LSTM vs 1–3B', '0.83 vs 0.81 for 7 days', 'winning', { c: K.ok, open: () => this.sheet('Shadow', 'Scout · LSTM vs 1–3B', [{ k: 'Window', v: '7 days on the frozen split' }, { k: 'Next', v: 'The Registrar proposes promotion; the owner approves.' }]) }), row('Publisher · tiny vs 1–3B', '0.79 vs 0.80', 'testing')] }],
+      R6: () => [stats([['Pro', 'M. Kader · researcher'], ['2', 'private graphs cleared', K.warn]]), { isH: true, text: 'Graph' }, tog(['Show private nodes']), { isH: true, text: 'Notify me' }, tog(['New findings', 'Clarifying questions', 'Suggestions']), { isRows: true, items: g.exp ? [] : [row('Export my notes', 'JSON, with node ids', 'export', { acts: act('exp', ['Export']) })] }],
+      A1: () => [stats([['18,420', 'calls this month'], ['$86.40', 'of $' + s.cap + ' cap', K.warn], ['140 ms', 'p50 latency'], ['63%', 'answered on CPU', K.ok]]), { isH: true, text: 'Calls per day' }, bars([['Mon', 2610], ['Tue', 3240], ['Wed', 2880], ['Thu', 4050], ['Fri', 3650], ['Sat', 1350], ['Sun', 1080]], 4050), { isH: true, text: 'Which rung answered' }, bars([['LSTM', 41, '41%'], ['tiny', 22, '22%'], ['1–3B', 24, '24%'], ['8B', 10, '10%'], ['30B', 3, '3%']], 41, K.warn)],
+      A2: () => [{ isRows: true, items: [['kp', 'production', 'anm_live_••••7Qx2 · ask, graph.read · used 3 min ago', 'live'], ['ks', 'staging', 'anm_test_••••c19F · all scopes · used 1 day ago', 'test']].filter(k => !g[k[0]]).map(([k, t, sub, tag]) => row(t, sub, tag, { c: tag === 'live' ? K.ok : null, acts: [{ label: 'Copy', st: K.btn, fn: () => this.toast('Key copied', null) }, { label: 'Rotate', st: K.btn2, fn: () => this.toast('Rotated. Old key works for 24 h.', null) }, { label: 'Revoke', st: K.btnw, fn: () => this.hide(k, 'Revoked') }] })) }, { isButton: true, text: 'Create a key', fn: () => this.toast('Key created: anm_live_••••' + Math.random().toString(36).slice(2, 6), null) }],
+      A3: () => { const e = EPS[s.ep]; return [chips(EPS.map((x, i) => [x[1], () => this.setState({ ep: i, ran: false })]), e[1]), { isCode: true, bg: K.hiC, fg: 'inherit', text: e[0] + ' ' + e[1] + (e[3] ? '\n' + json(e[3]) : '') }, { isButton: true, text: s.ran ? 'Run again' : 'Run', fn: () => this.setState({ ran: true }) }, ...(s.ran ? [{ isCode: true, bg: K.inkC, fg: K.hiC === K.inkC ? '#000' : '#fff', text: '200 OK\n' + json(e[4]) }] : [])]; },
+      A4: () => [stats([['$86.40', 'due 1 Nov', K.warn], ['$' + s.cap, 'hard cap']]), chips([['Cap +$50', () => this.setState(x => ({ cap: x.cap + 50 }))], ['Cap −$50', () => this.setState(x => ({ cap: Math.max(50, x.cap - 50) }))]]), { isH: true, text: 'Draft price per 1,000 calls' }, bars([['LSTM', 5, '$0.05'], ['tiny', 10, '$0.10'], ['1–3B', 40, '$0.40'], ['8B', 120, '$1.20'], ['30B', 400, '$4.00']], 400, K.warn), { isRows: true, items: [['September', '$71.10'], ['August', '$44.85'], ['July', '$12.30']].map(([t, v]) => row(t, 'Visa ·· 4242', v, { acts: [{ label: 'PDF', st: K.btn2, fn: () => this.toast(t + ' invoice downloaded', null) }] })) }],
+      A5: () => [{ isRows: true, items: EPS.map(e => row(e[0] + ' ' + e[1], e[2], e[0], { c: K.warn, open: () => this.sheet('Endpoint', e[0] + ' ' + e[1], [{ k: 'Does', v: e[2] }, { k: 'curl', v: `curl -X ${e[0]} https://api.anima.example${e[1]} -H "Authorization: Bearer $ANIMA_KEY"` + (e[3] ? ` -d '${JSON.stringify(e[3])}'` : '') }]), acts: [{ label: 'Try it', st: K.btn2, fn: ev => { ev.stopPropagation(); this.setState({ ep: EPS.indexOf(e), ran: false }); this.go('A3'); } }] })) }, { isH: true, text: 'SDK' }, { isCode: true, bg: K.hiC, fg: 'inherit', text: "import { Anima } from 'anima'\nconst a = new Anima(process.env.ANIMA_KEY)\nconst r = await a.ask({\n  question: 'Which rung clears depth 4?',\n  rung: 'auto', cite: true })" }],
+      A6: () => [stats([['99.97%', '30 days · API', K.ok], ['0', 'incidents this week']]), bars([['LSTM', 99.99, '99.99%'], ['tiny', 99.98, '99.98%'], ['1–3B', 99.95, '99.95%'], ['8B', 99.9, '99.90%'], ['30B', 99.8, '99.80%']], 100, K.ok), { isP: true, text: 'Sample data. The 30B rung runs on rented GPUs and is the lowest.' }],
+      S1: () => [{ isP: true, text: 'The headline experiment is in phase P3: 30B, small and LSTM at depth 1–3. Published either way.' }, bars([['P0 unify', 100, 'done'], ['P1 replicate', 100, 'done'], ['P2 seed', 100, 'done'], ['P3 small', 35, 'running'], ['P4 full', 0, '—'], ['P5 publish', 0, '—']], 100, K.warn), { isRows: true, items: [row('Companion D: who is exposed if H0 holds', '15 Oct · 9 min read', 'report', { open: () => this.go('S4') }), row('Debt share of AI capex: 32%', 'Companion B · tracked weekly', 'indicator', { c: K.warn, open: () => this.sheet('Indicator', 'Debt share of AI capex', [{ k: 'Last reading', v: '32% (mid-2026), up from 9% in FY24' }, { k: 'Warning sign', v: 'Keeps rising while free cash flow turns negative' }], [{ label: 'Companion B', to: R + 'AI Era Bubble.dc.html' }]) })] }],
+      S2: () => [{ isRows: true, items: REPS.map(([t, sub, sm], i) => row(t, sub, s.saved[i] ? 'saved' : 'report', { c: s.saved[i] ? K.ok : null, open: () => this.sheet(sub, t, [{ k: 'Summary', v: sm }, ...REPS[i][3].map((f, j) => ({ k: 'Finding ' + (j + 1), v: f }))], [{ label: 'Read the full report', to: R + t + '.dc.html' }]), acts: [{ label: s.saved[i] ? 'Unsave' : 'Save', st: K.btn2, fn: e => { e.stopPropagation(); this.setState(x => ({ saved: { ...x.saved, [i]: !x.saved[i] } })); } }] })) }],
+      S3: () => [bars([['quota', s.quota, `${s.quota} / 50`]], 50, K.warn), { isChat: true }],
+      S4: () => { const f = s.flt, items = COS.filter(c => f === 'All' || (f === 'Exposed' && c[2] >= 4) || (f === 'Mixed' && c[2] >= 1 && c[2] <= 3) || (f === 'Gains' && c[2] < 0)); return [{ isP: true, text: 'If H0 holds. A scenario from Companion D, not a forecast; exposure 5 is most at risk.' }, chips(['All', 'Exposed', 'Mixed', 'Gains'].map(x => [x, () => this.setState({ flt: x })]), f), { isRows: true, items: items.map(([n, seg, e, w, why, surv]) => row(n, seg + ' · ' + w, e < 0 ? 'gains' : 'exposure ' + e, { c: e >= 4 ? K.warn : e < 0 ? K.ok : null, open: () => this.sheet(seg, n, [{ k: 'Why', v: why }, { k: 'Stress window', v: w }, { k: 'What survives', v: surv }], [{ label: 'Companion D', to: R + 'Exposure and Templates.dc.html' }]) })) }]; },
+      S5: () => [{ isTiers: true, items: [['Member', 'free', ['Public graph and all reports', '50 questions a month', 'Weekly digest']], ['Pro', '$29 / mo', ['Unlimited questions', 'Raw result tables and shadow scores', 'Private follow-ups']], ['Partner', 'talk to us', ['Private seeded graph', 'Paid study or design partnership', 'Bridago on your CPUs']]].map(([name, price, feats]) => ({ name, price, feats, cardSt: K.card + (s.plan === name ? `outline:2px solid ${K.accC};` : 'outline:0;'), cta: s.plan === name ? 'Current plan' : name === 'Partner' ? 'Start a conversation' : 'Choose ' + name, st: s.plan === name ? K.btn : K.btn2, fn: () => { if (name === 'Partner') { this.setState({ role: 'sub' }); this.toast('Request sent to the owner (demo)', null); } else { this.setState({ plan: name }); this.toast('Plan: ' + name + ' (demo, no charge)', null); } } })) }],
+    };
+    return B[id] ? B[id]() : [];
+  }
+  renderVals() {
+    const s = this.state, e = s.pv ? this.lock(s.pv) : s, S = this.skinOf(e), K = this.K = kit(S, e.layout), cur = this.scrOf(s.scr), list = this.tabIds(s.role).map(i => { const c = this.scrOf(i); return [i, c.tab, c.kicker, c.title]; }), sg = cur.sugg;
+    const blank = { isH: 0, isP: 0, isMark: 0, isInput: 0, isChips: 0, isStats: 0, isRows: 0, isBars: 0, isCode: 0, isButton: 0, isToggles: 0, isTiers: 0, isChat: 0, isBar: 0, isAdd: 0 };
+    const blocks = this.compose(s.scr).map(b => ({ ...blank, ...b }));
+    return { phoneZoom: (() => { const z = Math.min(1, (window.innerWidth - 24) / 410); return z < 1 ? 'zoom:' + z.toFixed(3) + ';' : ''; })(),
+      nScreens: NSC, k: K, cur, roleName: ROLES.find(r => r[0] === s.role)[1], hint: 'tap rows, buttons, chips · the card above the tabs is the popup system',
+      roles: ROLES.map(([id, name]) => ({ name, pick: () => this.go(this.tabIds(id)[0]), style: `min-height:44px;font:700 14px 'Archivo',sans-serif;cursor:pointer;border:2px solid #111;background:${s.role === id ? '#111' : '#fff'};color:${s.role === id ? '#fff' : '#111'};` })),
+      skins: SKINS.map(([name], i) => ({ name, pick: () => this.setState({ skin: i }), style: `min-height:34px;padding:0 12px;font:600 12px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;border-radius:999px;background:${s.skin === i ? '#111' : '#fff'};color:${s.skin === i ? '#fff' : '#111'};` })),
+      list: list.map(([id, , , title]) => ({ id, title, go: () => this.go(id), style: `display:flex;gap:10px;align-items:baseline;min-height:38px;padding:0 10px;border:0;border-bottom:1px dashed #999;cursor:pointer;text-align:left;color:#111;font-family:inherit;background:${id === s.scr ? '#fff1a8' : 'transparent'};` })),
+      blocks,
+      toggleEdit: () => this.setState(x => ({ editMode: !x.editMode })), editLabel: s.editMode ? 'Done' : 'Edit',
+      cintents: [['Simplify screen', () => this.quickOps('simplify')], ['Numbers first', () => this.quickOps('numbers')], ['Compact lists', () => this.quickOps('compact')], ['Lists as tiles', () => this.quickOps('tiles')], ['Suggest layout', () => this.ask('Suggest the best layout and information for the ' + s.role + ' tier on this screen: hide noise, reorder, add widgets')], ['Reset screen', () => this.quickOps('reset')]].map(([label, fn]) => ({ label, fn, style: "min-height:34px;padding:0 10px;font:600 11px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;background:#fffbe0;color:#111;" })),
+      resetUi: () => this.setUi(() => ({ scr: {}, tabs: {}, news: [] }), () => this.go(this.tabIds(s.role)[0])),
+      tabRows: this.tabIds(s.role).map(id => { const c = this.scrOf(id); return { id, title: c.tab + ' · ' + c.title, go: () => this.go(id), up: () => this.moveTab(s.role, id, -1), down: () => this.moveTab(s.role, id, 1), rm: () => this.rmTab(s.role, id), wrap: 'display:flex;gap:4px;align-items:center;border-bottom:1px dashed #999;background:' + (id === s.scr ? '#fff1a8' : 'transparent') + ';', style: "flex:1;display:flex;gap:10px;align-items:baseline;min-height:38px;padding:0 10px;border:0;cursor:pointer;text-align:left;color:#111;font-family:inherit;background:transparent;min-width:0;" }; }),
+      tabOpts: this.allScreens().filter(x => !this.tabIds(s.role).includes(x.id)).map(x => ({ v: x.id, l: x.id + ' · ' + this.scrOf(x.id).title })),
+      addTabSel: ev => { if (ev.target.value) this.addTab(s.role, ev.target.value); },
+      newName: s.newName, onNewName: ev => this.setState({ newName: ev.target.value }), makeScreen: () => { const n = s.newName.trim(); if (n) { this.newScreen(s.role, n); this.setState({ newName: '' }); } },
+      nPat: SKINS.length * LAYOUTS.length, nLooks: SKINS.length, nLay: LAYOUTS.length,
+      agentIn: s.agentIn, onAgentIn: ev => this.setState({ agentIn: ev.target.value }), onAgentKey: ev => { if (ev.key === 'Enter') this.ask(s.agentIn); }, askNow: () => this.ask(s.agentIn),
+      agentStatus: s.busy ? 'thinking…' : s.pv ? 'previewing' : 'ready',
+      pbtnDark: "min-height:44px;padding:0 14px;font:700 12px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;background:#111;color:#fff;",
+      intents: [['Calmer', 'calm and roomy'], ['More contrast', 'high contrast'], ['For investors', 'investor serious'], ['Playful', 'playful round'], ['Denser', 'dense compact sharp'], ['Technical', 'technical mono'], ['Premium dark', 'premium dark glass'], ['Surprise me', null]].map(([label, q]) => ({ label, fn: () => q ? this.ask(q) : this.surprise(), style: "min-height:34px;padding:0 10px;font:600 11px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;border-radius:999px;background:#fff;color:#111;" })),
+      locks: [['skin', 'Look'], ['layout', 'Layout'], ['ov', 'Mix']].map(([k, label]) => ({ label: (s.lk[k] ? '■ ' : '□ ') + label, fn: () => this.setState(x => ({ lk: { ...x.lk, [k]: !x.lk[k] } })), style: "min-height:30px;padding:0 10px;font:600 11px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;background:" + (s.lk[k] ? '#111' : '#fff') + ";color:" + (s.lk[k] ? '#fff' : '#111') + ";" })),
+      agentLog: s.log.map(m => ({ text: m.text, hasFx: !!m.hasFx, fx: m.fx || (() => {}), fxLabel: m.fxLabel || '', style: m.who === 'u' ? "justify-self:end;max-width:88%;padding:7px 10px;background:#111;color:#fff;font-size:13px;" : "max-width:96%;padding:7px 10px;border:1.5px solid #111;background:#f4f4f0;font-size:13px;line-height:1.4;display:grid;justify-items:start;" })),
+      proposals: s.props.map(p => { const S2 = this.skinOf(this.lock(p.cfg)), L2 = this.lock(p.cfg); return { name: p.name, why: p.why, tags: this.describe(L2), sw1: 'width:18px;height:18px;border:1.5px solid #111;background:' + S2.bg, sw2: 'width:18px;height:18px;border:1.5px solid #111;background:' + S2.surf, sw3: 'width:18px;height:18px;border:1.5px solid #111;background:' + S2.acc, enter: () => this.setState({ pv: p.cfg }), leave: () => this.setState({ pv: null }), apply: () => { this.applyCfg(p.cfg, p.name + ' applied.'); }, save: () => this.savePreset(L2) }; }),
+      undoCfg: () => this.undoNow(), _u0: () => this.setState(x => { if (!x.undo.length) return null; const u = x.undo[x.undo.length - 1]; return { undo: x.undo.slice(0, -1), redo: [...x.redo, { skin: x.skin, layout: x.layout, ov: x.ov, ui: x.ui }], skin: u.skin, layout: u.layout, ov: u.ov, ui: u.ui || x.ui, pv: null }; }),
+      redoCfg: () => this.setState(x => { if (!x.redo.length) return null; const u = x.redo[x.redo.length - 1]; return { redo: x.redo.slice(0, -1), undo: [...x.undo, { skin: x.skin, layout: x.layout, ov: x.ov, ui: x.ui }], skin: u.skin, layout: u.layout, ov: u.ov, ui: u.ui || x.ui, pv: null }; }),
+      critiqueNow: () => this.critique(this.cfgNow(), false, ''), saveNow: () => this.savePreset(this.cfgNow()),
+      hasPresets: s.presets.length > 0,
+      presets: s.presets.map((r, i) => ({ label: r.label, load: () => this.applyCfg(r.cfg, 'Loaded ' + r.label + '.'), del: () => this.delPreset(i), style: "min-height:30px;padding:0 9px;font:600 11px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;background:#fff;color:#111;" })),
+      resetOv: () => this.setState({ ov: {} }),
+      groups: [
+        ['Accent', 'acc', ['#e30613', '#ff5a1f', '#ffd84a', '#c6ff3d', '#0a7a3c', '#14b8a6', '#2c6bff', '#9184d9', '#ff5c8a', '#111111'].map(c => [c, c])],
+        ['Surface', 'bg', [['Paper', 'paper'], ['Snow', 'snow'], ['Slate', 'slate'], ['Ink', 'ink'], ['Sand', 'sand'], ['Mint', 'mint'], ['Rose', 'rose'], ['Navy', 'navy']]],
+        ['Type', 'ty', [['Sans', 'sans'], ['Serif', 'serif'], ['Mono', 'mono'], ['Display', 'display'], ['Round', 'round'], ['News', 'news'], ['Tech', 'tech'], ['Poster', 'poster']]],
+        ['Corners', 'rad', [['Sharp', 0], ['Soft', 8], ['Round', 22]]],
+        ['Borders', 'bw', [['None', 0], ['Thin', 1], ['Heavy', 3]]],
+        ['Shadow', 'sh', [['Flat', 'flat'], ['Soft', 'soft'], ['Hard', 'hard']]],
+        ['Density', 'dn', [['Compact', 0], ['Regular', 1], ['Roomy', 2]]],
+      ].map(([label, key, opts]) => ({ label, opts: opts.map(([name, v]) => { const on = s.ov[key] === v; const sw = key === 'acc'; return { name: sw ? '' : name, aria: label + ': ' + name, on, pick: () => this.setState(x => ({ ov: { ...x.ov, [key]: on ? undefined : v } })), style: sw ? `width:30px;height:30px;border-radius:50%;cursor:pointer;background:${v};border:3px solid ${on ? '#111' : '#fff'};outline:1px solid #111;` : `min-height:32px;padding:0 10px;font:600 11px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;background:${on ? '#111' : '#fff'};color:${on ? '#fff' : '#111'};` }; }) })),
+      layouts: LAYOUTS.map((name, i) => ({ name, pick: () => this.setState({ layout: i }), style: `min-height:34px;padding:0 12px;font:600 12px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;background:${s.layout === i ? '#111' : '#fff'};color:${s.layout === i ? '#fff' : '#111'};` })),
+      pNum: e.skin * LAYOUTS.length + e.layout + 1, pName: skinAt(e.skin)[0] + ' · ' + LAYOUTS[e.layout],
+      pbtn: "min-height:34px;padding:0 12px;font:700 12px 'JetBrains Mono',monospace;cursor:pointer;border:2px solid #111;background:#fff;color:#111;",
+      prevP: () => this.setState(x => { const T = SKINS.length * LAYOUTS.length, n = (x.skin * LAYOUTS.length + x.layout + T - 1) % T; return { skin: Math.floor(n / LAYOUTS.length), layout: n % LAYOUTS.length }; }),
+      nextP: () => this.setState(x => { const T = SKINS.length * LAYOUTS.length, n = (x.skin * LAYOUTS.length + x.layout + 1) % T; return { skin: Math.floor(n / LAYOUTS.length), layout: n % LAYOUTS.length }; }),
+      shuffleP: () => this.setState({ skin: Math.floor(Math.random() * SKINS.length), layout: Math.floor(Math.random() * LAYOUTS.length), ov: {} }),
+      tabs: list.map(([id, tab]) => ({ label: tab, fn: () => this.go(id), style: K.pill ? `flex:0 0 auto;min-height:36px;padding:0 14px;border-radius:999px;cursor:pointer;${K.mono}font-size:11px;font-weight:600;border:${Math.max(S.bw, 1)}px solid ${id === s.scr ? S.acc : S.line};background:${id === s.scr ? S.acc : 'transparent'};color:${id === s.scr ? S.on : S.ink};` : K.rail ? `min-height:54px;padding:0 4px;background:none;border:0;border-left:3px solid ${id === s.scr ? K.accC : 'transparent'};cursor:pointer;${K.mono}font-size:10px;font-weight:600;color:${id === s.scr ? K.accC : K.mutC};` : K.dock ? `flex:0 0 auto;min-height:40px;padding:0 12px;border:0;border-radius:999px;cursor:pointer;${K.mono}font-size:11px;font-weight:600;background:${id === s.scr ? S.acc : 'transparent'};color:${id === s.scr ? S.on : S.bg};` : `flex:1 1 auto;min-width:44px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:44px;padding:0 10px;background:none;border:0;${K.top ? 'border-bottom' : 'border-top'}:3px solid ${id === s.scr ? K.accC : 'transparent'};cursor:pointer;${K.mono}font-size:11px;font-weight:600;color:${id === s.scr ? K.accC : K.mutC};` })),
+      showSugg: !!sg && s.sugOn[s.scr] && !s.sugOff[s.scr] && !s.toast && !s.sheet,
+      sugg: sg ? { text: sg[0], cta: sg[1], go: () => { this.setState(x => ({ sugOff: { ...x.sugOff, [s.scr]: true } })); this.go(sg[2]); } } : { text: '', cta: '', go: () => {} },
+      dismiss: () => this.setState(x => ({ sugOff: { ...x.sugOff, [s.scr]: true } })),
+      toast: !!s.toast, toastText: s.toast ? s.toast.text : '', canUndo: !!(s.toast && s.toast.undo),
+      undo: () => this.setState(x => { const gg = { ...x.gone }; delete gg[x.toast.undo]; return { gone: gg, toast: null }; }),
+      sheetOpen: !!s.sheet, sheet: s.sheet || { kicker: '', title: '', rows: [], links: [] }, closeSheet: () => this.setState({ sheet: null }), stop: e => e.stopPropagation(),
+      msgs: s.msgs.map(m => ({ text: m.text, style: m.me ? `justify-self:end;max-width:84%;padding:9px 12px;border-radius:${S.rad > 12 ? 16 : S.rad}px;background:${S.acc};color:${S.on};font-size:14px;line-height:1.4;` : `justify-self:start;max-width:92%;padding:9px 12px;border-radius:${S.rad > 12 ? 16 : S.rad}px;border:${Math.max(S.bw, 1)}px solid ${S.line};background:${S.surf};font-size:14px;line-height:1.45;` })),
+      clarify: !!s.clarify, clarifyQ: s.clarify ? s.clarify.q : '',
+      clarifyOpts: (s.clarify ? s.clarify.opts : []).map(([label, ans]) => ({ label, fn: () => this.setState(x => ({ clarify: null, msgs: [...x.msgs, { me: true, text: label }, { me: false, text: ans }] })) })),
+      chips: ['Can a small model be as good?', 'Is the GPU boom a bubble?', 'What does H5 test?', 'How do I engage?'].map(l => ({ label: l, fn: () => this.chatAsk(l) })),
+      draft: s.draft, onDraft: e => this.setState({ draft: e.target.value }), sendDraft: () => { if (s.draft.trim()) this.chatAsk(s.draft.trim()); },
+    };
+  }
+}
+</script>
+</body>
+</html>

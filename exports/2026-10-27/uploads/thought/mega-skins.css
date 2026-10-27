@@ -1,0 +1,61 @@
+/* Skins for Mega Graph. Every colour in the app is a variable set here; html[data-skin] picks the set. */
+:root, html[data-skin="paper"] {
+  color-scheme: light;
+  --bg: #f4f3f8; --card: #ffffff; --card2: #fbfaff; --card3: #f7f6fb; --card4: #f1f0f6; --hover: #eeedf5;
+  --line: #e7e5ef; --line2: #e4e2ec; --line3: #cfcdd9;
+  --acc-bg: #ece9fd; --acc-bg2: #ddd8fb; --acc-line: #9f94e6; --acc-ink: #3b318a; --acc-ink2: #4c42a3; --acc: #5a4fc0; --acc2: #796cbf;
+  --ink: #1f2030; --ink2: #25273a; --ink3: #383a4e; --ink4: #4d5064; --ink5: #5f6278; --ink6: #666a80; --ink7: #9a9cad;
+  --warn: #8a6a12; --warn2: #7a5c10; --bad: #b4532c; --bad2: #9a4524; --good: #1f7a5c; --blue: #2f6aa6; --purple: #7b3fa3; --teal: #1d7f79; --olive: #4f7a12; --rose: #b03a5c;
+  --ink-rgb: 31, 32, 48; --card-rgb: 255, 255, 255;
+  --stage-a: #1c1e30; --stage-b: #141522;
+}
+html[data-skin="night"] {
+  color-scheme: dark;
+  --bg: #161826; --card: #1b1d2c; --card2: #171928; --card3: #202236; --card4: #20222f; --hover: #232532;
+  --line: #2b2d3b; --line2: #292b31; --line3: #3f424d;
+  --acc-bg: #2b2741; --acc-bg2: #423a6a; --acc-line: #5d5294; --acc-ink: #e7e5fe; --acc-ink2: #d2cefd; --acc: #b5abfc; --acc2: #9184d9;
+  --ink: #e9e9ed; --ink2: #e4e7f5; --ink3: #cfd3e5; --ink4: #b2b6ca; --ink5: #9397ab; --ink6: #8a8ea1; --ink7: #595d6c;
+  --warn: #e5c46f; --warn2: #f3e2b0; --bad: #e8956f; --bad2: #f0c7b3; --good: #7fcfb6; --blue: #7fb2e5; --purple: #c79be0; --teal: #5fd0c9; --olive: #b6d97f; --rose: #e57f9b;
+  --ink-rgb: 233, 233, 237; --card-rgb: 27, 29, 44;
+  --stage-a: #1c1e30; --stage-b: #101120;
+}
+html[data-skin="blueprint"] {
+  color-scheme: dark;
+  --bg: #0f1f3d; --card: #15284d; --card2: #12254a; --card3: #183059; --card4: #1a335f; --hover: #1d3a6b;
+  --line: #2b4675; --line2: #203a66; --line3: #3b5a8f;
+  --acc-bg: #1f3f78; --acc-bg2: #2a4f94; --acc-line: #5b86d6; --acc-ink: #e6f0ff; --acc-ink2: #c3d4f2; --acc: #8fc1ff; --acc2: #6aa6f0;
+  --ink: #e6f0ff; --ink2: #dbe7fb; --ink3: #c3d4f2; --ink4: #a9bfe3; --ink5: #8fa6cc; --ink6: #8aa3d0; --ink7: #5d78a8;
+  --warn: #f3d27a; --warn2: #f6e3a8; --bad: #ff9d7e; --bad2: #ffc3ad; --good: #7fe3c2; --blue: #8fc1ff; --purple: #d3a8f0; --teal: #6fe3dc; --olive: #c7e58f; --rose: #ff9fb8;
+  --ink-rgb: 230, 240, 255; --card-rgb: 21, 40, 77;
+  --stage-a: #0f2a57; --stage-b: #0a1c3d;
+}
+html[data-skin="sepia"] {
+  color-scheme: light;
+  --bg: #f3ead7; --card: #fbf5e6; --card2: #f7efdc; --card3: #f1e7d0; --card4: #ece1c8; --hover: #e8dcc0;
+  --line: #dccfb0; --line2: #d6c8a6; --line3: #c2b28a;
+  --acc-bg: #efdcc0; --acc-bg2: #e5cba3; --acc-line: #b9824a; --acc-ink: #6b3a14; --acc-ink2: #85501f; --acc: #9a5a1c; --acc2: #b07a3a;
+  --ink: #2b2418; --ink2: #352c1d; --ink3: #4a3f2b; --ink4: #5c4f38; --ink5: #6b5d42; --ink6: #6f6247; --ink7: #9d8f72;
+  --warn: #8a6200; --warn2: #7a5600; --bad: #b0472a; --bad2: #8f3a22; --good: #2f6f4a; --blue: #2f5f8f; --purple: #7b4a8f; --teal: #2a7570; --olive: #5a741a; --rose: #a8405a;
+  --ink-rgb: 43, 36, 24; --card-rgb: 251, 245, 230;
+  --stage-a: #2e2819; --stage-b: #1d1911;
+}
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: var(--acc); } a:hover { color: var(--acc-ink2); }
+::selection { background: rgba(var(--ink-rgb), 0.18); }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 1px; }
+::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-thumb { background: var(--line3); border-radius: 8px; } ::-webkit-scrollbar-track { background: transparent; }
+/* Rendered documents */
+.mg-doc { font-size: 14.5px; line-height: 1.65; color: var(--ink3); max-width: 760px; }
+.mg-doc h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; color: var(--ink); letter-spacing: -0.01em; font-weight: 600; }
+.mg-doc h2 { font-size: 18px; margin: 26px 0 8px; color: var(--ink); font-weight: 600; padding-top: 6px; border-top: 1px solid var(--line); }
+.mg-doc h3 { font-size: 15px; margin: 18px 0 4px; color: var(--ink); font-weight: 600; }
+.mg-doc h4 { font-size: 13px; margin: 14px 0 2px; color: var(--ink5); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.mg-doc p { margin: 8px 0; } .mg-doc ul, .mg-doc ol { margin: 6px 0; padding-left: 22px; } .mg-doc li { margin: 3px 0; }
+.mg-doc code { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; background: var(--card4); padding: 1px 5px; border-radius: 4px; }
+.mg-doc blockquote { margin: 10px 0; padding: 4px 14px; border-left: 3px solid var(--acc-line); color: var(--ink4); background: var(--card3); border-radius: 0 8px 8px 0; }
+.mg-doc table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 10px 0; display: block; overflow-x: auto; }
+.mg-doc th { text-align: left; font-weight: 600; color: var(--ink); background: var(--card4); } .mg-doc th, .mg-doc td { padding: 6px 10px; border: 1px solid var(--line); vertical-align: top; }
+.mg-doc hr { border: 0; border-top: 1px solid var(--line); margin: 18px 0; }
+.mg-doc a.wl { color: var(--acc-ink); background: var(--acc-bg); padding: 0 5px; border-radius: 5px; cursor: pointer; text-decoration: none; } .mg-doc a.wl:hover { background: var(--acc-bg2); }
+.mg-doc .wl.miss { color: var(--ink6); border-bottom: 1px dashed var(--line3); }
+.mg-doc sup.ct { font-size: 10.5px; } .mg-doc sup.ct a { cursor: pointer; text-decoration: none; padding: 0 1px; font-weight: 600; }

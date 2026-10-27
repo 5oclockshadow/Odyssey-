@@ -1,0 +1,62 @@
+[
+  {
+    "name": "probe",
+    "args": "question",
+    "desc": "Run a retrieval probe and read what lights up."
+  },
+  {
+    "name": "inspect",
+    "args": "node",
+    "desc": "List a node’s neighbours and centrality."
+  },
+  {
+    "name": "add_edge",
+    "args": "a, b, relation",
+    "desc": "Propose + test a new edge; keep it only if dev holds."
+  },
+  {
+    "name": "prune_edge",
+    "args": "a, b",
+    "desc": "Propose + test removing an edge."
+  },
+  {
+    "name": "lookup_code",
+    "args": "topic",
+    "desc": "Search Karpathy’s repos for a reference implementation."
+  },
+  {
+    "name": "architect",
+    "args": "",
+    "desc": "Regenerate the DSPy signature + Pydantic models + config from the graph."
+  },
+  {
+    "name": "ship_feature",
+    "args": "id",
+    "desc": "Ship a latent UI capability to the console."
+  },
+  {
+    "name": "set_layout",
+    "args": "name",
+    "desc": "Switch the live view archetype (force, radial, chord, helix, layers, grid, sphere)."
+  },
+  {
+    "name": "set_lens",
+    "args": "name, on",
+    "desc": "Toggle an analysis lens (fragility, links, analogy)."
+  },
+  {
+    "name": "shake",
+    "args": "",
+    "desc": "Stress-test robustness by dropping edges."
+  },
+  {
+    "name": "compile",
+    "args": "",
+    "desc": "Search spreading parameters against the benchmark."
+  },
+  {
+    "name": "connect_mcp",
+    "args": "id",
+    "desc": "Connect an MCP server (github, vector, bm25, arxiv, duckdb)."
+  }
+]

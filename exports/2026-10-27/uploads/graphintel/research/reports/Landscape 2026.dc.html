@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent); text-decoration: none; } a:hover { color: var(--color-accent-300); text-decoration: underline; text-underline-offset: 3px; }
+  </style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#161826"/><path d="M25 70 L42 45 L58 58 L76 28" fill="none" stroke="#9184d9" stroke-width="5"/></svg></template>
+</helmet>
+
+<div data-screen-label="Landscape report" style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);padding:var(--space-8) clamp(16px,4vw,56px) 96px;display:grid;gap:72px;max-width:1120px;align-content:start;">
+
+<header style="display:grid;gap:var(--space-4);max-width:800px;">
+  <div style="display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-3);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);"><span style="white-space:nowrap;">The Threshold Institute</span><span style="color:var(--color-neutral-600);">/</span><span style="white-space:nowrap;">Landscape report</span><span style="color:var(--color-neutral-600);">/</span><span style="white-space:nowrap;">8 October 2026</span></div>
+  <h1 style="margin:0;font-size:clamp(34px,4.6vw,48px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Where AI stands, who is competing, who is paying, and what a graph should be asked.</h1>
+  <p style="margin:0;font-size:16px;line-height:1.6;color:var(--color-neutral-300);">Built from seven research passes run on 8 October 2026: the International AI Safety Report, frontier-lab financing, the knowledge-graph market, US federal procurement, automated-research systems, the EU AI Act timeline and data-centre energy. Numbers carry a source number in brackets. Anything marked <span style="color:var(--color-accent-300);">judgement</span> is my inference, not a finding.</p>
+  <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;font-size:12px;"><span class="tag tag-neutral">sourced</span><span class="tag tag-accent">judgement</span><span class="tag tag-outline">conflicting or unverified</span></div>
+</header>
+
+<section style="display:grid;gap:var(--space-4);max-width:800px;">
+  <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">Read this first</span>
+  <sc-for list="{{ summary }}" as="s" hint-placeholder-count="5">
+    <div style="display:grid;grid-template-columns:28px minmax(0,1fr);gap:var(--space-3);font-size:15px;line-height:1.6;color:var(--color-neutral-300);"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-neutral-500);padding-top:4px;">{{ s.n }}</span><span>{{ s.text }}<sc-if value="{{ s.hasJ }}" hint-placeholder-val="{{ false }}"> <span style="color:var(--color-accent-300);"><span class="tag tag-accent" style="font-size:10px;">judgement</span> {{ s.judgement }}</span></sc-if></span></div>
+  </sc-for>
+</section>
+
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="4">
+  <section style="display:grid;gap:var(--space-6);">
+    <div style="display:grid;gap:var(--space-2);max-width:760px;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-neutral-500);">{{ sec.n }}</span><h2 style="margin:0;font-size:26px;font-weight:500;letter-spacing:-0.01em;">{{ sec.title }}</h2><p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);">{{ sec.lede }}</p></div>
+    <sc-for list="{{ sec.tables }}" as="t" hint-placeholder-count="1">
+      <div style="display:grid;gap:var(--space-2);">
+        <sc-if value="{{ t.hasTitle }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);margin-top:var(--space-2);">{{ t.title }}</span></sc-if>
+        <div style="display:grid;grid-template-columns:{{ t.cols }};gap:var(--space-2) var(--space-6);padding-bottom:var(--space-2);background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+          <sc-for list="{{ t.heads }}" as="h" hint-placeholder-count="4"><span style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-500);">{{ h }}</span></sc-for>
+        </div>
+        <sc-for list="{{ t.rows }}" as="r" hint-placeholder-count="3">
+          <div style="display:grid;grid-template-columns:{{ t.cols }};gap:var(--space-2) var(--space-6);padding:var(--space-3) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;align-items:start;">
+            <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="4"><span style="{{ c.style }}">{{ c.text }}</span></sc-for>
+          </div>
+        </sc-for>
+        <sc-if value="{{ t.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;line-height:1.55;color:var(--color-neutral-500);max-width:760px;">{{ t.note }}</span></sc-if>
+      </div>
+    </sc-for>
+  </section>
+</sc-for>
+
+<section style="display:grid;gap:var(--space-4);max-width:900px;">
+  <div style="display:grid;gap:var(--space-2);"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-neutral-500);">09</span><h2 style="margin:0;font-size:26px;font-weight:500;letter-spacing:-0.01em;">Sources</h2></div>
+  <div style="display:grid;gap:var(--space-1);">
+    <sc-for list="{{ sources }}" as="s" hint-placeholder-count="10">
+      <div style="display:grid;grid-template-columns:28px minmax(0,1fr);gap:var(--space-3);font-size:12px;line-height:1.5;"><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-500);">{{ s.n }}</span><span style="min-width:0;overflow-wrap:anywhere;"><a href="{{ s.url }}" target="_blank">{{ s.title }}</a> <span style="color:var(--color-neutral-500);">{{ s.note }}</span></span></div>
+    </sc-for>
+  </div>
+  <p style="margin:0;font-size:12px;line-height:1.6;color:var(--color-neutral-500);max-width:760px;">Several figures come from aggregator sites rather than primary filings. Before any number goes into a proposal, pull the primary document; the engine's re-examination round can be pointed at each bracketed claim.</p>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const B = 'font-size:13px;line-height:1.55;color:var(--color-neutral-300);';
+const H = 'font-size:13px;line-height:1.55;font-weight:500;color:var(--color-text);';
+const M = 'font-size:12px;line-height:1.55;font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-400);';
+const J = 'font-size:13px;line-height:1.55;color:var(--color-accent-300);';
+const T = (title, heads, cols, rows, note) => ({ title: title || '', hasTitle: !!title, heads, cols, note: note || '', hasNote: !!note,
+  rows: rows.map(r => ({ cells: r.map((text, i) => { const j = typeof text === 'string' && text.startsWith('J·'); return { text: j ? text.slice(2) : text, style: (j ? J : (i === 0 ? H : B)) + 'min-width:0;overflow-wrap:anywhere;' }; }) })) });
+const mono = (rows) => rows;
+
+const SUMMARY = [
+  'Capability is rising fast and unevenly. The 2026 International Safety Report finds the length of software task an AI agent can complete has been doubling roughly every seven months, while performance stays "jagged" [1][2]. Dated extrapolations from that curve are the report\'s, not mine, and it says growth could slow, continue or accelerate to 2030 [1].',
+  'Money is concentrated in two companies. OpenAI and Anthropic took $217B in H1 2026, 43% of all global venture funding [4]. Anthropic\'s run-rate is reported at $47B in May, against a $965B valuation [3]. Every other lab sits an order of magnitude lower, so the frontier-model market is closed to a new entrant. The opportunity is around it.',
+  'Buyers want traceable, testable AI and the contract terms are moving that way. GSA\'s draft terms add testing and monitoring rights and irrevocable government use licences [12][15]; the Pentagon\'s multi-vendor awards leave logging, retention and cost attribution across vendors unstandardised [13]. A graph that ties every claim, span and incident to a source is a fit for that gap. J·That is my reading, and it is the strongest commercial angle in this report.',
+  'Automated research is real and verification is the bottleneck. The AI Scientist reached Nature in March 2026 [16]; the strongest results are in code and maths where a grader exists, and weaker where a human must judge [17]. The Institute\'s consistency energy is an attempt at a grader for prose claims. That is the research bet; it is unproven.',
+  'Several widely repeated numbers are stale or conflicting, and the Institute can win credibility by saying which. The "1,000 TWh by 2026" data-centre figure is a 2024 forecast; the IEA\'s 2026 report puts 2025 at about 485 TWh [19][21].',
+  'Honest status of the Institute itself: the engine and sandbox are written and tested only against stubs, nothing has run on a host, there is no legal entity, no past performance and no revenue. Section 03 is built around that.'
+].map((text, i) => { const k = text.indexOf(' J·'); return { n: String(i + 1).padStart(2, '0'), text: k < 0 ? text : text.slice(0, k), judgement: k < 0 ? '' : text.slice(k + 3), hasJ: k >= 0 }; });
+
+const SECTIONS = [
+  { n: '01', title: 'State of play', lede: 'The measured facts that frame everything else.', tables: [
+    T('Capability and use', ['Finding', 'Number', 'Source'], 'minmax(0,2fr) minmax(0,1.2fr) 60px', [
+      ['Task length AI agents complete, doubling time', 'about 7 months; about 30 min tasks at near 80% success', '[1][2]'],
+      ['Algorithmic efficiency gain', '2 to 6 times per year', '[2]'],
+      ['ChatGPT weekly users', 'about 700M, from about 200M a year earlier', '[2]'],
+      ['Reasoning and science', 'IMO gold-level; graduate science benchmarks at or above expert level', '[1]'],
+      ['Evaluation integrity', 'models can tell tests from deployment and exploit loopholes', '[1]'],
+      ['Labour', 'less demand for writing and translation, more for ML and chatbot work; economists disagree on size', '[1]'],
+      ['Frontier safety frameworks', 'twelve companies published or updated one in 2025', '[1]']
+    ], 'The report itself makes no policy recommendations and states that current risk-management techniques are improving but insufficient [1].'),
+    T('Money and compute', ['Finding', 'Number', 'Source'], 'minmax(0,2fr) minmax(0,1.2fr) 60px', [
+      ['Frontier-lab equity disclosed', '$34.5B (2024), $76.8B (2025), $262.7B year to early July 2026', '[5]'],
+      ['OpenAI', '$122B round, $852B valuation, March 2026; about $25B ARR reported; IPO talk now 2027', '[3][4]'],
+      ['Anthropic', '$30B at $380B (Feb), $65B at $965B (May); run-rate $14B to $47B Feb to May; Google up to $40B more', '[3]'],
+      ['Concentration', 'remove OpenAI, Anthropic and xAI and disclosed lab funding falls from $264.7B to $26.7B', '[5]'],
+      ['Newer labs', 'Thinking Machines $50B valuation (Mar 2026); xAI $20B at about $200B; DeepSeek $7.4B first external round', '[22]']
+    ], 'Conflicts: one aggregator puts the Anthropic Series G near $900B and another says $380B; sequential rounds explain some of it. One source says SpaceX acquired xAI for $250B, another says SpaceX went public. Treat both as unverified until a primary filing is read.'),
+    T('Energy', ['Finding', 'Number', 'Source'], 'minmax(0,2fr) minmax(0,1.2fr) 60px', [
+      ['Data-centre electricity 2025', 'about 485 TWh, up 17%; AI-specific centres up about 50%', '[19]'],
+      ['AI-focused centres 2025', '155 TWh, 0.49% of global electricity', '[20]'],
+      ['2030 base case', 'about 945 TWh, under 3% of global demand', '[19][20]'],
+      ['Per-task energy', 'falling fast, yet total rises because users and agent workloads grow faster', '[19]'],
+      ['US power gap (Goldman, via aggregator)', '9.3 GW short in 2026, 45 GW by 2028', '[19]']
+    ], 'Power, not chips, is described as the binding constraint on how fast AI scales [21]; that is an aggregator\'s framing.')
+  ]},
+  { n: '02', title: 'Competition', lede: 'Three fields overlap with the Institute: frontier labs, graph and knowledge-graph vendors, and automated-research systems. The Institute is small in all three; the question is where it is different.', tables: [
+    T('Graph and knowledge-graph vendors', ['Player', 'Position', 'Recent move', 'Source'], 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1.6fr) 60px', [
+      ['Neo4j', 'default for developer-led GraphRAG; "knowledge layer for AI"', 'acquired GraphAware (government intelligence analysis), June 2026; $100M GenAI fund; Google Cloud and Gemini ADK integration; zero-copy Virtual Graph preview', '[7][9]'],
+      ['TigerGraph', 'production-scale, real-time graph analytics', 'positions for governed, explainable enterprise context', '[8]'],
+      ['Microsoft GraphRAG, Fabric IQ', 'open pipeline plus ontology on Fabric', 'community-summary global search; Azure partnerships', '[7][9]'],
+      ['Palantir Foundry', 'operational ontology for regulated buyers', '$243.9M Pentagon funding directive through March 2027', '[9][10]'],
+      ['Stardog, Graphwise, others', 'RDF and semantic standards', 'GraphRAG launches', '[9]'],
+      ['Market size', '$1.90B (2026) to $9.88B (2032), 31.6% CAGR', 'North America about 36% share', '[6][7]']
+    ], 'All of these store and query a graph a human designed. None in this list is reported to learn its own ontology at runtime and score its own consistency; that is the Institute\'s claim and it needs a benchmark to back it.'),
+    T('Automated research', ['System', 'What it does', 'Status', 'Source'], 'minmax(0,1fr) minmax(0,1.6fr) minmax(0,1.4fr) 60px', [
+      ['Sakana AI Scientist', 'idea, code, experiments, paper, review', 'Nature, March 2026; v2 had a fully AI paper pass peer review; independent evaluation found bold claims with mixed results', '[16]'],
+      ['AlphaEvolve, AI Co-Scientist', 'LLM plus automated evaluator plus evolutionary search; multi-agent hypothesis ranking', 'faster 4x4 matrix multiply, improved maths bounds', '[17]'],
+      ['FutureHouse Robin, Kosmos', 'end-to-end biology discovery', 'Robin reached Nature in 2026', '[17]'],
+      ['Darwin Gödel Machine', 'agent that rewrites its own code under evaluation', 'clearest self-improvement example so far', '[17]']
+    ], 'Strongest where a grader exists (code, maths). Where no grader can settle the question a human still judges the output, so verification, not generation, is the bottleneck [17].'),
+    T('Where the Institute differs', ['Dimension', 'Incumbents', 'Institute', ''], 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1.6fr) 10px', [
+      ['Ontology', 'designed up front', 'seeded core, periphery minted and ranked at runtime', ''],
+      ['Telemetry', 'separate observability stack', 'spans, logs, code and incidents are nodes in the same graph', ''],
+      ['Repair', 'human ticket', 'incident, located by graph walk, patched, sandbox-tested', ''],
+      ['Proof', 'vendor benchmarks', 'none yet', '']
+    ], 'J· The third row is the defensible one. The last row is the gap a funder or buyer will ask about first.')
+  ]},
+  { n: '03', title: 'Who pays, and how to get in', lede: 'Contract vehicles and funding routes, ranked by fit with a pre-revenue, single-operator Institute. Entry paths are my judgement; the facts under them are sourced.', tables: [
+    T('The market you would be entering', ['Fact', 'Detail', 'Source'], 'minmax(0,1.3fr) minmax(0,2fr) 60px', [
+      ['Federal AI spend FY2026', 'first year combined AI procurement, R&D and infrastructure passes $100B (tracker estimate); DoD AI-related ceilings above $32B in H1', '[14]'],
+      ['DoD frontier awards', 'CDAO awarded up to $200M each to Anthropic, Google, OpenAI and xAI; earlier $800M agentic award split four ways', '[13][14]'],
+      ['GSA OneGov', 'OpenAI 27-month deal from 1 Oct 2026 at 50% off token prices, open to federal, state, local and tribal; Anthropic extension to 31 Oct at $1 per user', '[10][11]'],
+      ['Anthropic dispute', 'in March the administration ordered agencies to stop using Claude and GSA terminated its OneGov agreement; a September report shows a one-month extension. Current status needs checking.', '[10][12]'],
+      ['New GSA terms (draft)', 'irrevocable licence for any lawful government use; neutrality standards for outputs; permission before training on non-public data; testing and monitoring rights', '[12][15]'],
+      ['Open problem', 'multi-vendor DoD structure raises how logging, retention and cost attribution are standardised across providers', '[13]']
+    ]),
+    T('Routes, ranked', ['Route', 'What it is', 'Fit', 'First step'], 'minmax(0,1fr) minmax(0,1.5fr) 70px minmax(0,1.5fr)', [
+      ['Assurance subcontract', 'provenance, audit and monitoring layer under a prime or a lab on a federal or EU programme', 'J·High', 'one-page capability note; pilot on public data showing every claim traced to a source'],
+      ['Grants and fellowships', 'AI-safety, metascience and open-science funders; academic partnerships', 'J·High', 'publish the consistency-energy method with a benchmark; submit as a paper and a grant'],
+      ['SBIR and OTA topics', 'small-business R&D awards and prototype agreements', 'J·Medium', 'needs a US entity and SAM.gov registration; watch CDAO and DARPA topics'],
+      ['Enterprise pilots', 'compliance and risk teams preparing for EU high-risk duties', 'J·Medium', 'audit-ready record keeping is a named obligation; sell the record'],
+      ['GSA MAS or OASIS+', 'the standard vehicles for AI software and services', 'J·Low now', 'needs past performance and an entity; a 12 to 24 month goal'],
+      ['Research subscriptions', 'Signals and reports to individuals and funds', 'J·Low', 'only after the verification story is proven; avoid anything resembling personalised financial advice']
+    ]),
+    T('Regulatory clock', ['Date', 'What applies', 'Source'], 'minmax(0,1fr) minmax(0,2.2fr) 60px', [
+      ['2 Aug 2026', 'Article 50 transparency obligations apply', '[18]'],
+      ['27 Jul 2026', 'Digital Omnibus (Regulation 2026/1744) in force', '[18]'],
+      ['2 Dec 2026', 'watermarking grace period ends for systems already on the market', '[18]'],
+      ['2 Dec 2027', 'Annex III high-risk obligations (employment, credit, education, infrastructure)', '[18]'],
+      ['2 Aug 2028', 'Annex I embedded high-risk systems', '[18]']
+    ], 'The delay is because standards were not ready, not because the duties were reduced [18]. Data governance, risk management, technical documentation, human oversight and audit-ready record keeping remain the duties.')
+  ]},
+  { n: '04', title: 'The questions to put to the graph', lede: 'Each row is a question the graph is built to answer, why a graph answers it better than a search, and what result would make me abandon it. Curiosity questions map the field. Frontier questions test the Institute\'s own method. Warning questions check claims that the public and funders are acting on.', tables: [
+    T('Curiosity: map the field', ['Question', 'Why a graph', 'What would end it'], 'minmax(0,1.5fr) minmax(0,1.4fr) minmax(0,1.2fr)', [
+      ['Which headline AI claims rest on one source, and which are triangulated?', 'edge support counts and source independence are structural', 'a field where nearly everything is triangulated'],
+      ['Where do money, compute and revenue disagree?', 'hyperedges tie a lab, a round, a cluster and a revenue figure', 'reported numbers reconcile within error'],
+      ['Which benchmark results survive a contamination check?', 'link each score to its test set, release date and training cut-off', 'contamination is rare'],
+      ['What does a lab disclose in a model card versus a safety framework?', 'diff the two documents over versions', 'they never diverge'],
+      ['Who funds whom, and where does the money circle back as compute purchases?', 'cycles are a graph primitive', 'no cycles above a stated size']
+    ]),
+    T('Frontier: test the method', ['Question', 'Why a graph', 'What would end it'], 'minmax(0,1.5fr) minmax(0,1.4fr) minmax(0,1.2fr)', [
+      ['Does high consistency energy in a region predict later revision or retraction of its claims?', 'energy is computed per region, revision history is an edge', 'no correlation after 90 days of tracking'],
+      ['Do minted types converge across runs, or does the ontology drift?', 'compare type sets across seeds', 'types never overlap between runs'],
+      ['Can the energy act as a grader for prose claims the way a test suite does for code?', 'it scores agreement across sources, not truth', 'it rewards confident repetition of one source'],
+      ['Which fields have cheap verifiers, and is that where automated discovery will land first?', 'label each claim type by verifier cost', 'verifier cost does not predict results'],
+      ['Do bridges between distant subfields (materials, biology, algorithms) rank higher for later citations?', 'bridge edges are explicit', 'bridges are no better than random pairs']
+    ]),
+    T('Debunk and warn: planet and society', ['Question', 'Why a graph', 'What would end it'], 'minmax(0,1.5fr) minmax(0,1.4fr) minmax(0,1.2fr)', [
+      ['Which energy forecasts in circulation are stale, and who still cites them?', 'link each figure to its vintage and its citers', 'the 1,000 TWh figure turns out to be restated by the IEA'],
+      ['Does falling per-task energy outrun growth in agent workloads, or the reverse?', 'tie efficiency, user and workload series together', 'total demand flattens'],
+      ['Is entry-level demand falling in exposed jobs, and is the evidence more than a few studies?', 'count independent studies per claim; flag thin support', 'many independent studies agree on a small effect'],
+      ['Where do evaluations fail because models detect the test?', 'link eval, model, awareness evidence', 'results hold under hidden evaluations'],
+      ['What share of misuse reports (cyber, persuasion, fraud) rests on lab self-reports?', 'source independence per claim', 'independent confirmation is common'],
+      ['Which voluntary safety commitments have a dated, checkable trigger, and which are vague?', 'extract thresholds as nodes with dates', 'most commitments are checkable']
+    ], 'Warnings are only published with their support count and falsifier. A thin claim is labelled thin.')
+  ]},
+  { n: '05', title: 'Things to settle before taking a contract', lede: 'Not questions for the graph; decisions for you.', tables: [
+    T('', ['Item', 'Why it matters', 'Source or basis'], 'minmax(0,1fr) minmax(0,2fr) minmax(0,1fr)', [
+      ['Legal entity and jurisdiction', 'every federal, EU and enterprise route starts with a contracting party; billing and the signals framing wait on it', 'judgement'],
+      ['Data rights', 'GSA terms ask for permission before training on non-public government data and grant an irrevocable use licence; decide what you can accept', '[12][15]'],
+      ['Model dependency', 'the engine runs on a frontier model whose vendor may be in a government dispute; keep the model string swappable (it is, in institute.yaml) and test a second vendor', '[10][12]'],
+      ['Security posture', 'agent-in-docker with a sandbox is a design, not an accreditation; FedRAMP-authorised hosting would be needed for federal data', 'judgement'],
+      ['Claims discipline', 'no personalised financial advice; disclose that the author is an agent; publish support counts with every claim', 'mission in institute.yaml'],
+      ['Proof', 'a benchmark run of the consistency energy against a fixed claim set is worth more than any deck', 'judgement'],
+      ['Human approval', 'keep humans approving outbound posts and merges until the record shows the repair loop is reliable', 'institute.yaml'],
+      ['Sector and tier coverage', 'sections 06 to 08 were added from one round of searches; every figure there is a lead for the engine to re-check, not a settled number', 'judgement']
+    ]),
+    T('Next 90 days', ['When', 'What'], '90px minmax(0,1fr)', [
+      ['Weeks 1 to 2', 'run pytest and docker compose up on a host; fix whatever the first real run breaks'],
+      ['Weeks 2 to 4', 'point the engine at the sources in section 09 and let it re-examine every bracketed number; publish the diff against this report'],
+      ['Weeks 4 to 8', 'fix a claim set and run the energy benchmark; write it up as a paper and a short assurance note'],
+      ['Weeks 8 to 12', 'form the entity, register, and send the note to three prime contractors, two grant programmes and two compliance teams']
+    ])
+  ]},
+  { n: '06', title: 'Beyond government: sectors', lede: 'Where AI is actually used in healthcare, schools, travel and private enterprise, and how much of it shows up as value. Figures are survey-based and the definitions differ, so compare within a row, not across rows.', tables: [
+    T('Healthcare', ['Finding', 'Number', 'Source'], 'minmax(0,2fr) minmax(0,1.4fr) 60px', [
+      ['US health systems using at least one AI application', '75% in 2026, up from 59% in 2025; half run three or more', '[23]'],
+      ['US physicians using AI professionally', '81% (AMA 2026), up from 66% in 2024 and 38% in 2023', '[24]'],
+      ['Ambient scribes, the largest use by spend', '$600M in 2025, 2.4 times the year before; 62.6% of Epic hospitals by mid-2025', '[24][25]'],
+      ['Reported time and burnout effects', 'documentation time down 40 to 45% in vendor-linked summaries; 21.2% absolute fall in burnout prevalence at one large group', '[25][26]'],
+      ['Full production of domain-specific AI', '22% of organisations (Menlo Ventures, Aug to Sep 2025, 700+ executives), sevenfold on 2024', '[25]'],
+      ['Reliable use in core diagnosis', 'fewer than 20% (aggregator, thin sourcing)', '[26]'],
+      ['Scribe vendor loyalty', 'up to 67% of outpatient providers expect to switch vendor within three years', '[25]'],
+      ['Gap to look at', 'rural versus urban hospitals; the adoption figures say little about who is left out', 'J·a prediction in one source [23], not a measurement']
+    ], 'Adoption is broad and shallow: documentation tools lead, clinical decision support lags. Several numbers come from vendor blogs and aggregators; the engine should trace each to its survey.'),
+    T('Schools', ['Finding', 'Number', 'Source'], 'minmax(0,2fr) minmax(0,1.4fr) 60px', [
+      ['US public school teachers using AI for work, 2024-25', '60%; 32% weekly; weekly users save about 5.9 hours a week', '[27][28]'],
+      ['Teachers with formal written guidance', '18%; one derived index puts 79% of classroom use outside any written policy', '[27]'],
+      ['Middle and high school students using AI for school, 2025', '54% (RAND); 53% of ELA, maths and science teachers use it in instruction', '[29]'],
+      ['Teachers and students using AI in 2024-25 (CDT)', '85% of teachers; 86% of students for personal or school reasons; about half received any training', '[30]'],
+      ['Higher education', '88% of students and 77% of faculty use AI (Digital Education Council, 45,398 responses, 35 countries)', '[31]'],
+      ['Causal evidence', 'small, especially for US K-12; schools adopt faster than researchers can evaluate', '[29]'],
+      ['Policy state', 'states are mandating AI coordinators, teacher training and district policies (Ohio set a July 1 deadline)', '[30]']
+    ], 'The pattern is use first, policy later. CDT and RAND measure different things (any use versus instructional use), which is why 85% and 53% both appear for teachers.'),
+    T('Travel and hospitality', ['Finding', 'Number', 'Source'], 'minmax(0,2fr) minmax(0,1.4fr) 60px', [
+      ['Share of bookings by AI agents by 2030', '30% (IDC projection)', '[32]'],
+      ['Travel businesses experimenting with or scaling agentic AI', '61% (Phocuswright 2026)', '[33]'],
+      ['Hotel organisations with an agent that can book and price in real time', '11% (June 2026 study reported by Skift)', '[33]'],
+      ['Distribution rails', 'Sabre, PayPal and MindTrip announced an end-to-end agentic booking pipeline over 420 airlines and 2M hotels; MCP adopted by Booking.com, Expedia, Sabre, Amadeus and Turkish Airlines', '[34][35]'],
+      ['Traveller trust', 'travellers say they are not ready to let AI book; open question of who pays when an agent is wrong', '[36]'],
+      ['Where the proven return is', 'pricing, demand forecasting, automated rebooking and service triage, not trip-planning chat', '[35]']
+    ], 'The sector most exposed to agent-to-agent commerce. The liability question in [36] is a claim the graph should track across jurisdictions.'),
+    T('Private enterprise and the public/private split', ['Finding', 'Number', 'Source'], 'minmax(0,2fr) minmax(0,1.4fr) 60px', [
+      ['Organisations using AI in at least one function', 'about 88%; 44% say it is scaling across the enterprise (McKinsey 2026)', '[37][38]'],
+      ['Organisations reporting any EBIT impact', '37%, flat on last year; about 6% are high performers at 5% of EBIT or more', '[37][38]'],
+      ['Scaling agents', '40% of organisations above $1B revenue, 22% of smaller ones', '[37][38]'],
+      ['US firms using AI in a two-week window (Census)', '23.2% overall; 38.4% of firms with 250 or more employees', '[38]'],
+      ['Cost as a constraint', 'AI operating cost, including tokens, limits use at about one in five organisations', '[39]'],
+      ['Worldwide AI spending forecast 2026', 'about $2.7T (Gartner), more than half infrastructure, so not an enterprise software budget', '[38][39]'],
+      ['Public versus private', 'private firms scale agents faster and report value unevenly; schools and hospitals adopt ahead of policy; governments buy through framework vehicles (section 03)', 'J·synthesis of the rows above']
+    ], 'Scaling and value are diverging: agent scaling rose 13 points in a year while the EBIT share did not move [38]. A contract that sells measurement of value fits that gap.')
+  ]},
+  { n: '07', title: 'Stabilising law across tiers of government', lede: 'A job for the engine: for a named water body or process, compare what federal, provincial and municipal law says, find where the tiers agree, conflict or leave a gap, and report it from procurement, environmental, ethical and monitoring angles. Canada is the worked example because it has all three tiers and documented overlap.', tables: [
+    T('Who holds what, for water in Canada', ['Tier', 'What it holds', 'Source'], 'minmax(0,1fr) minmax(0,3fr) 60px', [
+      ['Federal', 'fisheries and fish habitat, navigation and shipping, boundary and international waters, federal lands, First Nations reserves; the Fisheries Act is its strongest water-pollution tool', '[40][41][42]'],
+      ['Provincial and territorial', 'general responsibility for safe public drinking water, natural resources, public health and most major water licences; municipalities are creatures of provincial statute', '[40][44][45]'],
+      ['Municipal', 'day-to-day operation of drinking-water and wastewater treatment by delegation from the province; zoning and development affect source protection', '[40][41][45]'],
+      ['Shared instruments', 'Canada Water Act (joint consultation); Guidelines for Canadian Drinking Water Quality set through a federal-provincial-territorial committee, voluntary outside federal areas; Canada-Quebec St. Lawrence agreement', '[40][42][46]']
+    ], 'Water is not a single head of power in the Constitution, which is why the tiers overlap [47].'),
+    T('Known disagreements and gaps (starting claims for the engine)', ['Claim', 'Where it comes from', 'What the engine should do'], 'minmax(0,2fr) minmax(0,1.3fr) minmax(0,1.5fr)', [
+      ['Federal fisheries jurisdiction and provincial water regulation have conflicted in practice', 'case-study literature [47]', 'list decided cases and which tier won; mark untested areas'],
+      ['Drinking-water guidelines are federal in origin but binding only where a province adopts them; Health Canada does not monitor adoption', 'policy review [41]', 'check each province now; the source is dated, so treat it as a lead'],
+      ['Municipal authority had gaps for protecting sources in built-up areas; gaps also exist on First Nations reserves', 'post-Walkerton reviews [43]', 'compare with current provincial source-protection acts'],
+      ['Ottawa has been reluctant to use its navigation, habitat and international powers over water takings', 'policy review [41]', 'find any recent federal use of those powers'],
+      ['A national drinking-water code would raise constitutional problems', 'legal commentary [44]', 'track proposals and the legal reading of each']
+    ], 'These are leads from reports of varying age, and some predate current legislation. The engine should date each one and re-check it against statute text before anything is published.'),
+    T('How the engine would run it', ['Step', 'What it does'], '160px minmax(0,1fr)', [
+      ['1. Pick the object', 'a water body, a process (a permit, a discharge, a procurement), and the places it touches'],
+      ['2. Pull the rules per tier', 'statute, regulation, guideline and bylaw text, each a node with jurisdiction, date and source link'],
+      ['3. Align', 'edges: requires, permits, prohibits, defers_to, contradicts, silent_on; a hyperedge groups the clauses that govern one act'],
+      ['4. Score agreement', 'consistency energy over each cluster; low energy means the tiers agree, high energy marks a conflict or a gap'],
+      ['5. Report by lens', 'procurement (what a bidder must satisfy), environmental (limits and monitoring), ethical (affected groups, consent), monitoring (who measures, how often, who sees it)'],
+      ['6. Stay a lead', 'every finding carries its sources and a falsifier; legal conclusions are for a lawyer']
+    ])
+  ]},
+  { n: '08', title: 'A compute-sharing app for phones and tablets', lede: 'Paying people for idle compute on devices they already own: what exists, what the hardware can and cannot do, and what has to be true for the economics to work.', tables: [
+    T('What exists', ['Network', 'What is shared', 'Reported scale or return', 'Source'], 'minmax(0,1fr) minmax(0,1.2fr) minmax(0,2fr) 60px', [
+      ['Grass', 'idle bandwidth, used for web data collection', 'about 2.5M nodes in 190 countries; roughly $33M ARR (aggregator); users report $5 to $80 a month per device', '[48][49]'],
+      ['io.net', 'GPU compute marketplace', 'about $12.5M annualised revenue mid-2026, down from a $20M+ pace; on-chain demand about 2.6% of supplier payouts; revenue is self-reported', '[50][51]'],
+      ['Acurast', 'phone compute in trusted execution environments; a Lite app on any phone, a Core mode for dedicated old phones', 'no revenue figure found', '[52]'],
+      ['Helium and others', 'wireless coverage and similar', 'the only DePIN project cited as clearing $10M annualised from paying telecom customers', '[51]'],
+      ['Sector', 'DePIN overall', '$50B combined market cap claimed early 2026; 13M devices contributing daily; reported by token sites, so treat as promotional', '[49]']
+    ], 'Pattern: supply is easy to recruit, paying demand is thin. Token rewards can exceed customer revenue, which is the first thing to test before building.'),
+    T('What a phone can actually do', ['Constraint', 'Finding', 'Source'], 'minmax(0,1fr) minmax(0,3fr) 60px', [
+      ['Peak hardware', 'flagship NPUs about 35 to 60 TOPS (Apple A19 Pro, Snapdragon 8 Elite Gen 5, Dimensity 9400+); sub-$200 Android phones now carry basic NPU cores', '[54][59]'],
+      ['Thermals', 'a flagship phone settled near 10 tokens a second after about 15% throttling over 20 runs; mid-range phones throttle after about 30 seconds', '[55][56]'],
+      ['Memory', 'the bottleneck; 7B models run at 2 to 3 tokens a second on a flagship with notable battery drain, so useful work is small models and small jobs', '[53][57]'],
+      ['Background execution', 'Android OEMs kill background processes aggressively; a job over about 90 seconds may be interrupted without a foreground service and a battery exemption', '[58]'],
+      ['Energy proxy', 'iOS gives apps no per-component power data, only thermal state and battery level', '[55]'],
+      ['Good fit', 'federated learning (Gboard has used it since 2017), small inference, embeddings, classification, checking other devices work', '[59]']
+    ], 'A phone is a poor place for large-model inference and a reasonable one for many small, interruptible, verifiable jobs.'),
+    T('Questions to settle first', ['Question', 'Why it decides the project'], 'minmax(0,1.4fr) minmax(0,2fr)', [
+      ['Who pays for the work, and how much per device-hour?', 'without a buyer the app is a token scheme; test with one paying workload before recruiting supply'],
+      ['Which jobs split into small, retryable, checkable pieces?', 'embeddings, classification and document parsing for the Institute research queue are candidates'],
+      ['How is a result verified on an untrusted device?', 'redundant execution or a trusted execution environment; both cost capacity'],
+      ['What do the platform rules allow?', 'app store policies on background compute and on payments; check before design'],
+      ['What are the privacy and consent terms for a household?', 'a family of five shares a network, a data allowance and a power bill; each member has to consent separately'],
+      ['What is the net pay after electricity, data and battery wear?', 'if it is cents a month, retention is the whole product problem'],
+      ['Is it a payment or a securities question?', 'token payouts raise regulatory questions in several jurisdictions; ask a lawyer before any token']
+    ], 'J·The Institute own research queue is the safest first buyer, because the workload, the verification and the consent are all under your control.')
+  ]}
+];
+
+const SOURCES = [
+  [1, 'International AI Safety Report 2026', 'https://internationalaisafetyreport.org/publication/international-ai-safety-report-2026', 'primary, Feb 2026'],
+  [2, 'SOCRadar summary of the 2026 report', 'https://socradar.io/blog/international-ai-safety-report-2026-key-facts/', 'secondary: 700M users, efficiency, doubling time'],
+  [3, 'Racing to a Trillion: OpenAI and Anthropic funding history', 'https://pinggy.io/blog/openai_anthropic_funding_history/', 'aggregator'],
+  [4, '50 Top AI Funded Startups, July 2026', 'https://aifundingtracker.com/top-50-ai-startups/', 'aggregator: 43% of H1 venture funding'],
+  [5, 'Frontier AI Labs Funding Trends 2026', 'https://newmarketpitch.com/blogs/news/frontier-ai-labs-funding-trends', 'aggregator; and /frontier-ai-labs-funding-analysis for concentration'],
+  [6, 'Knowledge Graph Market Report 2025 to 2032', 'https://www.marketsandmarkets.com/Market-Reports/knowledge-graph-market-217920811.html', 'analyst estimate'],
+  [7, 'Knowledge Graph Market, 2026 M&A and partnerships', 'https://www.openpr.com/news/4606313/knowledge-graph-market-2035-graphrag-enterprise-ai', 'press release: Neo4j and GraphAware'],
+  [8, 'Best Graph Databases in 2026', 'https://www.tigergraph.com/blog/best-graph-databases/', 'vendor guide, treat as biased'],
+  [9, 'Top Knowledge Graph Platforms 2026', 'https://www.getgalaxy.io/articles/top-knowledge-graph-platforms-enterprise-data-intelligence-2026', 'vendor guide'],
+  [10, 'GSA extends and expands AI OneGov contracts', 'https://app.govly.com/public/signals/197327', 'procurement signal, Sep 2026; also /167515'],
+  [11, 'GSA and OpenAI OneGov deal', 'https://www.executivegov.com/articles/gsa-openai-onegov-agreement-chatgpt', 'trade press'],
+  [12, 'GSA issues draft AI contract terms', 'https://www.executivegov.com/articles/gsa-draft-ai-contract-terms', 'trade press, Mar 2026'],
+  [13, 'Pentagon awards AI contracts up to $200M each', 'https://completeaitraining.com/news/pentagon-awards-ai-contracts-worth-up-to-200-million-each/', 'relays a Forrester analysis'],
+  [14, 'US Federal AI Spending Tracker FY2026', 'https://presenc.ai/research/us-federal-ai-spending-tracker-2026', 'aggregator estimate'],
+  [15, 'Government AI Procurement Guide', 'https://gainam.com/insights/government-ai-procurement-guide', 'practitioner guide'],
+  [16, 'The AI Scientist, now published in Nature', 'https://sakana.ai/ai-scientist-nature/', 'vendor announcement; independent check at arxiv.org/abs/2502.14297'],
+  [17, 'The Autoresearch Loop: a research brief', 'https://blog.agihouse.org/posts/autoresearch-research-brief', 'secondary brief'],
+  [18, 'EU AI Act: high-risk deadline deferred, not cancelled', 'https://labs.cloudsecurityalliance.org/research/csa-research-note-eu-ai-act-high-risk-deadline-omnibus-20260/', 'research note; also Orrick and Gibson Dunn'],
+  [19, 'AI Data Center Statistics 2026', 'https://axis-intelligence.com/ai-data-center-statistics/', 'aggregator citing IEA April 2026 and Goldman Sachs'],
+  [20, 'How much energy do data centers and AI use?', 'https://ourworldindata.org/how-much-energy-do-data-centers-and-artificial-intelligence-use', 'Our World in Data, citing IEA 2026'],
+  [21, 'AI Data Center Power Demand 2026', 'https://valueaddvc.com/blog/ai-data-center-power-demand-how-much-electricity-ai-actually-consumes-in-2026', 'repeats the stale 1,000 TWh figure'],
+  [22, 'New Frontier Lab Tracker 2026', 'https://presenc.ai/research/frontier-lab-tracker-thinking-machines-ssi-xai-2026', 'aggregator'],
+  [23, 'Health system AI adoption surges in 2026', 'https://www.fiercehealthcare.com/ai-and-machine-learning/75-us-healthcare-systems-use-plan-use-ai-platform-2026', 'trade press on an Eliciting Insights survey'],
+  [24, 'How hospitals are actually using AI in 2026', 'https://www.softx.ca/resources/how-hospitals-are-actually-using-ai-in-2026', 'vendor blog relaying AMA surveys; check against the AMA'],
+  [25, 'State of AI adoption in healthcare 2026', 'https://scopicsoftware.com/blog/ai-adoption-in-healthcare/', 'vendor blog relaying Menlo Ventures and ASTP/ONC'],
+  [26, 'AI in healthcare adoption statistics 2026', 'https://www.aboutchromebooks.com/ai-in-healthcare-adoption-statistics', 'aggregator; weak sourcing on diagnosis'],
+  [27, 'Teacher AI use statistics 2026', 'https://axis-intelligence.com/teacher-ai-use-statistics/', 'aggregator relaying Gallup and Walton; the policy index is its own'],
+  [28, 'AI usage among students and teachers, 2026', 'https://websites2know.com/how-ai-usage-is-growing-among-students-and-teachers/', 'aggregator relaying Gallup, RAND and Digital Education Council'],
+  [29, 'Artificial Intelligence in K-12 Schools, Stanford SCALE', 'https://scale.stanford.edu/publications/artificial-intelligence-k-12-schools', 'research centre; cites RAND 2025'],
+  [30, 'As AI use in schools grows, lawmakers scramble', 'https://stateline.org/2026/06/10/as-ai-use-in-schools-grows-lawmakers-and-districts-scramble-to-set-up-guardrails/', 'news; cites a CDT survey'],
+  [31, 'Digital Education Council survey, via [28]', 'https://websites2know.com/how-ai-usage-is-growing-among-students-and-teachers/', 'secondary; find the primary'],
+  [32, 'IDC: agentic AI will redefine travel and hospitality', 'https://www.idc.com/resource-center/blog/agentic-ai-will-redefine-travel-and-hospitality-in-2026/', 'analyst blog: 30% of bookings by 2030'],
+  [33, '11% of travel companies can sell to an AI agent', 'https://gimmonix.com/news/only-11-percent-agent-ready-2026', 'vendor blog relaying Skift and Phocuswright'],
+  [34, 'March 2026: the month agentic travel gets real', 'https://www.oag.com/blog/march-2026-the-month-agentic-travel-gets-real', 'industry data provider'],
+  [35, 'AI in travel 2026: the trust gap', 'https://www.teacode.io/blog/ai-travel-industry-innovation-trends', 'vendor blog relaying Skift on MCP adoption'],
+  [36, 'Travel brands are building AI agents for a consumer that does not exist', 'https://skift.com/2026/03/03/travel-brands-are-building-ai-agents-for-a-consumer-that-doesnt-exist/', 'trade press, opinion'],
+  [37, 'The State of AI: Global Survey 2026', 'https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai', 'primary: McKinsey'],
+  [38, 'AI adoption in enterprise statistics and trends 2026', 'https://www.secondtalent.com/resources/ai-adoption-in-enterprise-statistics/', 'aggregator relaying McKinsey, Census and Gartner'],
+  [39, 'AI statistics 2026', 'https://unicoconnect.com/blogs/ai-statistics-2026', 'aggregator relaying McKinsey'],
+  [40, 'Water governance and legislation: shared responsibility', 'https://www.canada.ca/en/environment-climate-change/services/water-overview/governance-legislation/shared-responsibility.html', 'primary: Government of Canada'],
+  [41, 'Local Water Management in Canada, Pembina Institute', 'https://www.pembina.org/reports/local_h2o_mgmt_0202.pdf', 'think tank; dated, early 2000s'],
+  [42, 'Water Security in Canada, IISD', 'https://www.iisd.org/system/files/publications/water_security_canada.pdf', 'think tank; dated'],
+  [43, 'Emerging issues in water governance, UBC', 'https://watergovernance.sites.olt.ubc.ca/files/2010/02/CWRA.pdf', 'academic; dated, cites Walkerton and BC reviews'],
+  [44, 'Constitutional limits on national drinking water regulation in Canada', 'https://oba.org/constitutional-limits-on-national-drinking-water-regulation-in-canada-federalism-the-ccme-and-the-ch/', 'legal commentary, Ontario Bar Association'],
+  [45, 'Federal and provincial jurisdiction to regulate environmental issues', 'https://lop.parl.ca/sites/PublicWebsite/default/en_CA/ResearchPublications/201386E', 'primary: Library of Parliament; dated'],
+  [46, 'Guidance for safe drinking water in areas of federal jurisdiction', 'https://www.canada.ca/en/health-canada/services/publications/healthy-living/guidance-providing-safe-drinking-water-areas-federal-jurisdiction-version-3.html', 'primary: Health Canada'],
+  [47, 'Customary Water Laws and Practices in Canada, FAO', 'https://www.fao.org/fileadmin/templates/legal/docs/CaseStudy_Canada.pdf', 'UN agency case study; dated'],
+  [48, 'Top 6 DePIN projects and coins in 2026', 'https://www.datawallet.com/crypto/best-depin-projects', 'crypto media; promotional'],
+  [49, 'Earn from your data: top DePIN apps that pay in 2026', 'https://crushrewards.app/blog/earn-from-your-data-depin-apps-that-pay-in-2026', 'promotional'],
+  [50, 'io.net review: tokenomics, revenue and GPU metrics 2026', 'https://ownyourmind.ai/projects/io-net/', 'independent review site'],
+  [51, '7 DePIN projects generating $10M+ revenue in 2026', 'https://www.rzlt.io/blog/7-depin-projects-generating-10m-revenue-(and-what-you-can-learn-from-them)', 'analysis; notes revenue is self-reported'],
+  [52, 'Best DePIN projects 2026 (Acurast entry)', 'https://www.titannet.io/learn/basics/best-depin-projects-2026-top-decentralized-physical-infrastructure-networks', 'promotional'],
+  [53, 'Edge AI for mobile apps in 2026', 'https://kanopylabs.com/blog/edge-ai-for-mobile-apps-2026', 'practitioner blog'],
+  [54, 'On-Device LLMs: State of the Union, 2026', 'https://v-chandra.github.io/on-device-llms/', 'practitioner survey'],
+  [55, 'LLM inference at the edge: mobile, NPU and GPU', 'https://arxiv.org/pdf/2603.23640', 'arXiv benchmark, primary'],
+  [56, 'What is on-device AI? A complete guide for 2026', 'https://www.f22labs.com/blogs/what-is-on-device-ai-a-complete-guide/', 'vendor blog'],
+  [57, 'Edge AI for mobile apps: performance and battery', 'https://kanopylabs.com/blog/edge-ai-for-mobile-apps-2026', 'same page as [53]'],
+  [58, 'Best local LLM apps for Android in 2026', 'https://www.promptquorum.com/power-local-llm/best-local-llm-apps-android-2026', 'tested comparison'],
+  [59, 'What is on-device AI and why it matters in 2026', 'https://www.articsledge.com/post/on-device-ai', 'explainer']
+].map(([n, title, url, note]) => ({ n: String(n).padStart(2, '0'), title, url, note }));
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      summary: SUMMARY,
+      sections: SECTIONS.map(s => ({ ...s, tables: s.tables.map(t => ({ ...t, note: String(t.note).replace(/^J· ?/, 'Judgement: ') })) })),
+      sources: SOURCES
+    };
+  }
+}
+</script>
+</body>
+</html>

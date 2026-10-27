@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools==75.6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anima-harness"
+version = "0.1.0"
+description = "The full Anima experiment: one cell, one row."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["anima-seed-gen @ git+https://github.com/anima/seed-gen@v0.1.0"]
+
+[project.scripts]
+anima-harness = "anima_harness.__main__:main"
+
+[tool.setuptools]
+packages = ["anima_harness"]

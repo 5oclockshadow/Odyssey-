@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <script src="./anima3d.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    html { scroll-behavior: smooth; }
+    a { color: var(--color-accent-300); text-underline-offset: 3px; }
+    a:hover { color: var(--color-accent-200); }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  </style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#161826"/><circle cx="50" cy="50" r="18" fill="none" stroke="#9184d9" stroke-width="3"/><circle cx="50" cy="50" r="4" fill="#9184d9"/></svg></template>
+</helmet>
+
+<div data-screen-label="Anima site" style="min-height:100vh;">
+
+<nav class="nav" style="position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:22px;padding:12px clamp(16px,4vw,48px);background:color-mix(in oklch, var(--color-bg) 82%, transparent);backdrop-filter:blur(10px);">
+  <a href="#top" class="nav-brand" style="display:flex;align-items:center;gap:10px;color:var(--color-text);text-decoration:none;font-weight:500;letter-spacing:0.02em;"><span style="width:10px;height:10px;border-radius:50%;border:1.5px solid var(--color-accent);box-shadow:0 0 12px var(--color-accent);"></span>Anima</a>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:14px;flex:1;">
+    <a href="#thesis" style="color:var(--color-neutral-300);text-decoration:none;">Thesis</a>
+    <a href="#experiment" style="color:var(--color-neutral-300);text-decoration:none;">Experiment</a>
+    <a href="#graph" style="color:var(--color-neutral-300);text-decoration:none;">Graph</a>
+    <a href="#lstm" style="color:var(--color-neutral-300);text-decoration:none;">LSTM</a>
+    <a href="#research" style="color:var(--color-neutral-300);text-decoration:none;">Research</a>
+    <a href="#tiers" style="color:var(--color-neutral-300);text-decoration:none;">Tiers</a>
+  </div>
+  <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+      <span class="tag tag-accent">{{ tierName }}</span>
+      <span style="color:var(--color-neutral-300);">{{ user.email }}</span>
+      <button class="btn btn-ghost" onClick="{{ signOut }}" style="font-size:13px;">Sign out</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{ signedOut }}" hint-placeholder-val="{{ true }}">
+    <button class="btn btn-primary" onClick="{{ openLogin }}" style="font-size:13px;"><i class="ph ph-sign-in"></i> Sign in</button>
+  </sc-if>
+</nav>
+
+<section id="top" data-screen-label="01 Hero" style="position:relative;min-height:max(640px,100vh);display:flex;align-items:center;overflow:hidden;background:radial-gradient(ellipse 55% 50% at 70% 50%, var(--color-accent-900) 0%, transparent 70%), var(--color-bg);">
+  <div ref="{{ heroRef }}" style="position:absolute;inset:0;"></div>
+  <div style="position:relative;z-index:2;max-width:600px;padding:96px clamp(20px,5vw,72px) 72px;display:grid;gap:22px;pointer-events:none;">
+    <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">{{ slide.kicker }}</div>
+    <h1 style="margin:0;font-size:clamp(40px,6vw,72px);line-height:1.02;letter-spacing:-0.025em;font-weight:500;">{{ slide.title }}</h1>
+    <p style="margin:0;font-size:clamp(17px,1.7vw,20px);line-height:1.5;color:var(--color-neutral-300);">{{ slide.body }}</p>
+    <sc-if value="{{ showRung }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:baseline;gap:14px;">
+        <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">Substrate</span>
+        <span style="font-size:34px;font-weight:500;color:var(--color-accent-200);font-variant-numeric:tabular-nums;">{{ rung.n }}</span>
+        <span style="font-size:13px;color:var(--color-neutral-400);">{{ rung.hw }}</span>
+      </div>
+    </sc-if>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;pointer-events:auto;">
+      <a href="#graph" class="btn btn-primary" style="text-decoration:none;">Query the graph</a>
+      <a href="#experiment" class="btn btn-ghost" style="text-decoration:none;">The headline experiment</a>
+    </div>
+  </div>
+  <div style="position:absolute;z-index:3;left:clamp(20px,5vw,72px);right:clamp(20px,5vw,72px);bottom:28px;display:flex;align-items:center;gap:14px;">
+    <button class="btn btn-icon btn-ghost" onClick="{{ togglePause }}" aria-label="Pause or play"><i class="{{ pauseIcon }}"></i></button>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;flex:1;max-width:560px;">
+      <sc-for list="{{ slideBars }}" as="b" hint-placeholder-count="4">
+        <button onClick="{{ b.go }}" style="all:unset;cursor:pointer;display:grid;gap:7px;">
+          <span style="height:2px;background:var(--color-neutral-700);border-radius:2px;overflow:hidden;display:block;"><span style="display:block;height:100%;background:var(--color-accent);width:{{ b.fill }};"></span></span>
+          <span style="font-size:11px;color:var(--color-neutral-400);">{{ b.label }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<main style="display:grid;gap:120px;padding:96px clamp(20px,5vw,72px) 120px;max-width:1240px;">
+
+<section id="thesis" data-screen-label="02 Thesis" style="display:grid;gap:28px;scroll-margin-top:80px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">The thesis · Anima</div>
+    <h2 style="margin:0;font-size:clamp(30px,3.6vw,44px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Intelligence lives in the seeded graph, not in the model weights.</h2>
+    <p style="margin:0;font-size:18px;line-height:1.6;color:var(--color-neutral-300);">Once the graph is seeded and the <button onClick="{{ terms.dspy }}" style="all:unset;cursor:help;border-bottom:1px dashed var(--color-accent-400);color:var(--color-text);">DSPy cognition layer</button> is in place, the model is only the <button onClick="{{ terms.substrate }}" style="all:unset;cursor:help;border-bottom:1px dashed var(--color-accent-400);color:var(--color-text);">substrate</button>. A small model, or an <button onClick="{{ terms.lstm }}" style="all:unset;cursor:help;border-bottom:1px dashed var(--color-accent-400);color:var(--color-text);">LSTM</button> on a CPU, should then match a large one. How the graph is <button onClick="{{ terms.seed }}" style="all:unset;cursor:help;border-bottom:1px dashed var(--color-accent-400);color:var(--color-text);">seeded</button> decides how intelligent it is.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px;">
+    <sc-for list="{{ claims }}" as="c" hint-placeholder-count="4">
+      <div class="card" style="display:grid;gap:8px;align-content:start;">
+        <div class="card-kicker">{{ c.k }}</div>
+        <div class="card-title" style="font-size:18px;">{{ c.t }}</div>
+        <p class="card-body" style="margin:0;">{{ c.b }}</p>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px;">
+    <div class="card elev-sm" style="display:grid;gap:8px;">
+      <div class="card-kicker">Bridago · the brain</div>
+      <p class="card-body" style="margin:0;">The implementation: one shared seeded brain. Graph, seed and cognition layer, held fixed while the substrate changes underneath.</p>
+    </div>
+    <div class="card elev-sm" style="display:grid;gap:8px;">
+      <div class="card-kicker">Rex · branch</div>
+      <p class="card-body" style="margin:0;">The graph side: store, seed generator, shuffled-seed control, the public and private graph split.</p>
+    </div>
+    <div class="card elev-sm" style="display:grid;gap:8px;">
+      <div class="card-kicker">Jarvis · branch</div>
+      <p class="card-body" style="margin:0;">The agent side: one DSPy Signature, its output stack, GEPA reflection and the energy-based halt.</p>
+    </div>
+  </div>
+</section>
+
+<section id="experiment" data-screen-label="03 Experiment" style="display:grid;gap:28px;scroll-margin-top:80px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Headline experiment</div>
+    <h2 style="margin:0;font-size:clamp(30px,3.6vw,44px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Seed once. Shrink the model. The line should stay flat.</h2>
+    <p style="margin:0;font-size:17px;line-height:1.6;color:var(--color-neutral-300);">The same tasks on a ladder of substrates, with and without the Bridago seed. Unseeded, quality falls with size, as dspy-router-test already found for deep schemas. Seeded, Anima predicts it does not.</p>
+  </div>
+  <div class="card" style="display:grid;gap:14px;padding:22px;">
+    <div style="display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;justify-content:space-between;">
+      <div style="display:flex;gap:18px;font-size:13px;color:var(--color-neutral-300);flex-wrap:wrap;">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="width:18px;height:2px;background:var(--color-accent);"></span>Seeded (H0 prediction)</span>
+        <span style="display:flex;align-items:center;gap:8px;"><span style="width:18px;height:0;border-top:2px dashed var(--color-neutral-400);"></span>Unseeded (direction of dspy-router-test)</span>
+      </div>
+      <span class="tag tag-outline">Predicted shape · not yet measured</span>
+    </div>
+    <svg viewBox="0 0 640 260" style="width:100%;height:auto;display:block;" role="img" aria-label="Predicted quality by substrate size, seeded and unseeded">
+      <g stroke="var(--color-neutral-800)" stroke-width="1"><line x1="60" y1="40" x2="600" y2="40"></line><line x1="60" y1="100" x2="600" y2="100"></line><line x1="60" y1="160" x2="600" y2="160"></line><line x1="60" y1="220" x2="600" y2="220"></line></g>
+      <g fill="var(--color-neutral-400)" font-size="11" font-family="inherit"><text x="52" y="44" text-anchor="end">high</text><text x="52" y="224" text-anchor="end">low</text></g>
+      <rect x="60" y="40" width="540" height="22" fill="var(--color-accent-900)" opacity="0.6"></rect>
+      <text x="596" y="55" text-anchor="end" fill="var(--color-accent-300)" font-size="11">within 5 points of 30B</text>
+      <polyline points="80,52 210,54 340,55 470,57 580,58" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></polyline>
+      <polyline points="80,52 210,88 340,126 470,176 580,206" fill="none" stroke="var(--color-neutral-400)" stroke-width="2" stroke-dasharray="6 5"></polyline>
+      <g fill="var(--color-accent)"><circle cx="80" cy="52" r="4"></circle><circle cx="210" cy="54" r="4"></circle><circle cx="340" cy="55" r="4"></circle><circle cx="470" cy="57" r="4"></circle><circle cx="580" cy="58" r="4"></circle></g>
+      <g fill="var(--color-neutral-300)" font-size="12" text-anchor="middle"><text x="80" y="246">30B</text><text x="210" y="246">8B</text><text x="340" y="246">1–3B</text><text x="470" y="246">~50M transformer</text><text x="580" y="246">LSTM · CPU</text></g>
+    </svg>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:720px;">
+      <thead><tr><th>Condition</th><th>What the substrate gets</th><th>What it tests</th></tr></thead>
+      <tbody>
+        <sc-for list="{{ conditions }}" as="c" hint-placeholder-count="4"><tr><td>{{ c.n }}</td><td>{{ c.g }}</td><td>{{ c.t }}</td></tr></sc-for>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="graph" ref="{{ graphSec }}" data-screen-label="04 Graph" style="display:grid;gap:22px;scroll-margin-top:80px;">
+  <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between;">
+    <div style="display:grid;gap:12px;max-width:720px;">
+      <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">The Bridago graph</div>
+      <h2 style="margin:0;font-size:clamp(30px,3.6vw,44px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Run a query, watch it traverse.</h2>
+      <p style="margin:0;font-size:16px;line-height:1.6;color:var(--color-neutral-300);">The seed graph behind the experiment: thesis, brain, branches, seed blocks, substrates, hypotheses and sources. Drag to orbit, click a node to start from it.</p>
+    </div>
+    <div class="seg" role="radiogroup" aria-label="Graph view">
+      <sc-for list="{{ views }}" as="v" hint-placeholder-count="2">
+        <label class="seg-opt" style="display:flex;align-items:center;gap:6px;"><input type="radio" name="gview" checked="{{ v.on }}" onChange="{{ v.pick }}"><i class="{{ v.icon }}"></i>{{ v.label }}</label>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:14px;min-height:560px;">
+    <div class="card" style="flex:1 1 280px;max-width:340px;display:grid;gap:14px;align-content:start;padding:16px;">
+      <div class="card-kicker">Query</div>
+      <div style="display:grid;gap:6px;">
+        <sc-for list="{{ queries }}" as="q" hint-placeholder-count="4">
+          <button onClick="{{ q.pick }}" style="all:unset;cursor:pointer;display:grid;gap:3px;padding:10px 12px;border-radius:var(--radius-md);border:1px solid var(--color-neutral-800);background:{{ q.bg }};">
+            <span style="display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:500;">{{ q.name }}<sc-if value="{{ q.locked }}" hint-placeholder-val="{{ false }}"><span class="tag tag-neutral" style="font-size:10px;padding:1px 7px;"><i class="ph ph-lock-simple"></i> {{ q.needName }}</span></sc-if></span>
+            <span style="font-size:12px;line-height:1.45;color:var(--color-neutral-400);">{{ q.desc }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:grid;gap:10px;">
+        <sc-if value="{{ needsFrom }}" hint-placeholder-val="{{ true }}">
+          <label class="field" style="display:grid;gap:4px;font-size:12px;">Start
+            <select class="input" value="{{ from }}" onChange="{{ setFrom }}"><sc-for list="{{ nodeOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select>
+          </label>
+        </sc-if>
+        <sc-if value="{{ needsTo }}" hint-placeholder-val="{{ false }}">
+          <label class="field" style="display:grid;gap:4px;font-size:12px;">End
+            <select class="input" value="{{ to }}" onChange="{{ setTo }}"><sc-for list="{{ nodeOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select>
+          </label>
+        </sc-if>
+        <sc-if value="{{ needsHyp }}" hint-placeholder-val="{{ false }}">
+          <label class="field" style="display:grid;gap:4px;font-size:12px;">Hypothesis
+            <select class="input" value="{{ hyp }}" onChange="{{ setHyp }}"><sc-for list="{{ hypOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select>
+          </label>
+        </sc-if>
+        <sc-if value="{{ needsHops }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;gap:4px;font-size:12px;">Hops
+            <div class="seg"><sc-for list="{{ hopOpts }}" as="h" hint-placeholder-count="3"><label class="seg-opt"><input type="radio" name="hops" checked="{{ h.on }}" onChange="{{ h.pick }}">{{ h.n }}</label></sc-for></div>
+          </div>
+        </sc-if>
+      </div>
+      <pre style="margin:0;padding:10px 12px;border-radius:var(--radius-md);background:var(--color-bg);font-size:12px;line-height:1.6;color:var(--color-accent-200);white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;">{{ qtext }}</pre>
+      <button class="btn btn-primary btn-block" onClick="{{ run }}"><i class="ph ph-play"></i> Run</button>
+    </div>
+
+    <div style="flex:999 1 480px;min-width:0;position:relative;display:grid;grid-template-rows:minmax(380px,1fr) auto;gap:14px;">
+      <div style="position:relative;border-radius:var(--radius-lg);overflow:hidden;background:radial-gradient(ellipse at 50% 40%, var(--color-surface) 0%, var(--color-bg) 75%);border:1px solid var(--color-neutral-800);">
+        <div ref="{{ exRef }}" style="position:absolute;inset:0;"></div>
+        <div style="position:absolute;left:14px;top:12px;display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--color-neutral-400);pointer-events:none;">
+          <span class="tag tag-outline">{{ viewNote }}</span>
+          <sc-if value="{{ waveOn }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">wave {{ waveN }}</span></sc-if>
+        </div>
+        <sc-if value="{{ hasHover }}" hint-placeholder-val="{{ false }}">
+          <div class="card elev-md" style="position:absolute;left:{{ hover.x }}px;top:{{ hover.y }}px;transform:translate(12px,-50%);pointer-events:none;padding:10px 12px;max-width:260px;display:grid;gap:4px;">
+            <span class="card-kicker" style="font-size:10px;">{{ hover.type }}</span>
+            <span style="font-size:14px;font-weight:500;">{{ hover.label }}</span>
+            <span style="font-size:12px;line-height:1.45;color:var(--color-neutral-400);">{{ hover.note }}</span>
+          </div>
+        </sc-if>
+      </div>
+      <div class="card" style="display:grid;gap:12px;padding:16px;">
+        <sc-if value="{{ noResult }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:14px;color:var(--color-neutral-400);">Pick a query and press Run. Results appear here as the traversal finishes.</p></sc-if>
+        <sc-if value="{{ hasResult }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:12px;">
+            <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;"><span style="font-size:15px;font-weight:500;">{{ result.title }}</span><span style="font-size:12px;color:var(--color-neutral-400);">{{ result.meta }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+              <sc-for list="{{ result.rows }}" as="r" hint-placeholder-count="3"><div style="display:grid;gap:2px;"><span style="font-size:11px;color:var(--color-neutral-400);text-transform:uppercase;letter-spacing:0.06em;">{{ r.k }}</span><span style="font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;">{{ r.v }}</span></div></sc-for>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ result.list }}" as="l" hint-placeholder-count="5"><span class="tag tag-neutral">{{ l }}</span></sc-for></div>
+            <sc-if value="{{ result.hasNote }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:13px;line-height:1.55;color:var(--color-neutral-300);">{{ result.note }}</p></sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lstm" data-screen-label="05 LSTM" style="display:grid;gap:24px;scroll-margin-top:80px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">The sharpest test</div>
+    <h2 style="margin:0;font-size:clamp(30px,3.6vw,44px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Why an LSTM on a CPU</h2>
+    <p style="margin:0;font-size:17px;line-height:1.6;color:var(--color-neutral-300);">A recurrent network runs in constant memory per step and linear time, which is what makes CPU inference viable. Its documented weakness is recall from context. In Bridago the structure is not in the context; it is in the graph, served as a lookup. So the thesis predicts a specific pattern: the LSTM fails unseeded, fails with the seed pasted into its prompt, and passes when it can look the seed up.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;">
+    <div class="card" style="display:grid;gap:10px;align-content:start;"><div class="card-kicker">For</div>
+      <sc-for list="{{ lstmFor }}" as="x" hint-placeholder-count="3"><p class="card-body" style="margin:0;">{{ x.t }} <sc-if value="{{ x.s }}" hint-placeholder-val="{{ true }}"><a href="{{ x.u }}" target="_blank" rel="noopener">{{ x.s }}</a></sc-if></p></sc-for>
+    </div>
+    <div class="card" style="display:grid;gap:10px;align-content:start;"><div class="card-kicker">Against</div>
+      <sc-for list="{{ lstmAgainst }}" as="x" hint-placeholder-count="3"><p class="card-body" style="margin:0;">{{ x.t }} <sc-if value="{{ x.s }}" hint-placeholder-val="{{ true }}"><a href="{{ x.u }}" target="_blank" rel="noopener">{{ x.s }}</a></sc-if></p></sc-for>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;">
+    <sc-for list="{{ lstmPattern }}" as="p" hint-placeholder-count="3">
+      <div style="display:grid;gap:6px;padding:16px;border-radius:var(--radius-md);border:1px solid var(--color-neutral-800);">
+        <span style="font-size:12px;color:var(--color-neutral-400);">{{ p.c }}</span>
+        <span style="font-size:20px;font-weight:500;">{{ p.r }}</span>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="research" data-screen-label="06 Research" style="display:grid;gap:24px;scroll-margin-top:80px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Research</div>
+    <h2 style="margin:0;font-size:clamp(30px,3.6vw,44px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">The material behind it</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;">
+    <sc-for list="{{ papers }}" as="p" hint-placeholder-count="4">
+      <a href="{{ p.href }}" class="card" style="display:grid;gap:8px;align-content:start;text-decoration:none;color:var(--color-text);">
+        <div style="display:flex;justify-content:space-between;gap:8px;"><span class="card-kicker">{{ p.k }}</span><sc-if value="{{ p.locked }}" hint-placeholder-val="{{ false }}"><span class="tag tag-neutral" style="font-size:10px;padding:1px 7px;"><i class="ph ph-lock-simple"></i> {{ p.needName }}</span></sc-if></div>
+        <span class="card-title" style="font-size:18px;">{{ p.t }}</span>
+        <span class="card-body">{{ p.b }}</span>
+      </a>
+    </sc-for>
+  </div>
+</section>
+
+<section id="tiers" data-screen-label="07 Tiers" style="display:grid;gap:24px;scroll-margin-top:80px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Access</div>
+    <h2 style="margin:0;font-size:clamp(30px,3.6vw,44px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Four tiers, one graph</h2>
+    <p style="margin:0;font-size:16px;line-height:1.6;color:var(--color-neutral-300);">Everyone sees the public graph. Each tier opens more queries and more of the material. The private graph, with live rounds and raw runs, is the owner's.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px;">
+    <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="4">
+      <div class="card" style="display:grid;gap:12px;align-content:start;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><span class="card-kicker">{{ t.name }}</span><sc-if value="{{ t.current }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Your tier</span></sc-if></div>
+        <span style="font-size:26px;font-weight:500;">{{ t.price }}</span>
+        <span class="card-body">{{ t.who }}</span>
+        <div style="display:grid;gap:6px;"><sc-for list="{{ t.items }}" as="i" hint-placeholder-count="3"><span style="display:flex;gap:8px;font-size:13px;line-height:1.45;color:var(--color-neutral-200);"><i class="ph ph-check" style="color:var(--color-accent);margin-top:2px;"></i>{{ i }}</span></sc-for></div>
+        <button class="btn btn-secondary" onClick="{{ t.choose }}">{{ t.cta }}</button>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<sc-if value="{{ isOwner }}" hint-placeholder-val="{{ false }}">
+  <section id="owner" data-screen-label="08 Owner" style="display:grid;gap:20px;scroll-margin-top:80px;">
+    <div style="display:grid;gap:10px;"><div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Owner</div><h2 style="margin:0;font-size:32px;font-weight:500;">Your console, apps and institute</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
+      <sc-for list="{{ ownerLinks }}" as="o" hint-placeholder-count="5">
+        <a href="{{ o.href }}" class="card" style="display:grid;gap:6px;text-decoration:none;color:var(--color-text);"><i class="{{ o.icon }}" style="font-size:22px;color:var(--color-accent);"></i><span class="card-title" style="font-size:16px;">{{ o.t }}</span><span class="card-body" style="font-size:13px;">{{ o.b }}</span></a>
+      </sc-for>
+    </div>
+  </section>
+</sc-if>
+</main>
+
+<footer style="padding:40px clamp(20px,5vw,72px) 56px;display:flex;flex-wrap:wrap;gap:12px 28px;font-size:13px;color:var(--color-neutral-400);">
+  <span>Anima · the thesis. Bridago · the brain. Rex and Jarvis · its branches.</span>
+  <span>{{ engineNote }}</span>
+</footer>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div class="card elev-lg" role="status" style="position:fixed;left:clamp(12px,3vw,32px);bottom:24px;z-index:30;max-width:380px;display:grid;gap:10px;padding:16px;animation:rise .25s ease-out;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><span class="card-kicker" style="display:flex;align-items:center;gap:6px;"><i class="{{ toast.icon }}"></i>{{ toast.kind }}</span><button class="btn btn-icon btn-ghost" onClick="{{ closeToast }}" aria-label="Dismiss"><i class="ph ph-x"></i></button></div>
+    <p style="margin:0;font-size:14px;line-height:1.5;">{{ toast.text }}</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ toast.opts }}" as="o" hint-placeholder-count="2"><button class="btn btn-secondary" style="font-size:12px;" onClick="{{ o.fn }}">{{ o.label }}</button></sc-for></div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasTerm }}" hint-placeholder-val="{{ false }}">
+  <div class="card elev-lg" role="dialog" style="position:fixed;left:{{ term.x }}px;top:{{ term.y }}px;z-index:31;width:300px;display:grid;gap:8px;padding:14px;animation:rise .2s ease-out;">
+    <div style="display:flex;justify-content:space-between;align-items:center;"><span class="card-kicker">Clarification · {{ term.k }}</span><button class="btn btn-icon btn-ghost" onClick="{{ closeTerm }}" aria-label="Close"><i class="ph ph-x"></i></button></div>
+    <p style="margin:0;font-size:13px;line-height:1.55;">{{ term.d }}</p>
+    <button class="btn btn-ghost" style="justify-self:start;font-size:12px;" onClick="{{ term.show }}">Show it in the graph →</button>
+  </div>
+</sc-if>
+
+<button onClick="{{ toggleAsk }}" class="btn btn-primary" aria-label="Ask a question" style="position:fixed;right:clamp(12px,3vw,32px);bottom:24px;z-index:30;border-radius:999px;padding:12px 16px;background:var(--color-bg);box-shadow:var(--shadow-md);"><i class="ph ph-chat-circle-dots"></i> Ask</button>
+
+<sc-if value="{{ ask }}" hint-placeholder-val="{{ false }}">
+  <div class="card elev-lg" style="position:fixed;right:clamp(12px,3vw,32px);bottom:80px;z-index:32;width:min(380px,calc(100vw - 24px));height:min(520px,70vh);display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:14px;animation:rise .2s ease-out;">
+    <div style="display:flex;justify-content:space-between;align-items:center;"><span class="card-kicker">Ask Bridago</span><span class="tag tag-outline" style="font-size:10px;">{{ askMode }}</span></div>
+    <div ref="{{ msgBox }}" style="overflow:auto;display:grid;gap:10px;align-content:start;">
+      <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="1">
+        <div style="display:grid;gap:6px;justify-items:{{ m.align }};">
+          <div style="max-width:88%;padding:9px 12px;border-radius:var(--radius-md);font-size:13px;line-height:1.5;background:{{ m.bg }};">{{ m.text }}</div>
+          <sc-if value="{{ m.hasOpts }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ m.opts }}" as="o" hint-placeholder-count="2"><button class="btn btn-secondary" style="font-size:12px;" onClick="{{ o.fn }}">{{ o.label }}</button></sc-for></div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <form onSubmit="{{ send }}" style="display:flex;gap:8px;"><input class="input" style="flex:1;" placeholder="Ask about the thesis, the seed, the LSTM…" value="{{ draft }}" onChange="{{ setDraft }}"><button class="btn btn-primary" type="submit" aria-label="Send"><i class="ph ph-paper-plane-right"></i></button></form>
+  </div>
+</sc-if>
+
+<sc-if value="{{ login }}" hint-placeholder-val="{{ false }}">
+  <div class="dialog-backdrop" onClick="{{ closeLogin }}" style="position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;">
+    <form class="dialog" onClick="{{ stop }}" onSubmit="{{ submitLogin }}" style="width:min(420px,100%);display:grid;gap:14px;">
+      <div class="dialog-title">Sign in</div>
+      <div class="seg" role="radiogroup" aria-label="Tier"><sc-for list="{{ loginTiers }}" as="t" hint-placeholder-count="3"><label class="seg-opt"><input type="radio" name="ltier" checked="{{ t.on }}" onChange="{{ t.pick }}">{{ t.name }}</label></sc-for></div>
+      <label class="field" style="display:grid;gap:4px;">Email<input class="input" type="email" required value="{{ lEmail }}" onChange="{{ setEmail }}" placeholder="you@domain.com"></label>
+      <label class="field" style="display:grid;gap:4px;">Password<input class="input" type="password" required value="{{ lPass }}" onChange="{{ setPass }}"></label>
+      <p class="dialog-body" style="margin:0;font-size:12px;line-height:1.5;color:var(--color-neutral-400);">{{ loginNote }}</p>
+      <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:13px;color:var(--color-accent-200);">{{ lErr }}</p></sc-if>
+      <div class="dialog-actions" style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-ghost" onClick="{{ closeLogin }}">Cancel</button><button type="submit" class="btn btn-primary">{{ loginCta }}</button></div>
+    </form>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;engineUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Engine&quot;}}">
+const N = (id, label, type, ring, w, note, pub = true) => ({ id, label, type, ring, w, note, pub });
+const NODES = [
+  N('anima', 'Anima', 'thesis', 0, 1, 'The thesis: the seeded graph and DSPy layer carry the cognition; the model is the substrate.'),
+  N('bridago', 'Bridago', 'brain', 0, 1, 'The shared seeded brain. Held fixed while the substrate changes.'),
+  N('rex', 'Rex', 'branch', 1, .8, 'Graph branch: store, seed generator, shuffle control, public/private split.'),
+  N('jarvis', 'Jarvis', 'branch', 1, .8, 'Agent branch: one DSPy Signature, output stack, GEPA reflection, energy halt.'),
+  ...[['incidence', 'Incidence', 'Hypergraph incidence matrix, sparse.'], ['types', 'Types', 'Node to ontology symbol, symbol to parent.'], ['restriction', 'Restriction maps', 'What a node may hold inside each hyperedge.'], ['constraints', 'Constraints', 'Transitivity, disjointness, cardinality as Horn clauses.'], ['energy', 'Energy', 'Consistency score; the halting rule.']].map(([i, l, n]) => N(i, l, 'seed', 2, .55, 'Seed block. ' + n)),
+  ...[['s30b', '30B', 'Top of the ladder.'], ['s8b', '8B', 'Mid open model on small/fast.'], ['s3b', '1–3B', 'Small open model; the dspy-router-test failure case.'], ['tinytf', '~50M transformer', 'Trained only on seed → query → answer.'], ['lstm', 'LSTM · CPU', 'xLSTM / minLSTM, same data and budget as the tiny transformer.'], ['gnn', 'Hypergraph GNN', 'No-language baseline.']].map(([i, l, n]) => N(i, l, 'substrate', 2, .5, 'Substrate. ' + n)),
+  ...[['h0', 'H0 · flat line', 'Seeded, every rung stays within 5 points of 30B.'], ['h1', 'H1 · gap closure', 'Seeded 1–3B within 5 points of 30B at depth ≤ 6.'], ['h2', 'H2 · invariance', 'Seeding halves the spread between substrates.'], ['h3', 'H3 · LSTM ≈ TF', 'LSTM within 5 points of the tiny transformer at ≥10× lower CPU cost.'], ['h4', 'H4 · LSTM pattern', 'Fails unseeded and in-context; passes by retrieval.'], ['h5', 'H5 · structure', 'A shuffled seed removes ≥ 80% of the gain.'], ['h6', 'H6 · depth', 'The seeded gain grows with schema depth.'], ['h7', 'H7 · seeding decides', 'Seed quality moves accuracy more than model size.']].map(([i, l, n]) => N(i, l, 'hypothesis', 1, .45, n)),
+  ...[['dspy', 'DSPy (ICLR 2024)', 'Compiled programs let small models compete with GPT-3.5 chains.'], ['trm', 'TRM (2025)', '7M params, 45% ARC-AGI-1; deep supervision drives it.'], ['xlstm', 'xLSTM (NeurIPS 2024)', 'Exponential gating and matrix memory; scales competitively.'], ['minlstm', 'minLSTM (2024)', 'Parallel-trainable LSTM; matches recent sequence models.'], ['zoology', 'Zoology (2023)', 'Against: fixed state loses at associative recall.'], ['wen', 'RNNs ≠ Transformers yet (2024)', 'Retrieval closes the RNN in-context gap.'], ['alpine', 'ALPINE (NeurIPS 2024)', 'Transformers store adjacency, not transitive reachability.'], ['jsonbench', 'JSONSchemaBench (2025)', 'Deep schemas break all models.'], ['gepa', 'GEPA (ICLR 2026)', 'Reflective prompt evolution; the optimiser.'], ['router', 'dspy-router-test', 'Internal: small models fail deep schemas unseeded.']].map(([i, l, n]) => N(i, l, 'source', 3, .3, n)),
+  ...[['smallfast', 'small/fast server', 'Inference server on the 5-digit port.'], ['phoenix', 'Phoenix traces', 'Every span of every round.'], ['runs', 'Raw runs', 'results.parquet, one row per cell.'], ['seedv4', 'Seed v4 · curated', 'Hand-reviewed constraints and energy.'], ['sextant', 'SEXTANT', 'The company agent.'], ['institute', 'Institute', 'The self-running think tank.'], ['glaw', 'Goal · law across tiers', 'Federal, provincial, municipal rules.'], ['gcompute', 'Goal · phone compute', 'Idle devices paid to share compute.']].map(([i, l, n]) => N(i, l, 'private', 3, .35, n, false)),
+];
+const EDGES = 'anima-bridago bridago-rex bridago-jarvis rex-incidence rex-types rex-restriction rex-constraints rex-energy jarvis-gepa jarvis-dspy bridago-s30b bridago-s8b bridago-s3b bridago-tinytf bridago-lstm bridago-gnn anima-h0 anima-h1 anima-h2 anima-h3 anima-h4 anima-h5 anima-h6 anima-h7 h0-s30b h0-lstm h1-s3b h2-s8b h3-lstm h3-tinytf h4-lstm h5-rex h6-router h7-constraints h7-energy dspy-h1 trm-energy trm-tinytf xlstm-lstm minlstm-lstm zoology-lstm wen-lstm wen-h4 alpine-incidence jsonbench-router router-s3b smallfast-s3b smallfast-s8b smallfast-lstm phoenix-jarvis runs-phoenix runs-h0 seedv4-rex sextant-bridago institute-sextant glaw-institute gcompute-institute'.split(' ').map(s => s.split('-'));
+const BY = Object.fromEntries(NODES.map(n => [n.id, n]));
+const TIERS = [
+  { id: 'visitor', name: 'Visitor', price: 'Free', who: 'Anyone, no account.', items: ['Public graph, neighbourhood queries', 'Thesis, experiment, LSTM argument', 'Ask Bridago'] },
+  { id: 'member', name: 'Member', price: 'Free', who: 'Sign in with email.', items: ['Shortest path and evidence queries', 'Full research plan and reports', 'Saved questions'] },
+  { id: 'pro', name: 'Pro', price: 'Paid', who: 'Researchers who want to test seeds.', items: ['Seed vs shuffled control', 'Catalogue and raw tables', 'Results as they land'] },
+  { id: 'owner', name: 'Owner', price: 'You', who: 'Engine password.', items: ['Private graph, live rounds', 'Console, agent space, institute', 'Studio and publishing'] },
+];
+const QUERIES = [
+  { id: 'hop', name: 'Neighbourhood', need: 0, desc: 'Everything within 1–3 hops of a node, wave by wave.' },
+  { id: 'path', name: 'Shortest path', need: 1, desc: 'How two ideas connect, e.g. LSTM to Anima.' },
+  { id: 'evidence', name: 'Evidence for a hypothesis', need: 1, desc: 'The substrates, seed blocks and sources a hypothesis rests on.' },
+  { id: 'shuffle', name: 'Seed vs shuffled', need: 2, desc: 'Same degrees, permuted edges. How much reach survives?' },
+];
+const TERMS = {
+  seed: ['Seed', 'The file Bridago starts from: incidence, types, restriction maps, constraints and an energy score. v4 tests minimal, generated and curated seeds.', 'rex'],
+  substrate: ['Substrate', 'Whatever does the token-level inference: 30B, 8B, 1–3B, a tiny transformer or an LSTM. In Anima it is replaceable.', 'bridago'],
+  dspy: ['DSPy cognition layer', 'One Signature with typed, ordered fields (intake → reframe → reasoning → act), compiled by GEPA. Held fixed across substrates.', 'jarvis'],
+  lstm: ['LSTM', 'A recurrent network: constant memory per step, linear time, runs on a CPU. Weak at recall from context, which is why retrieval from the graph is the test.', 'lstm'],
+};
+const FAQ = [
+  [/seed/i, 'The seed is five blocks (incidence, types, restriction maps, constraints, energy) in one file. Rex generates it; v4 compares minimal, generated and curated seeds, plus a shuffled control.'],
+  [/lstm|rnn|cpu/i, 'The LSTM is the sharpest test: it is known to fail at recall from context. Anima predicts it fails unseeded and in-context, and passes when it retrieves the seed from the graph (H4).'],
+  [/result|measur|data|number/i, 'Nothing is measured yet. Phase P1 replicates dspy-router-test; P3 runs 30B, 1–3B and LSTM at depth 1–3 before the full grid.'],
+  [/bridago|rex|jarvis/i, 'Bridago is the shared seeded brain. Rex is its graph branch, Jarvis its agent branch. Every substrate plugs into the same Bridago.'],
+  [/tier|price|login|account/i, 'Visitor and Member are free; Pro opens the shuffled-seed control and raw tables; Owner is the engine password and opens the private graph and console.'],
+  [/shuffl|control/i, 'The shuffled seed keeps every node\'s degree but permutes the edges. If it works as well as the real seed, the gain was volume, not structure (H5).'],
+];
+const RUNGS = [{ n: '30B', hw: 'GPU', s: 1 }, { n: '8B', hw: 'one GPU', s: .74 }, { n: '1–3B', hw: 'CPU or one GPU', s: .52 }, { n: '~50M', hw: 'CPU · tiny transformer', s: .32 }, { n: 'LSTM', hw: 'CPU', s: .16 }];
+const SLIDES = [
+  { label: 'Seed', kicker: 'Anima · 01', title: 'Seed the graph once.', body: 'Incidence, types, restriction maps, constraints and an energy score. Five blocks in one file, generated by Rex.' },
+  { label: 'Brain', kicker: 'Bridago · 02', title: 'One shared brain.', body: 'Rex holds the graph. Jarvis holds the DSPy cognition layer. Together they are Bridago, and they stay fixed.' },
+  { label: 'Shrink', kicker: 'Substrate · 03', title: 'Shrink the model.', body: 'The same brain on a ladder of substrates, from 30B down to an LSTM on a CPU.' },
+  { label: 'Hold', kicker: 'Prediction · 04', title: 'Quality holds.', body: 'If the cognition is in the graph, the seeded line stays flat while the model shrinks. That is the experiment.' },
+];
+const ls = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+
+class Component extends DCLogic {
+  state = { slide: 0, t0: Date.now(), now: Date.now(), paused: false, rung: 0, user: ls('anima.user'), login: false, lEmail: '', lPass: '', lTier: 'member', lErr: '',
+    view: 'public', q: 'hop', from: 'lstm', to: 'anima', hyp: 'h4', hops: 2, result: null, wave: -1, hover: null, toast: null, term: null, ask: false, draft: '', engineOk: false,
+    msgs: [{ who: 'b', text: 'Ask about the thesis, the seed, the LSTM test or the tiers. Short questions get a clarifying question back.' }], seen: ls('anima.seen') || {} };
+  heroRef = React.createRef(); exRef = React.createRef(); graphSec = React.createRef(); msgBox = React.createRef();
+  engine() { return this.props.engineUrl || (/\.dc\.html$/.test(location.pathname) ? '' : '/api'); }
+  rank() { const u = this.state.user; return u ? TIERS.findIndex(t => t.id === u.tier) : 0; }
+
+  componentDidMount() {
+    window.Anima3D && window.Anima3D.load().then(() => {
+      this.hero = Anima3D.hero(this.heroRef.current); this.hero.go(0);
+      this.ex = Anima3D.explorer(this.exRef.current, { onPick: (id, grey) => grey ? this.say('Clarification', 'That node is private. Owners see it in full; everyone else sees a grey shape.', 'ph ph-lock-simple') : this.setState({ from: id }, () => this.ex.focus(id)),
+        onHover: (id, x, y) => this.setState({ hover: id ? { ...this.nodeView(BY[id]), x, y } : null }), onWave: k => this.setState({ wave: k }) });
+      this.ex.set(this.data());
+    });
+    this.tick = setInterval(() => { const s = this.state; if (s.paused) return this.setState({ t0: s.t0 + 100, now: Date.now() });
+      const el = Date.now() - s.t0, slide = Math.floor(el / 7000) % 4, rung = Math.min(4, Math.floor((el % 7000) / 1300));
+      if (slide !== s.slide || (slide === 2 && rung !== s.rung)) this.hero && this.hero.go(slide, RUNGS[rung].s);
+      this.setState({ now: Date.now(), slide, rung }); }, 100);
+    if (this.engine()) fetch(this.engine() + '/health').then(r => { if (r.ok) this.setState({ engineOk: true }); }, () => {});
+    this.timers = [setTimeout(() => this.once('intro', 'Suggestion', 'Hover any dashed term for a short definition, or jump straight to the graph and run a query.', 'ph ph-lightbulb', [{ label: 'Go to the graph', fn: () => this.goGraph() }]), 6000),
+      setTimeout(() => this.once('why', 'Question', 'What brings you here?', 'ph ph-question', [{ label: 'I build agents', fn: () => this.tailor('agents') }, { label: 'I fund or buy', fn: () => this.tailor('buy') }, { label: 'I research', fn: () => this.tailor('research') }]), 30000)];
+    this.io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && this.once('graph', 'Suggestion', 'Try the LSTM test: pick Shortest path from LSTM · CPU to Anima, then Evidence for H4.', 'ph ph-graph', [{ label: 'Set it up', fn: () => this.setState({ q: 'path', from: 'lstm', to: 'anima', toast: null }, () => this.run()) }])), { threshold: .35 });
+    this.graphSec.current && this.io.observe(this.graphSec.current);
+  }
+  componentWillUnmount() { clearInterval(this.tick); (this.timers || []).forEach(clearTimeout); this.io && this.io.disconnect(); this.hero && this.hero.destroy(); this.ex && this.ex.destroy(); }
+  componentDidUpdate() { const s = this.state, p = this._prev || {}; this._prev = { view: s.view, user: s.user, msgs: s.msgs }; if (p.view !== s.view || p.user !== s.user) this.ex && this.ex.set(this.data()); if (p.msgs !== s.msgs && this.msgBox.current) this.msgBox.current.scrollTop = 1e6; }
+
+  say(kind, text, icon, opts = []) { clearTimeout(this.tt); this.setState({ toast: { kind, text, icon, opts } }); this.tt = setTimeout(() => this.setState({ toast: null }), 12000); }
+  once(key, ...a) { if (this.state.seen[key]) return; const seen = { ...this.state.seen, [key]: 1 }; localStorage.setItem('anima.seen', JSON.stringify(seen)); this.setState({ seen }); this.say(...a); }
+  tailor(who) { const m = { agents: ['Start with the DSPy cognition layer and the LSTM argument; both are about what a small substrate needs.', '#lstm'], buy: ['The headline chart is the claim in one picture: you do not need the expensive model if the brain is seeded right.', '#experiment'], research: ['The full plan has all eight hypotheses and their falsifiers. Members can open it.', '#research'] }[who];
+    this.say('Suggestion', m[0], 'ph ph-lightbulb', [{ label: 'Take me there', fn: () => { location.hash = m[1]; this.setState({ toast: null }); } }]); }
+  goGraph() { location.hash = '#graph'; this.setState({ toast: null }); }
+  nodeView(n) { const priv = !n.pub && !this.privateOn(); return { label: priv ? 'Private node' : n.label, type: priv ? 'private' : n.type, note: priv ? 'Visible to the owner.' : n.note }; }
+  privateOn() { return this.state.view === 'private' && this.rank() === 3; }
+  data() { const p = this.privateOn(); return { nodes: NODES.map(n => ({ ...n, grey: !n.pub && !p })), edges: EDGES }; }
+  adj(edges = EDGES) { const a = {}; edges.forEach(([x, y]) => { (a[x] = a[x] || []).push(y); (a[y] = a[y] || []).push(x); }); return a; }
+  bfs(from, hops, edges) { const a = this.adj(edges), seen = { [from]: 0 }, waves = [[from]]; let f = [from];
+    for (let h = 1; h <= hops; h++) { f = [...new Set(f.flatMap(i => a[i] || []))].filter(j => !(j in seen)); if (!f.length) break; f.forEach(j => seen[j] = h); waves.push(f); } return waves; }
+  path(a, b) { const adj = this.adj(), prev = { [a]: null }, q = [a]; while (q.length) { const x = q.shift(); if (x === b) break; (adj[x] || []).forEach(y => { if (!(y in prev)) { prev[y] = x; q.push(y); } }); }
+    if (!(b in prev)) return []; const out = []; for (let x = b; x; x = prev[x]) out.unshift(x); return out; }
+  shuffled() { const stubs = EDGES.flat().sort(() => Math.random() - .5), out = []; for (let i = 0; i + 1 < stubs.length; i += 2) out.push([stubs[i], stubs[i + 1]]); return out; }
+  name(id) { return this.nodeView(BY[id]).label; }
+  qtext() { const s = this.state; return { hop: `FROM ${s.from}\n  EXPAND ${s.hops} HOPS\n  RETURN waves`, path: `FROM ${s.from} TO ${s.to}\n  SHORTEST PATH\n  RETURN nodes`, evidence: `FROM ${s.hyp}\n  EXPAND 2 HOPS\n  WHERE type IN (substrate, seed, source)\n  RETURN evidence`, shuffle: `FROM bridago EXPAND 2 HOPS\n  ON seed, ON shuffle(seed, keep=degree)\n  RETURN reach` }[s.q]; }
+
+  run() { const s = this.state, need = QUERIES.find(q => q.id === s.q).need;
+    if (need > this.rank()) return this.say('Clarification', `${QUERIES.find(q => q.id === s.q).name} needs the ${TIERS[need].name} tier.`, 'ph ph-lock-simple', [{ label: 'Sign in', fn: () => this.setState({ toast: null, login: true, lTier: TIERS[need].id }) }]);
+    const t = performance.now(); let waves, res;
+    if (s.q === 'hop') { waves = this.bfs(s.from, s.hops); const n = waves.flat(); res = { title: `${this.name(s.from)} · ${s.hops} hops`, rows: [{ k: 'Nodes', v: n.length }, { k: 'Waves', v: waves.length - 1 }, { k: 'Private (grey)', v: n.filter(i => !BY[i].pub).length }], list: n.slice(1).map(i => this.name(i)) }; }
+    if (s.q === 'path') { const p = this.path(s.from, s.to); waves = p.map(x => [x]); res = { title: `${this.name(s.from)} → ${this.name(s.to)}`, rows: [{ k: 'Hops', v: Math.max(0, p.length - 1) }], list: p.map(i => this.name(i)), note: p.length ? '' : 'No path in this view.' }; }
+    if (s.q === 'evidence') { waves = this.bfs(s.hyp, 2).map((w, i) => i ? w.filter(x => BY[x].type !== 'hypothesis' && x !== 'anima') : w); const e = waves.flat().slice(1);
+      res = { title: `Evidence for ${this.name(s.hyp)}`, rows: ['substrate', 'seed', 'source'].map(k => ({ k, v: e.filter(i => BY[i].type === k).length })), list: e.map(i => this.name(i)), note: BY[s.hyp].note }; }
+    if (s.q === 'shuffle') { waves = this.bfs('bridago', 2); const real = waves.flat().length, sh = this.bfs('bridago', 2, this.shuffled()).flat().length;
+      res = { title: 'Reach from Bridago in 2 hops', rows: [{ k: 'Seed', v: real }, { k: 'Shuffled', v: sh }, { k: 'Kept', v: Math.round(100 * sh / real) + '%' }], list: [], note: 'This is graph reach on the sample seed, not task accuracy. H5 asks the same question of accuracy: a shuffled seed should keep under 20% of the gain.' }; }
+    res.meta = `${(performance.now() - t).toFixed(1)} ms · ${waves.length} waves`; res.hasNote = !!res.note;
+    this.ex && this.ex.run(waves); this.setState({ result: res, wave: 0 });
+    const next = { hop: ['Now try Shortest path between two of these.', 'path'], path: ['See what a hypothesis rests on: Evidence for H4.', 'evidence'], evidence: ['Test structure against volume: Seed vs shuffled.', 'shuffle'], shuffle: null }[s.q];
+    if (next) setTimeout(() => this.say('Suggestion', next[0], 'ph ph-lightbulb', [{ label: 'Next query', fn: () => this.setState({ q: next[1], toast: null }) }]), waves.length * 520 + 600); }
+
+  ask(text) { const msgs = [...this.state.msgs, { who: 'u', text }];
+    if (text.trim().split(/\s+/).length < 3) { const hit = FAQ.filter(([r]) => r.test(text)).slice(0, 3);
+      return this.setState({ msgs: [...msgs, { who: 'b', text: 'Could you say a bit more? Do you mean:', opts: (hit.length ? hit : FAQ.slice(0, 3)).map(([r]) => ({ label: { 'seed': 'How the seed works', 'lstm|rnn|cpu': 'Why the LSTM', 'result|measur|data|number': 'Are there results?', 'bridago|rex|jarvis': 'What Bridago is', 'tier|price|login|account': 'Tiers', 'shuffl|control': 'The shuffled control' }[r.source] })) }], draft: '' }); }
+    this.setState({ msgs, draft: '' });
+    const offline = () => { const f = FAQ.find(([r]) => r.test(text)); this.setState(s => ({ msgs: [...s.msgs, { who: 'b', text: f ? f[1] : 'Not in the offline notes. With the engine running, this goes to a live round on the published graph.' }] })); };
+    if (!this.state.engineOk) return setTimeout(offline, 350);
+    fetch(this.engine() + '/round', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, kind: 'chat' }) }).then(r => r.json()).then(r => this.setState(s => ({ msgs: [...s.msgs, { who: 'b', text: r.answer || r.text || JSON.stringify(r) }] }))).catch(offline); }
+
+  submitLogin(e) { e.preventDefault(); const s = this.state, done = (demo) => { const user = { email: s.lEmail, tier: s.lTier, demo }; localStorage.setItem('anima.user', JSON.stringify(user));
+      this.setState({ user, login: false, lPass: '', lErr: '' }); this.say('Suggestion', s.lTier === 'owner' ? 'Owner view is on. Switch the graph to Private to see live rounds and raw runs.' : `Signed in as ${TIERS.find(t => t.id === s.lTier).name}. New queries are unlocked in the graph.`, 'ph ph-check-circle', s.lTier === 'owner' ? [{ label: 'Open private graph', fn: () => { this.setState({ view: 'private', toast: null }); location.hash = '#graph'; } }] : []); };
+    if (s.lTier !== 'owner' || !this.state.engineOk) return done(!this.state.engineOk);
+    fetch(this.engine() + '/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: s.lPass }) })
+      .then(r => r.ok ? done(false) : this.setState({ lErr: 'Wrong password.' })).catch(() => this.setState({ lErr: 'The engine did not answer.' })); }
+
+  renderVals() {
+    const s = this.state, rank = this.rank(), el = s.now - s.t0, slide = SLIDES[s.slide], set = k => e => this.setState({ [k]: e.target.value }), q = s.q;
+    const lock = need => ({ locked: need > rank, needName: TIERS[need].name });
+    return {
+      heroRef: this.heroRef, exRef: this.exRef, graphSec: this.graphSec, msgBox: this.msgBox,
+      slide, showRung: s.slide === 2, rung: RUNGS[s.rung], pauseIcon: s.paused ? 'ph ph-play' : 'ph ph-pause', togglePause: () => this.setState({ paused: !s.paused }),
+      slideBars: SLIDES.map((x, i) => ({ label: x.label, fill: i < s.slide ? '100%' : i > s.slide ? '0%' : Math.min(100, ((el % 7000) / 7000) * 100) + '%', go: () => { this.setState({ t0: Date.now() - i * 7000, slide: i }); this.hero && this.hero.go(i, 1); } })),
+      signedIn: !!s.user, signedOut: !s.user, user: s.user || {}, tierName: TIERS[rank].name + (s.user && s.user.demo ? ' · demo' : ''), isOwner: rank === 3,
+      openLogin: () => this.setState({ login: true }), closeLogin: () => this.setState({ login: false }), stop: e => e.stopPropagation(),
+      signOut: () => { localStorage.removeItem('anima.user'); this.setState({ user: null, view: 'public' }); },
+      terms: Object.fromEntries(Object.keys(TERMS).map(k => [k, e => { const b = e.currentTarget.getBoundingClientRect(); this.setState({ term: { key: k, x: Math.min(b.left, innerWidth - 316), y: Math.min(b.bottom + 8, innerHeight - 200) } }); }])),
+      hasTerm: !!s.term, term: s.term ? { ...s.term, k: TERMS[s.term.key][0], d: TERMS[s.term.key][1], show: () => { this.setState({ term: null, q: 'hop', from: TERMS[s.term.key][2], hops: 1 }, () => { location.hash = '#graph'; this.run(); }); } } : {}, closeTerm: () => this.setState({ term: null }),
+      claims: [{ k: 'Gap closure', t: 'Small reaches large', b: 'A seeded small model lands within 5 points of the 30B model on the same task.' }, { k: 'Invariance', t: 'The spread shrinks', b: 'With the seed, the spread between substrates halves. Without it, it does not.' }, { k: 'Structure', t: 'Not just more context', b: 'A shuffled seed of the same size gives back almost none of the gain.' }, { k: 'Seeding decides', t: 'Seed beats size', b: 'Seed quality moves accuracy more than parameter count does.' }],
+      conditions: [{ n: 'Unseeded', g: 'The task only', t: 'Replicates dspy-router-test' }, { n: 'In context', g: 'The seed pasted into the prompt', t: 'Whether volume alone helps' }, { n: 'By retrieval', g: 'Seed in the graph; Bridago answers lookups', t: 'The thesis' }, { n: 'Shuffled', g: 'Retrieval with a degree-preserving permuted seed', t: 'The control' }],
+      views: [{ label: 'Public', icon: 'ph ph-globe', on: s.view === 'public', pick: () => this.setState({ view: 'public' }) },
+        { label: 'Private', icon: 'ph ph-lock-simple', on: s.view === 'private', pick: () => rank === 3 ? this.setState({ view: 'private' }) : this.say('Clarification', 'The private graph holds live rounds, raw runs and institute goals. It opens for the owner.', 'ph ph-lock-simple', [{ label: 'Owner sign in', fn: () => this.setState({ toast: null, login: true, lTier: 'owner' }) }]) }],
+      viewNote: this.privateOn() ? 'Private · everything' : 'Public · private nodes greyed', waveOn: s.wave >= 0 && !!s.result, waveN: s.wave,
+      queries: QUERIES.map(x => ({ ...x, ...lock(x.need), bg: x.id === q ? 'var(--color-accent-900)' : 'transparent', pick: () => this.setState({ q: x.id }) })),
+      needsFrom: q === 'hop' || q === 'path', needsTo: q === 'path', needsHyp: q === 'evidence', needsHops: q === 'hop',
+      from: s.from, to: s.to, hyp: s.hyp, setFrom: set('from'), setTo: set('to'), setHyp: set('hyp'),
+      nodeOpts: NODES.filter(n => n.pub || this.privateOn()).map(n => ({ id: n.id, label: n.label })), hypOpts: NODES.filter(n => n.type === 'hypothesis').map(n => ({ id: n.id, label: n.label })),
+      hopOpts: [1, 2, 3].map(n => ({ n, on: s.hops === n, pick: () => this.setState({ hops: n }) })), qtext: this.qtext(), run: () => this.run(),
+      hasHover: !!s.hover, hover: s.hover || {}, hasResult: !!s.result, noResult: !s.result, result: s.result || { rows: [], list: [] },
+      lstmFor: [{ t: 'xLSTM adds exponential gating and matrix memory and scales competitively with transformers.', s: '[xLSTM]', u: 'https://arxiv.org/abs/2405.04517' }, { t: 'minLSTM trains in parallel and matches recent sequence models on several tasks.', s: '[minLSTM]', u: 'https://arxiv.org/abs/2410.01201' }, { t: 'Fixed state per step: a long seed costs once, not per token of context.', s: '', u: '#lstm' }],
+      lstmAgainst: [{ t: 'Fixed-size state loses at associative recall, which explains most of the gap to attention.', s: '[Zoology]', u: 'https://arxiv.org/abs/2312.04927' }, { t: 'RNNs cannot retrieve in context as transformers do; retrieval or one attention layer closes it.', s: '[Wen et al.]', u: 'https://arxiv.org/abs/2402.18510' }, { t: 'Copying long strings from context favours transformers.', s: '[Jelassi et al.]', u: 'https://arxiv.org/abs/2402.01032' }],
+      lstmPattern: [{ c: 'Unseeded', r: 'Fails' }, { c: 'Seed in context', r: 'Fails' }, { c: 'Seed by retrieval', r: 'Passes (H4)' }, { c: 'Shuffled seed', r: 'Fails (H5)' }],
+      papers: [{ k: 'Plan · v4', t: 'Anima research plan', b: 'Eight hypotheses with falsifiers, the substrate ladder, seed spec, harness and phases.', href: '../../../research/reports/Seeded Substrate Plan v4.dc.html', need: 1 },
+        { k: 'Report · v3', t: 'Graph intelligence report', b: 'The prior deep dive: seed, destroy, probe; field order; constrained decoding.', href: '../../../research/reports/Graph Intelligence Report v3.dc.html', need: 1 },
+        { k: 'Catalogue', t: 'Templatizable offers', b: 'Fifty service offers across sixteen sectors; six rows sourced.', href: '../../../research/reports/Catalogue 5M.dc.html', need: 2 },
+        { k: 'Landscape 2026', t: 'Competition and sectors', b: 'Who pays, where AI use exceeds measured value, law across tiers.', href: '../../web/dist/reports/landscape-2026.html', need: 0 }].map(p => ({ ...p, ...lock(p.need), href: p.need > rank ? '#tiers' : p.href })),
+      tiers: TIERS.map((t, i) => ({ ...t, current: i === rank, cta: i === rank ? 'Current' : i < rank ? 'Included' : i === 3 ? 'Owner sign in' : 'Sign in as ' + t.name, choose: () => i > rank && this.setState({ login: true, lTier: t.id }) })),
+      ownerLinks: [{ t: 'Ops console', b: 'Containers, shells, repository, traces.', href: '../../ops/src/Console.dc.html', icon: 'ph ph-terminal-window' }, { t: 'Agent space', b: 'SEXTANT: full graph, chat, record, publish queue.', href: '../../ops/ui/space.html', icon: 'ph ph-graph' },
+        { t: 'Institute', b: 'Goals, questions and the daily round.', href: 'Institute.dc.html', icon: 'ph ph-buildings' }, { t: 'Studio', b: 'Generate and export sites from a brief.', href: '../../../marketing/Style Studio.dc.html', icon: 'ph ph-paint-brush' }, { t: 'Research plan', b: 'Anima v4.', href: '../../../research/reports/Seeded Substrate Plan v4.dc.html', icon: 'ph ph-flask' }],
+      engineNote: s.engineOk ? 'Engine connected.' : 'Engine offline: sample seed graph and offline answers.',
+      hasToast: !!s.toast, toast: s.toast ? { ...s.toast, opts: s.toast.opts || [] } : { opts: [] }, closeToast: () => this.setState({ toast: null }),
+      ask: s.ask, toggleAsk: () => this.setState({ ask: !s.ask }), askMode: s.engineOk ? 'live round' : 'offline notes', draft: s.draft, setDraft: set('draft'),
+      send: e => { e.preventDefault(); s.draft.trim() && this.ask(s.draft.trim()); },
+      msgs: s.msgs.map(m => ({ ...m, align: m.who === 'u' ? 'end' : 'start', bg: m.who === 'u' ? 'var(--color-accent-900)' : 'var(--color-neutral-800)', hasOpts: !!m.opts, opts: (m.opts || []).map(o => ({ ...o, fn: () => this.ask(o.label + ' — tell me more') })) })),
+      login: s.login, lEmail: s.lEmail, lPass: s.lPass, lErr: s.lErr, hasErr: !!s.lErr, setEmail: set('lEmail'), setPass: set('lPass'), submitLogin: e => this.submitLogin(e),
+      loginTiers: TIERS.slice(1).map(t => ({ name: t.name, on: s.lTier === t.id, pick: () => this.setState({ lTier: t.id }) })),
+      loginCta: 'Sign in as ' + TIERS.find(t => t.id === s.lTier).name,
+      loginNote: s.lTier === 'owner' ? (s.engineOk ? 'Owner sign-in checks the engine password.' : 'Engine offline: this opens a local demo owner session with sample data only.') : 'Member and Pro accounts are stored in this browser until the engine has user accounts.',
+    };
+  }
+}
+</script>
+</body>
+</html>

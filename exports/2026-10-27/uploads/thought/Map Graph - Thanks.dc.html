@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; } button, input { font-family: 'Instrument Sans', sans-serif; } button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; }</style>
+</helmet>
+<div data-screen-label="Thanks" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.55;">
+  <dc-import name="Map Graph Nav" current="" hint-size="100%,64px"></dc-import>
+  <main style="max-width: 760px; margin: 0 auto; padding: clamp(32px, 6vw, 72px) clamp(16px, 4vw, 32px); display: grid; gap: 30px;">
+    <div style="display: grid; gap: 10px;"><div style="color: #27d3ff; font-weight: 600;">You are in.</div><h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(40px, 7vw, 84px); line-height: 0.95; letter-spacing: -0.035em;">{{ headline }}</h1><div style="color: #b9c1e0; font-size: 18px;">{{ sub }}</div></div>
+    <div style="padding: 24px; border: 1px solid #252c42; border-radius: 18px; background: #131827; display: grid; gap: 14px;">
+      <div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 22px;">Move up by inviting friends</div>
+      <div style="color: #b9c1e0;">Each friend who joins from your link moves you ahead by ten places.</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;"><input readonly value="{{ link }}" aria-label="Your invite link" style="flex: 1 1 260px; min-width: 0; padding: 12px 16px; border-radius: 999px; border: 1px solid #3a4468; background: #0b0e17; color: #eef1ff; font-size: 15px;"><button type="button" onClick="{{ copy }}" style="padding: 12px 22px; border: 0; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 600; cursor: pointer;">{{ copyLabel }}</button><a href="{{ mailHref }}" style="padding: 12px 22px; border: 1px solid #3a4468; border-radius: 999px; color: #eef1ff; text-decoration: none;">Email a friend</a></div>
+      <div style="display: grid; gap: 6px;"><div style="display: flex; justify-content: space-between; font-size: 14px; color: #9aa3c4;"><span>{{ refs }} invited</span><span>{{ tierLabel }}</span></div><div style="height: 10px; border-radius: 6px; background: #0b0e17; overflow: hidden;"><div style="{{ bar }}"></div></div><div style="display: flex; justify-content: space-between; font-size: 12px; color: #6d7699;"><span>standard</span><span>3 · priority</span><span>10 · founding circle</span></div></div>
+    </div>
+    <div style="padding: 24px; border: 1px solid #ff3ea5; border-radius: 18px; background: #131827; display: grid; gap: 10px;"><div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 22px;">Want a say in what we build?</div><div style="color: #b9c1e0;">Register interest in founding membership. It takes no payment and commits you to nothing.</div><a href="{{ foundingHref }}" style="width: fit-content; padding: 12px 24px; border-radius: 999px; background: #ff3ea5; color: #0b0e17; font-weight: 600; text-decoration: none;">See founding membership</a></div>
+  </main>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { C: null, m: null, info: null, copied: false };
+  async componentDidMount() { const C = await import('./tandem-core.js'), API = this.API = await import('./tandem-api.js'), m = API.member.get(); this.setState({ C, m }); if (!m) { location.href = C.pageUrl('home') + '#join'; return; } API.track('page_view', 'thanks'); const r = await API.api('GET', '/api/waitlist/' + m.code); if (r.status === 200) this.setState({ info: r.json }); }
+  copy = () => { const l = this.link(); try { navigator.clipboard.writeText(l); } catch (e) { /* ignore */ } this.API.track('share', 'thanks', { how: 'copy' }); this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); };
+  link() { const i = this.state.info || this.state.m || {}; return i.referralUrl ? new URL(i.referralUrl, location.href).href : ''; }
+  renderVals() {
+    const s = this.state, i = s.info || s.m || {}, refs = i.referrals || 0, pct = Math.min(100, refs / 10 * 100), tier = i.tier || 'standard';
+    return { headline: i.position ? 'You are number ' + i.position + '.' : 'You are on the list.', sub: s.m ? 'We will write to ' + s.m.email + ' when your turn comes.' : '', link: this.link(), copy: this.copy, copyLabel: s.copied ? 'Copied' : 'Copy link',
+      mailHref: 'mailto:?subject=' + encodeURIComponent('Map anything, in the context you steer') + '&body=' + encodeURIComponent('I joined the Map Graph waitlist. Join with my link and we both move up: ' + this.link()), refs, tierLabel: tier, bar: { height: 10, width: pct + '%', background: '#27d3ff', borderRadius: 6, transition: 'width .4s' }, foundingHref: s.C ? s.C.pageUrl('founding') : '#' };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saltline · Lead Graph Intelligence</title>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#05080b;--panel:#0a0f14;--panel2:#0e151c;--line:#18232d;--line2:#23313e;--text:#d5dfe8;--dim:#7b8a97;--faint:#46545f;--cyan:#38c8ff;--amber:#ffb020;--green:#3ddc84;--red:#ff4d5e;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:13px/1.45 Barlow,system-ui,sans-serif}
+a{color:var(--cyan)}a:hover{color:var(--amber)}
+.m{font-family:'JetBrains Mono',monospace}
+.c{font-family:'Barlow Condensed',sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.cls{display:flex;justify-content:center;gap:24px;padding:3px;background:var(--green);color:var(--bg);font:600 11px/1.4 'Barlow Condensed';letter-spacing:.3em}
+.top{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{display:flex;align-items:center;gap:10px;font:700 20px 'Barlow Condensed';letter-spacing:.14em}
+.brand i{width:16px;height:16px;border:2px solid var(--cyan);transform:rotate(45deg);box-shadow:0 0 14px var(--cyan)}
+.goal{font:500 12px 'Barlow Condensed';letter-spacing:.05em;color:var(--dim);max-width:330px;line-height:1.25}
+.goal b{color:var(--text);font-weight:600}
+.kv{display:flex;flex-direction:column;line-height:1.05}.kv span{font:600 10px 'Barlow Condensed';letter-spacing:.14em;color:var(--dim)}.kv b{font:500 16px 'JetBrains Mono'}
+.btn{background:transparent;border:1px solid var(--line2);color:var(--text);padding:6px 12px;font:600 11px 'Barlow Condensed';letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.btn:hover{border-color:var(--cyan);color:var(--cyan)}.btn:active{background:color-mix(in srgb,var(--cyan) 16%,transparent)}
+.btn.go{border-color:var(--green);color:var(--green)}.btn.go:hover{background:color-mix(in srgb,var(--green) 14%,transparent)}
+.btn:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:1px}
+input.seed{background:var(--panel2);border:1px solid var(--line2);color:var(--text);font:12px 'JetBrains Mono';padding:6px 9px;min-width:200px;outline:none;caret-color:var(--cyan)}
+.main{display:grid;grid-template-columns:280px minmax(0,1fr) 388px;gap:8px;padding:8px}
+@media(max-width:1250px){.main{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);position:relative;min-width:0}
+.panel:before,.panel:after{content:"";position:absolute;width:10px;height:10px;border-color:var(--cyan);border-style:solid;pointer-events:none}
+.panel:before{left:-1px;top:-1px;border-width:2px 0 0 2px}.panel:after{right:-1px;bottom:-1px;border-width:0 2px 2px 0}
+.ph{display:flex;align-items:center;gap:8px;padding:6px 10px;white-space:nowrap;overflow:hidden;border-bottom:1px solid var(--line);font:600 12px 'Barlow Condensed';letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.ph b{color:var(--text);font-weight:700}.ph .r{margin-left:auto;font:500 11px 'JetBrains Mono';letter-spacing:0;text-transform:none}
+.pb{padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.row{display:grid;gap:8px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:none}
+.seg{display:flex;gap:2px}.seg i{flex:1;height:8px;background:var(--line)}.seg i.on{background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+#gbox{position:relative;height:max(540px,calc(100vh - 232px));overflow:hidden;background:radial-gradient(circle at 50% 42%,#0a131b,var(--bg) 78%)}
+#g{width:100%;height:100%;display:block;cursor:grab}#g:active{cursor:grabbing}
+.lnk{stroke:var(--line2);stroke-width:1}
+.nlabel{font:600 10px 'Barlow Condensed';letter-spacing:.05em;fill:var(--text);pointer-events:none;paint-order:stroke;stroke:var(--bg);stroke-width:3px}
+.hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:3px;font:11px 'JetBrains Mono';color:var(--dim)}
+.legend{position:absolute;left:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px}
+.legend span{display:flex;align-items:center;gap:5px;padding:3px 8px;background:color-mix(in srgb,var(--panel) 82%,transparent);border:1px solid var(--line);font:600 11px 'Barlow Condensed';letter-spacing:.1em}
+.scan{position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--cyan) 50%,transparent),transparent);animation:scan 6s linear infinite;pointer-events:none}
+@keyframes scan{from{transform:translateY(0)}to{transform:translateY(560px)}}
+.odo{display:flex;align-items:baseline;gap:8px}
+.odo b{font:500 40px 'JetBrains Mono';line-height:1;letter-spacing:-1px}
+.odo .of{color:var(--dim);font:500 15px 'JetBrains Mono'}
+.pbar{height:7px;background:var(--line);position:relative;overflow:hidden;margin-top:7px}
+.pbar>i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .2s}
+.ring{transform:rotate(-90deg)}
+.feed{max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+.card{border:1px solid var(--line);background:var(--panel2);padding:7px 9px;cursor:pointer;animation:in .4s ease-out}
+.card:hover{border-color:var(--cyan)}.card.sel{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan) inset}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card .t{display:flex;align-items:baseline;gap:8px}.card .t b{font:600 13px Barlow;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .path{font:600 9px 'Barlow Condensed';letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.card .lab{font:600 9px 'Barlow Condensed';letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+.conf{font:700 9px 'Barlow Condensed';letter-spacing:.1em;padding:1px 6px;border:1px solid currentColor;white-space:nowrap}
+.sc{font:600 13px 'JetBrains Mono'}
+.detail{border-bottom:1px solid var(--line);padding:9px 10px;font-size:12px;display:none}.detail.on{display:block}
+.stream{max-height:150px;overflow:hidden;font:11px 'JetBrains Mono';color:var(--dim);display:flex;flex-direction:column;gap:2px}
+.stream div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:in .3s ease-out}
+pre.code{margin:0;padding:8px;background:#060a0e;border:1px solid var(--line);font:11px/1.45 'JetBrains Mono';color:var(--green);white-space:pre-wrap;max-height:150px;overflow:auto}
+.att{display:flex;align-items:center;gap:7px;font:11px 'JetBrains Mono'}
+.badge{font:700 9px 'Barlow Condensed';letter-spacing:.1em;padding:1px 6px;border:1px solid currentColor}
+.tape{overflow:hidden;white-space:nowrap;border-top:1px solid var(--line);font:12px 'JetBrains Mono';padding:6px 0;color:var(--dim);background:var(--panel)}
+.tape span{display:inline-block;padding-left:100%;animation:tape 46s linear infinite}
+@keyframes tape{to{transform:translateX(-100%)}}
+.pulse{animation:pulse 1.3s ease-in-out infinite}@keyframes pulse{50%{opacity:.4}}
+.note{color:var(--dim);font-size:11px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="cls"><span>INTERNAL</span><span>SALTLINE · GRAPH INTELLIGENCE · CLIENT DISCOVERY</span><span>AUTONOMOUS</span></div>
+<header class="top">
+  <div class="brand"><i></i>LEAD GRAPH</div>
+  <div class="goal">Sole objective: <b>autonomously draft 10,000 client &amp; customer reports</b> for environmental science &amp; STEM, expanding a live opportunity graph.</div>
+  <div class="kv"><span>DRAFTED</span><b id="kDraft">0</b></div>
+  <div class="kv"><span>REPORTS</span><b id="kRep">0</b></div>
+  <div class="kv"><span>SECTORS</span><b id="kSec">0</b></div>
+  <div class="kv"><span>CLAUDE</span><b id="kCalls">0</b></div>
+  <div class="kv"><span>SANDBOX</span><b id="kSand" style="font-size:12px;color:var(--dim)">—</b></div>
+  <div class="kv"><span>AGENTS</span><b id="kAg">0</b></div>
+  <span style="flex:1"></span>
+  <input class="seed" id="seed" autocomplete="off" placeholder="optional focus: region / vertical">
+  <button class="btn go" id="runBtn">Run agents</button>
+  <button class="btn" id="resetBtn">Reset</button>
+  <button class="btn" id="csvBtn">Export top leads CSV</button>
+  <a class="btn" href="Command Center.html" style="text-decoration:none">Command center</a>
+</header>
+<div class="main">
+  <div class="col">
+    <section class="panel"><div class="ph"><b>Agents</b> async workers<span class="r" id="agN"></span></div><div class="pb" id="agents"></div></section>
+    <section class="panel"><div class="ph"><b>Self-repair sandbox</b> scorer<span class="r" id="sandN">idle</span></div><div class="pb" id="sand"><div class="note">On run, Claude writes the scoring function; it executes in an isolated Web Worker and is auto-fixed on any error before it scores a single lead.</div></div></section>
+    <section class="panel"><div class="ph"><b>Regions</b> demand by geography<span class="r" id="regN"></span></div><div class="pb" id="regions"></div></section>
+  </div>
+  <div class="col">
+    <section class="panel">
+      <div class="ph"><b>Opportunity graph</b> fields &rarr; sectors &rarr; buyer segments<span class="r" id="gNote">idle</span></div>
+      <div id="gbox"><svg id="g"></svg><div class="scan"></div>
+        <div class="hud"><span id="hud1">press Run agents</span><span id="hud2"></span><span id="hud3"></span></div>
+        <div class="legend"><span><i class="dot" style="background:var(--cyan)"></i>field</span><span><i class="dot" style="background:var(--amber)"></i>sector</span><span><i class="dot" style="background:var(--green)"></i>segment · hot</span><span><i class="dot" style="background:var(--violet)"></i>segment · cool</span></div>
+      </div>
+    </section>
+  </div>
+  <div class="col">
+    <section class="panel"><div class="ph"><b>Progress</b> to 10,000 reports<span class="r" id="rate"></span></div>
+      <div class="pb" style="flex-direction:row;align-items:center;gap:14px">
+        <svg width="78" height="78" viewBox="0 0 78 78" class="ring"><circle cx="39" cy="39" r="33" fill="none" stroke="var(--line)" stroke-width="7"></circle><circle id="ringfg" cx="39" cy="39" r="33" fill="none" stroke="var(--green)" stroke-width="7" stroke-linecap="round" stroke-dasharray="207.3" stroke-dashoffset="207.3"></circle></svg>
+        <div style="flex:1;min-width:0"><div class="odo"><b id="odo">0</b><span class="of">/ 10,000</span></div><div class="pbar"><i id="pbar" style="width:0"></i></div><div class="note" id="eta" style="margin-top:5px">standing by</div></div>
+      </div>
+    </section>
+    <section class="panel"><div class="ph"><b>Top lead reports</b> by score<span class="r" id="topN">0</span></div>
+      <div class="detail" id="detail"></div>
+      <div class="pb feed" id="feed"><div class="note">No reports yet. Press <b style="color:var(--text)">Run agents</b> — the platform drafts reports on its own and streams the strongest here.</div></div>
+    </section>
+    <section class="panel"><div class="ph"><b>Live draft stream</b><span class="r pulse" id="streamN" style="display:none"></span></div><div class="pb"><div class="stream" id="stream"></div></div></section>
+  </div>
+</div>
+<div class="tape"><span id="tape">Graph intelligence standing by · real Claude reasoning + sandboxed self-repair · every lead is AI-suggested and must be verified before outreach</span></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const TARGET=10000, CONC=3;
+const nf=new Intl.NumberFormat('en-US');
+
+/* ---------- built-in taxonomy (real domain structure; Claude enriches live) ---------- */
+const TAX=[
+ {root:'Environmental science', sectors:[
+   {name:'Water & desalination', service:'brine & water-quality monitoring and reuse studies', channel:'operations & technology leads', segs:['Desalination operators','Water utilities','Industrial water users','Irrigation districts','Beverage & bottling']},
+   {name:'Coastal & marine', service:'shoreline change & blue-carbon monitoring', channel:'environment & sustainability teams', segs:['Port authorities','Coastal developers','Aquaculture farms','Marine parks','Dredging contractors']},
+   {name:'Agriculture & land', service:'soil-salinity mapping & halophyte trials', channel:'agronomy & R&D leads', segs:['Saline-land growers','Agritech firms','Seed companies','Farm cooperatives','Plantations']},
+   {name:'Energy & mining', service:'compliance vegetation & water monitoring', channel:'ESG & compliance leads', segs:['Solar & wind developers','Lithium & salt producers','Oil & gas operators','Transmission utilities','Hydrogen projects']},
+   {name:'Public & conservation', service:'restoration MRV & biodiversity baselines', channel:'programme & grants offices', segs:['Environment agencies','Water boards','Conservation NGOs','National parks','Climate funds']},
+ ]},
+ {root:'STEM services (general)', sectors:[
+   {name:'Universities & research', service:'field data pipelines & remote sensing', channel:'research partnership offices', segs:['Research universities','Field stations','Research institutes','Lab networks','Science museums']},
+   {name:'Climate & carbon markets', service:'MRV & carbon-credit due diligence', channel:'project developers & buyers', segs:['Carbon developers','Credit buyers','Verification bodies','Nature funds','Offset platforms']},
+   {name:'Infrastructure & engineering', service:'environmental due-diligence & survey', channel:'project management leads', segs:['EPC contractors','Rail & road agencies','Airport operators','Water infrastructure','Coastal defence']},
+   {name:'Industrial & manufacturing', service:'emissions & effluent monitoring', channel:'EHS & operations leads', segs:['Chemicals plants','Food processing','Mining mills','Textile dyeing','Pulp & paper']},
+   {name:'Insurance & finance', service:'physical climate-risk analytics', channel:'risk & underwriting teams', segs:['Reinsurers','Asset managers','Development banks','Agri-insurers','Infrastructure funds']},
+ ]},
+];
+const REGIONS=['Arabian Peninsula','Red Sea coast','Nile Delta','Iberia','North Sea coast','California Central Valley','Colorado River delta','Murray–Darling Basin','WA wheatbelt','Atacama & Altiplano','Gujarat / Rann of Kutch','Indus Delta','Bengal Delta','Mekong Delta','Java north coast','East African coast']
+ .map((name,i)=>({name,weight:+(0.45+0.55*(((i*37)%16)/15)).toFixed(2)}));
+const TIERS=[{name:'Enterprise',weight:.9},{name:'Public agency',weight:.8},{name:'Mid-market',weight:.6},{name:'Startup / SME',weight:.4}];
+const TRIGGERS=[{name:'New regulation',weight:.85},{name:'Expansion / capex',weight:.7},{name:'Funding round',weight:.55},{name:'Incident / remediation',weight:.8}];
+const hash=s=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h);};
+
+/* ---------- state ---------- */
+const S={nodes:[],links:[],byId:{},segs:[],drafted:0,reported:0,calls:0,top:[],regionTally:{},workers:Array.from({length:CONC},()=>'idle'),running:false,done:false,sel:null,startT:0,scorer:null,scorerSrc:null};
+
+function buildTaxonomyGraph(){
+  S.nodes=[];S.links=[];S.byId={};S.segs=[];
+  TAX.forEach((r,ri)=>{
+    const rid='r'+ri; S.byId[rid]={id:rid,type:'root',label:r.root,count:0}; S.nodes.push(S.byId[rid]);
+    r.sectors.forEach((sec,si)=>{
+      const sid='s'+ri+'_'+si; S.byId[sid]={id:sid,type:'sector',label:sec.name,count:0,service:sec.service,channel:sec.channel};
+      S.nodes.push(S.byId[sid]); S.links.push({source:rid,target:sid});
+      sec.segs.forEach((seg,gi)=>{
+        const gid='g'+ri+'_'+si+'_'+gi, base=55+hash(seg+sec.name)%35;
+        const node={id:gid,type:'seg',label:seg,count:0,sector:sec.name,root:r.root,service:sec.service,channel:sec.channel,base,confidence:base>=75?'high':base>=62?'medium':'low',ai:false};
+        S.byId[gid]=node; S.nodes.push(node); S.links.push({source:sid,target:gid}); S.segs.push(node);
+      });
+    });
+  });
+}
+
+/* ---------- sandbox: Claude writes scorer, Worker validates, auto-fix loop ---------- */
+const WORKER_SRC=`self.onmessage=function(e){var d=e.data;try{var f=new Function('lead','region','tier','trigger',d.code);var out=d.samples.map(function(s){var v=f(s.lead,s.region,s.tier,s.trigger);if(typeof v!=='number'||!isFinite(v))throw new Error('scorer returned a non-number');return Math.max(1,Math.min(100,v));});self.postMessage({id:d.id,ok:true,out:out});}catch(err){self.postMessage({id:d.id,ok:false,error:String(err&&err.message||err)});}};`;
+let worker=null,wseq=0,wpending={};
+function sandbox(code,samples){
+  if(!worker){ worker=new Worker(URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}))); worker.onmessage=e=>{const p=wpending[e.data.id];if(p){delete wpending[e.data.id];p(e.data);}}; }
+  return new Promise(res=>{ const id=++wseq; wpending[id]=res; worker.postMessage({id,code,samples}); setTimeout(()=>{if(wpending[id]){delete wpending[id];res({ok:false,error:'sandbox timeout'});}},4000); });
+}
+const SAMPLES=()=>[0,1,2].map(i=>({lead:{baseScore:S.segs[i]?S.segs[i].base:70,confidence:'high'},region:REGIONS[i],tier:TIERS[i%4],trigger:TRIGGERS[i%4]}));
+const FALLBACK_SRC="return Math.round(Math.max(1,Math.min(100, lead.baseScore*0.55 + region.weight*22 + tier.weight*13 + trigger.weight*10)));";
+async function askScorer(){
+  if(!window.claude||!window.claude.complete) return null;
+  S.calls++;paint();
+  try{ const t=await window.claude.complete({system:'You write small pure JavaScript. Output only code, no markdown, no explanation.',messages:[{role:'user',content:'Write the BODY ONLY of function scoreLead(lead, region, tier, trigger) returning a 0-100 opportunity score as a number. Inputs: lead={baseScore:number, confidence:"high"|"medium"|"low"}; region={name, weight:0-1}; tier={name, weight:0-1}; trigger={name, weight:0-1}. Blend baseScore with the three weights, give baseScore the most influence, clamp to 0-100, return a rounded number. Return only statements (no function signature, no backticks).'}],max_tokens:300});
+    return t.replace(/```[a-z]*|```/g,'').trim();
+  }catch(e){ return null; }
+}
+async function askFix(code,error){
+  if(!window.claude||!window.claude.complete) return null;
+  S.calls++;paint();
+  try{ const t=await window.claude.complete({system:'You fix JavaScript. Output only corrected code, no markdown.',messages:[{role:'user',content:'This is the body of scoreLead(lead, region, tier, trigger). It failed in a sandbox with:\n'+error+'\n\nCODE:\n'+code+'\n\nReturn a corrected function body only (statements, no signature, no backticks) that returns a finite 0-100 number.'}],max_tokens:300});
+    return t.replace(/```[a-z]*|```/g,'').trim();
+  }catch(e){ return null; }
+}
+function sandRow(attempt,status,col,msg){
+  const d=document.createElement('div');d.className='att';
+  d.innerHTML=`<span class="badge" style="color:${col}">${esc(status)}</span><span class="m" style="color:var(--dim)">attempt ${attempt}${msg?' · '+esc(msg):''}</span>`;
+  $('sand').appendChild(d);
+}
+async function buildScorer(){
+  $('sand').innerHTML=''; $('sandN').textContent='writing'; $('kSand').textContent='writing…'; $('kSand').style.color='var(--amber)';
+  const pre=document.createElement('pre');pre.className='code';pre.id='scode';$('sand').appendChild(pre);
+  let code=await askScorer(); let aiWrote=!!code; if(!code){ code=FALLBACK_SRC; }
+  for(let a=1;a<=4;a++){
+    $('scode').textContent=code;
+    $('sandN').textContent='testing #'+a;
+    const res=await sandbox(code,SAMPLES());
+    if(res.ok){ S.scorer=new Function('lead','region','tier','trigger',code); S.scorerSrc=code; sandRow(a,'PASS','var(--green)',aiWrote?'Claude code validated in Worker':'offline scorer validated'); $('sandN').textContent='live'; $('kSand').textContent=aiWrote?'PASS · AI':'PASS · offline'; $('kSand').style.color='var(--green)'; log('sandbox: scorer PASS on attempt '+a); return; }
+    sandRow(a,'FIXING','var(--red)',res.error);
+    log('sandbox: attempt '+a+' failed — '+res.error);
+    const fix=await askFix(code,res.error); if(!fix){ code=FALLBACK_SRC; aiWrote=false; } else { code=fix; }
+    await sleep(250);
+  }
+  S.scorer=new Function('lead','region','tier','trigger',FALLBACK_SRC); S.scorerSrc=FALLBACK_SRC; $('scode').textContent=FALLBACK_SRC; sandRow(5,'FALLBACK','var(--amber)','using offline scorer'); $('sandN').textContent='fallback'; $('kSand').textContent='FALLBACK'; $('kSand').style.color='var(--amber)';
+}
+
+/* ---------- Claude enrichment: discover extra real sectors/segments into the graph ---------- */
+function focusHint(){const v=$('seed').value.trim();return v?' Bias toward: "'+v+'".':'';}
+function jsonOf(t){const m=/\{[\s\S]*\}/.exec(t);if(!m)throw new Error('no json');return JSON.parse(m[0]);}
+async function enrich(){
+  if(!window.claude||!window.claude.complete) return;
+  for(const r of TAX){
+    if(!S.running) return;
+    const ri=TAX.indexOf(r), rid='r'+ri;
+    try{
+      S.calls++;paint();
+      const d=jsonOf(await window.claude.complete({system:'You are a B2B market analyst for an environmental-science and STEM services firm. Output JSON only. Use real buyer categories; never invent fake company names.',messages:[{role:'user',content:'Field: "'+r.root+'". Add 2 NEW buyer sectors we could sell monitoring, data, modelling or R&D services to, that are not in this list: '+r.sectors.map(s=>s.name).join(', ')+'.'+focusHint()+' For each return name, service (what we sell), channel (who to reach), and 3 segments (buyer sub-types). JSON {"sectors":[{"name":"","service":"","channel":"","segments":["","",""]}]}'}],max_tokens:600}));
+      (d.sectors||[]).slice(0,2).forEach((sec,k)=>{
+        const sid='ai_s'+ri+'_'+k+'_'+(S.nodes.length);
+        S.byId[sid]={id:sid,type:'sector',label:String(sec.name),count:0,service:String(sec.service||'specialist services'),channel:String(sec.channel||'relevant leads'),ai:true};
+        S.nodes.push(S.byId[sid]); S.links.push({source:rid,target:sid});
+        (sec.segments||[]).slice(0,3).forEach((seg,gi)=>{
+          const gid=sid+'_g'+gi, base=58+hash(seg+sec.name)%34;
+          const node={id:gid,type:'seg',label:String(seg),count:0,sector:String(sec.name),root:r.root,service:String(sec.service||''),channel:String(sec.channel||''),base,confidence:base>=75?'high':base>=62?'medium':'low',ai:true};
+          S.byId[gid]=node;S.nodes.push(node);S.links.push({source:sid,target:gid});S.segs.push(node);
+        });
+      });
+      paintGraph();paintRegions();log('discovered '+(d.sectors||[]).length+' AI sectors under '+r.root);
+    }catch(e){ log('enrich skipped: '+e.message); }
+  }
+}
+
+/* ---------- streaming generator: draft -> report toward 10k ---------- */
+let gi=0;
+const combos=[]; for(const rg of REGIONS)for(const ti of TIERS)for(const tr of TRIGGERS)combos.push([rg,ti,tr]);
+function scoreOf(seg,rg,ti,tr){ try{return Math.round(S.scorer({baseScore:seg.base,confidence:seg.confidence},rg,ti,tr));}catch(e){return seg.base;} }
+function makeLead(){
+  if(!S.segs.length) return null;
+  const combo=combos[(gi/S.segs.length|0)%combos.length], seg=S.segs[gi%S.segs.length]; gi++;
+  const [rg,ti,tr]=combo; const score=Math.max(1,Math.min(100,scoreOf(seg,rg,ti,tr)));
+  const conf=score>=75?'high':score>=55?'medium':'low';
+  seg.count++; S.byId_sector_bump(seg);
+  S.regionTally[rg.name]=(S.regionTally[rg.name]||0)+1;
+  return {seg:seg.label,sector:seg.sector,root:seg.root,region:rg.name,tier:ti.name,trigger:tr.name,service:seg.service,channel:seg.channel,score,conf,ai:seg.ai};
+}
+S.byId_sector_bump=seg=>{ const sNode=S.nodes.find(n=>n.type==='sector'&&n.label===seg.sector); if(sNode)sNode.count++; const rNode=S.nodes.find(n=>n.type==='root'&&n.label===seg.root); if(rNode)rNode.count++; };
+function considerTop(l){
+  if(S.top.length<14||l.score>S.top[S.top.length-1].score){
+    S.top.push(l); S.top.sort((a,b)=>b.score-a.score); if(S.top.length>14)S.top.pop(); return true;
+  } return false;
+}
+let streamBuf=[];
+function streamTick(){
+  if(!S.running) return;
+  const perTick=140; let madeTop=false;
+  for(let i=0;i<perTick&&S.drafted<TARGET;i++){ const l=makeLead(); if(!l)break; S.drafted++; streamBuf.unshift(l); if(considerTop(l))madeTop=true; }
+  S.reported=Math.max(0,S.drafted-perTick);
+  if(madeTop)paintTop();
+  paintStream(); paint(); if((S.drafted%980)<perTick){paintGraph();paintRegions();}
+  if(S.drafted>=TARGET){ S.reported=TARGET; finish(); return; }
+  setTimeout(streamTick,40);
+}
+
+/* ---------- run / pause / reset ---------- */
+let started=false;
+async function run(){
+  if(S.running) return;
+  if(!started){ buildTaxonomyGraph(); started=true; initSim(); paintAll(); }
+  S.running=true; S.done=false;
+  $('runBtn').textContent='Pause'; $('runBtn').classList.remove('go'); $('gNote').textContent='running'; $('streamN').style.display=''; $('hud1').textContent='drafting reports autonomously'; $('hud1').classList.add('pulse');
+  setWorkers(); 
+  if(!S.scorer){ await buildScorer(); }
+  enrich();
+  S.startT=Date.now();
+  streamTick();
+}
+function pause(){ S.running=false; $('runBtn').textContent='Resume'; $('runBtn').classList.add('go'); $('gNote').textContent='paused'; $('hud1').textContent='paused at '+nf.format(S.drafted); $('hud1').classList.remove('pulse'); S.workers=S.workers.map(()=>'idle'); paintAgents(); }
+function finish(){ S.running=false; S.done=true; $('runBtn').textContent='Done'; $('gNote').textContent='complete'; $('hud1').textContent=nf.format(TARGET)+' reports drafted'; $('hud1').classList.remove('pulse'); $('streamN').style.display='none'; S.workers=S.workers.map(()=>'idle'); paintAgents(); log('✓ complete · '+nf.format(TARGET)+' reports · '+S.top.length+' held as top leads'); }
+function setWorkers(){ const roles=['Scoring segments','Expanding graph','Ranking leads']; S.workers=roles; paintAgents(); }
+$('runBtn').onclick=()=>{ if(S.done) return; S.running?pause():run(); };
+$('resetBtn').onclick=()=>{ S.running=false;started=false;S.done=false;S.drafted=0;S.reported=0;S.top=[];S.regionTally={};S.segs=[];gi=0;streamBuf=[];S.scorer=null;S.scorerSrc=null;S.startT=0; buildTaxonomyGraph(); $('feed').innerHTML='<div class="note">Reset. Press Run agents.</div>'; $('stream').innerHTML=''; $('sand').innerHTML='<div class="note">On run, Claude writes the scoring function; it runs in an isolated Worker and self-repairs before use.</div>'; $('detail').classList.remove('on'); $('runBtn').textContent='Run agents'; $('runBtn').classList.add('go'); $('gNote').textContent='idle'; $('hud1').textContent='press Run agents'; $('kSand').textContent='—'; $('kSand').style.color='var(--dim)'; $('sandN').textContent='idle'; initSim(); paintAll(); };
+
+/* ---------- d3 graph ---------- */
+const svg=d3.select('#g'),gbox=$('gbox');
+const gAll=svg.append('g'),gL=gAll.append('g'),gN=gAll.append('g'),gT=gAll.append('g');
+let sim=null,zoomT=d3.zoomIdentity;
+const zoom=d3.zoom().scaleExtent([0.3,4]).on('zoom',e=>{zoomT=e.transform;gAll.attr('transform',zoomT);});
+svg.call(zoom);
+const CONFC={high:'var(--green)',medium:'var(--amber)',low:'var(--violet)'};
+const rOf=n=>n.type==='root'?15+Math.min(10,Math.sqrt(n.count)/6):n.type==='sector'?8+Math.min(10,Math.sqrt(n.count)/4):4+Math.min(14,Math.sqrt(n.count)/2);
+const colOf=n=>n.type==='root'?'var(--cyan)':n.type==='sector'?'var(--amber)':CONFC[n.confidence];
+function dims(){return [gbox.clientWidth||900,gbox.clientHeight||560];}
+function initSim(){ const [w,h]=dims(); svg.attr('viewBox',`0 0 ${w} ${h}`);
+  if(sim)sim.stop();
+  sim=d3.forceSimulation(S.nodes)
+    .force('link',d3.forceLink(S.links).id(d=>d.id).distance(l=>{const t=l.target.type||S.byId[l.target]&&S.byId[l.target].type;return t==='seg'?40:92;}).strength(.4))
+    .force('charge',d3.forceManyBody().strength(-150))
+    .force('center',d3.forceCenter(w/2,h/2))
+    .force('collide',d3.forceCollide().radius(d=>rOf(d)+5))
+    .on('tick',ticked);
+}
+function paintGraph(){
+  if(!sim)return;
+  sim.nodes(S.nodes); sim.force('link').links(S.links);
+  const L=gL.selectAll('line').data(S.links,d=>(d.source.id||d.source)+'-'+(d.target.id||d.target));
+  L.enter().append('line').attr('class','lnk'); L.exit().remove();
+  const N=gN.selectAll('g.node').data(S.nodes,d=>d.id);
+  const en=N.enter().append('g').attr('class','node').style('cursor','pointer').on('click',(e,d)=>select(d))
+    .call(d3.drag().on('start',(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;}).on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y;}).on('end',(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
+  en.append('circle');
+  en.merge(N).select('circle').attr('r',rOf).attr('fill',colOf).attr('stroke',d=>d.id===S.sel?'var(--cyan)':d.ai?'var(--cyan)':'var(--bg)').attr('stroke-width',d=>d.id===S.sel?2.5:d.ai?1.2:1.5).attr('stroke-dasharray',d=>d.ai&&d.id!==S.sel?'2 2':null);
+  N.exit().remove();
+  const T=gT.selectAll('text').data(S.nodes.filter(n=>n.type!=='seg'),d=>d.id);
+  T.enter().append('text').attr('class','nlabel').attr('dx',d=>rOf(d)+4).attr('dy',4); T.exit().remove();
+  gT.selectAll('text').text(d=>d.label.length>24?d.label.slice(0,23)+'…':d.label);
+  sim.alpha(.5).restart();
+}
+function ticked(){ gL.selectAll('line').attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y); gN.selectAll('g.node').attr('transform',d=>`translate(${d.x},${d.y})`); gT.selectAll('text').attr('x',d=>d.x).attr('y',d=>d.y); }
+function select(n){ S.sel=n.id===S.sel?null:n.id; if(n.type==='seg'&&S.sel){ $('detail').innerHTML=`<div class="path">${esc(n.root)} › ${esc(n.sector)}</div><div style="display:flex;gap:8px;align-items:baseline"><b style="font:600 15px Barlow;flex:1">${esc(n.label)}</b><span class="sc" style="color:var(--cyan)">${n.count}</span></div><div style="margin-top:4px"><span class="lab">We sell</span> <span style="color:var(--text)">${esc(n.service)}</span></div><div><span class="lab">Reach</span> <span style="color:var(--text)">${esc(n.channel)}</span></div><div class="note" style="margin-top:4px">${nf.format(n.count)} report${n.count===1?'':'s'} drafted into this segment${n.ai?' · AI-discovered':''}.</div>`; $('detail').classList.add('on'); } else $('detail').classList.remove('on'); paintGraph(); }
+
+/* ---------- side panels ---------- */
+function paintAgents(){ $('agents').innerHTML=S.workers.map((w,i)=>{const busy=w!=='idle';return `<div><div class="row" style="grid-template-columns:48px minmax(0,1fr)"><span class="m" style="color:${busy?'var(--cyan)':'var(--faint)'}">W${i+1}</span><div class="seg"><i class="${busy?'on':''}"></i><i class="${busy?'on':''}"></i><i class="${busy?'on':''}"></i></div></div><div style="font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(w)}</div></div>`;}).join(''); const a=S.workers.filter(w=>w!=='idle').length;$('kAg').textContent=a;$('agN').textContent=a+'/'+CONC; }
+function paintRegions(){ const ents=Object.entries(S.regionTally).sort((a,b)=>b[1]-a[1]).slice(0,8); const mx=Math.max(1,...ents.map(e=>e[1])); $('regN').textContent=Object.keys(S.regionTally).length||REGIONS.length; $('regions').innerHTML=(ents.length?ents:REGIONS.slice(0,8).map(r=>[r.name,0])).map(([n,v])=>`<div class="row" style="grid-template-columns:minmax(0,1fr) 48px"><div style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px">${esc(n)}</div><div style="height:4px;background:var(--line);margin-top:2px"><i style="display:block;height:100%;width:${v/mx*100}%;background:var(--cyan)"></i></div></div><span class="m" style="color:var(--dim);text-align:right">${nf.format(v)}</span></div>`).join(''); }
+function paintTop(){ $('topN').textContent=S.top.length; const feed=$('feed'); if(feed.querySelector('.note'))feed.innerHTML=''; feed.innerHTML=S.top.map(l=>`<div class="card${('t'+l.score+l.seg)===S.sel?' sel':''}"><div class="path">${esc(l.root)} › ${esc(l.sector)}</div><div class="t"><b>${esc(l.seg)}</b><span class="conf" style="color:${CONFC[l.conf]}">${esc(l.conf)}</span><span class="sc" style="color:var(--cyan)">${l.score}</span></div><div style="margin-top:3px;font-size:12px;color:var(--text)">${esc(l.region)} · ${esc(l.tier)} · ${esc(l.trigger)}</div><div style="font-size:12px"><span class="lab">Offer</span> ${esc(l.service)}</div><div style="font-size:12px"><span class="lab">Reach</span> ${esc(l.channel)}</div><div style="display:flex;gap:6px;margin-top:6px"><button class="btn" data-build="${S.top.indexOf(l)}" style="padding:4px 9px">Build proposal file</button></div></div>`).join(''); }
+function paintStream(){ $('streamN').textContent=nf.format(S.drafted); $('stream').innerHTML=streamBuf.slice(0,10).map(l=>`<div><span style="color:${CONFC[l.conf]}">${l.score}</span> <span style="color:var(--text)">${esc(l.seg)}</span> · ${esc(l.region)} · <span style="color:var(--dim)">${esc(l.tier)}</span></div>`).join(''); }
+function paintCounters(){ const t=S.drafted, frac=Math.min(1,t/TARGET); $('kDraft').textContent=nf.format(t); $('kRep').textContent=nf.format(S.reported); $('kSec').textContent=S.nodes.filter(n=>n.type==='sector').length; $('kCalls').textContent=S.calls; $('hud2').textContent=nf.format(S.nodes.length)+' graph nodes'; $('hud3').textContent=S.scorerSrc?'scorer live in sandbox':''; $('odo').textContent=nf.format(t); $('pbar').style.width=(frac*100)+'%'; $('ringfg').setAttribute('stroke-dashoffset',(207.3*(1-frac)).toFixed(1)); if(S.startT){ const el=(Date.now()-S.startT)/1000, rate=t/Math.max(1,el); $('rate').textContent=S.running?Math.round(rate)+'/s':''; $('eta').textContent=t>=TARGET?'complete · '+nf.format(TARGET)+' reports':(S.running?'~'+Math.max(0,Math.round((TARGET-t)/Math.max(1,rate)))+'s remaining':'paused · '+nf.format(t)+' drafted'); } }
+function paint(){ paintCounters(); }
+function paintAll(){ paintGraph();paintAgents();paintRegions();paintTop();paintCounters(); }
+
+function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:type||'text/markdown'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50);
+function templateProposal(l){return `# Proposal: ${l.service} for ${l.seg}\n\n**Sector:** ${l.sector} (${l.root})  \n**Region:** ${l.region} · **Tier:** ${l.tier} · **Trigger:** ${l.trigger}  \n**Opportunity score:** ${l.score}/100 (${l.conf})\n\n## Why now\n${l.trigger} creates a need for independent ${l.service} in ${l.region}.\n\n## What we deliver\n- Baseline assessment and data plan\n- ${l.service}\n- Monitoring dashboard and quarterly reporting\n\n## How we reach them\n${l.channel}\n\n## Next steps\n1. Verify target organisations in ${l.region}\n2. Confirm scope and budget owner\n3. Book discovery call\n\n_AI-suggested lead. Verify before outreach._\n`;}
+async function buildProposal(i,btn){
+  const l=S.top[i];if(!l)return;btn.disabled=true;btn.textContent='Building…';
+  let md=null;
+  if(window.claude&&window.claude.complete){try{S.calls++;paint();md=await window.claude.complete({system:'You write concise B2B service proposals for an environmental-science and STEM services firm. Markdown only. Never invent company names, figures or statutes; mark unknowns as [to confirm].',messages:[{role:'user',content:`Write a 1-page proposal file.\nBuyer segment: ${l.seg}\nSector: ${l.sector} (${l.root})\nRegion: ${l.region}\nTier: ${l.tier}\nBuying trigger: ${l.trigger}\nOur offer: ${l.service}\nChannel: ${l.channel}\nScore: ${l.score}/100\nSections: title, why now, problem, proposed scope (bullets), deliverables, indicative phases, how we reach the buyer, next steps. End with: AI-suggested lead, verify before outreach.`}],max_tokens:900});}catch(e){md=null;}}
+  if(!md)md=templateProposal(l);
+  dl('proposal-'+slug(l.seg+'-'+l.region)+'.md',md);
+  log('built file · proposal for '+l.seg+' · '+l.region);
+  btn.disabled=false;btn.textContent='Rebuild file';
+}
+$('feed').addEventListener('click',e=>{const b=e.target.closest('[data-build]');if(b){e.stopPropagation();buildProposal(+b.dataset.build,b);}});
+$('csvBtn').onclick=()=>{if(!S.top.length){log('no leads yet to export');return;}const q=v=>'"'+String(v).replace(/"/g,'""')+'"';const rows=[['score','confidence','segment','sector','field','region','tier','trigger','service','channel']].concat(S.top.map(l=>[l.score,l.conf,l.seg,l.sector,l.root,l.region,l.tier,l.trigger,l.service,l.channel]));dl('saltline-top-leads.csv',rows.map(r=>r.map(q).join(',')).join('\n'),'text/csv');log('exported '+S.top.length+' leads to CSV');};
+const logs=[];
+function log(m){ logs.unshift(new Date().toISOString().slice(11,19)+' · '+m); $('tape').textContent=logs.slice(0,16).join('   ◆   '); }
+
+new ResizeObserver(()=>{ if(sim){const [w,h]=dims();svg.attr('viewBox',`0 0 ${w} ${h}`);sim.force('center',d3.forceCenter(w/2,h/2));sim.alpha(.2).restart();} }).observe(gbox);
+buildTaxonomyGraph(); initSim(); paintAll();
+log('standing by · real reasoning + sandboxed self-repair · no mock data');
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+services:
+  tester:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/workspace
+    environment:
+      REPO_PATH: /workspace
+      REDIS_URL: redis://redis:6379/0
+      TESTER_APPROVER_TOKEN: ${TESTER_APPROVER_TOKEN:?set TESTER_APPROVER_TOKEN}
+    depends_on:
+      - redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"

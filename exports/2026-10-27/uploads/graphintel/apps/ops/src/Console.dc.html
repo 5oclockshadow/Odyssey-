@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css">
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
+  <style>
+    body { margin: 0; background: #0b0c0a; color: #e9ede0; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 13px; }
+    a { color: #c8f43a; text-decoration: none; } a:hover { color: #e3ff85; text-decoration: underline; text-underline-offset: 3px; }
+    ::selection { background: #c8f43a; color: #10140a; }
+    button, input, textarea { font: inherit; color: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; } ::-webkit-scrollbar-thumb { background: #2b3024; border-radius: 5px; } ::-webkit-scrollbar-corner { background: transparent; }
+    .xterm { padding: 6px 10px; height: 100%; } .xterm-viewport { background: transparent !important; }
+  </style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0b0c0a"/><path d="M28 36l16 14-16 14" fill="none" stroke="#c8f43a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 66h22" stroke="#c8f43a" stroke-width="7" stroke-linecap="round"/></svg></template>
+</helmet>
+
+<div data-screen-label="Ops console" style="height:100vh;display:grid;grid-template-columns:minmax(980px,1fr);grid-template-rows:34px minmax(0,1fr) 24px;background:#0b0c0a;color:#e9ede0;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;overflow-x:auto;overflow-y:hidden;">
+
+  <header style="display:flex;align-items:center;gap:14px;padding:0 14px;border-bottom:1px solid #2b3024;background:#0b0c0a;">
+    <span style="display:flex;align-items:center;gap:8px;font-weight:600;letter-spacing:0.08em;font-size:12px;"><span style="width:9px;height:9px;background:#c8f43a;display:inline-block;"></span>THRESHOLD OPS</span>
+    <span style="color:#646b58;">/</span>
+    <span style="color:#98a08a;font-size:12px;">{{ breadcrumb }}</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px;">
+      <span style="{{ connStyle }}">{{ connLabel }}</span>
+      <a href="{{ phoenix }}" target="_blank">Phoenix ↗</a>
+      <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}"><button style="background:none;border:0;color:#98a08a;cursor:pointer;" style-hover="color:#e9ede0;" onClick="{{ logout }}">Sign out</button></sc-if>
+    </div>
+  </header>
+
+  <div style="display:grid;grid-template-columns:46px 268px minmax(0,1fr) 340px;min-height:0;">
+
+    <nav style="background:#0b0c0a;border-right:1px solid #2b3024;display:flex;flex-direction:column;">
+      <sc-for list="{{ acts }}" as="a" hint-placeholder-count="3">
+        <button title="{{ a.title }}" onClick="{{ a.go }}" style="{{ a.style }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ a.d }}"></path></svg></button>
+      </sc-for>
+    </nav>
+
+    <aside style="background:#111310;border-right:1px solid #2b3024;min-height:0;overflow:auto;display:flex;flex-direction:column;">
+      <sc-if value="{{ isContainers }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:10px 12px 6px;font-size:11px;letter-spacing:0.1em;color:#98a08a;display:flex;justify-content:space-between;"><span>CONTAINERS</span><span style="font-family:'JetBrains Mono',monospace;">{{ runningLabel }}</span></div>
+        <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+          <div style="display:grid;">
+            <div style="padding:8px 12px 4px;font-size:11px;color:#646b58;letter-spacing:0.08em;text-transform:uppercase;">{{ g.title }}</div>
+            <sc-if value="{{ g.hasErr }}" hint-placeholder-val="{{ false }}"><div style="padding:2px 12px 6px;font-size:12px;color:#ff5b4a;">{{ g.err }}</div></sc-if>
+            <sc-for list="{{ g.items }}" as="c" hint-placeholder-count="2">
+              <button onClick="{{ c.pick }}" style="{{ c.style }}">
+                <span style="{{ c.dot }}"></span>
+                <span style="min-width:0;display:grid;text-align:left;"><span style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.name }}</span><span style="font-size:11px;color:#98a08a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.image }}</span></span>
+                <span style="font-size:11px;color:#98a08a;font-family:'JetBrains Mono',monospace;">{{ c.state }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+        <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+          <div style="margin:12px;padding:12px;background:#181b15;border:1px solid #2b3024;display:grid;gap:8px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;"><span style="font-weight:600;overflow-wrap:anywhere;">{{ selName }}</span><span style="font-size:11px;color:#98a08a;">{{ selDaemon }}</span></div>
+            <span style="font-size:12px;color:#98a08a;line-height:1.5;">{{ selMeta }}</span>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ selActions }}" as="b" hint-placeholder-count="4"><button onClick="{{ b.run }}" style="{{ b.style }}">{{ b.label }}</button></sc-for>
+            </div>
+            <span style="font-size:11px;color:#ffb02e;">{{ selNote }}</span>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ isFiles }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:10px 12px 6px;font-size:11px;letter-spacing:0.1em;color:#98a08a;display:flex;justify-content:space-between;align-items:center;"><span>REPOSITORY</span>
+          <span style="display:flex;gap:10px;"><button title="New file" onClick="{{ toggleNew }}" style="background:none;border:0;color:#98a08a;cursor:pointer;font-size:15px;line-height:1;" style-hover="color:#c8f43a;">+</button><button title="Refresh" onClick="{{ refreshTree }}" style="background:none;border:0;color:#98a08a;cursor:pointer;font-size:14px;line-height:1;" style-hover="color:#c8f43a;">↻</button></span></div>
+        <sc-if value="{{ showNew }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:6px;padding:4px 12px 8px;"><input value="{{ newPath }}" onChange="{{ setNewPath }}" onKeyDown="{{ newKey }}" placeholder="path/to/new_file.py" style="flex:1;min-width:0;background:#0b0c0a;border:1px solid #2b3024;padding:4px 8px;font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;"><button onClick="{{ createFile }}" style="background:#c8f43a;color:#10140a;border:0;padding:4px 10px;font-weight:600;cursor:pointer;">Create</button></div></sc-if>
+        <sc-for list="{{ fileRows }}" as="r" hint-placeholder-count="8">
+          <button onClick="{{ r.click }}" style="{{ r.style }}"><span style="color:#646b58;width:12px;display:inline-block;">{{ r.icon }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.name }}</span></button>
+        </sc-for>
+        <sc-if value="{{ treeError }}" hint-placeholder-val="{{ false }}"><div style="padding:8px 12px;font-size:12px;color:#ff5b4a;">{{ treeError }}</div></sc-if>
+      </sc-if>
+
+      <sc-if value="{{ isTraces }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:10px 12px 6px;font-size:11px;letter-spacing:0.1em;color:#98a08a;display:flex;justify-content:space-between;"><span>RECENT SPANS</span><a href="{{ phoenix }}" target="_blank" style="font-size:11px;">Phoenix ↗</a></div>
+        <sc-for list="{{ spanRows }}" as="s" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:6px 12px;">
+            <span style="{{ s.nameStyle }}">{{ s.label }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#98a08a;">{{ s.ms }}</span>
+            <span style="font-size:11px;color:#646b58;">{{ s.when }} {{ s.kind }}</span><span style="{{ s.statusStyle }}">{{ s.status }}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noSpans }}" hint-placeholder-val="{{ false }}"><div style="padding:8px 12px;font-size:12px;color:#98a08a;line-height:1.5;">{{ spanNote }}</div></sc-if>
+      </sc-if>
+    </aside>
+
+    <section style="display:grid;grid-template-rows:minmax(0,1fr) 272px;min-width:0;min-height:0;">
+
+      <div style="display:grid;grid-template-rows:34px minmax(0,1fr);min-height:0;background:#121410;">
+        <div style="display:flex;background:#0f110d;border-bottom:1px solid #2b3024;overflow-x:auto;">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2">
+            <div onClick="{{ t.go }}" style="{{ t.style }}"><span style="white-space:nowrap;">{{ t.title }}</span><span style="{{ t.dirtyStyle }}">●</span><span onClick="{{ t.close }}" style="{{ t.closeStyle }}">×</span></div>
+          </sc-for>
+        </div>
+
+        <div style="min-height:0;overflow:auto;">
+          <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:20px 24px 28px;display:grid;gap:22px;max-width:860px;">
+              <div style="display:grid;gap:4px;"><h2 style="margin:0;font-size:20px;font-weight:600;letter-spacing:-0.01em;">{{ headline }}</h2><span style="color:#98a08a;">{{ subline }}</span></div>
+              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+                <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="4"><div style="padding:12px 14px;background:#181b15;border:1px solid #2b3024;display:grid;gap:4px;"><span style="{{ t.valueStyle }}">{{ t.value }}</span><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#98a08a;">{{ t.label }}</span></div></sc-for>
+              </div>
+              <div style="display:grid;gap:6px;">
+                <span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">NEEDS ATTENTION</span>
+                <sc-for list="{{ attention }}" as="a" hint-placeholder-count="2">
+                  <div style="display:grid;grid-template-columns:8px minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid #20241b;align-items:baseline;"><span style="{{ a.dot }}"></span><span style="display:grid;gap:2px;"><span style="font-weight:500;overflow-wrap:anywhere;">{{ a.title }}</span><span style="color:#98a08a;line-height:1.5;overflow-wrap:anywhere;">{{ a.detail }}</span></span></div>
+                </sc-for>
+                <sc-if value="{{ allClear }}" hint-placeholder-val="{{ false }}"><span style="color:#3fd68f;">Nothing wrong that I can see.</span></sc-if>
+              </div>
+              <div style="display:grid;gap:6px;">
+                <span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">ENGINE</span>
+                <sc-for list="{{ engineRows }}" as="e" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;font-size:12px;padding:3px 0;"><span style="color:#98a08a;">{{ e.k }}</span><span style="font-family:'JetBrains Mono',monospace;overflow-wrap:anywhere;">{{ e.v }}</span></div></sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFile }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-rows:34px minmax(0,1fr);height:100%;">
+              <div style="display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid #20241b;font-size:12px;">
+                <span style="font-family:'JetBrains Mono',monospace;color:#98a08a;">{{ filePath }}</span><span style="color:#ffb02e;">{{ fileState }}</span>
+                <span style="margin-left:auto;display:flex;gap:8px;"><button onClick="{{ saveFile }}" style="background:#c8f43a;color:#10140a;border:0;padding:3px 12px;font-weight:600;cursor:pointer;">Save</button><button onClick="{{ deleteFile }}" style="{{ deleteStyle }}">{{ deleteLabel }}</button></span>
+              </div>
+              <div style="display:grid;grid-template-columns:54px minmax(0,1fr);min-height:0;">
+                <pre ref="{{ gutterRef }}" style="margin:0;padding:10px 8px 10px 0;text-align:right;color:#646b58;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:20px;overflow:hidden;background:#121410;user-select:none;">{{ gutterText }}</pre>
+                <textarea ref="{{ editorRef }}" value="{{ fileContent }}" onChange="{{ setContent }}" onScroll="{{ syncScroll }}" onKeyDown="{{ editorKey }}" spellcheck="false" wrap="off" style="resize:none;border:0;outline:none;background:#121410;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:20px;color:#e9ede0;tab-size:4;white-space:pre;overflow:auto;caret-color:#c8f43a;"></textarea>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-rows:32px minmax(0,1fr);background:#0d0f0b;border-top:1px solid #2b3024;min-height:0;">
+        <div style="display:flex;align-items:center;gap:2px;padding:0 8px;border-bottom:1px solid #20241b;">
+          <sc-for list="{{ bottomTabs }}" as="b" hint-placeholder-count="4"><button onClick="{{ b.go }}" style="{{ b.style }}">{{ b.label }}<span style="{{ b.countStyle }}">{{ b.count }}</span></button></sc-for>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:12px;font-size:11px;color:#98a08a;"><span style="font-family:'JetBrains Mono',monospace;">{{ termTargetLabel }}</span><button onClick="{{ reconnect }}" style="background:none;border:1px solid #2b3024;color:#e9ede0;padding:1px 8px;cursor:pointer;" style-hover="border-color:#c8f43a;">Reconnect</button></span>
+        </div>
+        <div style="min-height:0;position:relative;">
+          <div ref="{{ termRef }}" style="{{ termStyle }}"></div>
+          <sc-if value="{{ isLogs }}" hint-placeholder-val="{{ false }}"><pre style="margin:0;padding:8px 14px;height:100%;box-sizing:border-box;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.55;color:#cfd5c2;white-space:pre-wrap;overflow-wrap:anywhere;">{{ logText }}</pre></sc-if>
+          <sc-if value="{{ isSpans }}" hint-placeholder-val="{{ false }}"><div style="height:100%;overflow:auto;padding:4px 14px;">
+            <sc-for list="{{ spanRows }}" as="s" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:70px minmax(0,1fr) 80px 70px 120px;gap:12px;padding:3px 0;font-size:12px;font-family:'JetBrains Mono',monospace;"><span style="color:#646b58;">{{ s.when }}</span><span style="{{ s.nameStyle }}">{{ s.label }}</span><span style="color:#98a08a;text-align:right;">{{ s.ms }}</span><span style="{{ s.statusStyle }}">{{ s.status }}</span><span style="color:#646b58;">{{ s.kind }}</span></div></sc-for>
+            <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:70px 60px minmax(0,1fr);gap:12px;padding:3px 0;font-size:12px;font-family:'JetBrains Mono',monospace;"><span style="color:#646b58;">{{ l.when }}</span><span style="{{ l.levelStyle }}">{{ l.level }}</span><span style="overflow-wrap:anywhere;color:#cfd5c2;">{{ l.label }}</span></div></sc-for>
+          </div></sc-if>
+          <sc-if value="{{ isProblems }}" hint-placeholder-val="{{ false }}"><div style="height:100%;overflow:auto;padding:6px 14px;">
+            <sc-for list="{{ attention }}" as="a" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:8px minmax(0,1fr);gap:12px;padding:5px 0;align-items:baseline;"><span style="{{ a.dot }}"></span><span style="overflow-wrap:anywhere;"><span style="font-weight:500;">{{ a.title }}</span> <span style="color:#98a08a;">{{ a.detail }}</span></span></div></sc-for>
+            <sc-if value="{{ allClear }}" hint-placeholder-val="{{ false }}"><span style="color:#3fd68f;">No problems.</span></sc-if>
+          </div></sc-if>
+        </div>
+      </div>
+    </section>
+
+    <aside style="background:#111310;border-left:1px solid #2b3024;display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:0;">
+      <div style="padding:10px 14px;border-bottom:1px solid #20241b;display:grid;gap:2px;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">OPS AGENT</span><span style="font-size:12px;color:#98a08a;line-height:1.45;">Reports on the stack and helps you change code and containers. Separate from SEXTANT. It proposes; your click runs.</span></div>
+      <div ref="{{ chatRef }}" style="overflow:auto;padding:12px 14px;display:grid;gap:14px;align-content:start;">
+        <sc-for list="{{ chat }}" as="m" hint-placeholder-count="1">
+          <div style="display:grid;gap:8px;">
+            <span style="{{ m.whoStyle }}">{{ m.who }}</span>
+            <span style="line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;color:#e9ede0;">{{ m.text }}</span>
+            <sc-for list="{{ m.proposals }}" as="p" hint-placeholder-count="0">
+              <div style="padding:10px;background:#181b15;border:1px solid #2b3024;display:grid;gap:6px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#c8f43a;overflow-wrap:anywhere;">{{ p.headline }}</span>
+                <span style="font-size:12px;color:#98a08a;line-height:1.5;">{{ p.why }}</span>
+                <div style="display:flex;gap:6px;"><button onClick="{{ p.run }}" style="{{ p.runStyle }}">{{ p.runLabel }}</button><button onClick="{{ p.dismiss }}" style="background:none;border:1px solid #2b3024;padding:3px 10px;cursor:pointer;color:#98a08a;">Dismiss</button></div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+        <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">reading the stack…</span></sc-if>
+      </div>
+      <div style="padding:10px 14px 14px;border-top:1px solid #20241b;display:grid;gap:8px;">
+        <textarea value="{{ draft }}" onChange="{{ setDraft }}" onKeyDown="{{ draftKey }}" placeholder="what is wrong? why did app-lens-2 stop?" rows="3" style="resize:none;background:#0b0c0a;border:1px solid #2b3024;padding:8px 10px;line-height:1.5;outline:none;"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:#646b58;">Enter to send</span><button onClick="{{ send }}" style="background:#c8f43a;color:#10140a;border:0;padding:4px 14px;font-weight:600;cursor:pointer;">Ask</button></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer style="display:flex;align-items:center;gap:18px;padding:0 12px;background:#c8f43a;color:#10140a;font-size:11.5px;font-weight:500;overflow:hidden;white-space:nowrap;">
+    <span>{{ statusLeft }}</span><span>{{ statusEngine }}</span>
+    <span style="margin-left:auto;">{{ flash }}</span><span style="font-family:'JetBrains Mono',monospace;">{{ statusRight }}</span>
+  </footer>
+
+  <sc-if value="{{ needsLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(11,12,10,0.88);display:grid;place-items:center;">
+      <div style="width:340px;padding:24px;background:#181b15;border:1px solid #2b3024;display:grid;gap:12px;">
+        <span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">OWNER</span>
+        <span style="font-size:18px;font-weight:600;">Sign in to the console</span>
+        <input type="password" value="{{ pw }}" onChange="{{ setPw }}" onKeyDown="{{ pwKey }}" placeholder="password" autocomplete="current-password" style="background:#0b0c0a;border:1px solid #2b3024;padding:8px 10px;outline:none;">
+        <div style="display:flex;gap:12px;align-items:center;"><button onClick="{{ login }}" style="background:#c8f43a;color:#10140a;border:0;padding:6px 16px;font-weight:600;cursor:pointer;">Sign in</button><span style="color:#ff5b4a;font-size:12px;">{{ loginError }}</span></div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;opsUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;/ops&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Services&quot;}, &quot;authUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;/api&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Services&quot;}, &quot;phoenixUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;http://localhost:6006&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Services&quot;}}">
+const C = { lime: '#c8f43a', amber: '#ffb02e', red: '#ff5b4a', mint: '#3fd68f', cyan: '#4cc9f0', dim: '#98a08a', faint: '#646b58', line: '#2b3024', text: '#e9ede0' };
+const hms = (ts) => { const d = new Date(Number(ts) * 1000); return isNaN(d) ? '' : d.toTimeString().slice(0, 8); };
+const ACTS = [['containers', 'Containers', 'M3 7l9-4 9 4v10l-9 4-9-4V7zM3 7l9 4 9-4M12 11v10'], ['files', 'Repository', 'M4 4h6l2 2h8v14H4V4z'], ['traces', 'Traces', 'M3 12h4l3-8 4 16 3-8h4']];
+const SAMPLE = ['\x1b[2mOffline: this is a sample session. Connected, this is a real shell inside the selected container.\x1b[0m', '', '\x1b[32mroot@{n}\x1b[0m:/app# docker ps --format "{{.Names}}"', 'phoenix', 'redis', 'mcp-hub', '\x1b[32mroot@{n}\x1b[0m:/app# '];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.termRef = React.createRef(); this.gutterRef = React.createRef(); this.editorRef = React.createRef(); this.chatRef = React.createRef();
+    this.state = { act: 'containers', st: null, status: 'loading', needsLogin: false, offline: false, pw: '', loginError: '', sel: null, confirm: '', tree: {}, open: { '': true }, treeError: '',
+      tabs: [{ id: 'overview', title: 'Overview' }], active: 'overview', files: {}, bottom: 'terminal', logText: '', chat: [], draft: '', busy: false, showNew: false, newPath: '', flash: '', target: null, fx: null, now: Date.now() };
+  }
+  opsBase() { return String(this.props.opsUrl ?? '/ops').replace(/\/$/, ''); }
+  authBase() { return String(this.props.authUrl ?? '/api').replace(/\/$/, ''); }
+  async call(path, opts = {}) {
+    const r = await fetch(this.opsBase() + path, { credentials: 'include', ...opts, headers: { 'content-type': 'application/json', ...(opts.headers || {}) } });
+    if (r.status === 401) { this.setState({ needsLogin: true, status: 'locked' }); throw new Error('401'); }
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.detail || r.status);
+    return j;
+  }
+  flashMsg(t) { this.setState({ flash: t }); clearTimeout(this.ft); this.ft = setTimeout(() => this.setState({ flash: '' }), 5000); }
+
+  componentDidMount() {
+    const h = (location.hash || '').slice(1); if (ACTS.some(a => a[0] === h)) this.setState({ act: h });
+    this.load(); this.poll = setInterval(() => this.tick(), 5000); this.clock = setInterval(() => this.setState({ now: Date.now() }), 30000);
+    this.tryTerm = setInterval(() => { if (window.Terminal && this.termRef.current) { clearInterval(this.tryTerm); this.initTerm(); } }, 300);
+    this.onResize = () => this.fit(); window.addEventListener('resize', this.onResize);
+  }
+  componentWillUnmount() { clearInterval(this.poll); clearInterval(this.clock); clearInterval(this.tryTerm); window.removeEventListener('resize', this.onResize); this.ws && this.ws.close(); }
+  componentDidUpdate() { const b = this.state.bottom; if (this._bottom !== b) { this._bottom = b; if (b === 'terminal') setTimeout(() => this.fit(), 30); } }
+
+  async load() {
+    try { const st = await this.call('/state'); this.setState({ st, status: 'live', offline: false, needsLogin: false }); if (!this.state.sel) this.pickDefault(st); if (!this.state.tree['']) this.loadDir(''); }
+    catch (e) {
+      if (String(e.message) === '401') return;
+      try {
+        const u = this.props.fixtureUrl ?? '../fixtures/state.json';
+        const f = await fetch(u).then(r => r.ok ? r : fetch('fixtures/ops-state.json')); const fx = await f.json();
+        this.setState({ st: fx, fx, status: 'offline', offline: true, needsLogin: false, chat: fx.chat.map(m => ({ ...m, proposals: (m.proposals || []).map(p => ({ ...p, gone: false })) })) });
+        this.pickDefault(fx); this.loadDir('');
+      } catch { this.setState({ status: 'error' }); }
+    }
+  }
+  pickDefault(st) { const c = (st.containers || []).find(x => x.name === 'agent') || (st.containers || [])[0]; if (c) this.select(c, true); }
+  async tick() {
+    if (this.state.offline || this.state.needsLogin) return;
+    try { this.setState({ st: await this.call('/state') }); } catch (e) {}
+    if (this.state.bottom === 'logs') this.loadLogs();
+  }
+
+  select(c, quiet) { this.setState({ sel: { daemon: c.daemon, name: c.name }, confirm: '' }, () => { if (!quiet || !this.term) this.connect(); if (this.state.bottom === 'logs') this.loadLogs(); }); }
+  async loadLogs() {
+    const s = this.state.sel; if (!s) return;
+    if (this.state.offline) { this.setState({ logText: (this.state.fx.logs || {})[s.name] || '(no sample logs for this container)' }); return; }
+    try { this.setState({ logText: (await this.call(`/containers/${s.daemon}/${s.name}/logs?tail=300`)).logs }); } catch (e) { this.setState({ logText: String(e.message) }); }
+  }
+  async doAction(action) {
+    const s = this.state.sel; if (!s) return;
+    if ((action === 'remove' || action === 'stop') && this.state.confirm !== action) { this.setState({ confirm: action }); return; }
+    this.setState({ confirm: '' });
+    if (this.state.offline) { this.flashMsg(`offline: would ${action} ${s.daemon}/${s.name}`); return; }
+    try { await this.call(`/containers/${s.daemon}/${s.name}/${action}`, { method: 'POST' }); this.flashMsg(`${action} ${s.name}: done`); this.tick(); } catch (e) { this.flashMsg(`${action} ${s.name}: ${e.message}`); }
+  }
+
+  initTerm() {
+    const T = window.Terminal; if (!T) return;
+    this.term = new T({ fontFamily: '"JetBrains Mono", monospace', fontSize: 12.5, cursorBlink: true, theme: { background: '#0d0f0b', foreground: '#e9ede0', cursor: C.lime, selectionBackground: '#2b3024', green: C.mint, yellow: C.amber, red: C.red, blue: C.cyan } });
+    const F = window.FitAddon && window.FitAddon.FitAddon; if (F) { this.fitAddon = new F(); this.term.loadAddon(this.fitAddon); }
+    this.term.open(this.termRef.current); this.fit();
+    this.term.onData(d => { if (this.ws && this.ws.readyState === 1) this.ws.send(d); });
+    this.term.onResize(({ cols, rows }) => { if (this.ws && this.ws.readyState === 1) this.ws.send('\x01' + JSON.stringify({ cols, rows })); });
+    this.connect();
+  }
+  fit() { try { this.fitAddon && this.state.bottom === 'terminal' && this.fitAddon.fit(); } catch (e) {} }
+  connect() {
+    const s = this.state.sel; if (!this.term || !s) return;
+    this.ws && this.ws.close(); this.term.reset();
+    if (this.state.offline || !this.state.st) { this.term.write(SAMPLE.join('\r\n').replace(/\{n\}/g, s.name)); return; }
+    const u = new URL(`${this.opsBase()}/ws/exec/${s.daemon}/${s.name}`, location.href); u.protocol = u.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(u.href); ws.binaryType = 'arraybuffer'; this.ws = ws;
+    ws.onopen = () => { this.fit(); ws.send('\x01' + JSON.stringify({ cols: this.term.cols, rows: this.term.rows })); };
+    ws.onmessage = (e) => this.term.write(typeof e.data === 'string' ? e.data : new Uint8Array(e.data));
+    ws.onclose = () => this.term.write('\r\n\x1b[2m[disconnected]\x1b[0m\r\n');
+  }
+
+  async loadDir(path) {
+    try {
+      let entries;
+      if (this.state.offline) {
+        const keys = Object.keys(this.state.fx.files), pre = path ? path + '/' : '', seen = {};
+        keys.filter(k => k.startsWith(pre)).forEach(k => { const rest = k.slice(pre.length), n = rest.split('/')[0]; seen[n] = { name: n, dir: rest.includes('/'), path: pre + n }; });
+        entries = Object.values(seen).sort((a, b) => (b.dir - a.dir) || a.name.localeCompare(b.name));
+      } else entries = (await this.call('/fs?path=' + encodeURIComponent(path))).entries;
+      this.setState(s => ({ tree: { ...s.tree, [path]: entries }, treeError: '' }));
+    } catch (e) { this.setState({ treeError: String(e.message) }); }
+  }
+  toggleDir(p) { const open = !this.state.open[p]; this.setState(s => ({ open: { ...s.open, [p]: open } })); if (open && !this.state.tree[p]) this.loadDir(p); }
+  async openFile(path) {
+    if (!this.state.files[path]) {
+      try {
+        const content = this.state.offline ? this.state.fx.files[path] : (await this.call('/file?path=' + encodeURIComponent(path))).content;
+        this.setState(s => ({ files: { ...s.files, [path]: { content, orig: content } } }));
+      } catch (e) { this.flashMsg(`${path}: ${e.message}`); return; }
+    }
+    this.setState(s => ({ tabs: s.tabs.some(t => t.id === path) ? s.tabs : [...s.tabs, { id: path, title: path.split('/').pop() }], active: path }));
+  }
+  closeTab(id) { this.setState(s => { const tabs = s.tabs.filter(t => t.id !== id); return { tabs, active: s.active === id ? tabs[tabs.length - 1].id : s.active }; }); }
+  async saveFile() {
+    const p = this.state.active, f = this.state.files[p]; if (!f) return;
+    if (this.state.offline) { this.state.fx.files[p] = f.content; this.setState(s => ({ files: { ...s.files, [p]: { ...f, orig: f.content } } })); this.flashMsg('offline: saved in memory only'); return; }
+    try { await this.call('/file', { method: 'PUT', body: JSON.stringify({ path: p, content: f.content }) }); this.setState(s => ({ files: { ...s.files, [p]: { ...f, orig: f.content } } })); this.flashMsg(`saved ${p}`); } catch (e) { this.flashMsg(`save failed: ${e.message}`); }
+  }
+  async deleteFile() {
+    const p = this.state.active;
+    if (this.state.confirm !== 'del:' + p) { this.setState({ confirm: 'del:' + p }); return; }
+    this.setState({ confirm: '' });
+    try {
+      if (this.state.offline) delete this.state.fx.files[p]; else await this.call('/file?path=' + encodeURIComponent(p), { method: 'DELETE' });
+      this.closeTab(p); this.setState(s => { const files = { ...s.files }; delete files[p]; return { files }; }); this.refreshTree(); this.flashMsg(`deleted ${p}`);
+    } catch (e) { this.flashMsg(`delete failed: ${e.message}`); }
+  }
+  async createFile() {
+    const p = this.state.newPath.trim().replace(/^\/+/, ''); if (!p) return;
+    try {
+      if (this.state.offline) this.state.fx.files[p] = ''; else await this.call('/file', { method: 'PUT', body: JSON.stringify({ path: p, content: '' }) });
+      this.setState({ newPath: '', showNew: false }); await this.refreshTree(); this.openFile(p);
+    } catch (e) { this.flashMsg(`create failed: ${e.message}`); }
+  }
+  async refreshTree() { const dirs = Object.keys(this.state.open).filter(k => this.state.open[k]); this.setState({ tree: {} }); for (const d of dirs) await this.loadDir(d); }
+
+  async send() {
+    const text = this.state.draft.trim(); if (!text || this.state.busy) return;
+    this.setState(s => ({ draft: '', busy: true, chat: [...s.chat, { who: 'you', text, proposals: [] }] }));
+    try {
+      const r = this.state.offline ? { report: 'Offline: the ops agent needs the engine and a model key. Connected, it reads container state, logs, traces and the repository before it answers, and offers changes as cards.', proposals: [] } : await this.call('/chat', { method: 'POST', body: JSON.stringify({ text }) });
+      this.setState(s => ({ busy: false, chat: [...s.chat, { who: 'ops', text: r.report, proposals: (r.proposals || []).map(p => ({ ...p, gone: false })) }] }));
+    } catch (e) { this.setState(s => ({ busy: false, chat: [...s.chat, { who: 'ops', text: `Could not reach the ops agent: ${e.message}`, proposals: [] }] })); }
+    setTimeout(() => { const el = this.chatRef.current; if (el) el.scrollTop = el.scrollHeight; }, 50);
+  }
+  async runProposal(m, p) {
+    const done = (t) => this.setState(s => ({ chat: s.chat.map(x => x === m ? { ...x, proposals: x.proposals.map(y => y === p ? { ...y, gone: true } : y) } : x) }, this.flashMsg(t)));
+    if (this.state.offline) { done(`offline: would ${p.kind === 'edit' ? 'write ' + p.path : p.action + ' ' + p.daemon + '/' + p.name}`); return; }
+    try { await this.call('/run', { method: 'POST', body: JSON.stringify(p) }); done(p.kind === 'edit' ? `wrote ${p.path}` : `${p.action} ${p.name}: done`); this.tick(); } catch (e) { this.flashMsg(`failed: ${e.message}`); }
+  }
+
+  async login() {
+    const r = await fetch(this.authBase() + '/auth/login', { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: this.state.pw }) });
+    if (r.ok) { this.setState({ pw: '', loginError: '', needsLogin: false }); this.load(); } else { const j = await r.json().catch(() => ({})); this.setState({ loginError: j.detail || `failed (${r.status})` }); }
+  }
+  async logout() { await fetch(this.authBase() + '/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {}); this.setState({ needsLogin: true, st: null, status: 'locked' }); }
+
+  attention() {
+    const st = this.state.st; if (!st) return [];
+    const out = [];
+    (st.containers || []).forEach(c => {
+      if (c.health === 'unhealthy') out.push({ title: `${c.name} is unhealthy`, detail: `${c.daemon} · ${c.image}`, dot: C.red });
+      else if (c.state === 'exited' && c.exit !== 0) out.push({ title: `${c.name} exited with code ${c.exit}`, detail: `${c.daemon} · ${c.restarts} restarts · select it and open Logs`, dot: C.red });
+      else if (c.restarts > 2) out.push({ title: `${c.name} has restarted ${c.restarts} times`, detail: c.daemon, dot: C.amber });
+    });
+    Object.entries(st.daemon_errors || {}).forEach(([d, e]) => out.push({ title: `${d} docker unreachable`, detail: e, dot: C.red }));
+    if (st.engine && st.engine.error) out.push({ title: 'The engine is not answering', detail: String(st.engine.error), dot: C.red });
+    else if (st.engine && st.engine.sandbox && !(st.engine.sandbox.agent && st.engine.sandbox.web)) out.push({ title: 'A sandbox docker is unreachable from the engine', detail: JSON.stringify(st.engine.sandbox), dot: C.amber });
+    ((st.spans && st.spans.incidents) || []).filter(i => ['open', 'waiting'].includes(i.status)).forEach(i => out.push({ title: `${i.type} in ${String(i.code || '').replace('code:', '')}`, detail: `${i.message} · ${i.outcome || i.status}`, dot: C.amber }));
+    return out;
+  }
+
+  renderVals() {
+    const s = this.state, st = s.st, live = s.status === 'live', cs = (st && st.containers) || [], sum = (st && st.summary) || { running: cs.filter(c => c.state === 'running').length, total: cs.length };
+    const att = this.attention(), sp = (st && st.spans && st.spans.spans) || [], sel = s.sel && cs.find(c => c.daemon === s.sel.daemon && c.name === s.sel.name);
+    const dot = (c) => `width:8px;height:8px;border-radius:50%;background:${c.health === 'unhealthy' || (c.state === 'exited' && c.exit !== 0) ? C.red : c.state === 'running' ? C.mint : C.faint};`;
+    const groups = ['host', 'agent', 'web'].map(d => ({ title: { host: 'host docker', agent: "agent's docker", web: "site's docker" }[d], err: (st && st.daemon_errors && st.daemon_errors[d]) || '', hasErr: !!(st && st.daemon_errors && st.daemon_errors[d]),
+      items: cs.filter(c => c.daemon === d).map(c => ({ name: c.name, image: c.image, state: c.health === 'unhealthy' ? 'unhealthy' : c.state, dot: dot(c), pick: () => this.select(c),
+        style: `all:unset;box-sizing:border-box;display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 12px;cursor:pointer;background:${sel && sel.name === c.name && sel.daemon === c.daemon ? '#20241b' : 'transparent'};border-left:2px solid ${sel && sel.name === c.name && sel.daemon === c.daemon ? C.lime : 'transparent'};` })) }));
+    const btn = (label, run, kind) => ({ label, run, style: `border:1px solid ${kind === 'danger' ? C.red : C.line};background:${kind === 'danger' && s.confirm ? C.red : 'transparent'};color:${kind === 'danger' ? (s.confirm ? '#10140a' : C.red) : C.text};padding:3px 10px;cursor:pointer;font-size:12px;` });
+    const selActions = sel ? [{ ...btn('Shell', () => { this.setState({ bottom: 'terminal' }); this.connect(); }), }, btn('Logs', () => { this.setState({ bottom: 'logs' }); this.loadLogs(); }), btn('Restart', () => this.doAction('restart')),
+      btn(sel.state === 'running' ? (s.confirm === 'stop' ? 'Confirm stop' : 'Stop') : 'Start', () => this.doAction(sel.state === 'running' ? 'stop' : 'start'), sel.state === 'running' ? 'danger' : ''),
+      btn(s.confirm === 'remove' ? 'Confirm remove' : 'Remove', () => this.doAction('remove'), 'danger')].map(b => b.label === 'Shell' ? { ...b, style: `border:0;background:${C.lime};color:#10140a;padding:3px 10px;cursor:pointer;font-size:12px;font-weight:600;` } : b) : [];
+    const rows = []; const walk = (dir, depth) => (s.tree[dir] || []).forEach(e => { rows.push({ name: e.name, icon: e.dir ? (s.open[e.path] ? '▾' : '▸') : '', click: () => e.dir ? this.toggleDir(e.path) : this.openFile(e.path),
+      style: `all:unset;box-sizing:border-box;display:flex;gap:6px;align-items:center;padding:3px 12px 3px ${12 + depth * 14}px;cursor:pointer;font-size:12.5px;background:${s.active === e.path ? '#20241b' : 'transparent'};color:${e.dir ? C.text : '#cfd5c2'};` }); if (e.dir && s.open[e.path]) walk(e.path, depth + 1); }); walk('', 0);
+    const file = s.files[s.active], dirty = (id) => s.files[id] && s.files[id].content !== s.files[id].orig;
+    const spanRows = sp.map(x => ({ label: x.label, ms: x.ms >= 1000 ? (x.ms / 1000).toFixed(1) + ' s' : Math.round(x.ms * 10) / 10 + ' ms', when: hms(x.ts), kind: x.kind || '', status: x.status === 'ERROR' ? 'error' : 'ok',
+      nameStyle: `font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${x.status === 'ERROR' ? C.red : C.text};`, statusStyle: `font-size:11px;color:${x.status === 'ERROR' ? C.red : C.mint};text-align:right;` }));
+    const logRows = ((st && st.spans && st.spans.logs) || []).map(l => ({ when: hms(l.ts), level: l.level, label: l.label, levelStyle: `color:${l.level === 'ERROR' ? C.red : l.level === 'WARNING' ? C.amber : C.faint};` }));
+    const spanErr = sp.filter(x => x.status === 'ERROR').length;
+    const eng = st && st.engine && !st.engine.error ? st.engine : null;
+    const engineRows = eng ? [['model', eng.model], ['queue', `${eng.pending} pending · ${eng.concurrency} workers`], ['sandbox', `agent docker ${eng.sandbox && eng.sandbox.agent ? 'up' : 'down'} · site docker ${eng.sandbox && eng.sandbox.web ? 'up' : 'down'}`], ['redis', eng.redis ? 'connected' : 'not connected (in-memory)'], ['graph', `${eng.graph && eng.graph.nodes} nodes · ${eng.graph && eng.graph.edges} edges`]] : [['engine', st && st.engine ? String(st.engine.error || 'unknown') : 'no data']];
+    const bt = [['terminal', 'Terminal', 0], ['logs', 'Logs', 0], ['spans', 'Traces', spanErr], ['problems', 'Problems', att.length]];
+    const tabs = s.tabs.map(t => ({ title: t.title, go: () => this.setState({ active: t.id }), close: (e) => { e.stopPropagation(); this.closeTab(t.id); },
+      style: `display:flex;align-items:center;gap:8px;padding:0 12px;cursor:pointer;font-size:12.5px;border-right:1px solid #20241b;background:${s.active === t.id ? '#121410' : 'transparent'};color:${s.active === t.id ? C.text : C.dim};border-top:2px solid ${s.active === t.id ? C.lime : 'transparent'};`,
+      dirtyStyle: `color:${C.amber};font-size:9px;display:${dirty(t.id) ? 'inline' : 'none'};`, closeStyle: `color:${C.faint};cursor:pointer;display:${t.id === 'overview' ? 'none' : 'inline'};` }));
+    const problems = att.length;
+    return {
+      breadcrumb: s.active === 'overview' ? (s.sel ? `${s.sel.daemon} / ${s.sel.name}` : 'overview') : s.active, phoenix: this.props.phoenixUrl ?? (st && st.phoenix) ?? 'http://localhost:6006',
+      connLabel: live ? 'live' : s.offline ? 'offline · sample data' : s.status === 'locked' ? 'locked' : s.status === 'error' ? 'no ops service' : 'connecting…',
+      connStyle: `color:${live ? C.mint : s.offline ? C.amber : C.dim};`, authed: live,
+      acts: ACTS.map(([id, title, d]) => ({ id, title, d, go: () => this.setState({ act: id }), style: `all:unset;box-sizing:border-box;width:46px;height:46px;display:grid;place-items:center;cursor:pointer;color:${s.act === id ? C.lime : C.dim};border-left:2px solid ${s.act === id ? C.lime : 'transparent'};` })),
+      isContainers: s.act === 'containers', isFiles: s.act === 'files', isTraces: s.act === 'traces', groups, runningLabel: `${sum.running}/${sum.total} running`,
+      hasSel: !!sel, selName: sel ? sel.name : '', selDaemon: sel ? sel.daemon : '', selActions, selNote: sel && sel.protected ? 'Part of the stack: restart is allowed; stop and remove are refused here.' : (s.confirm ? 'Click again to confirm.' : ''),
+      selMeta: sel ? `${sel.state}${sel.health ? ' · ' + sel.health : ''} · ${sel.restarts} restarts${sel.ports.length ? ' · ' + sel.ports.join(', ') : ''}` : '',
+      fileRows: rows, treeError: s.treeError, showNew: s.showNew, newPath: s.newPath, toggleNew: () => this.setState({ showNew: !s.showNew }), setNewPath: (e) => this.setState({ newPath: e.target.value }),
+      newKey: (e) => { if (e.key === 'Enter') this.createFile(); }, createFile: () => this.createFile(), refreshTree: () => this.refreshTree(),
+      spanRows, noSpans: spanRows.length === 0, spanNote: st && st.spans && st.spans.error ? `Traces come from the engine (${st.spans.error}). Phoenix has the full view.` : 'No spans yet.', logRows,
+      tabs, isOverview: s.active === 'overview', isFile: s.active !== 'overview' && !!file,
+      headline: problems ? `${problems} thing${problems === 1 ? '' : 's'} need${problems === 1 ? 's' : ''} you` : 'Everything is running', subline: `${sum.running} of ${sum.total} containers across three dockers · ${(st && st.engine && st.engine.pending) ?? '–'} rounds queued`,
+      tiles: [{ label: 'running', value: `${sum.running}/${sum.total}`, valueStyle: 'font-size:24px;font-weight:600;' }, { label: 'problems', value: problems, valueStyle: `font-size:24px;font-weight:600;color:${problems ? C.red : C.mint};` },
+        { label: 'error spans', value: spanErr, valueStyle: `font-size:24px;font-weight:600;color:${spanErr ? C.amber : C.text};` }, { label: 'engine', value: eng ? 'up' : 'down', valueStyle: `font-size:24px;font-weight:600;color:${eng ? C.mint : C.red};` }],
+      attention: att.map(a => ({ ...a, dot: `width:8px;height:8px;border-radius:50%;background:${a.dot};` })), allClear: att.length === 0 && !!st, engineRows: engineRows.map(([k, v]) => ({ k, v })),
+      filePath: s.active, fileState: file && file.content !== file.orig ? 'unsaved changes' : '', fileContent: file ? file.content : '', gutterText: file ? file.content.split('\n').map((_, i) => i + 1).join('\n') : '',
+      setContent: (e) => this.setState(x => ({ files: { ...x.files, [x.active]: { ...x.files[x.active], content: e.target.value } } })), syncScroll: (e) => { if (this.gutterRef.current) this.gutterRef.current.scrollTop = e.target.scrollTop; },
+      editorKey: (e) => { if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); this.saveFile(); } if (e.key === 'Tab') { e.preventDefault(); const t = e.target, a = t.selectionStart; t.setRangeText('    ', a, t.selectionEnd, 'end'); this.setState(x => ({ files: { ...x.files, [x.active]: { ...x.files[x.active], content: t.value } } })); } },
+      saveFile: () => this.saveFile(), deleteFile: () => this.deleteFile(), deleteLabel: s.confirm === 'del:' + s.active ? 'Confirm delete' : 'Delete',
+      deleteStyle: `border:1px solid ${C.red};background:${s.confirm === 'del:' + s.active ? C.red : 'transparent'};color:${s.confirm === 'del:' + s.active ? '#10140a' : C.red};padding:3px 12px;cursor:pointer;`,
+      bottomTabs: bt.map(([id, label, n]) => ({ label, count: n ? ` ${n}` : '', go: () => { this.setState({ bottom: id }); if (id === 'logs') this.loadLogs(); }, style: `background:none;border:0;border-bottom:2px solid ${s.bottom === id ? C.lime : 'transparent'};color:${s.bottom === id ? C.text : C.dim};padding:6px 12px;cursor:pointer;font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;`, countStyle: `color:${id === 'problems' ? C.red : C.amber};` })),
+      termStyle: `position:absolute;inset:0;display:${s.bottom === 'terminal' ? 'block' : 'none'};`, termRef: this.termRef, gutterRef: this.gutterRef, editorRef: this.editorRef, chatRef: this.chatRef,
+      isLogs: s.bottom === 'logs', logText: s.logText || (s.sel ? 'loading…' : 'select a container'), isSpans: s.bottom === 'spans', isProblems: s.bottom === 'problems',
+      termTargetLabel: s.sel ? `sh · ${s.sel.daemon}/${s.sel.name}` : 'no container selected', reconnect: () => this.connect(),
+      chat: s.chat.map(m => ({ who: m.who === 'you' ? 'YOU' : 'OPS', text: m.text, whoStyle: `font-size:10.5px;letter-spacing:0.1em;color:${m.who === 'you' ? C.dim : C.lime};`,
+        proposals: (m.proposals || []).filter(p => !p.gone).map(p => ({ headline: p.kind === 'edit' ? `write ${p.path}` : `${p.action} ${p.daemon}/${p.name}`, why: p.why, run: () => this.runProposal(m, p),
+          runLabel: p.kind === 'edit' ? 'Write file' : `Run ${p.action}`, runStyle: `border:0;padding:3px 12px;font-weight:600;cursor:pointer;background:${p.action === 'remove' ? C.red : C.lime};color:#10140a;`, dismiss: () => this.setState(x => ({ chat: x.chat.map(y => y === m ? { ...y, proposals: y.proposals.map(z => z === p ? { ...z, gone: true } : z) } : y) })) })) })),
+      busy: s.busy, draft: s.draft, setDraft: (e) => this.setState({ draft: e.target.value }), draftKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.send(); } }, send: () => this.send(),
+      statusLeft: `${sum.running}/${sum.total} containers`, statusEngine: eng ? `engine up · ${eng.pending} queued` : 'engine down', flash: s.flash, statusRight: file ? `${s.active}` : (s.sel ? `${s.sel.daemon}/${s.sel.name}` : ''),
+      needsLogin: s.needsLogin, pw: s.pw, setPw: (e) => this.setState({ pw: e.target.value }), pwKey: (e) => { if (e.key === 'Enter') this.login(); }, login: () => this.login(), logout: () => this.logout(), loginError: s.loginError,
+    };
+  }
+}
+</script>
+</body>
+</html>

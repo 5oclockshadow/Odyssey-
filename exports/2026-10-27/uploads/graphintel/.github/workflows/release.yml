@@ -1,0 +1,20 @@
+name: release
+on:
+  push: { tags: ["v*"] }
+permissions: { contents: write }
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: release notes from the changelog section for this tag
+        run: awk -v tag="${GITHUB_REF_NAME#v}" '/^## /{p = index($0, tag) > 0} p' CHANGELOG.md > notes.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          body_path: notes.md
+          files: |
+            apps/web/dist/index.html
+            apps/web/dist/terminal.html
+            apps/web/dist/stack.html
+            apps/engine/institute.yaml
+            docker-compose.yml

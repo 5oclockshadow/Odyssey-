@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <script src="graph-engine.js"></script>
+  <style>html,body{margin:0;height:100%;overflow:hidden;background:var(--color-bg)}a{color:var(--color-accent)}a:hover{color:var(--color-accent-400)}</style>
+</helmet>
+<div style="position:fixed;inset:0;display:grid;grid-template-columns:232px minmax(0,1fr);background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
+  <aside style="display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-6) var(--space-3) var(--space-6) var(--space-4);min-height:0;overflow:auto">
+    <div style="display:flex;flex-direction:column;gap:var(--space-1);padding-left:var(--space-3)">
+      <div style="font-family:var(--font-heading);font-weight:var(--font-heading-weight);font-size:18px;letter-spacing:-0.01em">Graph Atlas</div>
+      <div style="font-size:12px;color:var(--color-neutral-400)">Viewer · same world as the film</div>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{ forms }}" as="f" hint-placeholder-count="12">
+        <button onClick="{{ f.go }}" style="display:block;width:100%;text-align:left;border:0;cursor:pointer;font-family:inherit;font-size:13px;line-height:1.35;white-space:nowrap;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:{{ f.bg }};color:{{ f.color }}" style-hover="background:color-mix(in srgb, var(--color-text) 7%, transparent)">
+          <span style="display:inline-block;width:26px;font-size:11px;letter-spacing:0.06em;font-variant-numeric:tabular-nums;color:{{ f.numColor }}">{{ f.n }}</span>{{ f.label }}
+        </button>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;padding-left:var(--space-3);font-size:12px;line-height:1.5;color:var(--color-neutral-400)">Drag to orbit, scroll to zoom, double-click to return to the film camera.</div>
+  </aside>
+  <main style="position:relative;display:flex;flex-direction:column;min-width:0;min-height:0">
+    <div ref="{{ wrapRef }}" style="position:relative;flex:1;min-height:0;overflow:hidden;cursor:grab;touch-action:none">
+      <canvas ref="{{ canvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
+      <canvas ref="{{ hudRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none"></canvas>
+      <div style="position:absolute;left:var(--space-6);top:var(--space-6);max-width:440px;pointer-events:none;display:flex;flex-direction:column;gap:var(--space-2)">
+        <div style="display:flex;align-items:center;gap:var(--space-2)">
+          <span style="width:16px;height:2px;background:var(--color-accent)"></span>
+          <span style="font-size:11px;letter-spacing:0.12em;color:var(--color-accent-300);font-variant-numeric:tabular-nums">{{ cur.n }} / 12</span>
+        </div>
+        <div style="font-family:var(--font-heading);font-weight:var(--font-heading-weight);font-size:26px;line-height:1.15;letter-spacing:-0.015em">{{ cur.label }}</div>
+        <div style="font-size:14px;line-height:1.5;color:var(--color-neutral-300);text-wrap:pretty">{{ cur.cap }}</div>
+      </div>
+      <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:13px;color:var(--color-neutral-400)">Building the graph…</div>
+      </sc-if>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-4);padding:var(--space-3) var(--space-4)">
+      <button class="btn btn-secondary btn-icon" onClick="{{ togglePlay }}" aria-label="Play or pause">
+        <sc-if value="{{ playing }}" hint-placeholder-val="{{ true }}">
+          <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M200,32H160a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,200,32Zm0,176H160V48h40ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Zm0,176H56V48H96Z"></path></svg>
+        </sc-if>
+        <sc-if value="{{ paused }}" hint-placeholder-val="{{ false }}">
+          <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"></path></svg>
+        </sc-if>
+      </button>
+      <div ref="{{ timeRef }}" style="font-size:12px;font-variant-numeric:tabular-nums;color:var(--color-neutral-400);min-width:84px">0:00 / 2:48</div>
+      <div ref="{{ trackRef }}" onPointerDown="{{ onTrackDown }}" style="position:relative;flex:1 1 240px;min-width:160px;height:28px;cursor:pointer;touch-action:none">
+        <div style="position:absolute;left:0;right:0;top:13px;height:2px;border-radius:1px;background:var(--color-neutral-800)"></div>
+        <sc-for list="{{ ticks }}" as="k" hint-placeholder-count="13">
+          <div style="position:absolute;top:9px;width:1px;height:10px;background:var(--color-neutral-600);left:{{ k.left }}"></div>
+        </sc-for>
+        <div ref="{{ fillRef }}" style="position:absolute;left:0;top:13px;height:2px;width:0;border-radius:1px;background:var(--color-accent)"></div>
+        <div ref="{{ headRef }}" style="position:absolute;top:7px;left:0;width:2px;height:14px;margin-left:-1px;background:var(--color-accent-300)"></div>
+      </div>
+      <div class="seg">
+        <label class="seg-opt"><input type="radio" name="cam" checked="{{ camFilm }}" onChange="{{ useFilmCam }}">Film camera</label>
+        <label class="seg-opt"><input type="radio" name="cam" checked="{{ camOrbit }}" onChange="{{ useOrbitCam }}">Orbit</label>
+      </div>
+      <div class="seg">
+        <label class="seg-opt"><input type="radio" name="spd" checked="{{ sp05 }}" onChange="{{ setSp05 }}">0.5×</label>
+        <label class="seg-opt"><input type="radio" name="spd" checked="{{ sp1 }}" onChange="{{ setSp1 }}">1×</label>
+        <label class="seg-opt"><input type="radio" name="spd" checked="{{ sp2 }}" onChange="{{ setSp2 }}">2×</label>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+        <button class="btn btn-secondary" onClick="{{ toggleLoop }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ loopDot }}"></span>Loop form</button>
+        <button class="btn btn-secondary" onClick="{{ toggleLabels }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ labelsDot }}"></span>Labels</button>
+        <button class="btn btn-secondary" onClick="{{ toggleDof }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ dofDot }}"></span>Depth of field</button>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ready: false, si: 0, playing: true, cam: 'film', labels: true, dof: true, loop: true, speed: 1 };
+  canvasRef = React.createRef(); hudRef = React.createRef(); wrapRef = React.createRef(); trackRef = React.createRef();
+  fillRef = React.createRef(); headRef = React.createRef(); timeRef = React.createRef();
+  T = 0.5; orbit = null; drag = null; scrub = false;
+
+  componentDidMount() {
+    this.alive = true;
+    const boot = () => {
+      if (!this.alive) return;
+      const G = window.GraphEngine;
+      if (!G || !G.tokens() || !this.canvasRef.current || !this.wrapRef.current) { this.bootT = setTimeout(boot, 60); return; }
+      this.G = G; this.Q = G.defaultCues();
+      this.bootT = setTimeout(() => {
+        if (!this.alive) return;
+        this.W = G.build({ n: 1400 });
+        this.bind();
+        this.last = performance.now();
+        this.setState({ ready: true });
+        this.raf = requestAnimationFrame(this.tick);
+      }, 30);
+    };
+    boot();
+  }
+  componentWillUnmount() { this.alive = false; clearTimeout(this.bootT); cancelAnimationFrame(this.raf); if (this.unbind) this.unbind(); }
+
+  bind() {
+    const el = this.wrapRef.current;
+    const down = (e) => { if (e.button !== 0) return; this.drag = { x: e.clientX, y: e.clientY }; if (this.state.cam !== 'orbit') this.toOrbit(); el.style.cursor = 'grabbing'; };
+    const move = (e) => {
+      if (!this.drag || !this.orbit) return;
+      const dx = e.clientX - this.drag.x, dy = e.clientY - this.drag.y;
+      this.drag = { x: e.clientX, y: e.clientY };
+      this.orbit.yaw -= dx * 0.006;
+      this.orbit.pitch = Math.max(-1.3, Math.min(1.3, this.orbit.pitch + dy * 0.005));
+    };
+    const up = () => { this.drag = null; el.style.cursor = 'grab'; };
+    const wheel = (e) => { e.preventDefault(); if (this.state.cam !== 'orbit') this.toOrbit(); this.orbit.dist = Math.max(0.3, Math.min(9, this.orbit.dist * Math.exp(e.deltaY * 0.0012))); };
+    const dbl = () => this.setState({ cam: 'film' });
+    el.addEventListener('pointerdown', down); window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    el.addEventListener('wheel', wheel, { passive: false }); el.addEventListener('dblclick', dbl);
+    this.unbind = () => {
+      el.removeEventListener('pointerdown', down); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
+      el.removeEventListener('wheel', wheel); el.removeEventListener('dblclick', dbl);
+    };
+  }
+  toOrbit() {
+    const c = this.F && this.F.cam;
+    this.orbit = c ? { yaw: c.yaw, pitch: c.pitch, dist: c.dist, target: c.target.slice(), fov: c.fov } : { yaw: 0.6, pitch: 0.2, dist: 3, target: [0, 0, 0], fov: 46 };
+    if (this.state.cam !== 'orbit') this.setState({ cam: 'orbit' });
+  }
+  secOf(T) { const S = this.G.SECTIONS; let si = 0; for (let i = 0; i < S.length; i++) if (T >= this.Q.s[S[i]]) si = i; return si; }
+  goTo(i) { if (!this.Q) return; this.T = this.Q.s[this.G.SECTIONS[i]] + 0.01; this.setState({ si: i }); }
+  seekX(x) {
+    const r = this.trackRef.current.getBoundingClientRect(), u = Math.max(0, Math.min(1, (x - r.left) / r.width));
+    this.T = Math.min(this.Q.total - 0.01, u * this.Q.total);
+    const si = this.secOf(this.T); if (si !== this.state.si) this.setState({ si });
+  }
+  trackDown(e) {
+    if (!this.Q) return;
+    this.scrub = true; this.seekX(e.clientX);
+    const mv = (ev) => this.seekX(ev.clientX), up = () => { this.scrub = false; window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); };
+    window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+  }
+  tick = (now) => {
+    if (!this.alive) return;
+    this.raf = requestAnimationFrame(this.tick);
+    const G = this.G, Q = this.Q, S = this.state, dt = Math.min(0.1, (now - this.last) / 1000);
+    this.last = now;
+    if (S.playing && !this.scrub) {
+      this.T += dt * S.speed;
+      if (S.loop) { const nm = G.SECTIONS[S.si], a = Q.s[nm], b = Q.e[nm]; if (this.T >= b || this.T < a) this.T = a + 0.01; }
+      else if (this.T >= Q.total) this.T = 0;
+    }
+    const wrap = this.wrapRef.current, cv = this.canvasRef.current, hud = this.hudRef.current;
+    if (!wrap || !cv || !hud) return;
+    const w = Math.max(2, wrap.clientWidth), h = Math.max(2, wrap.clientHeight), k = Math.min(1, Math.sqrt(650000 / (w * h))), dpr = Math.min(2, window.devicePixelRatio || 1);
+    const iw = Math.round(w * k), ih = Math.round(h * k), hw = Math.round(w * dpr), hh = Math.round(h * dpr);
+    if (cv.width !== iw || cv.height !== ih) { cv.width = iw; cv.height = ih; }
+    if (hud.width !== hw || hud.height !== hh) { hud.width = hw; hud.height = hh; }
+    const F = G.evaluate(this.W, this.T, Q, { width: w, height: h, dof: S.dof, camera: S.cam === 'orbit' && this.orbit ? this.orbit : null });
+    this.F = F;
+    G.render(cv.getContext('2d'), this.W, F, { scale: k, anchors: G.hudLayout(w, h).anchors });
+    const hc = hud.getContext('2d');
+    hc.setTransform(1, 0, 0, 1, 0, 0); hc.clearRect(0, 0, hw, hh);
+    G.drawHUD(hc, this.W, F, { dpr, labels: S.labels });
+    const u = this.T / Q.total, fmt = (t) => Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
+    if (this.fillRef.current) this.fillRef.current.style.width = (u * 100) + '%';
+    if (this.headRef.current) this.headRef.current.style.left = (u * 100) + '%';
+    if (this.timeRef.current) this.timeRef.current.textContent = fmt(this.T) + ' / ' + fmt(Q.total);
+    if (!S.loop && F.si !== S.si) this.setState({ si: F.si });
+  };
+
+  renderVals() {
+    const G = window.GraphEngine, S = this.state, ready = !!(G && this.Q);
+    const dot = (on) => on ? 'var(--color-accent)' : 'var(--color-neutral-700)';
+    const forms = ready ? G.SECTIONS.slice(0, 12).map((nm, i) => {
+      const t = G.TITLES[nm], on = S.si === i;
+      return { n: t.n, label: t.label, go: () => this.goTo(i), bg: on ? 'color-mix(in srgb, var(--color-accent) 16%, transparent)' : 'transparent', color: on ? 'var(--color-text)' : 'var(--color-neutral-300)', numColor: on ? 'var(--color-accent-300)' : 'var(--color-neutral-500)' };
+    }) : [];
+    const cur = ready ? G.TITLES[G.SECTIONS[S.si]] : { n: '01', label: 'Graph about data', cap: '' };
+    const ticks = ready ? G.SECTIONS.map((nm) => ({ left: (this.Q.s[nm] / this.Q.total * 100) + '%' })) : [];
+    return {
+      forms, cur, ticks, loading: !S.ready, playing: S.playing, paused: !S.playing,
+      camFilm: S.cam === 'film', camOrbit: S.cam === 'orbit', sp05: S.speed === 0.5, sp1: S.speed === 1, sp2: S.speed === 2,
+      loopDot: dot(S.loop), labelsDot: dot(S.labels), dofDot: dot(S.dof),
+      canvasRef: this.canvasRef, hudRef: this.hudRef, wrapRef: this.wrapRef, trackRef: this.trackRef, fillRef: this.fillRef, headRef: this.headRef, timeRef: this.timeRef,
+      togglePlay: () => this.setState((s) => ({ playing: !s.playing })),
+      useFilmCam: () => this.setState({ cam: 'film' }), useOrbitCam: () => this.toOrbit(),
+      setSp05: () => this.setState({ speed: 0.5 }), setSp1: () => this.setState({ speed: 1 }), setSp2: () => this.setState({ speed: 2 }),
+      toggleLoop: () => this.setState((s) => ({ loop: !s.loop })), toggleLabels: () => this.setState((s) => ({ labels: !s.labels })), toggleDof: () => this.setState((s) => ({ dof: !s.dof })),
+      onTrackDown: (e) => this.trackDown(e)
+    };
+  }
+}
+</script>
+</body>
+</html>

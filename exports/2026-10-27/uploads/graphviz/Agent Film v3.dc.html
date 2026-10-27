@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+  <style>html,body{margin:0;height:100%;overflow:hidden;background:#040509;color:rgb(214,236,255)}a{color:rgb(255,106,26)}a:hover{color:rgb(255,190,110)}</style>
+  <script>window.OM_SCENES = '[{"name":"Ignition","dur":9,"desc":"Darkness; the graph grows outward from its root by depth"},{"name":"Agent","dur":10,"desc":"Eight concept nodes flare as the DSPy modules; a molten route threads through them"},{"name":"Force","dur":6,"desc":"Tool: force-directed layout, route bends with the clusters"},{"name":"Hypergraph","dur":7,"desc":"Tool: hyperedge films over the same nodes"},{"name":"Simplicial","dur":7,"desc":"Tool: epsilon grows, triangles fill"},{"name":"Tesseract","dur":7,"desc":"Tool: communities on a rotating 4D hypercube"},{"name":"Hyperbolic","dur":7,"desc":"Tool: the hierarchy in a Poincare ball"},{"name":"Query","dur":20,"desc":"The agent is asked about itself: seeds, spreading heat, tool call, lift, cited answer, metric"},{"name":"Compile","dur":8,"desc":"Recall rises; the route thickens"},{"name":"Coda","dur":7,"desc":"Heat fades, camera pulls out, end title"}]';</script>
+  <script>window.OM_PLAYBACK = '{"mode":"loop"}';</script>
+  <script>window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"motionEditor":true}/*EDITMODE-END*/;</script>
+</helmet>
+<div style="position:fixed;inset:0;background:#040509">
+  <x-import component-from-global-scope="AgentFilmV3" from="./animations-v3.jsx ./tweaks-panel.jsx ./atlas-corpus.js ./lab-engine.js ./neural-film.js ./agent-film-v3.jsx" hint-size="100%,100%" style="position:absolute;inset:0"></x-import>
+</div>
+</x-dc>
+</body>
+</html>

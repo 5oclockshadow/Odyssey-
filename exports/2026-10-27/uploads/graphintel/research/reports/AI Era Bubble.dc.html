@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-300); text-decoration-color: var(--color-accent-700); text-underline-offset: 3px; }
+    a:hover { color: var(--color-accent-200); text-decoration-color: var(--color-accent); }
+  </style>
+</helmet>
+<article style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);padding:0 0 120px;">
+<div style="max-width:1080px;padding:56px clamp(20px,5vw,72px) 0;display:flex;flex-direction:column;gap:64px;">
+
+<header data-screen-label="Masthead" style="display:grid;gap:18px;max-width:880px;">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);"><span>Companion B to the Seeded Substrate paper</span><span style="color:var(--color-neutral-600);">/</span><span>Macro argument</span><span style="color:var(--color-neutral-600);">/</span><span>15 October 2026</span></div>
+  <h1 style="font-size:clamp(36px,5vw,52px);line-height:1.05;letter-spacing:-0.02em;font-weight:500;margin:0;">The dot-com bubble of the AI era</h1>
+  <p style="font-size:clamp(18px,2vw,21px);line-height:1.45;margin:0;color:var(--color-neutral-300);max-width:820px;">The argument: three years of GPU build-out, increasingly financed with debt, is being priced on scarce, expensive intelligence. Cheap, democratised access to AI undercuts that price while it squeezes entry-level work. If GPU demand breaks, the losses fall on a credit-funded sector that now props up growth, at the same time as hiring thins. This report sets out the case for reading that as an early warning of a depression-scale downturn, the evidence against it, and the indicators that would settle it.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;"><span class="tag tag-accent">Argued case</span><span class="tag tag-neutral">Counter-evidence included</span><span class="tag tag-outline">Not a forecast</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:14px;font-size:14px;"><a href="Seeded Substrate Plan v4.dc.html">Core paper: Plan v4</a><a href="Cheap Brain Evidence.dc.html">Companion A: evidence</a><a href="Institute Blueprint v3.dc.html">Companion C: Institute blueprint</a></div>
+</header>
+
+<section data-screen-label="01 Link to paper" style="display:grid;gap:14px;max-width:800px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">01 · Why this sits beside the substrate paper</div>
+  <p style="margin:0;font-size:16px;line-height:1.65;">The paper's H0 says model size stops mattering once the cognitive layer is seeded. If that is true at scale, it is also an economic claim: the value assumed in the GPU build-out sits in the wrong layer. This report follows that claim to the macro picture. Anima is one of the forces it describes, so its interest in the conclusion should be read with that in mind.</p>
+</section>
+
+<section data-screen-label="02 Chain" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">02 · The case, link by link</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Six links from GPU orders to job losses</h2>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:980px;">
+      <thead><tr><th>Link</th><th>Evidence</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Concentrated spend</td><td>Aggregate FY26 hyperscaler capex above $690B, against $95B in FY20</td><td><a href="https://mashop.app/blog/ai-bubble-five-indicators">FactSet via Mashop, Jul 2026</a></td></tr>
+        <tr><td>2 · Shift to debt</td><td>Debt rose from 9% of incremental capex in FY24 to 32% by mid-2026. AI-related debt was 10% of investment-grade issuance through Q2 2026, up from 2% in 2023.</td><td><a href="https://mashop.app/blog/ai-bubble-five-indicators">FactSet</a>; <a href="https://www.itechguides.com/ai-bubble-vs-dot-com-bubble-what-investors-should-compare/">Kansas City Fed via iTechguides</a></td></tr>
+        <tr><td>3 · Revenue gap</td><td>$8.5T of revenue needed through 2030 to cover capex at a 12% return; Gartner forecasts at most $3.6T, and puts over $3.5T of spend at risk of impairment</td><td><a href="https://aiweekly.co/alerts/gartner-35t-ai-infrastructure-spend-faces-impairment-by-2030">Gartner via AI Weekly, 14 Oct</a></td></tr>
+        <tr><td>4 · Price deflation</td><td>Cost per task at fixed capability falls about 13× a year. Each year's GPUs must earn back their cost selling cheaper intelligence.</td><td><a href="https://epoch.ai/publications/the-plunging-price-of-thought">Epoch AI, Sept 2026</a></td></tr>
+        <tr><td>5 · Fragile pricing</td><td>Nvidia lost $589B in one day on news of a cheaper model; Burry estimates shorter GPU lives would cut over $176B of earnings 2026–28; Nvidia's $100B investment in OpenAI came alongside expected GPU purchases</td><td><a href="https://www.bloomberg.com/news/articles/2025-01-27/asml-sinks-as-china-ai-startup-triggers-panic-in-tech-stocks">Bloomberg</a>; <a href="https://mashop.app/blog/ai-bubble-five-indicators">Mashop</a></td></tr>
+        <tr><td>6 · Labour at the entry</td><td>Employment of 22–25 year olds in the most AI-exposed jobs is 19% below less-exposed peers, up from 13% a year earlier; recent-graduate unemployment 5.6%, underemployment 41.5%</td><td><a href="https://www.rankid.dev/blog/ai-entry-level-jobs">Stanford DEL and NY Fed via Rankid</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin:0;font-size:15px;line-height:1.6;max-width:800px;">The mechanism: links 1–3 build a large, increasingly leveraged asset base priced on future revenue. Link 4 erodes that revenue as access to AI is democratised. Link 5 shows the asset prices react sharply to efficiency news. Link 6 means the same technology is narrowing the path into work, so household income weakens while the investment that has been supporting growth is at risk.</p>
+</section>
+
+<section data-screen-label="03 History" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">03 · Then and now</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Two precedents, two different failures</h2>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:940px;">
+      <thead><tr><th></th><th>Dot-com, 1995–2002</th><th>Great Depression, 1929–33</th><th>AI build-out, 2023–</th></tr></thead>
+      <tbody>
+        <tr><td>What was overbuilt</td><td>Telecom and fibre: US telecom capex $39.2B (1996) to $111.5B (2000)</td><td>Industrial capacity and equities bought on margin</td><td>Data centres, GPUs, power: five firms at $660–690B in 2026</td></tr>
+        <tr><td>How it was funded</td><td>Mostly equity and venture capital</td><td>Bank credit and broker loans</td><td>Cash flow, shifting toward corporate debt</td></tr>
+        <tr><td>Who held the risk</td><td>Mostly loss-making start-ups</td><td>Banks and households</td><td>Highly profitable incumbents, their lenders, and neoclouds</td></tr>
+        <tr><td>What turned it into a wider crisis</td><td>It did not; the recession was mild</td><td>Bank failures, a contracting money supply, trade collapse, policy errors</td><td>Unknown: depends on credit contagion and policy</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:800px;">Build-out figures: <a href="https://www.aitooldiscovery.com/ai-infra/is-ai-a-bubble">AI Tool Discovery, Oct 2026</a>. The step from a dot-com-style correction to a depression is not the size of the bubble but whether losses travel through the credit system and whether policy contains them. That is why the debt shift in link 2 is the link that matters most.</p>
+</section>
+
+<section data-screen-label="04 Against" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">04 · The case against</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">What the evidence does not show yet</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px;">
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">Smaller than the dot-com surge</div><p class="card-body" style="margin:0;">The IMF puts the AI boom's added investment at about 0.4% of US GDP since 2022, against roughly 1.2% for internet investment in 1995–2000, and notes the spenders are cash-rich (<a href="https://www.techtimes.com/articles/328971/20261014/imf-upgrades-2026-growth-forecast-ai-correction-could-erase-entire-gain.htm">Tech Times, 14 Oct</a>).</p></div>
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">No aggregate unemployment signal</div><p class="card-body" style="margin:0;">Anthropic's March 2026 study found no detectable rise in unemployment for highly exposed workers since late 2022. A CESifo paper found recent-graduate unemployment in summer 2026 within its 2022–26 range (<a href="https://www.digitalapplied.com/blog/ai-and-jobs-2026-what-the-labor-data-shows-analysis">Digital Applied</a>; <a href="https://finance.biggo.com/news/ad2398c1-d028-493d-948d-b780a3b258d7">BigGo</a>).</p></div>
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">Within historical norms</div><p class="card-body" style="margin:0;">Goldman projects AI capex at 1.8% of GDP in 2026 rising to 2.8% in 2028, inside the 2–5% range of earlier general-purpose technology build-outs (<a href="https://www.aieatingtheworld.com/articles/ai-bubble-2026-data-warning-signs-burst-forecasts">AI Eating the World</a>).</p></div>
+  </div>
+  <p style="margin:0;font-size:15px;line-height:1.6;max-width:800px;">The labour effect so far is fewer hires, not layoffs, and the Stanford authors describe it as an early indicator rather than a causal estimate. The strongest form of the argument is about what happens if links 2 and 6 move together, not about what has happened.</p>
+</section>
+
+<section data-screen-label="05 Indicators" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">05 · Early-warning indicators</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">What would turn a correction into a depression</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">The institute's Scout can track these as graph claims, refreshed as sources publish.</p>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:900px;">
+      <thead><tr><th>Indicator</th><th>Last reading</th><th>Warning sign</th></tr></thead>
+      <tbody>
+        <tr><td>Debt share of AI capex</td><td>32% (mid-2026)</td><td>Keeps rising while free cash flow turns negative</td></tr>
+        <tr><td>AI share of investment-grade issuance</td><td>10% (Q2 2026)</td><td>Spreads on AI-linked debt widen faster than the market</td></tr>
+        <tr><td>GPU rental and token prices</td><td>Cost per task down ~13× a year</td><td>GPU rental falls faster than capex is written down</td></tr>
+        <tr><td>Hyperscaler capex guidance</td><td>Above $690B (FY26)</td><td>First coordinated cut</td></tr>
+        <tr><td>Neocloud health</td><td>Gartner: over 80% may not stay independent</td><td>Defaults rather than acquisitions</td></tr>
+        <tr><td>Entry-level employment gap</td><td>19% (Aug 2026)</td><td>Spreads to workers over 30 or turns into layoffs</td></tr>
+        <tr><td>Aggregate unemployment</td><td>4.1% (Aug 2026)</td><td>A sustained rise alongside falling AI capex</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section data-screen-label="06 Reading" style="display:grid;gap:16px;max-width:820px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">06 · Reading</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">A sectoral correction is likely; a depression needs more to go wrong</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;">The evidence supports a dot-com-style correction in AI infrastructure: a revenue gap acknowledged by Gartner, falling unit prices, rising leverage and prices that move hard on efficiency news. A depression would need those losses to reach the credit system and coincide with a broad fall in employment. Neither has happened. Two parts of the chain are new compared with 2000: the build-out is now partly debt-funded, and the same technology is displacing entry-level work. Those are the two indicators to watch.</p>
+  <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-300);">For the institute, the business case in <a href="Institute Blueprint v3.dc.html">Blueprint v3</a> does not depend on a crash. It depends on buyers preferring quality per dollar, which they do in either scenario.</p>
+</section>
+
+</div>
+</article>
+</x-dc>
+</body>
+</html>

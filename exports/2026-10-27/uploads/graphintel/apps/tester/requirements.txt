@@ -1,0 +1,8 @@
+dspy>=2.6
+pyyaml
+fastapi
+uvicorn
+httpx
+pytest
+pyflakes>=3.2
+playwright==1.49.1

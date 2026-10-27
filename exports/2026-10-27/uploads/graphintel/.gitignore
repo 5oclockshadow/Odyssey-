@@ -1,0 +1,6 @@
+.env
+apps/engine/state/
+apps/engine/__pycache__/
+apps/engine/.pytest_cache/
+marketing/outbox/sent/
+marketing/outbox/declined/

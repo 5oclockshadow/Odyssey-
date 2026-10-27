@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>body{margin:0;background:#0b0c0a;color:#e9ede0;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px}a{color:#c8f43a;text-decoration:none}a:hover{color:#e3ff85;text-decoration:underline;text-underline-offset:3px}html{scroll-behavior:smooth}</style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0b0c0a"/><circle cx="50" cy="30" r="9" fill="#c8f43a"/><circle cx="26" cy="68" r="8" fill="#98a08a"/><circle cx="74" cy="68" r="8" fill="#98a08a"/><path d="M50 30L26 68M50 30L74 68" stroke="#98a08a" stroke-width="3"/></svg></template>
+</helmet>
+<div data-screen-label="Walkthrough v1" style="min-height:100vh;">
+  <nav style="position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center;padding:12px 28px;background:rgba(11,12,10,0.94);border-bottom:1px solid #2b3024;">
+    <span style="font-weight:600;letter-spacing:0.08em;font-size:12px;display:flex;align-items:center;gap:8px;white-space:nowrap;"><span style="width:9px;height:9px;background:#c8f43a;display:inline-block;"></span>THRESHOLD · V1</span>
+    <sc-for list="{{ areas }}" as="a" hint-placeholder-count="4"><a href="#{{ a.id }}" style="font-size:13px;white-space:nowrap;">{{ a.name }}</a></sc-for>
+  </nav>
+  <div style="max-width:1040px;margin:0 auto;padding:44px 28px 96px;display:grid;gap:64px;">
+    <header style="display:grid;gap:14px;">
+      <h1 style="margin:0;font-size:clamp(30px,4.5vw,44px);line-height:1.08;font-weight:600;letter-spacing:-0.02em;">Every road, start to finish.</h1>
+      <p style="margin:0;color:#98a08a;line-height:1.65;max-width:740px;">One company agent (SEXTANT) and one ops agent (OPS) behind four areas. Each card below opens the real page; deep links land on the right tab. Next to each link is its address once everything runs on <span style="font-family:'JetBrains Mono',monospace;color:#e9ede0;">docker compose up</span>.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:8px;">
+        <sc-for list="{{ areas }}" as="a" hint-placeholder-count="4"><a href="#{{ a.id }}" style="display:grid;gap:6px;padding:14px 16px;background:#181b15;border:1px solid #2b3024;color:#e9ede0;text-decoration:none;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">{{ a.who }}</span><span style="font-weight:600;font-size:17px;">{{ a.name }}</span><span style="font-size:13px;color:#98a08a;line-height:1.5;">{{ a.short }}</span></a></sc-for>
+      </div>
+    </header>
+    <sc-for list="{{ areas }}" as="a" hint-placeholder-count="4">
+      <section id="{{ a.id }}" style="display:grid;gap:18px;scroll-margin-top:70px;">
+        <div style="display:grid;gap:6px;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">{{ a.who }}</span><h2 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.01em;">{{ a.name }}</h2><p style="margin:0;color:#98a08a;line-height:1.65;max-width:760px;">{{ a.lede }}</p></div>
+        <div style="display:grid;gap:0;border-top:1px solid #20241b;">
+          <sc-for list="{{ a.stops }}" as="s" hint-placeholder-count="3">
+            <div style="display:flex;flex-wrap:wrap;gap:6px 24px;padding:13px 0;border-bottom:1px solid #20241b;align-items:baseline;">
+              <a href="{{ s.to }}" style="flex:1 1 150px;font-weight:600;font-size:15px;">{{ s.name }} →</a>
+              <span style="flex:2.3 1 280px;min-width:0;color:#cfd5c2;line-height:1.6;">{{ s.what }}</span>
+              <span style="flex:0 1 auto;min-width:0;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#646b58;overflow-wrap:anywhere;">{{ s.url }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ a.hasNext }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;font-size:13px;color:#98a08a;"><span>Next:</span><sc-for list="{{ a.next }}" as="n" hint-placeholder-count="2"><a href="#{{ n.id }}">{{ n.name }} →</a></sc-for></div></sc-if>
+      </section>
+    </sc-for>
+    <section id="run" style="display:grid;gap:14px;scroll-margin-top:70px;min-width:0;">
+      <h2 style="margin:0;font-size:26px;font-weight:600;">Start it, and what is unverified</h2>
+      <pre style="margin:0;min-width:0;max-width:100%;padding:16px 18px;background:#181b15;border:1px solid #2b3024;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.7;overflow:auto;">cp .env.example .env     # ANTHROPIC_API_KEY, OWNER_PASSWORD, SESSION_SECRET, HUB_TOKEN, REDIS_PASSWORD
+(cd apps/engine  &amp;&amp; pip install -r requirements.txt &amp;&amp; python -m pytest -q)
+(cd apps/mcp-hub &amp;&amp; pip install -r requirements.txt &amp;&amp; python -m pytest -q)
+(cd apps/ops     &amp;&amp; pip install -r requirements.txt &amp;&amp; python -m pytest -q)
+docker compose up -d --build</pre>
+      <p style="margin:0;color:#98a08a;line-height:1.65;max-width:760px;">Verified by reading: cross-module references in the Python, every frontend call against a backend route, the three web pages loading, the 3D graph rendering. Not verified: pytest and docker compose have never run; live model calls, the MCP hub against real servers, sandbox builds, GitHub pull requests and posting are untested. Every link opens the built page right here in the design app; with no engine behind them the pages show offline or sample data, labelled as such. Use the browser back button to return to this map.</p>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const S = (name, to, url, what) => ({ name, to, url, what });
+const RAW = [
+  { id: 'site', who: 'PUBLIC', name: 'The site', short: 'What visitors see. Published things in full, the rest greyed.', lede: 'Open to anyone. It reads a read-only API that only ever returns what you approved. Visitor chat and contact reach SEXTANT with no tools and no write access.', next: ['company', 'console'], stops: [
+    S('Home and all pages', 'apps/web/dist/index.html', '/', 'Home, Research, Academy, Signals, Apps, Build, Ladder, Lab, About, Tiers, Contact, Talk. Talk is a live round on the published graph.'),
+    S('Research place', 'apps/web/dist/research.html', '/research', 'The 3D graph with 1, 2 or 3 hops from any published node; open questions with support counts; the live research feed; notes; reports; shipped apps. Unapproved nodes are grey shapes.'),
+    S('Landscape 2026 report', 'apps/web/dist/reports/landscape-2026.html', '/reports/landscape-2026.html', 'Competition, who pays, sectors, law across tiers, the phone-compute app, questions for the graph, sources.'),
+    S('Stack page', 'apps/web/dist/stack.html', '/stack', 'How the containers fit together and what each one is for.'),
+    S('Shipped apps', 'apps/web/dist/research.html', '/a/<port>/', 'Apps the agent builds appear under Apps on the site, each in the site\'s own Docker on ports 8100 to 8199.')
+  ] },
+  { id: 'company', who: 'OWNER · SEXTANT', name: 'The company: agent space', short: 'Everything SEXTANT holds, nothing greyed. Talk, approve, publish.', lede: 'The second terminal, only for the company agent. Sign in once with OWNER_PASSWORD; the same login covers the console. This is where you decide what becomes public and what changes in its own code.', next: ['site', 'console'], stops: [
+    S('Graph', 'apps/ops/ui/space.html#graph', '/space#graph', 'The full 3D graph. Click a node to focus, pick 1 to 3 hops, and Publish this node. Distance from centre is edge weight.'),
+    S('Talk to SEXTANT', 'apps/ops/ui/space.html#chat', '/space#chat', 'Owner chat: it sees the whole graph and has its tools. Each answer reports nodes and edges added and types minted.'),
+    S('The record', 'apps/ops/ui/space.html#record', '/space#record', 'Every round, newest first: kind, intake, tool calls, reasoning, answer, energy change.'),
+    S('Publish queue', 'apps/ops/ui/space.html#publish', '/space#publish', 'Batches SEXTANT proposes, with sources. Approve, decline, or retract. Approving is what turns grey shapes into labelled nodes on /research.'),
+    S('Upgrades and repairs', 'apps/ops/ui/space.html#approve', '/space#approve', 'Plans and diffs for its own code, incident repairs, post drafts. Approving a diff runs the whole test suite in the sandbox and opens a pull request.'),
+    S('Drafts and gate', 'apps/ops/ui/space.html#gate', '/space#gate', 'The mindful gate for X, LinkedIn, Slack and Reddit: caps, quiet hours, spacing, duplicates, disclosure.'),
+    S('MCP hub', 'apps/ops/ui/space.html#hub', '/space#hub', 'Servers behind the one hub, the market search, and the audit of installs and calls.')
+  ] },
+  { id: 'console', who: 'OWNER · OPS', name: 'The terminal: ops console', short: 'Containers, shells, code and traces. OPS agent proposes, you click.', lede: 'A VS Code-style workspace for the stack itself. Separate from SEXTANT: its agent only reports on containers and helps you change code and containers, and cannot run anything without your click.', next: ['company', 'tools'], stops: [
+    S('Containers and shell', 'apps/ops/src/Console.dc.html#containers', '/terminal#containers', 'Every container on the host, the agent\'s Docker and the site\'s Docker. Start, stop, restart, remove; a real shell in any of them; logs in the bottom panel.'),
+    S('Repository editor', 'apps/ops/src/Console.dc.html#files', '/terminal#files', 'Browse, edit, create, delete and save files in the repository. Edits land on disk; you rebuild to deploy.'),
+    S('Traces and problems', 'apps/ops/src/Console.dc.html#traces', '/terminal#traces', 'Recent spans, error logs and open incidents from the engine, with the link out to Phoenix.'),
+    S('OPS agent', 'apps/ops/src/Console.dc.html', '/terminal (right panel)', 'Ask why a container stopped. It reads state, logs, traces and files, then offers changes as cards with a Run button.')
+  ] },
+  { id: 'tools', who: 'BEHIND THE SCENES', name: 'Under the hood', short: 'Phoenix, the engine\'s API, the registry, the README.', lede: 'Everything else you may want to open while it runs.', next: ['site', 'company'], stops: [
+    S('Phoenix', 'http://localhost:6006', 'http://localhost:6006', 'Every span of every round, over OTLP. Runs inside the agent\'s Docker.'),
+    S('Engine health', 'apps/engine/README.md', '/api/health', 'Model, queue depth, sandbox reachability for both Dockers, Redis, graph size. /api/docs lists every route.'),
+    S('Engine config', 'apps/engine/institute.yaml', 'apps/engine/institute.yaml', 'The company as a file: mission, seeded goals and questions, tools, feeds, limits, the mindful gate. Nothing else configures the engine.'),
+    S('Root README', 'README.md', 'README.md', 'Containers, mounts, the MCP hub, autonomy, mindful social, your day.')
+  ] }
+];
+const NAMES = Object.fromEntries(RAW.map(a => [a.id, a.name]));
+const AREAS = RAW.map(a => ({ ...a, hasNext: a.next.length > 0, next: a.next.map(id => ({ id, name: NAMES[id] })) }));
+class Component extends DCLogic { renderVals() { return { areas: AREAS }; } }
+</script>
+</body>
+</html>

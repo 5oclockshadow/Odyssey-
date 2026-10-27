@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; } doc-page:not(:defined) { visibility: hidden; } doc-page { font-family: 'Instrument Sans', sans-serif; color: #0b0e17; }</style>
+  <script src="./doc-page.js"></script>
+</helmet>
+<doc-page orientation="landscape" data-screen-label="Pamphlet">
+  <section class="page" data-label="Outside" style="background: #f4f1e8; color: #0b0e17;">
+    <div style="height: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));">
+      <div style="padding: 0.5in 0.38in; border-right: 1px dashed #b9b4a4; display: grid; align-content: space-between; gap: 14pt;">
+        <div style="display: grid; gap: 9pt;">
+          <div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20pt; line-height: 1;">Questions</div>
+          <div style="font-size: 12pt; line-height: 1.4;"><b>Are the example fields the only things it can map?</b><br>No. Laws, recipes, DNA, coins, homes, companies, libraries, patents and logistics are examples. Any topic works, or define your own context.</div>
+          <div style="font-size: 12pt; line-height: 1.4;"><b>Is the sample data real?</b><br>No. Samples use invented names. Anything the engine or Claude adds is marked unverified until you confirm it.</div>
+          <div style="font-size: 12pt; line-height: 1.4;"><b>Do the tabs keep working?</b><br>Yes. Auto mode keeps running in the background.</div>
+        </div>
+        <div style="font-size: 11pt; color: #5b5f70;">Early-access preview. Dates and prices are not announced.</div>
+      </div>
+      <div style="padding: 0.5in 0.38in; border-right: 1px dashed #b9b4a4; display: grid; align-content: space-between; gap: 14pt;">
+        <div style="display: grid; gap: 10pt;">
+          <div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 26pt; line-height: 1;">Be early.</div>
+          <div style="font-size: 13pt; line-height: 1.4;">Join the waitlist for early access. Every friend you invite moves you up ten places.</div>
+          <div style="padding: 9pt 12pt; background: #0b0e17; color: #27d3ff; font-weight: 600; font-size: 14pt; border-radius: 8pt; width: fit-content;">Web address here</div>
+          <div style="font-size: 11pt; color: #5b5f70;">Web address: placeholder, to be added at launch.</div>
+        </div>
+        <div style="display: grid; gap: 4pt; font-size: 12pt;"><b>Contact</b><span>Placeholder email</span><span>Placeholder company and address</span></div>
+      </div>
+      <div style="padding: 0.5in 0.38in; background: #0b0e17; color: #eef1ff; display: grid; align-content: space-between; gap: 14pt;">
+        <svg width="62" height="40" viewBox="0 0 34 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="#27d3ff" stroke-width="2.5"></circle><circle cx="23" cy="11" r="9" fill="none" stroke="#ff3ea5" stroke-width="2.5"></circle></svg>
+        <div style="display: grid; gap: 12pt;"><div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32pt; line-height: 0.98; letter-spacing: -0.03em; overflow-wrap: anywhere;">Map anything, in the <span style="color: #27d3ff;">context</span> you steer.</div><div style="font-size: 13pt; line-height: 1.4; color: #c9d0ee;">Drop a node and it finds its place. Nodes ask the questions that fill in the rest.</div></div>
+        <div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20pt;">Map Graph</div>
+      </div>
+    </div>
+  </section>
+  <section class="page" data-label="Inside" style="background: #f4f1e8; color: #0b0e17;">
+    <div style="height: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));">
+      <div style="padding: 0.5in 0.38in; border-right: 1px dashed #b9b4a4; display: grid; align-content: start; gap: 11pt;">
+        <div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24pt; line-height: 1;">Drop a node.<br>It finds its place.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #0f8aa8;">1. Steer.</b> Name the topic or pick a context, such as logistics or law, or define your own.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #0f8aa8;">2. Drop.</b> Ctrl+click and type a name. The map picks its type, its container and its links, and tells you why.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #0f8aa8;">3. Answer.</b> Each node asks what is missing. A word is enough, and the link is made.</div>
+        <div style="padding: 9pt 11pt; border: 1.5pt solid #ff3ea5; border-radius: 8pt; font-size: 12pt; line-height: 1.35;"><b>This node asks:</b> What does Truck 12 run on?</div>
+      </div>
+      <div style="padding: 0.5in 0.38in; border-right: 1px dashed #b9b4a4; display: grid; align-content: start; gap: 11pt;">
+        <div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24pt; line-height: 1;">Sub-map any idea, four ways.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #0f8aa8;">Into.</b> What it is made of.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #0f8aa8;">For.</b> What it serves, and who needs it.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #0f8aa8;">From.</b> What follows from it.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #0f8aa8;">Reverse.</b> What must come first, back to the source.</div>
+        <div style="font-size: 12pt; line-height: 1.4;">Pick two ideas to see every forward and reverse route. If none exists, the map adds the question that would bridge them.</div>
+      </div>
+      <div style="padding: 0.5in 0.38in; display: grid; align-content: start; gap: 11pt;">
+        <div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24pt; line-height: 1;">Two engines, side by side.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #0f8aa8;">Thoughts</b> grows ideas from a seed. Shake it in plain words and new thoughts and links fall out as a numbered revision.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b style="color: #d1237f;">Atlas</b> maps what you know into levels you can walk up and down.</div>
+        <div style="font-size: 12pt; line-height: 1.4;">Run them in separate tabs. Auto mode and live AI keep working in the background.</div>
+        <div style="font-size: 12pt; line-height: 1.4;"><b>For</b> researchers, founders, lawyers, educators, writers, archivists and product teams.</div>
+      </div>
+    </div>
+  </section>
+</doc-page>
+
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,1746 @@
+{
+ "version": 1,
+ "generated": "2026-10-23T13:05:16.943Z",
+ "source": "marketing/Coming Out 100 Repos.dc.html",
+ "links": {
+  "site": "http://localhost/",
+  "graph": "http://localhost/#/graph"
+ },
+ "split": {
+  "claude": "research cores with no source in the repo and the harness TESTER runs in",
+  "tester": "packages every repo that has source here, runs the bar, fixes until it passes",
+  "sextant": "writes code for repos that only exist as research, drafts README findings; TESTER gates every one"
+ },
+ "bar": [
+  {
+   "id": "tests",
+   "label": "Tests in CI, no network, no model",
+   "check": "tests/ exists; no requests/httpx/urllib/socket/anthropic/openai/dspy.LM in tests; CI workflow runs them"
+  },
+  {
+   "id": "compose",
+   "label": "docker compose up in one line",
+   "check": "docker-compose.yml with one service that runs the example"
+  },
+  {
+   "id": "readme",
+   "label": "README names the finding and hypothesis",
+   "check": "README has ## Finding and ## Hypothesis sections, each non-empty"
+  },
+  {
+   "id": "hygiene",
+   "label": "Licence, secrets scan, dependency audit",
+   "check": "LICENSE present; no key-shaped strings; every dependency pinned"
+  },
+  {
+   "id": "example",
+   "label": "A runnable example under 60 seconds",
+   "check": "examples/quickstart.* exists and finishes in under 60 s in CI"
+  },
+  {
+   "id": "links",
+   "label": "Links back to the site and the graph",
+   "check": "README links the institute site and the public graph"
+  }
+ ],
+ "waves": [
+  [
+   "W0",
+   "launch day"
+  ],
+  [
+   "W1",
+   "week 1"
+  ],
+  [
+   "W2",
+   "week 2"
+  ],
+  [
+   "W3",
+   "week 3"
+  ],
+  [
+   "W4",
+   "week 4"
+  ]
+ ],
+ "repos": [
+  {
+   "id": "seed-gen",
+   "name": "anima/seed-gen",
+   "dir": "repos/seed-gen",
+   "what": "Generate hypergraph seeds at any size and depth, reproducible from one integer.",
+   "from": "Plan v4 §05",
+   "cat": "Seed · Rex",
+   "line": "open",
+   "wave": 0,
+   "lang": "python",
+   "builder": "claude",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "built"
+  },
+  {
+   "id": "seed-shuffle",
+   "name": "anima/seed-shuffle",
+   "dir": "repos/seed-shuffle",
+   "what": "Degree-preserving shuffled seeds: the control every graph-AI claim should run.",
+   "from": "Plan v4 H5",
+   "cat": "Seed · Rex",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "seed-lint",
+   "name": "anima/seed-lint",
+   "dir": "repos/seed-lint",
+   "what": "Validate a seed.yaml: blocks present, types acyclic, constraints satisfiable.",
+   "from": "seed spec",
+   "cat": "Seed · Rex",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "horn-closure",
+   "name": "anima/horn-closure",
+   "dir": "repos/horn-closure",
+   "what": "Horn-clause constraints compiled to fast transitive closure.",
+   "from": "Plan v4 P3",
+   "cat": "Seed · Rex",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "energy-halt",
+   "name": "anima/energy-halt",
+   "dir": "repos/energy-halt",
+   "what": "Consistency energy as a halting rule for any agent loop.",
+   "from": "engine signature",
+   "cat": "Seed · Rex",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/signature.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "hyperedge",
+   "name": "anima/hyperedge",
+   "dir": "repos/hyperedge",
+   "what": "Sparse incidence matrices for hypergraphs, numpy and torch.",
+   "from": "seed spec",
+   "cat": "Seed · Rex",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "graph-merge",
+   "name": "anima/graph-merge",
+   "dir": "repos/graph-merge",
+   "what": "Merge new evidence into a live graph with retraction and provenance.",
+   "from": "round.py",
+   "cat": "Seed · Rex",
+   "line": "open-core",
+   "wave": 2,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/round.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "ontology-drift",
+   "name": "anima/ontology-drift",
+   "dir": "repos/ontology-drift",
+   "what": "Measure type sprawl and constraint violations over time.",
+   "from": "Blueprint v3",
+   "cat": "Seed · Rex",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "pubpriv",
+   "name": "anima/pubpriv",
+   "dir": "repos/pubpriv",
+   "what": "Public/private graph split with opaque ids for unpublished nodes.",
+   "from": "publishing.py",
+   "cat": "Seed · Rex",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/publishing.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "seed-curate",
+   "name": "anima/seed-curate",
+   "dir": "repos/seed-curate",
+   "what": "Hosted curation of domain seeds with review queues.",
+   "from": "H7",
+   "cat": "Seed · Rex",
+   "line": "paid API",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "apps/engine/institute.yaml"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "one-signature",
+   "name": "anima/one-signature",
+   "dir": "repos/one-signature",
+   "what": "One DSPy Signature, six ordered fields, the whole agent.",
+   "from": "signature.py",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 0,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/signature.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "field-order-bench",
+   "name": "anima/field-order-bench",
+   "dir": "repos/field-order-bench",
+   "what": "Benchmark reasoning-first vs answer-first field order.",
+   "from": "Report v3",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Graph Intelligence Report v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "gepa-runner",
+   "name": "anima/gepa-runner",
+   "dir": "repos/gepa-runner",
+   "what": "Run GEPA on your trajectories with a frozen split.",
+   "from": "Plan v4 §06",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "rank-split",
+   "name": "anima/rank-split",
+   "dir": "repos/rank-split",
+   "what": "Split deep output schemas into ranked emissions.",
+   "from": "Plan v4 §06",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "schema-depth",
+   "name": "anima/schema-depth",
+   "dir": "repos/schema-depth",
+   "what": "Measure where each model breaks on nested schemas.",
+   "from": "dspy-router-test",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "signature-lint",
+   "name": "anima/signature-lint",
+   "dir": "repos/signature-lint",
+   "what": "Catch untyped, undescribed or misordered DSPy fields.",
+   "from": "Report v3",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Graph Intelligence Report v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "trajectory-store",
+   "name": "anima/trajectory-store",
+   "dir": "repos/trajectory-store",
+   "what": "Store and replay agent trajectories as graph nodes.",
+   "from": "observe.py",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/observe.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "reflect-loop",
+   "name": "anima/reflect-loop",
+   "dir": "repos/reflect-loop",
+   "what": "Nightly reflection round with a Q-table over actions.",
+   "from": "reflect.py",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/reflect.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "compiled-programs",
+   "name": "anima/compiled-programs",
+   "dir": "repos/compiled-programs",
+   "what": "GEPA-compiled programs per substrate rung, served.",
+   "from": "Blueprint v3 §07",
+   "cat": "Cognition · Jarvis",
+   "line": "paid API",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "prompt-cache",
+   "name": "anima/prompt-cache",
+   "dir": "repos/prompt-cache",
+   "what": "Content-addressed cache for compiled prompts.",
+   "from": "engine",
+   "cat": "Cognition · Jarvis",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/round.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "lstm-substrate",
+   "name": "anima/lstm-substrate",
+   "dir": "repos/lstm-substrate",
+   "what": "An LSTM that plugs into Bridago as a substrate, CPU only.",
+   "from": "Plan v4 H3",
+   "cat": "Substrates",
+   "line": "open",
+   "wave": 0,
+   "lang": "python",
+   "builder": "claude",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "built"
+  },
+  {
+   "id": "minlstm-cpu",
+   "name": "anima/minlstm-cpu",
+   "dir": "repos/minlstm-cpu",
+   "what": "minLSTM trained in parallel, served on CPU.",
+   "from": "Plan v4 §04",
+   "cat": "Substrates",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "xlstm-serve",
+   "name": "anima/xlstm-serve",
+   "dir": "repos/xlstm-serve",
+   "what": "xLSTM inference server with constant memory per step.",
+   "from": "Plan v4 §04",
+   "cat": "Substrates",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "tiny-tf",
+   "name": "anima/tiny-tf",
+   "dir": "repos/tiny-tf",
+   "what": "Train a ~50M transformer on seed → query → answer only.",
+   "from": "Plan v4 §07",
+   "cat": "Substrates",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "ladder",
+   "name": "anima/ladder",
+   "dir": "repos/ladder",
+   "what": "Run one task across 30B, 8B, 1–3B, tiny TF and LSTM.",
+   "from": "Plan v4 §07",
+   "cat": "Substrates",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "small-fast",
+   "name": "anima/small-fast",
+   "dir": "repos/small-fast",
+   "what": "The small/fast inference server, one container.",
+   "from": "small/fast",
+   "cat": "Substrates",
+   "line": "open-core",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "cpu-bench",
+   "name": "anima/cpu-bench",
+   "dir": "repos/cpu-bench",
+   "what": "Tokens per second and cost per round on commodity CPUs.",
+   "from": "Blueprint v3",
+   "cat": "Substrates",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "hgnn-baseline",
+   "name": "anima/hgnn-baseline",
+   "dir": "repos/hgnn-baseline",
+   "what": "Hypergraph GNN baseline with no language model.",
+   "from": "Plan v4 §07",
+   "cat": "Substrates",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "rung-router",
+   "name": "anima/rung-router",
+   "dir": "repos/rung-router",
+   "what": "Route each call to the smallest rung that passes.",
+   "from": "register",
+   "cat": "Substrates",
+   "line": "paid API",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "cpu-appliance",
+   "name": "anima/cpu-appliance",
+   "dir": "repos/cpu-appliance",
+   "what": "On-prem Bridago appliance: seed, substrate, API.",
+   "from": "Blueprint v3 §05",
+   "cat": "Substrates",
+   "line": "paid API",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "anima-harness",
+   "name": "anima/anima-harness",
+   "dir": "repos/anima-harness",
+   "what": "The full Anima experiment: one cell, one row.",
+   "from": "Plan v4 §09",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 0,
+   "lang": "python",
+   "builder": "claude",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "built"
+  },
+  {
+   "id": "frozen-split",
+   "name": "anima/frozen-split",
+   "dir": "repos/frozen-split",
+   "what": "Evaluation splits agents cannot read, with tamper checks.",
+   "from": "Blueprint v2",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v2.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "hidden-eval",
+   "name": "anima/hidden-eval",
+   "dir": "repos/hidden-eval",
+   "what": "Run evaluations the model cannot detect.",
+   "from": "q-evals",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "apps/engine/institute.yaml"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "reachability-bench",
+   "name": "anima/reachability-bench",
+   "dir": "repos/reachability-bench",
+   "what": "Inferred vs observed reachability on generated graphs.",
+   "from": "Plan v4",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "single-fact",
+   "name": "anima/single-fact",
+   "dir": "repos/single-fact",
+   "what": "Measure how much of an answer is one retrieved fact.",
+   "from": "Plan v4 §11",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "replicate",
+   "name": "anima/replicate",
+   "dir": "repos/replicate",
+   "what": "Reproduce any published cell from its generator seed.",
+   "from": "Plan v4",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "results-schema",
+   "name": "anima/results-schema",
+   "dir": "repos/results-schema",
+   "what": "Parquet schema for agent experiment results.",
+   "from": "run.py",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "leak-detector",
+   "name": "anima/leak-detector",
+   "dir": "repos/leak-detector",
+   "what": "Find test-set leakage into seeds and prompts.",
+   "from": "Blueprint v3",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "probe-kit",
+   "name": "anima/probe-kit",
+   "dir": "repos/probe-kit",
+   "what": "Linear and nonlinear probes for graph structure in hidden states.",
+   "from": "Report v3 Part 7",
+   "cat": "Harness · eval",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Graph Intelligence Report v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "replication-hub",
+   "name": "anima/replication-hub",
+   "dir": "repos/replication-hub",
+   "what": "Hosted outside-replication programme.",
+   "from": "Blueprint v3 §05",
+   "cat": "Harness · eval",
+   "line": "paid API",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "oversight",
+   "name": "anima/oversight",
+   "dir": "repos/oversight",
+   "what": "Oversee the overseers: rank every fire, watch every agent.",
+   "from": "oversight.py",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 0,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/oversight.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "heal",
+   "name": "anima/heal",
+   "dir": "repos/heal",
+   "what": "Turn error spans into incidents with a located fix.",
+   "from": "heal.py",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/heal.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "self-upgrade-gate",
+   "name": "anima/self-upgrade-gate",
+   "dir": "repos/self-upgrade-gate",
+   "what": "Let agents propose diffs; tests and owner gate the merge.",
+   "from": "upgrades.py",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/upgrades.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "sandbox",
+   "name": "anima/sandbox",
+   "dir": "repos/sandbox",
+   "what": "Run untrusted agent code in a throwaway container.",
+   "from": "sandbox.py",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/sandbox.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "ship-app",
+   "name": "anima/ship-app",
+   "dir": "repos/ship-app",
+   "what": "Agents ship small apps to a port range, health-checked.",
+   "from": "tools.py",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/tools.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "mindful-gate",
+   "name": "anima/mindful-gate",
+   "dir": "repos/mindful-gate",
+   "what": "Caps, quiet hours, spacing and disclosure for agent posts.",
+   "from": "mindful.py",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/mindful.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "day-brief",
+   "name": "anima/day-brief",
+   "dir": "repos/day-brief",
+   "what": "The owner's day compiled from what the agents did.",
+   "from": "day.py",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/day.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "register",
+   "name": "anima/register",
+   "dir": "repos/register",
+   "what": "Staff register: role holders, shadows, promotions.",
+   "from": "Blueprint v2",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v2.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "audit",
+   "name": "anima/audit",
+   "dir": "repos/audit",
+   "what": "Append-only audit for every approval and login.",
+   "from": "auth.py",
+   "cat": "Agent ops",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/auth.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "agent-ops-cloud",
+   "name": "anima/agent-ops-cloud",
+   "dir": "repos/agent-ops-cloud",
+   "what": "Hosted oversight for other people's agent fleets.",
+   "from": "oversight.py",
+   "cat": "Agent ops",
+   "line": "paid API",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/oversight.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "otel-graph",
+   "name": "anima/otel-graph",
+   "dir": "repos/otel-graph",
+   "what": "OpenTelemetry spans written into the graph.",
+   "from": "observe.py",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 0,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/observe.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "phoenix-bridge",
+   "name": "anima/phoenix-bridge",
+   "dir": "repos/phoenix-bridge",
+   "what": "Ship agent rounds to Phoenix with graph links.",
+   "from": "observe.py",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/observe.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "trace-stats",
+   "name": "anima/trace-stats",
+   "dir": "repos/trace-stats",
+   "what": "Per-tool latency and failure stats from traces.",
+   "from": "reflect.py",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/reflect.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "cost-per-round",
+   "name": "anima/cost-per-round",
+   "dir": "repos/cost-per-round",
+   "what": "Token and CPU cost per round by role and rung.",
+   "from": "Blueprint v3",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "graph-diff",
+   "name": "anima/graph-diff",
+   "dir": "repos/graph-diff",
+   "what": "Readable diffs between two graph versions.",
+   "from": "engine",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/round.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "energy-board",
+   "name": "anima/energy-board",
+   "dir": "repos/energy-board",
+   "what": "Live energy and drift for a running graph.",
+   "from": "day.py",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/day.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "token-ledger",
+   "name": "anima/token-ledger",
+   "dir": "repos/token-ledger",
+   "what": "Budget caps and spend alarms for agent fleets.",
+   "from": "oversight.py",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/oversight.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "round-record",
+   "name": "anima/round-record",
+   "dir": "repos/round-record",
+   "what": "Every round as a JSONL record you can query.",
+   "from": "engine",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/round.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "drift-alarm",
+   "name": "anima/drift-alarm",
+   "dir": "repos/drift-alarm",
+   "what": "Alert when types multiply or deletions spike.",
+   "from": "Blueprint v3",
+   "cat": "Observability",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "fleet-observe",
+   "name": "anima/fleet-observe",
+   "dir": "repos/fleet-observe",
+   "what": "Hosted observability across many Bridago instances.",
+   "from": "Blueprint v3",
+   "cat": "Observability",
+   "line": "open-core",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v3.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "graph3d",
+   "name": "anima/graph3d",
+   "dir": "repos/graph3d",
+   "what": "A 3D graph viewer for any node/hyperedge JSON.",
+   "from": "graph3d.js",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 0,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/ops/src/graph3d.js"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "traverse",
+   "name": "anima/traverse",
+   "dir": "repos/traverse",
+   "what": "Watch a query traverse the graph wave by wave.",
+   "from": "anima3d.js",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 1,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/site/src/anima3d.js"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "hop-view",
+   "name": "anima/hop-view",
+   "dir": "repos/hop-view",
+   "what": "1–3 hop neighbourhoods with private nodes greyed.",
+   "from": "publishing.py",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 2,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/publishing.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "ladder-chart",
+   "name": "anima/ladder-chart",
+   "dir": "repos/ladder-chart",
+   "what": "The seeded vs unseeded chart for any results file.",
+   "from": "Anima site",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 3,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/site/src/Anima.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "seed-inspector",
+   "name": "anima/seed-inspector",
+   "dir": "repos/seed-inspector",
+   "what": "Browse a seed file block by block.",
+   "from": "seed spec",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 4,
+   "lang": "js",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "register-board",
+   "name": "anima/register-board",
+   "dir": "repos/register-board",
+   "what": "The staff register as a live board.",
+   "from": "Blueprint v2",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 1,
+   "lang": "js",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Institute Blueprint v2.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "overseer-ui",
+   "name": "anima/overseer-ui",
+   "dir": "repos/overseer-ui",
+   "what": "The Overseer page, standalone.",
+   "from": "Overseer.dc.html",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 2,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/ops/src/Overseer.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "graph-embed",
+   "name": "anima/graph-embed",
+   "dir": "repos/graph-embed",
+   "what": "Embed a live graph query in any page.",
+   "from": "Anima site",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 3,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/site/src/Anima.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "notebook-graph",
+   "name": "anima/notebook-graph",
+   "dir": "repos/notebook-graph",
+   "what": "Jupyter widget for Bridago graphs.",
+   "from": "graph3d.js",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/ops/src/graph3d.js"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "nocturne-graph",
+   "name": "anima/nocturne-graph",
+   "dir": "repos/nocturne-graph",
+   "what": "A dark theme kit for graph UIs.",
+   "from": "design system",
+   "cat": "Visual",
+   "line": "open",
+   "wave": 1,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "mcp-hub",
+   "name": "anima/mcp-hub",
+   "dir": "repos/mcp-hub",
+   "what": "One MCP hub with install audit and market search.",
+   "from": "apps/mcp-hub",
+   "cat": "Integrations · MCP",
+   "line": "open",
+   "wave": 0,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/mcp-hub/hub.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "mcp-graph",
+   "name": "anima/mcp-graph",
+   "dir": "repos/mcp-graph",
+   "what": "MCP server exposing a Bridago graph to any client.",
+   "from": "mcp-hub",
+   "cat": "Integrations · MCP",
+   "line": "open",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/mcp-hub/hub.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "mcp-seed",
+   "name": "anima/mcp-seed",
+   "dir": "repos/mcp-seed",
+   "what": "MCP tools to generate, lint and shuffle seeds.",
+   "from": "seed-gen",
+   "cat": "Integrations · MCP",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "paper-to-claims",
+   "name": "anima/paper-to-claims",
+   "dir": "repos/paper-to-claims",
+   "what": "Turn papers into source and claim nodes with quote spans.",
+   "from": "feeds.py",
+   "cat": "Integrations · MCP",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/feeds.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "repo-to-graph",
+   "name": "anima/repo-to-graph",
+   "dir": "repos/repo-to-graph",
+   "what": "Turn a codebase into a seeded graph.",
+   "from": "Builder",
+   "cat": "Integrations · MCP",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "sql-to-seed",
+   "name": "anima/sql-to-seed",
+   "dir": "repos/sql-to-seed",
+   "what": "Turn relational schemas into seeds with constraints.",
+   "from": "seed spec",
+   "cat": "Integrations · MCP",
+   "line": "open-core",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "feeds",
+   "name": "anima/feeds",
+   "dir": "repos/feeds",
+   "what": "Feed ingestion with dedupe and provenance.",
+   "from": "feeds.py",
+   "cat": "Integrations · MCP",
+   "line": "open",
+   "wave": 2,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/feeds.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "pr-agent",
+   "name": "anima/pr-agent",
+   "dir": "repos/pr-agent",
+   "what": "An agent that opens PRs only through the test gate.",
+   "from": "heal.py",
+   "cat": "Integrations · MCP",
+   "line": "open",
+   "wave": 3,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/heal.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "slack-gate",
+   "name": "anima/slack-gate",
+   "dir": "repos/slack-gate",
+   "what": "Approve agent actions from Slack.",
+   "from": "mindful.py",
+   "cat": "Integrations · MCP",
+   "line": "open",
+   "wave": 4,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/mindful.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "bridago-api",
+   "name": "anima/bridago-api",
+   "dir": "repos/bridago-api",
+   "what": "Metered Bridago API: seed, query, round.",
+   "from": "serve.py",
+   "cat": "Integrations · MCP",
+   "line": "paid API",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/serve.py"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "seed-law-tiers",
+   "name": "anima/seed-law-tiers",
+   "dir": "repos/seed-law-tiers",
+   "what": "Federal, provincial and municipal rules for a water body.",
+   "from": "institute.yaml",
+   "cat": "Domain seeds",
+   "line": "open-core",
+   "wave": 0,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/institute.yaml"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "seed-sector-value",
+   "name": "anima/seed-sector-value",
+   "dir": "repos/seed-sector-value",
+   "what": "Reported AI use vs measured value by sector.",
+   "from": "institute.yaml",
+   "cat": "Domain seeds",
+   "line": "open-core",
+   "wave": 1,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/institute.yaml"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "seed-phone-compute",
+   "name": "anima/seed-phone-compute",
+   "dir": "repos/seed-phone-compute",
+   "what": "Paid compute on idle phones: costs and payouts.",
+   "from": "institute.yaml",
+   "cat": "Domain seeds",
+   "line": "open-core",
+   "wave": 2,
+   "lang": "python",
+   "builder": "tester",
+   "sources": [
+    "apps/engine/institute.yaml"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "seed-compliance",
+   "name": "anima/seed-compliance",
+   "dir": "repos/seed-compliance",
+   "what": "Regulatory obligations as typed constraints.",
+   "from": "Catalogue",
+   "cat": "Domain seeds",
+   "line": "paid API",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Catalogue 5M.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "seed-clinical",
+   "name": "anima/seed-clinical",
+   "dir": "repos/seed-clinical",
+   "what": "Care pathways with contraindications as constraints.",
+   "from": "Catalogue",
+   "cat": "Domain seeds",
+   "line": "paid API",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Catalogue 5M.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "seed-supply",
+   "name": "anima/seed-supply",
+   "dir": "repos/seed-supply",
+   "what": "Supply-chain dependencies and single points of failure.",
+   "from": "Catalogue",
+   "cat": "Domain seeds",
+   "line": "paid API",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Catalogue 5M.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "seed-codebase",
+   "name": "anima/seed-codebase",
+   "dir": "repos/seed-codebase",
+   "what": "Seeds for large codebases: modules, owners, risks.",
+   "from": "repo-to-graph",
+   "cat": "Domain seeds",
+   "line": "paid API",
+   "wave": 2,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "seed-finance",
+   "name": "anima/seed-finance",
+   "dir": "repos/seed-finance",
+   "what": "Market regimes and their indicators.",
+   "from": "regime-lens",
+   "cat": "Domain seeds",
+   "line": "paid API",
+   "wave": 3,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "seed-curriculum",
+   "name": "anima/seed-curriculum",
+   "dir": "repos/seed-curriculum",
+   "what": "Curricula with prerequisites as closure.",
+   "from": "Catalogue",
+   "cat": "Domain seeds",
+   "line": "paid API",
+   "wave": 4,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Catalogue 5M.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "seed-travel",
+   "name": "anima/seed-travel",
+   "dir": "repos/seed-travel",
+   "what": "Travel operations: routes, constraints, disruptions.",
+   "from": "Catalogue",
+   "cat": "Domain seeds",
+   "line": "paid API",
+   "wave": 1,
+   "lang": "python",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Catalogue 5M.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "style-studio",
+   "name": "anima/style-studio",
+   "dir": "repos/style-studio",
+   "what": "Generate a site from a brief, assembled from small calls.",
+   "from": "Style Studio",
+   "cat": "Studio · sites",
+   "line": "open",
+   "wave": 0,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "marketing/Style Studio.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "studio-kit",
+   "name": "anima/studio-kit",
+   "dir": "repos/studio-kit",
+   "what": "12 structures × 8 looks, deterministic.",
+   "from": "studio-kit.js",
+   "cat": "Studio · sites",
+   "line": "open",
+   "wave": 1,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "marketing/studio-kit.js"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "site-from-graph",
+   "name": "anima/site-from-graph",
+   "dir": "repos/site-from-graph",
+   "what": "Publish a graph as a site with public/private split.",
+   "from": "Anima site",
+   "cat": "Studio · sites",
+   "line": "open",
+   "wave": 2,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/site/src/Anima.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "tmpltz",
+   "name": "anima/tmpltz",
+   "dir": "repos/tmpltz",
+   "what": "Every finding becomes a template.",
+   "from": "Tmpltz",
+   "cat": "Studio · sites",
+   "line": "open-core",
+   "wave": 3,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/site/src/Tmpltz.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "report-kit",
+   "name": "anima/report-kit",
+   "dir": "repos/report-kit",
+   "what": "Research reports with tagged claims and sources.",
+   "from": "Plan v4",
+   "cat": "Studio · sites",
+   "line": "open",
+   "wave": 4,
+   "lang": "js",
+   "builder": "sextant",
+   "sources": [],
+   "research": [
+    "research/reports/Seeded Substrate Plan v4.dc.html"
+   ],
+   "status": "queued"
+  },
+  {
+   "id": "deck-from-findings",
+   "name": "anima/deck-from-findings",
+   "dir": "repos/deck-from-findings",
+   "what": "Slides from a set of graph findings.",
+   "from": "Studio",
+   "cat": "Studio · sites",
+   "line": "open",
+   "wave": 1,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "marketing/Style Studio.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "tier-auth",
+   "name": "anima/tier-auth",
+   "dir": "repos/tier-auth",
+   "what": "Visitor/Member/Pro/Owner tiers for a graph site.",
+   "from": "Anima site",
+   "cat": "Studio · sites",
+   "line": "open",
+   "wave": 2,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/site/src/Anima.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "ask-widget",
+   "name": "anima/ask-widget",
+   "dir": "repos/ask-widget",
+   "what": "Ask panel that asks a clarifying question back.",
+   "from": "Anima site",
+   "cat": "Studio · sites",
+   "line": "open",
+   "wave": 3,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/site/src/Anima.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "popups",
+   "name": "anima/popups",
+   "dir": "repos/popups",
+   "what": "Contextual suggestions, clarifications and questions.",
+   "from": "Anima site",
+   "cat": "Studio · sites",
+   "line": "open",
+   "wave": 4,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "apps/site/src/Anima.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  },
+  {
+   "id": "studio-cloud",
+   "name": "anima/studio-cloud",
+   "dir": "repos/studio-cloud",
+   "what": "Hosted Studio with export.",
+   "from": "Style Studio",
+   "cat": "Studio · sites",
+   "line": "paid API",
+   "wave": 1,
+   "lang": "js",
+   "builder": "tester",
+   "sources": [
+    "marketing/Style Studio.dc.html"
+   ],
+   "research": [],
+   "status": "queued"
+  }
+ ]
+}

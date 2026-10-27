@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-300); } a:hover { color: var(--color-accent-200); }
+    code { font-family: ui-monospace, Menlo, monospace; font-size: .9em; color: var(--color-accent-200); }
+    ::-webkit-scrollbar { height: 9px; width: 9px; } ::-webkit-scrollbar-thumb { background: var(--color-neutral-700); border-radius: 5px; }
+  </style>
+</helmet>
+<div data-screen-label="Walkthrough v3" style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 15% 0%, var(--color-accent-900) 0%, transparent 55%), var(--color-bg);">
+  <nav class="nav" style="position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:12px clamp(16px,4vw,44px);background:color-mix(in oklab, var(--color-bg) 92%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--color-neutral-800);">
+    <span class="nav-brand" style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;">Anima · Walkthrough v3</span>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;">
+      <sc-for list="{{ maps }}" as="m" hint-placeholder-count="9"><button class="btn {{ m.cls }}" style="font-size:12px;white-space:nowrap;" onClick="{{ m.go }}">{{ m.label }}</button></sc-for>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:4px;">
+      <button class="btn btn-ghost" style="font-size:12px;" onClick="{{ expandAll }}">Expand all</button>
+      <button class="btn btn-ghost" style="font-size:12px;" onClick="{{ collapseAll }}">Collapse</button>
+    </div>
+  </nav>
+
+  <div style="max-width:1200px;padding:32px clamp(16px,4vw,44px) 90px;display:grid;gap:22px;">
+    <header style="display:grid;gap:10px;max-width:880px;">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">{{ cur.kicker }}</span>
+      <h1 style="margin:0;font-size:clamp(28px,4vw,42px);line-height:1.07;letter-spacing:-0.02em;font-weight:500;">{{ cur.title }}</h1>
+      <p style="margin:0;font-size:17px;line-height:1.5;color:var(--color-neutral-300);">{{ cur.lede }}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--color-neutral-400);"><span>{{ stat.nodes }} nodes</span><span>{{ stat.leaves }} features</span><sc-if value="{{ cur.hasOpen }}" hint-placeholder-val="{{ false }}"><a href="{{ cur.open }}" target="_blank">Open the thing itself ↗</a></sc-if></div>
+    </header>
+
+    <sc-if value="{{ viewing }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:8px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;"><b style="font-size:15px;">{{ viewName }}</b><code style="font-size:11px;color:var(--color-neutral-400);">{{ viewSrc }}</code><button class="btn btn-ghost" style="font-size:12px;margin-left:auto;" onClick="{{ closeDoc }}">Close ✕</button></div>
+        <div style="border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--color-neutral-700);background:var(--color-neutral-900);height:min(78vh,860px);">
+          <iframe src="{{ viewSrc }}" title="{{ viewName }}" style="width:100%;height:100%;border:0;display:block;background:#fff;"></iframe>
+        </div>
+      </div>
+    </sc-if>
+    <div style="overflow-x:auto;padding:4px;">
+      <div style="min-width:min(100%,680px);display:grid;gap:3px;">
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="12">
+          <div style="{{ r.rowSt }}">
+            <button onClick="{{ r.toggle }}" style="{{ r.btnSt }}">{{ r.glyph }}</button>
+            <div style="{{ r.cardSt }}">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                <sc-if value="{{ r.hasHref }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.openDoc }}" style="padding:0;background:none;border:0;cursor:pointer;text-align:left;font-family:inherit;font-weight:{{ r.weight }};font-size:{{ r.size }}px;color:{{ r.linkInk }};text-decoration:underline;text-decoration-color:var(--color-accent-700);text-underline-offset:3px;">{{ r.label }} ↗</button></sc-if>
+                <sc-if value="{{ r.noHref }}" hint-placeholder-val="{{ true }}"><span onClick="{{ r.toggle }}" style="font-weight:{{ r.weight }};font-size:{{ r.size }}px;color:{{ r.ink }};cursor:{{ r.cur }};">{{ r.label }}</span></sc-if>
+                <sc-if value="{{ r.hasTag }}" hint-placeholder-val="{{ false }}"><span class="tag {{ r.tagCls }}" style="font-size:10px;">{{ r.tag }}</span></sc-if>
+                <sc-if value="{{ r.collapsed }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:var(--color-neutral-500);">+{{ r.kids }}</span></sc-if>
+              </div>
+              <sc-if value="{{ r.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;line-height:1.5;color:var(--color-neutral-400);">{{ r.note }}</span></sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+// Each node: [label, note, tag, children]. tag optional. The markmap flattens this with collapse state.
+const n = (label, note, tag, children) => ({ label, note: note || '', tag: tag || '', children: children || [] });
+
+const ENGINE = n('agent · the engine', 'apps/engine, one FastAPI process. One DSPy Signature, one graph, every loop.', 'container', [
+  n('round.py', 'The Signature (intake → out), the hypergraph, merge() with the seed guarantee, Hebbian weights, closure.', 'core'),
+  n('signature.py', 'The depth-2 Round schema: reasoning, evidence, definitions, nodes, hyperedges, closure, actors, answer, energy.'),
+  n('main.py', 'Every loop is the agent\'s own initiative.', 'loops', [
+    n('worker', 'Drains the queue; each item is one round. Writes the ledger.'),
+    n('research / reexamine', 'Each topic at boot, then the weakest edges forever.'),
+    n('drive', 'Free-time rounds: it picks the most valuable next act.'),
+    n('watch', 'Signals pump: new feed and Trends items become ingest rounds.'),
+    n('staffing', 'Shows the agent its unwatched questions; it hires a sub-agent for one.'),
+    n('labs', 'Shows each lab\'s queue; it proposes, runs and retires candidates.'),
+    n('repair / reflect', 'Incidents become tested patches; nightly decay and the Q-table.'),
+    n('apps / fleet / hub', 'Reconcile shipped apps and sub-agents; hold the MCP session open.'),
+  ]),
+  n('serve.py', 'The HTTP doors.', 'http', [
+    n('public', '/round, /public/graph, /public/feed, /event, /health — no tools, nothing merged.'),
+    n('owner', '/owner/board, /owner/stream, /owner/say, /owner/mind, /owner/fleet, /owner/sources, /owner/labs, /owner/api, /owner/config, /owner/hub, /owner/day.'),
+  ]),
+  n('tools.py', 'What the one agent can call.', 'tools', [
+    n('knowledge', 'web_search, fetch_url, graph_query, list_source, read_source.'),
+    n('change itself', 'plan_upgrade (read all, edit none), run_tests, propose_publish, publish.'),
+    n('build', 'sandbox_run (8 languages), ship_app.'),
+    n('fleet & signals', 'fleet_create/update/act/delete/logs, source_add/update/remove, display_set.'),
+    n('labs', 'lab_list, lab_propose, lab_run, lab_record, lab_close.'),
+  ]),
+  n('graph & cognition', 'The thing that does the thinking, per the paper.', 'thesis', [
+    n('selfmodel.py', 'The graph knows every file and function of its own source.'),
+    n('observe.py', 'Telemetry becomes graph: traces, spans, logs; errors become incidents.'),
+    n('reflect.py', 'Q-table over round kinds; nightly telemetry decay and tomorrow\'s plan.'),
+  ]),
+  n('ledger.py', 'The work board (planned → ongoing → done) and the message stream between actors.', 'new'),
+  n('sim.py', 'The simulated world: a DSPy world-agent writes papers, filings and feeds, never repeating; sim in development, live in production, the owner can flip it.', 'new'),
+  n('reprice.py', 'Fair repricing of GPU-linked commodities and assets, and the ledger of what the institute cannot yet do. Gates: scenarios sum to 1 and span both directions, drivers cite sources, the range agrees, simulated never publishes.', 'new'),
+  n('v1.py', 'The /v1 API: one key per tenant, one persona per call (civilian, student, child, scholar, journalist, corporate, government, developer), metered by rung.', 'new'),
+  n('fleet.py + worker/', 'Sub-agents as containers: CRUD, reconcile, harvest, provenance (from_node).', 'new'),
+  n('signals.py + parsers.py', 'RSS, Atom and Google Trends sources; owner and agent both CRUD them.', 'new'),
+  n('labs.py + labs.yaml', 'Standing programmes: phases, exit tests, real-code gates.', 'new'),
+  n('display.py', 'The owner\'s dynamic display: widgets the brain and owner both arrange.', 'new'),
+  n('apikeys.py', 'Paid-API tenants and earnings summed from real metered calls.', 'new'),
+  n('heal / upgrades / mindful / publishing / day / oversight', 'Self-repair, reviewed upgrades, the posting gate, public batches, the owner\'s day, fire triage.'),
+  n('bus.py / auth.py', 'Redis-or-memory shared state; one-owner signed-cookie login.'),
+]);
+
+const OPS = n('ops · the console', 'apps/ops. The owner\'s cohesive console over the running engine. No simulation.', 'container', [
+  n('Owner Console.dc.html', 'The unified console: one shell, every terminal, light or dark. Replaces Fleet, Console, Overseer and Space as the place you work; those still run inside it.', 'new', [
+    n('Fires', 'The Overseer, built in: ranked fires, batch actions that clear many at once, what is held back and why, each watcher\'s health.'),
+    n('Brain & roster', 'SEXTANT and every sub-agent, each with its live task; click to inspect.'),
+    n('Work', 'The real board: planned, ongoing, done, with each round\'s energy change.'),
+    n('Live', 'The back-and-forth: agents report, the brain assigns and thinks aloud, you talk to it.'),
+    n('Mind', 'The graph as the thinker: reasoning nodes, types minted, hypotheses with falsifiers, consistency energy.'),
+    n('Labs', 'Each lab\'s phases, honest limits, candidates and real runs; run or close one.'),
+    n('Signals', 'Sources and a live Trends preview.'),
+    n('API & earnings', 'The tenant sheet and revenue from real calls; create, rotate, suspend.'),
+    n('Site', 'Shipped apps: open, relaunch, remove.'),
+    n('Config', 'Model, labs, publishing; the session; MCP servers install and remove.'),
+    n('Terminals', 'The ops console inside it: every container on three daemons, logs, a shell in any of them, the repository.'),
+    n('Graph space', 'The 3D graph inside it: hop any node\'s neighbourhood, publish batches, search the MCP market.'),
+    n('Light / dark', 'One toggle, remembered. Light is the warm paper look; dark is the ops terminal look with the lime accent.'),
+  ]),
+  n('Fleet.dc.html (v1)', 'The first version of the console, kept for reference.'),
+  n('Explorer.dc.html', 'Every graph as a 4D connectome and a markmap, plus timeline, fair repricing and limits; a live world strip with Simulate / Auto / Live. With no engine it runs the in-browser simulation (livesim.js).', 'new', [
+    n('Agent brain / Institute graph', 'SEXTANT at the centre with its tools, source and thoughts; the same graph without it.'),
+    n('Reprice', 'Expected re-rate, range, scenarios, drivers, sources and limits per asset; tier-aware; publish, retract, reprice now.'),
+    n('Limits', 'What the institute cannot yet do, what lifts it, what needs the owner.'),
+  ]),
+  n('API Atlas.dc.html', 'Eight personas and the calls each makes, with request, response shape, rung price and policy; runs live calls when an engine and key are present.', 'new'),
+  n('Console / Overseer / Space', 'The earlier day-page, fire triage and hop-between-terminals views.'),
+  n('agent.py / ops.py', 'The ops agent on a cheaper model, and the container shell with the host docker socket.'),
+]);
+
+const SITE = n('web · the public site', 'apps/web (nginx) + apps/site. What visitors and clients see.', 'container', [
+  n('Anima.dc.html', 'Self-animating 3D hero: seed, traverse, ladder, result.'),
+  n('Institute.dc.html', 'The thesis, the live public graph, the experiment.'),
+  n('tiers', 'Visitor, Member, Pro, Owner; Pro adds shadow scores and raw tables.'),
+  n('shipped apps', 'Everything the agent builds runs behind nginx at /a/<port>/.'),
+]);
+
+const DIND = n('agent-dind · the agent\'s docker', 'A private Docker daemon the engine fully controls. Everything it depends on runs here.', 'container', [
+  n('Phoenix', 'OTLP traces at :6006 — every round, span and log.'),
+  n('Redis', 'Dedupe, counters and the pending-work mirror at :6379.'),
+  n('MCP hub', 'One server in front of every other at :8765; market install and audit.'),
+  n('sandbox', '8-language runs with no network; builds images; the repair image.'),
+  n('sub-agents', 'Each fleet member is a 128MB container here (or in web-dind).'),
+]);
+
+const DOCKER = n('The stack', 'docker-compose.yml. cp .env.example .env && docker compose up -d is the whole install.', 'stack', [
+  n('init', 'One-shot: makes the named volumes the agent owns.'),
+  ENGINE, OPS, SITE, DIND,
+  n('web-dind · the site\'s docker', 'Where shipped apps and sibling sub-agents run, behind the site.', 'container'),
+  n('networks & mounts', 'web ↔ agent ↔ each dind; state (rw) is the only place the agent writes; its own source is read-only.'),
+]);
+
+const TESTS = n('Triple test', 'Three suites, each with no model, no network and no Docker. Run in Docker on every push.', 'stack', [
+  n('engine', 'apps/engine/test_engine.py + test_fleet.py', 'suite', [
+    n('the graph', 'Seed is core and never removed; merge; unknown members dropped; Hebbian decay; closure; persistence.'),
+    n('loop & Signature', 'Queue order; depth-2 schema; one-in-one-out; only owners write the graph.'),
+    n('everything becomes graph', 'Spans → nodes, errors → incidents, logs → log nodes, events land.'),
+    n('self-repair & auth', 'Dedupe and cap; locate from source and trace; owner login, hashing, throttle.'),
+    n('fleet, signals, display', 'Trends parsing; source CRUD; pump once; sub-agent CRUD across two daemons; harvest; widgets.'),
+    n('staffed by the research', 'Unstaffed questions listed; the loop only asks, the agent hires; provenance edge in the graph.'),
+    n('labs', 'A candidate advances only on a passing run; prose and crashes do not pass; manual phases have no cell; owner can run or close.'),
+  n('world, repricing and /v1', 'test_world.py: sim mode follows THRESHOLD_ENV; novelty drops repeats; a record is refused until fair, sourced and consistent; simulated is never published; /v1 shapes by persona and meters by rung.'),
+  ]),
+  n('mcp-hub', 'apps/mcp-hub/test_hub.py — the hub, market search and install audit.', 'suite'),
+  n('ops', 'apps/ops/test_ops.py — the console\'s data shaping.', 'suite'),
+  n('how to run', 'docker compose -f docker-compose.test.yml up. CI runs all three plus a compose check.', 'run'),
+]);
+
+const RP = 'research/reports/';
+// Every node label that is a real file opens it. Click a label with ↗ to open; click a branch to expand.
+const LINKS = {
+  'Seeded Substrate Plan v4': RP + 'Seeded Substrate Plan v4.dc.html', 'A · Cheap Brain Evidence': RP + 'Cheap Brain Evidence.dc.html', 'B · AI Era Bubble': RP + 'AI Era Bubble.dc.html',
+  'C · Institute Blueprint v3': RP + 'Institute Blueprint v3.dc.html', 'D · Exposure and Templates': RP + 'Exposure and Templates.dc.html',
+  'Institute Blueprint v1': RP + 'Institute Blueprint.dc.html', 'Institute Blueprint v2': RP + 'Institute Blueprint v2.dc.html', 'Institute Blueprint v3': RP + 'Institute Blueprint v3.dc.html',
+  'Graph Intelligence Report v1': RP + 'Graph Intelligence Report.dc.html', 'Graph Intelligence Report v2': RP + 'Graph Intelligence Report v2.dc.html', 'Graph Intelligence Report v3': RP + 'Graph Intelligence Report v3.dc.html',
+  'Landscape 2026': RP + 'Landscape 2026.dc.html', 'Catalogue 5M': RP + 'Catalogue 5M.dc.html', 'next-version plan': 'research/next-version-plan.md', 'research notes': 'research/notes.md',
+  'Walkthrough v1': 'Walkthrough v1.dc.html', 'Walkthrough v2': 'Walkthrough v2.dc.html', 'Walkthrough v3': 'Walkthrough v3.dc.html',
+  'Owner Console.dc.html': 'apps/ops/src/Owner Console.dc.html', 'Fleet.dc.html (v1)': 'apps/ops/src/Fleet.dc.html', 'Console / Overseer / Space': 'apps/ops/src/Console.dc.html', 'Anima.dc.html': 'apps/site/src/Anima.dc.html', 'Institute.dc.html': 'apps/site/src/Institute.dc.html',
+  'labs.py + labs.yaml': 'apps/engine/labs.yaml', 'institute config': 'apps/engine/institute.yaml', 'The stack': 'docker-compose.yml', 'how to run': 'docker-compose.test.yml',
+  'Style Studio': 'marketing/Style Studio.dc.html', 'Tmpltz': 'marketing/Tmpltz.dc.html', 'Coming Out 100 Repos': 'marketing/Coming Out 100 Repos.dc.html',
+  'Phone app': 'apps/mobile/Anima App.dc.html', 'Phone patterns': 'apps/mobile/Anima App Patterns.dc.html',
+};
+const RESEARCH = n('Research & versions', 'Every paper and every version, in order. Click any title with ↗ to open it.', 'stack', [
+  n('The thesis', 'Anima: the cognition lives in the graph seed and the DSPy layer, not the weights. Seed Bridago once; quality holds from 30B down to an LSTM on CPU.', 'thesis', [
+    n('Seeded Substrate Plan v4', 'The core paper. H0–H7 each with a falsifier; the substrate ladder (30B, 8B, 1–3B, tiny, LSTM); the shuffled-seed control that separates structure from extra context; phases P0–P5.', 'core'),
+    n('next-version plan', 'What changes in v5: the LSTM substrate argument made a first-class arm, and the full spec set.', 'plan'),
+  ]),
+  n('Companions to the paper', 'Each argues one thing the paper depends on.', '', [
+    n('A · Cheap Brain Evidence', 'Grades the public record: small models on scoped tasks and recursion-for-size are established; the full seeded ladder is untested.'),
+    n('B · AI Era Bubble', 'Six links from GPU orders to entry-level job losses, the case against, seven early-warning indicators.'),
+    n('C · Institute Blueprint v3', 'Ten agents, four pipelines, three funnels, the moat.'),
+    n('D · Exposure and Templates', '50 companies scored for exposure if H0 holds; ~1,000 grouped into 42 templatable archetypes.'),
+  ]),
+  n('Graph intelligence reports', 'The research line the institute grew out of.', '', [
+    n('Graph Intelligence Report v1', 'First pass.', 'v1'), n('Graph Intelligence Report v2', 'Revised.', 'v2'), n('Graph Intelligence Report v3', 'Current.', 'v3'),
+  ]),
+  n('The institute, by version', 'How the organisation design evolved.', '', [
+    n('Institute Blueprint v1', 'Founding blueprint.', 'v1'), n('Institute Blueprint v2', 'Staffed by the research it studies.', 'v2'), n('Institute Blueprint v3', 'Concrete pipelines and funnels; the owner overseeing the overseers.', 'v3'),
+  ]),
+  n('Market & catalogue', '', '', [n('Landscape 2026', 'Where the field stands.'), n('Catalogue 5M', 'The product and repo catalogue.')]),
+  n('Walkthroughs, by version', 'This document and its predecessors.', '', [
+    n('Walkthrough v1', 'First tour.', 'v1'), n('Walkthrough v2', 'Chaptered tour with live scaled previews.', 'v2'), n('Walkthrough v3', 'This one: clickable markmaps, every container and app.', 'v3'),
+  ]),
+  n('Go-to-market', 'What the research is turned into.', '', [n('Style Studio', 'Brief in, site out.'), n('Tmpltz', 'Findings become reusable offers.'), n('Coming Out 100 Repos', 'The launch: 100 repos in five waves.'), n('Phone app', 'Four tiers, every button works.'), n('Phone patterns', '144 looks and layouts.')]),
+  n('research notes', 'Working notes behind the reports.'),
+]);
+
+const ALL = n('The Threshold Institute', 'A self-running institute staffed by the very research it studies. Anima is the thesis; Bridago the shared seeded brain; SEXTANT the one agent that runs it.', 'root', [DOCKER, TESTS, RESEARCH]);
+
+const MAPS = [
+  { id: 'research', label: 'Research & versions', kicker: 'research/', title: 'Research and versions', lede: 'Every paper, companion and version in one map, in the order they were written. Every title with ↗ opens the real document.', tree: RESEARCH },
+  { id: 'all', label: 'Everything', kicker: 'The whole stack, one map', title: 'The Institute, end to end', lede: 'Every container, app and module, and how they nest. Expand a branch to go deeper; each leaf is a feature. The maps after this one zoom into each piece.', tree: ALL },
+  { id: 'docker', label: 'Stack', kicker: 'Containers', title: 'The six containers', lede: 'What docker compose brings up, and what lives in each. The agent owns its own Docker so everything it depends on is inside its blast radius.', tree: DOCKER },
+  { id: 'engine', label: 'Engine', kicker: 'apps/engine', title: 'The engine', lede: 'One process: the Signature, the graph, and the loops that give the agent initiative. The graph and DSPy layer are where the paper says the intelligence lives.', tree: ENGINE, open: 'apps/engine/README.md' },
+  { id: 'console', label: 'Console', kicker: 'apps/ops', title: 'The owner console', lede: 'One shell with every terminal: the brain, the work, the labs, the earnings, the site, the config. Shows only what the running engine reports.', tree: OPS, open: 'apps/ops/src/Fleet.dc.html' },
+  { id: 'site', label: 'Site', kicker: 'apps/web + apps/site', title: 'The public site', lede: 'The thesis, the live graph and the experiment, for visitors and clients.', tree: SITE, open: 'apps/site/src/Institute.dc.html' },
+  { id: 'dind', label: 'Agent docker', kicker: 'agent-dind', title: 'The agent\'s own docker', lede: 'Phoenix, Redis, the MCP hub, the sandbox and every sub-agent run here, so the engine controls everything it leans on.', tree: DIND },
+  { id: 'labs', label: 'Labs', kicker: 'apps/engine/labs', title: 'The labs', lede: 'Standing programmes where a claim is computed, then tested on a real bench, and a candidate advances only when real code passes the phase\'s exit test.', tree: n('Labs', 'labs.py keeps the ledger and the gates; it never decides a pass.', 'new', [
+    n('chem-stability', 'Propose stable molecules; prove them computationally before any flask. Target 10,000.', 'lab', [n('1 · screen', 'Real RDKit: sanitise, valence, embed, MMFF94, energy per heavy atom.'), n('2 · wet lab', 'A named lab reports synthesis; a candidate waits here.'), n('3 · production', 'A route with cost, yield, safety and a buyer.'), n('honest', 'Phase 1 is a statement about a file, not about matter.', 'warn')]),
+    n('btc-graph', 'Read the public transaction graph: key reuse, miner concentration.', 'lab', [n('1 · verify', 'Fetch a real block header, recompute double-SHA-256 against the target.'), n('2 · re-run', 'The Critic reproduces it on a second node, with a shuffled-graph control.'), n('3 · disclose', 'Notify a maintainer, or publish with heights and tx ids.'), n('honest', 'Will not mine; cannot bruteforce a 256-bit key. Finds weak or reused keys and discloses.', 'warn')]),
+    n('law-review', 'A judicial review of history: seizures of land, removals of leaders.', 'lab', [n('1 · sourced', 'Fetch every citation and check the quote is really there.'), n('2 · adversarial', 'The Critic argues the other side from the same record.'), n('3 · finding', 'Written only on what survived; contested points shown as contested.'), n('honest', 'Establishes what the record supports, not what was just. Not legal advice.', 'warn')]),
+  ]) },
+  { id: 'fleet', label: 'Fleet & signals', kicker: 'apps/engine', title: 'Sub-agents, signals, display', lede: 'The institute staffs itself: the brain hires a sub-agent for a question nothing is watching, feeds it sources, and arranges what you see.', tree: n('Fleet & signals', '', 'new', [
+    n('sub-agents', 'Small containers, one job each.', '', [n('CRUD', 'Create, update, pause, restart, delete; the brain and owner share the controls.'), n('where', 'child (agent docker) or sibling (apps docker); up to four levels deep.'), n('provenance', 'Each records the question it serves; a staffs edge goes into the graph.'), n('harvest', 'Workers print JSON lines; each new item becomes a round for the brain.')]),
+    n('signals', 'RSS, Atom and Google Trends by country; CRUD, run-now, per-source health.'),
+    n('display', 'Widgets — trends, signals, fleet, vitals, notes — the brain and owner both arrange.'),
+  ]) },
+  { id: 'api', label: 'API & revenue', kicker: 'apps/engine/apikeys', title: 'Paid API and earnings', lede: 'Tenants, keys and plans; every metered call is priced by the rung that answered and summed into real earnings. The cheap rungs cost cents, which is the thesis made legible.', tree: n('API & revenue', '', 'new', [
+    n('tenants', 'Name, plan (metered, team, scale), spend cap, keys; create, rotate, suspend, remove.'),
+    n('metering', 'Each call appended with its rung and price; nothing is invented.'),
+    n('earnings', 'Revenue, MRR, calls and the CPU share, summed over the month per tenant and per rung.'),
+  ]) },
+  { id: 'tests', label: 'Triple test', kicker: 'CI & Docker', title: 'The triple test', lede: 'Three suites, each pure: no model, no network, no Docker. They run inside Docker on every push, next to a compose sanity check.', tree: TESTS, open: 'docker-compose.test.yml' },
+];
+
+class Component extends DCLogic {
+  state = { m: 0, open: {} };
+  componentDidMount() { this.reset(0, false); }
+  key(map, path) { return map + ':' + path; }
+  reset(mi, collapse) {
+    const open = {}, map = MAPS[mi].id;
+    const walk = (node, path, depth) => { if (node.children && node.children.length && (!collapse ? depth < 2 : depth < 0)) open[this.key(map, path)] = true; (node.children || []).forEach((c, i) => walk(c, path + '.' + i, depth + 1)); };
+    walk(MAPS[mi].tree, '0', 0);
+    this.setState({ m: mi, open });
+  }
+  all(val) {
+    const open = {}, map = MAPS[this.state.m].id;
+    if (val) { const walk = (node, path) => { if (node.children && node.children.length) open[this.key(map, path)] = true; (node.children || []).forEach((c, i) => walk(c, path + '.' + i)); }; walk(MAPS[this.state.m].tree, '0'); }
+    this.setState({ open });
+  }
+  flatten(node, path, depth, map, rows) {
+    const k = this.key(map, path), hasKids = !!(node.children && node.children.length), isOpen = this.state.open[k];
+    rows.push({ node, path, depth, hasKids, isOpen });
+    if (hasKids && isOpen) node.children.forEach((c, i) => this.flatten(c, path + '.' + i, depth + 1, map, rows));
+  }
+  countLeaves(node) { return (!node.children || !node.children.length) ? 1 : node.children.reduce((a, c) => a + this.countLeaves(c), 0); }
+  countNodes(node) { return 1 + (node.children || []).reduce((a, c) => a + this.countNodes(c), 0); }
+  renderVals() {
+    const s = this.state, M = MAPS[s.m], map = M.id, rows = [];
+    this.flatten(M.tree, '0', 0, map, rows);
+    const TAG = { root: 'tag-accent', container: 'tag-accent', stack: 'tag-accent', core: 'tag-accent', thesis: 'tag-accent', new: 'tag-accent-2', loops: 'tag-neutral', http: 'tag-neutral', tools: 'tag-neutral', suite: 'tag-accent-2', run: 'tag-outline', lab: 'tag-accent', warn: 'tag-outline' };
+    const ACCENT = depth => ['var(--color-text)', 'var(--color-text)', 'var(--color-neutral-200)', 'var(--color-neutral-300)'][Math.min(depth, 3)];
+    return {
+      maps: MAPS.map((x, i) => ({ label: x.label, cls: i === s.m ? 'btn-primary' : 'btn-ghost', go: () => { this.reset(i, false); window.scrollTo({ top: 0 }); } })),
+      cur: { kicker: M.kicker, title: M.title, lede: M.lede, hasOpen: !!M.open, open: M.open || '#' },
+      stat: { nodes: this.countNodes(M.tree), leaves: this.countLeaves(M.tree) },
+      viewing: !!s.doc, viewSrc: s.doc || '', viewName: s.docName || '', closeDoc: () => this.setState({ doc: '' }),
+      expandAll: () => this.all(true), collapseAll: () => this.all(false),
+      rows: rows.map(r => {
+        const warn = r.node.tag === 'warn';
+        return {
+          label: r.node.label, note: r.node.note, hasNote: !!r.node.note,
+          tag: r.node.tag && r.node.tag !== 'root' ? r.node.tag : '', hasTag: !!(r.node.tag && r.node.tag !== 'root'), tagCls: TAG[r.node.tag] || 'tag-neutral',
+          openDoc: () => { this.setState({ doc: LINKS[r.node.label], docName: r.node.label }); window.scrollTo({ top: 0 }); }, hasHref: !!LINKS[r.node.label], noHref: !LINKS[r.node.label], cur: r.hasKids ? 'pointer' : 'default', linkInk: 'var(--color-accent-200)',
+          glyph: r.hasKids ? (r.isOpen ? '▾' : '▸') : '·', collapsed: r.hasKids && !r.isOpen, kids: r.node.children.length,
+          weight: r.depth === 0 ? 600 : r.depth === 1 ? 550 : 450, size: r.depth === 0 ? 22 : r.depth === 1 ? 17 : 14.5, ink: warn ? 'var(--color-accent-200)' : ACCENT(r.depth),
+          toggle: () => { if (!r.hasKids) return; this.setState(st => ({ open: { ...st.open, [this.key(map, r.path)]: !st.open[this.key(map, r.path)] } })); },
+          btnSt: `flex:none;width:26px;height:26px;margin-top:2px;border-radius:6px;border:1px solid ${r.hasKids ? 'var(--color-neutral-700)' : 'transparent'};background:${r.hasKids ? 'var(--color-neutral-900)' : 'transparent'};color:var(--color-neutral-300);cursor:${r.hasKids ? 'pointer' : 'default'};font-size:12px;`,
+          rowSt: `display:flex;gap:10px;align-items:flex-start;margin-left:${r.depth * 26}px;padding-left:${r.depth ? 10 : 0}px;border-left:${r.depth ? '1px solid var(--color-neutral-800)' : '0'};`,
+          cardSt: `flex:1;min-width:0;display:grid;gap:3px;padding:${r.depth === 0 ? '4px 0 10px' : '7px 0'};border-bottom:1px solid ${r.depth === 0 ? 'var(--color-neutral-800)' : 'transparent'};`,
+        };
+      }),
+    };
+  }
+}
+</script>
+</body>
+</html>

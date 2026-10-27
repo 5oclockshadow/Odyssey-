@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>html, body { margin: 0; background: #0d3b8c; } a { color: #ffe14d; } a:hover { color: #fff; } button { font-family: 'IBM Plex Mono', monospace; }</style>
+</helmet>
+<div data-screen-label="Bag Tests" style="min-height: 100vh; padding: 20px; background: #0d3b8c; color: #eaf4ff; font-family: 'IBM Plex Mono', monospace; font-size: 12px; display: grid; gap: 14px; align-content: start;">
+  <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;">
+    <h1 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-size: 34px; letter-spacing: 0.03em;">Engine tests</h1>
+    <span id="summary" style="font-size: 16px; color: #ffe14d;">{{ summary }}</span>
+    <button type="button" onClick="{{ run }}" style="margin-left: auto; padding: 6px 14px; border: 2px solid #ffe14d; background: #ffe14d; color: #0a2f6e; cursor: pointer; font-weight: 500;">{{ label }}</button>
+  </div>
+  <div style="height: 6px; background: #0a2f6e;"><div style="{{ bar }}"></div></div>
+  <div style="display: grid; gap: 2px;">
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+      <div style="display: grid; grid-template-columns: 26px 64px minmax(0, 1.2fr) minmax(0, 1.4fr) 60px; gap: 10px; padding: 4px 8px; border: 1px solid #3f74bf; align-items: baseline; background: {{ r.bg }};">
+        <span style="color: #8fc7ff;">{{ r.id }}</span><span style="color: #8fc7ff;">{{ r.group }}</span><span>{{ r.mark }} {{ r.name }}</span><span style="color: {{ r.col }}; overflow-wrap: anywhere;">{{ r.evidence }}</span><span style="text-align: right; color: #8fc7ff;">{{ r.ms }} ms</span>
+      </div>
+    </sc-for>
+  </div>
+  <div style="color: #8fc7ff;"><a href="Thought Graph - Drafting.dc.html">Drafting</a> · <a href="Thought Graph - Studio v1.dc.html">Studio v1</a></div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { results: [], running: false, total: 30 };
+  componentDidMount() { this.run(); }
+  componentWillUnmount() { this.dead = true; }
+  run = async () => {
+    if (this.state.running) return; this.setState({ running: true, results: [] });
+    const T = await import('./thought-bag-tests.js'), AT = await import('./atlas-tests.js'), BT = await import('./tandem-tests.js'), ST = await import('./atlas-assist-tests.js'), PT = await import('./atlas-lens-tests.js'); const SC = await import('./scenario-suite.js'); this.SC = SC; this.setState({ total: [T, AT, BT, ST, PT, SC].reduce((n, m) => n + (m.ALL || m.TESTS).length, 0) });
+    const first = await T.runAll(rs => { if (!this.dead) this.setState({ results: rs.slice() }); });
+    const second = await AT.runAll(rs => { if (!this.dead) this.setState({ results: [...first, ...rs] }); }); const third = await BT.runAll(rs => { if (!this.dead) this.setState({ results: [...first, ...second, ...rs] }); }); const fourth = await ST.runAll(rs => { if (!this.dead) this.setState({ results: [...first, ...second, ...third, ...rs] }); }); const fifth = await PT.runAll(rs => { if (!this.dead) this.setState({ results: [...first, ...second, ...third, ...fourth, ...rs] }); }); const sixth = await this.SC.runAll(rs => { if (!this.dead) this.setState({ results: [...first, ...second, ...third, ...fourth, ...fifth, ...rs] }); }); const out = [...first, ...second, ...third, ...fourth, ...fifth, ...sixth];
+    if (!this.dead) { this.setState({ running: false, results: out }); window.__bagTests = out; }
+  };
+  renderVals() {
+    const s = this.state, R = s.results, pass = R.filter(r => r.pass).length;
+    return { summary: R.length ? `${pass}/${s.total} passing${s.running ? ' · running' : ''}${!s.running && pass < R.length ? ' · ' + (R.length - pass) + ' failing' : ''}` : 'starting…', label: s.running ? 'Running…' : 'Run again', run: this.run,
+      bar: { height: 6, width: (100 * R.length / s.total) + '%', background: pass === R.length ? '#ffe14d' : '#ff7a7a', transition: 'width .2s' },
+      rows: R.map(r => ({ id: r.id, group: r.group, name: r.name, mark: r.pass ? '✓' : '✗', evidence: r.evidence, ms: r.ms, col: r.pass ? '#cfe6ff' : '#ff9a9a', bg: r.pass ? 'transparent' : 'rgba(255,90,90,0.14)' })) };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    html, body { margin: 0; background: #161826; }
+    a { color: #9184d9; }
+    a:hover { color: #d2cefd; }
+  </style>
+</helmet>
+<div data-screen-label="Topics" style="min-height:100vh;display:grid;align-content:start;gap:16px;padding:16px clamp(12px,3vw,32px) 32px;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:14px;">
+  <header style="display:grid;gap:8px;max-width:980px;">
+    <span class="card-kicker">Research · topics agent</span>
+    <h1 style="margin:0;font-size:clamp(26px,4vw,36px);">Ten thousand topics, cool and boring, with what each could earn</h1>
+    <p style="margin:0;font-size:14px;line-height:1.55;color:color-mix(in srgb,var(--color-text) 72%,transparent);max-width:760px;text-wrap:pretty;">An agent adds topics from every domain, a round at a time. Before it adds anything it reads every topic already listed in that domain and leaves out repeats and rewordings itself. The list stays in this browser; export it as JSONL or CSV.</p>
+  </header>
+
+  <section class="card elev-sm" style="gap:12px;padding:14px;max-width:980px;">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+      <span style="font-size:28px;font-weight:500;font-variant-numeric:tabular-nums;">{{ count }}</span>
+      <span style="font-size:13px;color:color-mix(in srgb,var(--color-text) 62%,transparent);">of 10,000 · {{ domainsCovered }}</span>
+      <span style="margin-left:auto;font-size:12.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);overflow-wrap:anywhere;">{{ agentLine }}</span>
+    </div>
+    <div style="height:2px;background:var(--color-neutral-800);border-radius:2px;overflow:hidden;"><div style="height:100%;background:var(--color-accent);width:{{ pct }};"></div></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <button type="button" class="btn btn-primary" onClick="{{ toggle }}">{{ toggleLabel }}</button>
+      <button type="button" class="btn btn-secondary" onClick="{{ exportJsonl }}">Export JSONL</button>
+      <button type="button" class="btn btn-secondary" onClick="{{ exportCsv }}">Export CSV</button>
+    </div>
+  </section>
+
+  <section class="card elev-sm" style="gap:10px;padding:14px;max-width:980px;">
+    <h2 style="margin:0;font-size:16px;">Research you asked for</h2>
+    <p style="margin:0;font-size:13px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 66%,transparent);">One request per line. The agent works through these first, turns each into topics, and marks them as requested.</p>
+    <textarea class="input" aria-label="Research requests" value="{{ reqText }}" onChange="{{ onReq }}" placeholder="Seeded substrate: quality from 30B down to an LSTM on CPU" style="min-height:90px;"></textarea>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <button type="button" class="btn btn-secondary" onClick="{{ saveReq }}">Queue these</button>
+      <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ reqLine }}</span>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:10px;max-width:980px;">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <input class="input" aria-label="Search topics" value="{{ q }}" onChange="{{ onQ }}" placeholder="Search" style="flex:1 1 220px;width:auto;">
+      <select class="input" aria-label="Domain" value="{{ dom }}" onChange="{{ onDom }}" style="flex:0 1 220px;width:auto;">
+        <sc-for list="{{ domOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}" selected="{{ o.on }}">{{ o.l }}</option></sc-for>
+      </select>
+      <div class="seg" role="radiogroup" aria-label="Kind">
+        <sc-for list="{{ kindOpts }}" as="o" hint-placeholder-count="3"><label class="seg-opt" style="padding:6px 10px;font-size:12.5px;"><input type="radio" name="tp-kind" checked="{{ o.on }}" onChange="{{ o.pick }}">{{ o.l }}</label></sc-for>
+      </div>
+      <div class="seg" role="radiogroup" aria-label="Sort">
+        <sc-for list="{{ sortOpts }}" as="o" hint-placeholder-count="2"><label class="seg-opt" style="padding:6px 10px;font-size:12.5px;"><input type="radio" name="tp-sort" checked="{{ o.on }}" onChange="{{ o.pick }}">{{ o.l }}</label></sc-for>
+      </div>
+    </div>
+    <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ shownLine }}</span>
+    <div style="display:grid;gap:2px;">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 14px;padding:10px 6px;border-bottom:1px solid color-mix(in srgb,var(--color-text) 7%,transparent);">
+          <span style="font-size:14px;line-height:1.4;overflow-wrap:anywhere;">{{ r.t }}</span>
+          <span style="font-size:13px;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;color:var(--color-accent-300);">{{ r.v }}</span>
+          <span style="font-size:12.5px;line-height:1.45;color:color-mix(in srgb,var(--color-text) 66%,transparent);overflow-wrap:anywhere;">{{ r.how }}</span>
+          <span style="font-size:11.5px;text-align:right;color:color-mix(in srgb,var(--color-text) 55%,transparent);white-space:nowrap;">{{ r.meta }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button type="button" class="btn btn-secondary" onClick="{{ prev }}" disabled="{{ atStart }}">Previous</button>
+      <button type="button" class="btn btn-secondary" onClick="{{ next }}" disabled="{{ atEnd }}">Next</button>
+      <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ pageLine }}</span>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = 'anima_topics_v1', TARGET = 10000, PER = 50, BATCH = 60;
+const DOMAINS = ['Agriculture and farm equipment', 'Aviation and airports', 'Banking and payments', 'Biotech and lab tools', 'Chemicals', 'Civil engineering and bridges', 'Construction and building codes', 'Cybersecurity', 'Dentistry', 'Schools and education', 'Elections and civic tech', 'Electric grids and utilities', 'Fisheries and aquaculture', 'Food safety and processing', 'Forestry and timber', 'Freight and trucking', 'Funeral and cemetery services', 'Video games', 'Geology and mining', 'Government procurement', 'Hospital billing and health insurance', 'HVAC and building maintenance', 'Insurance and claims', 'Industrial IoT and sensors', 'Local journalism', 'Law and courts', 'Libraries and archives', 'Warehousing and logistics', 'Manufacturing and factories', 'Maritime and ports', 'Materials science', 'Municipal water and sewers', 'Music and audio', 'Nonprofits and grants', 'Nursing and elder care', 'Oceans and climate science', 'Oil, gas and pipelines', 'Pensions and retirement', 'Pharmacies and drug supply', 'Printing and packaging', 'Public health', 'Railways', 'Real estate and property management', 'Recycling and waste', 'Religious organisations', 'Retail and shops', 'Robotics', 'Satellites and space', 'Semiconductors and chips', 'Sports and leagues', 'Standards and certification', 'Tax and accounting', 'Telecoms and towers', 'Textiles and fashion', 'Tourism and hotels', 'Toys and hobbies', 'Urban planning and zoning', 'Veterinary and pets', 'Weather and forecasting', 'Wine, beer and spirits', 'AI infrastructure and GPUs', 'Bitcoin and crypto markets', 'Small language models and on-device AI', 'Knowledge graphs and agent memory', 'Developer tools', 'Open-source maintenance', 'Data centres and cooling', 'Batteries and energy storage', 'Nuclear and fusion', 'Solar and wind', 'Mobility, cars and EV charging', 'Bicycles and micromobility', 'Housing and rent', 'Construction labour and trades', 'Home services and repair', 'Childcare', 'Disability and accessibility', 'Mental health', 'Fitness and gyms', 'Nutrition and diet', 'Cosmetics and personal care', 'Dating and relationships', 'Weddings and events', 'Photography and video', 'Film and TV production', 'Books and publishing', 'Translation and languages', 'Museums and heritage', 'Art and collectibles', 'Auctions and resale', 'E-commerce operations', 'Marketing and advertising', 'Customer support', 'Recruiting and HR', 'Payroll and benefits', 'Office furniture and real estate', 'Legal compliance and regulation', 'Privacy and data protection', 'Identity and fraud', 'Defence and security', 'Policing and emergency services', 'Fire safety', 'Prisons and justice reform', 'Immigration', 'Diplomacy and trade', 'Customs and tariffs', 'Commodities trading', 'Stock markets and funds', 'Venture capital', 'Small business lending', 'Accounting software', 'Spreadsheets and back-office', 'Scientific publishing', 'Universities and research funding', 'Clinical trials', 'Medical devices', 'Genomics', 'Rare diseases', 'Ageing and longevity', 'Pest control', 'Lawn, garden and landscaping', 'Pools and spas', 'Parking', 'Car washes and auto repair', 'Laundromats and dry cleaning', 'Vending and kiosks', 'Self-storage', 'Restaurants and kitchens', 'Coffee and tea', 'Cocoa, sugar and spices', 'Water rights and irrigation', 'Soil and fertiliser', 'Seeds and plant breeding', 'Livestock and dairy', 'Beekeeping', 'Mapping and GIS', 'Surveying and land records', 'Elevators and escalators', 'Locks, keys and access control', 'Uniforms and workwear', 'Signage and wayfinding', 'Translation of standards into software', 'Calendars, time zones and scheduling'];
+
+class Component extends DCLogic {
+  state = { topics: [], reqs: [], reqText: '', running: false, line: 'Agent paused.', q: '', dom: '', kind: 'all', sort: 'new', page: 0, calls: 0, errors: 0 };
+  componentDidMount() {
+    try { document.title = 'Topics · research agent'; document.documentElement.lang = 'en'; const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) this.setState({ topics: s.topics || [], reqs: s.reqs || [], reqText: (s.reqs || []).map(r => r.text).join('\n') }); } catch (e) {}
+  }
+  componentWillUnmount() { this.stopped = true; clearTimeout(this.timer); }
+  save() { try { localStorage.setItem(KEY, JSON.stringify({ topics: this.state.topics, reqs: this.state.reqs })); } catch (e) { this.setState({ line: 'This browser is out of storage for the list: export it, then clear older topics.' }); } }
+  pickTask() {
+    const req = this.state.reqs.find(r => !r.done);
+    if (req) return { domain: 'Requested research', request: req };
+    const n = {}; DOMAINS.forEach(d => { n[d] = 0; }); this.state.topics.forEach(t => { if (n[t.d] != null) n[t.d]++; });
+    const min = Math.min(...DOMAINS.map(d => n[d])), pool = DOMAINS.filter(d => n[d] === min);
+    return { domain: pool[Math.floor(Math.random() * pool.length)] };
+  }
+  async round() {
+    if (this.stopped || !this.state.running) return;
+    if (this.state.topics.length >= TARGET) return this.setState({ running: false, line: 'Reached 10,000 topics. The agent keeps adding when you start it again.' });
+    if (!(window.claude && typeof window.claude.complete === 'function')) return this.setState({ running: false, line: 'No model is available in this page, so the agent cannot add topics here.' });
+    const task = this.pickTask(), have = this.state.topics.filter(t => t.d === task.domain).map(t => t.t);
+    this.setState({ line: 'Thinking about ' + (task.request ? 'your request: ' + task.request.text.slice(0, 80) : task.domain) + ' · ' + have.length + ' already listed there' });
+    const ask = 'You keep a list of research topics an independent research institute could work on and earn from. Domain: ' + task.domain + '.' + (task.request ? ' The owner asked for this research: "' + task.request.text + '". Every topic must serve that request.' : '') +
+      '\nTopics already on the list in this domain (do not repeat them, reword them, or narrow one into a near copy):\n' + (have.length ? have.join('\n') : '(none yet)') +
+      '\nWrite ' + BATCH + ' NEW topics. Mix boring ones (unglamorous, overlooked, steady money, paperwork, maintenance, compliance) with cool ones (new science, frontier tech, surprising angles), about half each. Each topic is a specific question or product, not a field. For each give a realistic earning range for a small institute per year and the way it earns.' +
+      '\nReturn ONLY a JSON array of objects: {"t": topic (max 120 chars), "k": "boring" or "cool", "v": earning range like "$40k–$300k/yr", "e": 1-4 (1 = under $50k/yr, 2 = $50k–$500k, 3 = $500k–$5M, 4 = over $5M), "how": how it earns in one short sentence}. If you cannot find new ones, return fewer.';
+    try {
+      const r = String(await window.claude.complete({ messages: [{ role: 'user', content: ask }], max_tokens: 6000 }));
+      const arr = JSON.parse(r.slice(r.indexOf('['), r.lastIndexOf(']') + 1));
+      const now = Date.now(), add = (Array.isArray(arr) ? arr : []).filter(x => x && typeof x.t === 'string' && x.t.trim()).map((x, i) => ({ id: now.toString(36) + i.toString(36), t: String(x.t).trim().slice(0, 160), d: task.domain, k: x.k === 'cool' ? 'cool' : 'boring', v: String(x.v || '').slice(0, 40), e: Math.max(1, Math.min(4, +x.e || 1)), how: String(x.how || '').slice(0, 200), req: task.request ? task.request.text : '', ts: now }));
+      this.setState(s => ({ topics: s.topics.concat(add), reqs: task.request ? s.reqs.map(q => q === task.request ? { ...q, done: true, n: add.length } : q) : s.reqs, calls: s.calls + 1, line: 'Added ' + add.length + ' to ' + task.domain + '. Next round in a few seconds.' }), () => this.save());
+    } catch (e) { this.setState(s => ({ errors: s.errors + 1, line: 'That round failed (' + String(e.message || e).slice(0, 80) + '); trying another domain.' })); }
+    clearTimeout(this.timer); this.timer = setTimeout(() => this.round(), 7000);
+  }
+  download(name, text, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+  renderVals() {
+    const s = this.state, q = s.q.trim().toLowerCase();
+    let list = s.topics.filter(t => (!s.dom || t.d === s.dom) && (s.kind === 'all' || t.k === s.kind) && (!q || (t.t + ' ' + t.how + ' ' + t.d).toLowerCase().includes(q)));
+    list = s.sort === 'earn' ? list.slice().sort((a, b) => b.e - a.e || b.ts - a.ts) : list.slice().reverse();
+    const pages = Math.max(1, Math.ceil(list.length / PER)), page = Math.min(s.page, pages - 1), doms = {};
+    s.topics.forEach(t => { doms[t.d] = (doms[t.d] || 0) + 1; });
+    return {
+      count: s.topics.length.toLocaleString(), domainsCovered: Object.keys(doms).length + ' domains', pct: Math.min(100, s.topics.length / TARGET * 100).toFixed(1) + '%',
+      agentLine: s.line + (s.calls ? ' · ' + s.calls + ' rounds' : '') + (s.errors ? ' · ' + s.errors + ' failed' : ''),
+      toggle: () => { const on = !s.running; this.setState({ running: on, line: on ? 'Starting…' : 'Agent paused.' }, () => on && this.round()); }, toggleLabel: s.running ? 'Pause the agent' : 'Start the agent',
+      exportJsonl: () => this.download('topics.jsonl', s.topics.map(t => JSON.stringify(t)).join('\n'), 'application/jsonl'),
+      exportCsv: () => this.download('topics.csv', ['topic,domain,kind,earning,tier,how,requested'].concat(s.topics.map(t => [t.t, t.d, t.k, t.v, t.e, t.how, t.req].map(x => '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"').join(','))).join('\n'), 'text/csv'),
+      reqText: s.reqText, onReq: e => this.setState({ reqText: e.target.value }),
+      saveReq: () => { const lines = s.reqText.split('\n').map(x => x.trim()).filter(Boolean), old = {}; s.reqs.forEach(r => { old[r.text] = r; }); this.setState({ reqs: lines.map(text => old[text] || { text, done: false }) }, () => this.save()); },
+      reqLine: s.reqs.length ? s.reqs.filter(r => r.done).length + ' of ' + s.reqs.length + ' requests turned into topics' : 'No requests queued.',
+      q: s.q, onQ: e => this.setState({ q: e.target.value, page: 0 }), dom: s.dom, onDom: e => this.setState({ dom: e.target.value, page: 0 }),
+      domOpts: [{ v: '', l: 'All domains', on: !s.dom }].concat(['Requested research'].concat(DOMAINS).filter(d => doms[d]).map(d => ({ v: d, l: d + ' (' + doms[d] + ')', on: s.dom === d }))),
+      kindOpts: [['all', 'All'], ['boring', 'Boring'], ['cool', 'Cool']].map(([v, l]) => ({ l, on: s.kind === v, pick: () => this.setState({ kind: v, page: 0 }) })),
+      sortOpts: [['new', 'Newest'], ['earn', 'Earning']].map(([v, l]) => ({ l, on: s.sort === v, pick: () => this.setState({ sort: v, page: 0 }) })),
+      shownLine: list.length.toLocaleString() + ' shown' + (s.topics.length ? '' : ' · start the agent to build the list'),
+      rows: list.slice(page * PER, page * PER + PER).map(t => ({ t: t.t, v: t.v || '$'.repeat(t.e), how: t.how, meta: t.d + ' · ' + t.k + (t.req ? ' · requested' : '') })),
+      prev: () => this.setState({ page: Math.max(0, page - 1) }), next: () => this.setState({ page: Math.min(pages - 1, page + 1) }), atStart: page === 0, atEnd: page >= pages - 1,
+      pageLine: 'Page ' + (page + 1) + ' of ' + pages
+    };
+  }
+}
+</script>
+</body>
+</html>

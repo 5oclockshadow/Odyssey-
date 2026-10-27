@@ -1,0 +1,26 @@
+{
+  "phase": "post",
+  "timestamp": "2026-10-26T07:01:46Z",
+  "version": "0.3.0",
+  "tests": {
+    "ok": true,
+    "passed": 208,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "total": 208,
+    "duration": 122.43,
+    "exit_code": 0
+  },
+  "audit": {
+    "score": 99,
+    "counts": {
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "info": 0
+    }
+  },
+  "assertions_under_tests": 506,
+  "head": "2804427c40b2c4125410447c8ec2005dc61b1935"
+}

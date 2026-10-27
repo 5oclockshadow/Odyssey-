@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>html, body { margin: 0; background: #161826; color: #e9e9ed; font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; } *, *::before, *::after { box-sizing: border-box; } a { color: #b5abfc; } a:hover { color: #d2cefd; }</style>
+</helmet>
+<div data-screen-label="Suite" style="min-height: 100vh; padding: clamp(24px, 5vw, 64px) clamp(16px, 4vw, 48px); display: grid; align-content: start; gap: 36px; max-width: 1180px; margin: 0 auto;">
+  <header style="display: grid; gap: 12px; max-width: 720px;">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #9397ab;">MAP GRAPH · SIX APPS, ONE ENGINE</div>
+    <h1 style="margin: 0; font-size: clamp(28px, 4vw, 44px); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; text-wrap: balance;">Same thinking engine. Six different human capacities.</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #b2b6ca; text-wrap: pretty;">Every app keeps Shake, the 3D strata, flat, lanes and outline views, and planes that add, split, merge and retire themselves as your map grows. What changes is what each one trains you to do, and the challenge it sets you.</p>
+  </header>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 12px;">
+    <sc-for list="{{ apps }}" as="a" hint-placeholder-count="6">
+      <a href="{{ a.href }}" style="display: grid; gap: 14px; align-content: start; padding: 20px; border-radius: 14px; background: #1b1d2c; border: 1px solid rgba(233, 233, 237, 0.08); text-decoration: none; color: #e9e9ed;" style-hover="border-color: #595d6c; background: #1f2132;">
+        <div style="display: flex; align-items: center; gap: 10px;"><span style="{{ a.dot }}"></span><span style="font-size: 20px; font-weight: 600; letter-spacing: -0.01em;">{{ a.name }}</span><span style="flex: 1;"></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #9397ab;">{{ a.cap }}</span></div>
+        <div style="font-size: 15px; line-height: 1.45; text-wrap: pretty;">{{ a.line }}</div>
+        <div style="font-size: 13px; line-height: 1.5; color: #9397ab; text-wrap: pretty;">{{ a.who }}</div>
+        <div style="display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid rgba(233, 233, 237, 0.06);">
+          <div style="display: flex; gap: 8px; font-size: 12px;"><span style="width: 74px; flex: none; color: #75798c;">Planes</span><span style="color: #cfd3e5; line-height: 1.4;">{{ a.planes }}</span></div>
+          <div style="display: flex; gap: 8px; font-size: 12px;"><span style="width: 74px; flex: none; color: #75798c;">Challenge</span><span style="color: #cfd3e5; line-height: 1.4;">{{ a.challenge }}</span></div>
+          <div style="display: flex; gap: 8px; font-size: 12px;"><span style="width: 74px; flex: none; color: #75798c;">Try</span><span style="color: #cfd3e5; line-height: 1.4;">{{ a.example }}</span></div>
+        </div>
+      </a>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { apps: [] };
+  async componentDidMount() {
+    try {
+      const C = await import('./suite-core.js'), files = { thoughtmap: 'ThoughtMap', thoughtgraph: 'ThoughtGraph', mapmap: 'MapMap', mapgraph: 'MapGraph', growgraph: 'GrowGraph', growmap: 'GrowMap', chemgraph: 'ChemGraph' };
+      this.setState({ apps: C.APP_ORDER.map(id => { const a = C.APPS[id]; return { name: a.name, cap: a.capacity.toUpperCase(), line: a.line, who: a.who, href: files[id] + '.dc.html', planes: a.planes.map(p => p.label).join(', ') + ', then whatever the map grows', challenge: C.CHALLENGES[a.challenge].title + ': ' + C.CHALLENGES[a.challenge].ask, example: a.examples.slice(0, 2).join(' · '), dot: { width: 10, height: 10, borderRadius: 10, background: a.accent, flex: 'none' } }; }) });
+    } catch (e) { console.warn('Suite: could not load apps:', e && e.message); }
+  }
+  renderVals() { return { apps: this.state.apps }; }
+}
+</script>
+</body>
+</html>

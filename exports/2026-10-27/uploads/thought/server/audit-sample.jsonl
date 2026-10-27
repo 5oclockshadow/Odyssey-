@@ -1,0 +1,3 @@
+{"ts":"2026-10-10T00:00:00.000Z","level":"audit","event":"admin.stats","outcome":"denied","actor":"ip:3a5ea341"}
+{"ts":"2026-10-10T00:00:01.000Z","level":"audit","event":"admin.export","outcome":"allowed","actor":"admin","rows":1}
+(format sample derived from test output, not a production log)

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <script src="connectome.js"></script>
+  <script src="livesim.js"></script>
+  <style>
+    body { margin: 0; background: #f5f1e8; }
+    a { color: #b8401b; } a:hover { color: #e4572e; }
+    button, input { font: inherit; color: inherit; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    @keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  </style>
+</helmet>
+<div data-screen-label="Explorer" style="--bg:#f5f1e8;--glow:rgba(228,87,46,0.10);--glow2:rgba(59,91,219,0.07);--elev:0 1px 2px rgba(40,30,10,.06),0 14px 30px -22px rgba(40,30,10,.35);--surf:#fffdf8;--sunk:#ece6d6;--line:#e4ddcf;--ink:#1d1a15;--body:#5b5448;--mut:#7a7265;--mut2:#a39b89;--acc:#e4572e;--accink:#b8401b;--acctint:#fff1ea;--grn:#2e7d5b;--track:#ebe4d3;--fld:#ffffff;--fldline:#ddd4c0;--btn:#b8401b;--btntxt:#f5f1e8;{{ dark }}min-height:100vh;background:radial-gradient(900px 420px at 8% -8%, var(--glow), transparent 62%), radial-gradient(700px 380px at 96% 4%, var(--glow2), transparent 60%), var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:13.5px;">
+  <header ref="{{ hRef }}" style="{{ hdrPos }}z-index:20;display:grid;gap:8px;padding:10px clamp(12px,2.5vw,24px);background:color-mix(in oklab, var(--bg) 86%, transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);box-shadow:0 14px 30px -26px var(--acc);">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;">
+      <span style="display:inline-flex;align-items:center;gap:9px;white-space:nowrap;"><span style="width:22px;height:22px;border-radius:7px;background:conic-gradient(from 210deg, var(--acc), #6b4dff, var(--acc));box-shadow:0 0 18px -4px var(--acc);"></span><span style="font:400 25px/1 'Instrument Serif',serif;">Threshold <i style="color:var(--acc);">explorer</i></span></span>
+      <div style="display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:10px;background:var(--sunk);"><sc-for list="{{ tiers }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.fn }}" style="{{ t.st }}">{{ t.label }}</button></sc-for></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;"><sc-for list="{{ dock }}" as="g" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mut);">{{ g.label }}</span><div style="display:flex;gap:2px;padding:3px;border-radius:12px;background:var(--sunk);box-shadow:inset 0 1px 2px rgba(0,0,0,.10);"><sc-for list="{{ g.items }}" as="v" hint-placeholder-count="3"><button onClick="{{ v.fn }}" style="{{ v.st }}">{{ v.label }}</button></sc-for></div></div></sc-for></div>
+      <span style="margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+        <span style="{{ connDot }}"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);">{{ conn }}</span>
+        <button onClick="{{ toggleConnect }}" style="{{ mini }}">Connect</button>
+        <button onClick="{{ toggleTheme }}" style="{{ mini }}">{{ themeLabel }}</button>
+      </span>
+    </div>
+    <div style="position:relative;">
+      <input value="{{ cmd }}" onChange="{{ onCmd }}" onKeyDown="{{ cmdKey }}" placeholder="Search anything, or a command: agent #3 · where H5 · map · 4d · play · institute · ask …" style="width:100%;box-sizing:border-box;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--fldline);background:var(--fld);outline:none;font-family:'JetBrains Mono',monospace;font-size:12.5px;"></input>
+      <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;display:grid;grid-template-columns:minmax(0,1fr);gap:1px;max-height:320px;overflow-y:auto;padding:6px;border-radius:12px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);box-shadow:0 12px 32px rgba(0,0,0,0.18);"><sc-for list="{{ results }}" as="r" hint-placeholder-count="0"><button onClick="{{ r.fn }}" style="display:grid;grid-template-columns:80px minmax(0,1fr);gap:10px;align-items:baseline;padding:7px 9px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;"><span style="{{ r.kSt }}">{{ r.kind }}</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.label }} <span style="color:var(--mut);font-size:12px;">{{ r.sub }}</span></span></button></sc-for></div></sc-if>
+    </div>
+    <sc-if value="{{ showConnect }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);"><input value="{{ api }}" onChange="{{ onApi }}" placeholder="/api or http://localhost:8000" style="{{ fld }}flex:1 1 200px;"></input><input type="password" value="{{ pw }}" onChange="{{ onPw }}" onKeyDown="{{ pwKey }}" placeholder="owner password" style="{{ fld }}flex:1 1 160px;"></input><button onClick="{{ signIn }}" style="{{ on }}">Sign in and load</button><button onClick="{{ reload }}" style="{{ mini }}">Retry</button><span style="flex-basis:100%;font-size:12px;line-height:1.45;color:var(--mut);">{{ connNote }}</span></div></sc-if>
+    </header>
+  <div style="padding:10px clamp(12px,2.5vw,24px) 0;"><div style="display:grid;gap:6px;padding:8px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;">
+        <span style="{{ wChip }}"><span style="{{ wDot }}"></span>{{ wLabel }}</span>
+        <span style="flex:1 1 260px;min-width:0;font-size:12.5px;line-height:1.4;color:var(--body);">{{ wTicker }}</span>
+        <div style="display:flex;gap:2px;padding:2px;border-radius:9px;background:var(--sunk);"><sc-for list="{{ wModes }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.fn }}" title="{{ m.tip }}" style="{{ m.st }}">{{ m.label }}</button></sc-for></div>
+        <sc-if value="{{ wCtl }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;">
+          <sc-if value="{{ wIsSim }}" hint-placeholder-val="{{ false }}"><button onClick="{{ wPause }}" style="{{ mini }}">{{ wPauseLabel }}</button><sc-for list="{{ wPaces }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.fn }}" style="{{ p.st }}">{{ p.label }}</button></sc-for></sc-if>
+          <button onClick="{{ wTurn }}" style="{{ on }}">Run a turn</button>
+          <sc-if value="{{ wIsSim }}" hint-placeholder-val="{{ false }}"><button onClick="{{ wReset }}" style="{{ mini }}">Reset</button></sc-if></div></sc-if>
+      </div>
+      <span style="font-size:11.5px;line-height:1.45;color:var(--mut);">{{ wNote }}</span>
+    </div></div>
+
+  <div style="display:grid;gap:12px;padding:12px clamp(12px,2.5vw,24px) 40px;align-items:start;{{ gridSt }}">
+    <aside style="min-width:0;display:grid;gap:6px;align-content:start;{{ agentsSt }}">
+      <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;"><b style="font:400 20px 'Instrument Serif',serif;">Agents</b><span style="font-size:12px;color:var(--mut);">{{ agentNote }}</span><span style="display:flex;flex-wrap:wrap;gap:4px 10px;{{ legendSt }}"><sc-for list="{{ legend }}" as="l" hint-placeholder-count="5"><span style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--body);"><span style="{{ l.dot }}"></span>{{ l.label }}</span></sc-for></span></div>
+      <div style="{{ agentListSt }}"><sc-for list="{{ agents }}" as="a" hint-placeholder-count="4"><button onClick="{{ a.fn }}" style="{{ a.st }}">
+        <span style="display:flex;align-items:center;gap:7px;min-width:0;"><span style="{{ a.numSt }}">#{{ a.num }}</span><b style="font-weight:600;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ a.name }}</b><span style="{{ a.dot }}"></span></span>
+        <span style="font-size:11.5px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ a.role }}</span>
+        <span style="display:flex;flex-wrap:wrap;gap:3px 10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--body);"><span>{{ a.nw }} work</span><span>{{ a.nq }} questions</span><span>{{ a.ns }} sources</span><span>{{ a.time }}</span></span>
+        <span style="display:block;height:3px;border-radius:2px;background:var(--track);overflow:hidden;"><span style="{{ a.bar }}"></span></span>
+      </button></sc-for></div>
+    </aside>
+
+    <section style="min-width:0;display:grid;gap:10px;">
+      <sc-if value="{{ show4d }}" hint-placeholder-val="{{ true }}">
+        <div style="position:relative;height:{{ canvasH }};min-height:360px;border-radius:16px;overflow:hidden;background:#06070b;border:1px solid var(--line);">
+          <div ref="{{ cRef }}" style="position:absolute;inset:0;"></div>
+          <div style="position:absolute;left:14px;top:12px;display:grid;gap:3px;pointer-events:none;max-width:70%;"><span style="font:400 22px/1.1 'Instrument Serif',serif;color:#f6efe0;">{{ c4Title }}</span><span style="font-size:11.5px;color:#9aa3b8;">{{ c4Sub }}</span></div>
+          <span style="position:absolute;right:14px;bottom:12px;font-size:11px;color:#7d869c;pointer-events:none;">drag to turn · scroll to zoom · click a node</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border-radius:14px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);">
+          <button onClick="{{ play }}" style="{{ on }}">{{ playLabel }}</button>
+          <input type="range" min="0" max="1000" value="{{ tpos }}" onChange="{{ onT }}" style="flex:1 1 240px;accent-color:var(--acc);"></input>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;min-width:140px;">{{ tLabel }}</span>
+          <button onClick="{{ toNow }}" style="{{ mini }}">Now</button>
+          <span style="flex-basis:100%;font-size:12px;color:var(--mut);">{{ tNote }}</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ lockedBrain }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:10px;padding:22px;border-radius:16px;background:#06070b;color:#e9ede0;border:1px solid var(--line);"><b style="font:400 26px/1.1 'Instrument Serif',serif;">The agent’s own brain is private</b><span style="font-size:13.5px;line-height:1.55;color:#aeb6c8;max-width:620px;">Its thoughts, its tools and its own source code are visible to the owner, and to Pro without the thoughts. At this tier you see the institute graph: the published work, questions and sources, with agents by number.</span><button onClick="{{ openInst }}" style="{{ on }}justify-self:start;">Open the institute graph</button></div></sc-if>
+      <sc-if value="{{ isTime }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;"><b style="font:400 22px 'Instrument Serif',serif;">Timeline</b><span style="font-size:12px;color:var(--mut);">{{ tlNote }}</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ tlChips }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div>
+        <sc-for list="{{ tlDays }}" as="g" hint-placeholder-count="2"><div style="display:grid;gap:4px;">
+          <div style="display:flex;align-items:baseline;gap:8px;margin-top:6px;"><b style="font-size:13px;">{{ g.day }}</b><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);">{{ g.n }}</span></div>
+          <div style="display:grid;border-left:2px solid var(--line);margin-left:6px;padding-left:10px;"><sc-for list="{{ g.items }}" as="i" hint-placeholder-count="3"><div onClick="{{ i.fn }}" style="{{ i.st }}">
+            <div style="display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:8px;align-items:baseline;"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);">{{ i.time }}</span><span style="min-width:0;display:grid;gap:1px;"><b style="font-weight:500;line-height:1.35;">{{ i.title }}</b><span style="font-size:11.5px;color:var(--mut);">{{ i.who }} · {{ i.meta }}</span></span><span style="{{ i.kSt }}">{{ i.kind }}</span></div>
+            <sc-if value="{{ i.open }}" hint-placeholder-val="{{ false }}"><div style="margin:6px 0 2px 54px;padding:8px 10px;border-radius:10px;background:var(--sunk);font-size:12.5px;line-height:1.5;color:var(--body);">{{ i.note }}</div></sc-if>
+          </div></sc-for></div>
+        </div></sc-for>
+      </sc-if>
+      <sc-if value="{{ isFinance }}" hint-placeholder-val="{{ false }}"><dc-import name="Finance" embedded="{{ true }}" dark="{{ finDark }}" hint-size="100%,900px"></dc-import></sc-if>
+      <sc-if value="{{ isReprice }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;"><b style="font:400 24px 'Instrument Serif',serif;">Fair repricing of the GPU build-out</b><span style="font-size:12px;color:var(--mut);">{{ rpNote }}</span></div>
+        <div style="padding:9px 12px;border-radius:10px;background:var(--acctint);color:var(--accink);font-size:12.5px;line-height:1.5;">{{ rpDisclaimer }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;"><sc-for list="{{ rpKpis }}" as="k" hint-placeholder-count="6"><div style="padding:10px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);display:grid;gap:2px;align-content:start;"><span style="font:400 22px/1.1 'Instrument Serif',serif;">{{ k.v }}</span><span style="font-size:11.5px;color:var(--mut);line-height:1.35;">{{ k.l }}</span></div></sc-for></div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ rpKinds }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div>
+        <sc-if value="{{ rpEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:14px;border-radius:12px;border:1px dashed var(--fldline);color:var(--body);line-height:1.5;">{{ rpEmptyText }}<sc-if value="{{ rpCta }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;"><button onClick="{{ rpCtaFn }}" style="{{ on }}">{{ rpCtaLabel }}</button></div></sc-if></div></sc-if>
+        <sc-for list="{{ rpRows }}" as="r" hint-placeholder-count="0"><div style="display:grid;gap:8px;padding:12px 14px;border-radius:14px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);animation:rise .25s;">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;"><b style="font:400 20px 'Instrument Serif',serif;">{{ r.asset }}</b><span style="{{ tagS }}">{{ r.kind }}</span><span style="{{ r.basisSt }}">{{ r.basis }}</span><span style="{{ tagS }}">{{ r.conf }}</span><sc-if value="{{ r.showPub }}" hint-placeholder-val="{{ false }}"><span style="{{ r.pubSt }}">{{ r.pubLabel }}</span></sc-if><span style="margin-left:auto;font-size:11.5px;color:var(--mut);">{{ r.age }}</span></div>
+          <div style="display:grid;gap:4px;"><div style="position:relative;height:16px;border-radius:8px;background:var(--track);"><span style="{{ r.zeroSt }}"></span><span style="{{ r.segSt }}"></span><span style="{{ r.tickSt }}"></span></div><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;font-size:12.5px;"><b style="{{ r.expSt }}">Expected {{ r.expected }}</b><span style="color:var(--mut);">range {{ r.range }}</span></div></div>
+          <span style="font-size:12px;color:var(--mut);line-height:1.45;">{{ r.market }}</span>
+          <span style="{{ r.whySt }}">{{ r.why }}</span>
+          <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:10px;padding-top:8px;border-top:1px dashed var(--line);">
+            <sc-if value="{{ r.hasScen }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:6px;"><span style="{{ capS }}">Scenarios</span><sc-for list="{{ r.scen }}" as="x" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(0,1fr) 80px 96px;gap:8px;align-items:center;font-size:12.5px;"><span style="min-width:0;">{{ x.name }}<span style="display:block;font-size:11.5px;color:var(--mut);">{{ x.note }}</span></span><span style="height:6px;border-radius:3px;background:var(--track);overflow:hidden;"><span style="{{ x.bar }}"></span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;text-align:right;">{{ x.val }}</span></div></sc-for></div></sc-if>
+            <sc-if value="{{ r.hasDrv }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:4px;"><span style="{{ capS }}">What moves it</span><sc-for list="{{ r.drv }}" as="x" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:22px minmax(0,1fr) 44px;gap:8px;font-size:12.5px;align-items:baseline;"><span style="{{ x.st }}">{{ x.dir }}</span><span style="min-width:0;">{{ x.name }}<span style="display:block;font-size:11px;color:var(--mut);">cites {{ x.ev }}</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;text-align:right;">{{ x.w }}</span></div></sc-for></div></sc-if>
+            <sc-if value="{{ r.hasSrc }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:4px;"><span style="{{ capS }}">Sources</span><sc-for list="{{ r.src }}" as="x" hint-placeholder-count="2"><div style="display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;font-size:12.5px;"><span style="{{ x.st }}">{{ x.basis }}</span><sc-if value="{{ x.hasUrl }}" hint-placeholder-val="{{ false }}"><a href="{{ x.url }}" target="_blank">{{ x.label }}</a></sc-if><sc-if value="{{ x.noUrl }}" hint-placeholder-val="{{ true }}"><span>{{ x.label }}</span></sc-if><span style="color:var(--mut);font-size:11.5px;">{{ x.asof }}</span></div></sc-for></div></sc-if>
+            <div style="display:grid;gap:4px;"><span style="{{ capS }}">What it could not see</span><sc-for list="{{ r.lims }}" as="x" hint-placeholder-count="1"><span style="font-size:12.5px;line-height:1.45;color:var(--body);">· {{ x }}</span></sc-for></div>
+            <sc-if value="{{ r.hasSpark }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:4px;"><span style="{{ capS }}">Expected re-rate over time</span><div style="display:flex;align-items:flex-end;gap:2px;height:34px;"><sc-for list="{{ r.spark }}" as="x" hint-placeholder-count="0"><span style="{{ x.st }}"></span></sc-for></div></div></sc-if>
+          </div></sc-if>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ r.ctas }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div>
+        </div></sc-for>
+      </sc-if>
+      <sc-if value="{{ isLimits }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;"><b style="font:400 24px 'Instrument Serif',serif;">What the institute cannot yet do</b><span style="font-size:12px;color:var(--mut);">{{ lmNote }}</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;"><sc-for list="{{ lmKpis }}" as="k" hint-placeholder-count="4"><div style="padding:10px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);display:grid;gap:2px;"><span style="font:400 22px/1.1 'Instrument Serif',serif;">{{ k.v }}</span><span style="font-size:11.5px;color:var(--mut);">{{ k.l }}</span></div></sc-for></div>
+        <span style="display:block;height:6px;border-radius:3px;background:var(--track);overflow:hidden;"><span style="{{ lmBar }}"></span></span>
+        <sc-if value="{{ lmHasSrc }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:4px;padding:10px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);"><span style="{{ capS }}">Real sources this browser can reach</span><sc-for list="{{ lmSrc }}" as="x" hint-placeholder-count="3"><div style="display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center;font-size:12.5px;"><span style="{{ x.dot }}"></span><b style="font-weight:500;">{{ x.label }}</b><span style="color:var(--mut);">{{ x.text }}</span></div></sc-for></div></sc-if>
+        <sc-for list="{{ lmGroups }}" as="g" hint-placeholder-count="0"><div style="display:grid;gap:6px;"><span style="{{ capS }}">{{ g.title }} · {{ g.n }}</span>
+          <sc-for list="{{ g.items }}" as="l" hint-placeholder-count="0"><div style="display:grid;gap:6px;padding:10px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accink);">{{ l.id }}</span><span style="{{ l.stSt }}">{{ l.status }}</span><span style="font-size:11px;color:var(--mut);letter-spacing:0.1em;">{{ l.sev }}</span><span style="margin-left:auto;font-size:11px;color:var(--mut);">{{ l.by }}</span></div>
+            <span style="line-height:1.45;">{{ l.text }}</span>
+            <span style="font-size:12px;color:var(--mut);line-height:1.45;">Lifts by: {{ l.lifts }}</span>
+            <sc-if value="{{ l.hasPlan }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;line-height:1.45;color:var(--body);">Plan: {{ l.plan }}</span></sc-if>
+            <sc-if value="{{ l.needs }}" hint-placeholder-val="{{ false }}"><div style="padding:8px 10px;border-radius:10px;background:var(--acctint);color:var(--accink);font-size:12.5px;line-height:1.45;">Needs the owner: {{ l.need }}</div></sc-if>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ l.ctas }}" as="c" hint-placeholder-count="0"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div>
+          </div></sc-for></div></sc-for>
+      </sc-if>
+      <sc-if value="{{ isMap }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><b style="font:400 22px 'Instrument Serif',serif;">{{ mmTitle }}</b><span style="font-size:12px;color:var(--mut);">click a node to drill in · ± opens a branch</span><span style="margin-left:auto;display:flex;gap:6px;"><button onClick="{{ mmExpand }}" style="{{ mini }}">Expand all</button><button onClick="{{ mmCollapse }}" style="{{ mini }}">Collapse</button><button onClick="{{ toRoot }}" style="{{ mini }}">Institute</button></span></div>
+        <div style="overflow:auto;max-height:76vh;border-radius:16px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);"><div style="position:relative;width:{{ mmW }}px;height:{{ mmH }}px;">{{ mmSvg }}<sc-for list="{{ mm }}" as="m" hint-placeholder-count="6"><div style="{{ m.st }}"><sc-if value="{{ m.hasKids }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.toggle }}" style="{{ m.tSt }}">{{ m.glyph }}</button></sc-if><button onClick="{{ m.fn }}" title="{{ m.title }}" style="{{ m.lSt }}"><span style="{{ m.dot }}"></span><span style="min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.label }}</span><span style="{{ m.subSt }}">{{ m.sub }}</span></button></div></sc-for></div></div>
+      </sc-if>
+    </section>
+
+    <aside style="min-width:0;display:grid;gap:10px;align-content:start;{{ detailSt }}">
+      <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:8px;padding:14px;border-radius:16px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);animation:rise .25s;">
+          <span style="{{ dKickSt }}">{{ d.kicker }}</span>
+          <b style="font:400 22px/1.15 'Instrument Serif',serif;word-break:break-word;">{{ d.title }}</b>
+          <div style="display:grid;"><sc-for list="{{ d.meta }}" as="m" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px;font-size:12.5px;padding:5px 0;border-top:1px solid var(--line);"><span style="color:var(--mut);">{{ m.k }}</span><sc-if value="{{ m.link }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.fn }}" style="justify-self:start;padding:0;border:0;background:none;color:var(--accink);cursor:pointer;text-align:left;font-size:12.5px;">{{ m.v }}</button></sc-if><sc-if value="{{ m.plain }}" hint-placeholder-val="{{ true }}"><span style="min-width:0;word-break:break-word;">{{ m.v }}</span></sc-if></div></sc-for></div>
+          <sc-if value="{{ d.hasNote }}" hint-placeholder-val="{{ false }}"><div style="padding:9px 11px;border-radius:10px;background:var(--sunk);font-size:12.5px;line-height:1.5;color:var(--body);">{{ d.note }}</div></sc-if>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ d.pivots }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.fn }}" style="{{ p.st }}">{{ p.label }}</button></sc-for></div>
+        </div>
+        <div style="display:grid;gap:6px;padding:12px;border-radius:16px;border:1px dashed var(--fldline);">
+          <span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--accink);">Ask SEXTANT about this</span>
+          <div style="display:flex;gap:6px;"><input value="{{ ask }}" onChange="{{ onAsk }}" onKeyDown="{{ askKey }}" placeholder="Why this source? What should come next?" style="{{ fld }}flex:1;min-width:0;"></input><button onClick="{{ sendAsk }}" style="{{ on }}">Ask</button></div>
+          <sc-if value="{{ hasAnswer }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;line-height:1.5;padding:8px 10px;border-radius:10px;background:var(--sunk);">{{ answer }}</div></sc-if>
+          <span style="font-size:11.5px;color:var(--mut);line-height:1.4;">{{ askNote }}</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noSel }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;gap:10px;padding:14px;border-radius:16px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);">
+          <b style="font:400 22px/1.15 'Instrument Serif',serif;">The institute, as it works</b>
+          <span style="font-size:12.5px;line-height:1.5;color:var(--body);">{{ ovText }}</span>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px;"><sc-for list="{{ ovKpis }}" as="k" hint-placeholder-count="6"><div style="display:grid;gap:1px;"><span style="font:400 22px/1 'Instrument Serif',serif;">{{ k.v }}</span><span style="font-size:11px;color:var(--mut);">{{ k.l }}</span></div></sc-for></div>
+          <sc-if value="{{ hasHidden }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--mut);">{{ hiddenNote }}</span></sc-if>
+        </div>
+        <sc-for list="{{ ovLists }}" as="L" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:minmax(0,1fr);gap:2px;padding:12px;border-radius:16px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--elev);"><span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--mut);margin-bottom:2px;">{{ L.title }}</span><sc-for list="{{ L.items }}" as="i" hint-placeholder-count="3"><button onClick="{{ i.fn }}" style="display:flex;gap:8px;align-items:center;min-width:0;padding:6px 8px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;"><span style="{{ i.dot }}"></span><span style="min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ i.label }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--mut);flex:none;">{{ i.sub }}</span></button></sc-for></div></sc-for>
+      </sc-if>
+    </aside>
+  </div>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:40;padding:9px 16px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:13px;max-width:90vw;">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DARK = '--glow:rgba(200,244,58,0.07);--glow2:rgba(120,140,255,0.06);--elev:0 1px 0 rgba(255,255,255,.03) inset,0 18px 36px -24px rgba(0,0,0,.85);--bg:#0f100d;--surf:#16180f;--sunk:#1c1f16;--line:#2b3024;--ink:#e9ede0;--body:#c6ccb8;--mut:#98a08a;--mut2:#6c7360;--acc:#c8f43a;--accink:#d6f76a;--acctint:#232a12;--grn:#7fe0a0;--track:#262a1e;--fld:#12140e;--fldline:#2b3024;--btn:#c8f43a;--btntxt:#0f100d;';
+const M = "font-family:'JetBrains Mono',monospace;";
+const LN = { agent: ['Agents', 'var(--ink)'], work: ['Work', '#3b5bdb'], question: ['Questions', '#e4572e'], claim: ['Claims', '#8a4fd6'], source: ['Sources and papers', '#2e7d5b'], tool: ['Its tools', '#c98a1b'], module: ['Its own source', '#5c7896'], thought: ['Its thoughts', '#b08d2a'], group: ['', 'var(--mut2)'], root: ['', 'var(--ink)'], more: ['', 'var(--mut2)'] };
+const B = {
+  mini: 'min-height:30px;padding:0 11px;border-radius:8px;border:1px solid var(--fldline);background:var(--surf);cursor:pointer;font-size:12.5px;white-space:nowrap;',
+  on: 'min-height:32px;padding:0 14px;border-radius:9px;border:1px solid var(--btn);background:var(--btn);color:var(--btntxt);cursor:pointer;font-size:12.5px;font-weight:600;white-space:nowrap;',
+  fld: 'min-height:34px;padding:0 10px;border-radius:9px;border:1px solid var(--fldline);background:var(--fld);outline:none;box-sizing:border-box;',
+  seg: a => 'min-height:28px;padding:0 11px;border-radius:7px;border:0;cursor:pointer;font-size:12.5px;white-space:nowrap;background:' + (a ? 'var(--surf)' : 'transparent') + ';color:' + (a ? 'var(--ink)' : 'var(--mut)') + ';font-weight:' + (a ? 600 : 500) + ';box-shadow:' + (a ? '0 1px 2px rgba(0,0,0,0.14)' : 'none') + ';',
+};
+const dot = (c, d) => 'width:' + (d || 8) + 'px;height:' + (d || 8) + 'px;border-radius:50%;flex:none;background:' + c + ';';
+const fmtDur = s => s == null || isNaN(s) ? '' : s < 90 ? Math.round(s) + 's' : s < 5400 ? Math.round(s / 60) + 'm' : (s / 3600).toFixed(1) + 'h';
+const fmtT = t => t ? new Date(t * 1000).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+const lane = t => (['question', 'hypothesis', 'goal'].includes(String(t || '').toLowerCase()) ? 'question' : ['source', 'paper', 'document', 'feed', 'item', 'dataset', 'url'].includes(String(t || '').toLowerCase()) ? 'source' : 'claim');
+const slugOf = t => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const chipBtn = on => 'min-height:28px;padding:0 12px;border-radius:999px;cursor:pointer;font-size:12.5px;border:1px solid ' + (on ? 'var(--ink)' : 'var(--fldline)') + ';background:' + (on ? 'var(--ink)' : 'var(--surf)') + ';color:' + (on ? 'var(--bg)' : 'var(--ink)') + ';';
+const trimSlash = u => (u.endsWith('/') ? u.slice(0, -1) : u);
+const ago = t => { const x = Math.max(0, Date.now() / 1000 - t); return x < 90 ? Math.round(x) + 's ago' : x < 5400 ? Math.round(x / 60) + 'm ago' : (x / 3600).toFixed(1) + 'h ago'; };
+const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(Math.round(v * 10) / 10) + '%';
+const chipS = c => 'padding:1px 8px;border-radius:999px;border:1px solid ' + c + ';font-size:11px;white-space:nowrap;color:var(--ink);';
+const aname = a => /^agent #/.test(a.name) ? 'Agent #' + a.num + (a.role ? ' · ' + a.role : '') : '#' + a.num + ' ' + a.name;
+const split = key => { const i = key.indexOf(':'); return [key.slice(0, i), key.slice(i + 1)]; };
+
+// The same function as apps/engine/provenance.py, so demo data takes the exact shape the engine returns.
+function build(nodes, edges, agents, tasks, pub) {
+  const isPub = i => !!(nodes[i] && nodes[i].pub);
+  const roster = [{ id: 'sextant', num: 0, name: 'SEXTANT', role: 'the brain', status: 'running', where: 'agent', from_node: '' }];
+  [...agents].sort((a, b) => (a.created || 0) - (b.created || 0) || (a.id < b.id ? -1 : 1)).forEach((a, i) => { const fn = a.from_node || ''; roster.push({ id: a.id, num: i + 1, name: pub ? 'agent #' + (i + 1) : a.id, role: a.role || '', status: a.status || '?', where: a.where || '', from_node: !pub || isPub(fn) ? fn : '', items: a.items || 0, errors: a.errors || 0 }); });
+  const known = new Set(roster.map(a => a.id)), works = [], used = {}; let hidden = 0;
+  tasks.forEach(t => {
+    let who = String(t.who || 'sextant').replace(/^sub:/, ''); if (!known.has(who)) who = 'sextant';
+    let ids = (t.node_ids || []).filter(i => nodes[i] && !nodes[i].tel);
+    if (pub) { hidden += ids.filter(i => !isPub(i)).length; ids = ids.filter(isPub); if (!ids.length) return; }
+    const start = t.started || t.ts, end = t.ts, origin = String(t.origin || '').replace(/^sub:/, '');
+    const w = { id: t.id, agent: who, origin: known.has(origin) && origin !== who ? origin : '', kind: t.kind || '', title: t.title || '', state: t.state || '', started: t.state === 'planned' ? null : start, ts: end, dur: (t.state === 'done' || t.state === 'failed') && start && end ? Math.round((end - start) * 10) / 10 : null, energy: t.energy, nodes: ids.slice(0, 60), sim: !!t.sim };
+    if (!pub) w.note = String(t.note || '').slice(0, 600);
+    works.push(w); ids.forEach(i => { used[i] = (used[i] || 0) + 1; });
+  });
+  roster.forEach(a => { if (nodes[a.from_node] && !nodes[a.from_node].tel && !(a.from_node in used)) used[a.from_node] = 0; });
+  const keep = Object.keys(used).sort((a, b) => used[b] - used[a]).slice(0, 400), ks = new Set(keep), outE = [], seen = new Set();
+  Object.values(edges).forEach(e => { if (e.tel) return; const m = (e.members || []).filter(x => ks.has(x)); for (let i = 0; i + 1 < m.length; i++) { const k = m[i] + '|' + m[i + 1] + '|' + (e.relation || ''); if (!seen.has(k)) { seen.add(k); outE.push({ a: m[i], b: m[i + 1], rel: e.relation || '', w: e.w || 0 }); } } });
+  return { agents: roster, works, nodes: keep.map(i => ({ id: i, label: nodes[i].label || i, type: nodes[i].type || '', lane: lane(nodes[i].type), pub: isPub(i), refs: used[i], sim: !!nodes[i].sim })), edges: outE, hidden, public: pub, ts: Date.now() / 1000 };
+}
+function index(d) {
+  const A = {}, W = {}, N = {}, nbr = {}, first = {};
+  d.agents.forEach(a => { A[a.id] = { ...a, works: [] }; });
+  d.nodes.forEach(n => { N[n.id] = { ...n, works: [] }; nbr[n.id] = []; });
+  d.works.forEach(w => { W[w.id] = w; (A[w.agent] || A.sextant).works.push(w.id); if (w.origin && A[w.origin]) A[w.origin].works.push(w.id); const t = w.started || w.ts; w.nodes.forEach(i => { if (N[i]) N[i].works.push(w.id); if (t) first[i] = Math.min(first[i] || Infinity, t); }); });
+  d.edges.forEach(e => { if (N[e.a] && N[e.b]) { nbr[e.a].push({ id: e.b, rel: e.rel }); nbr[e.b].push({ id: e.a, rel: e.rel }); } });
+  const starts = d.works.map(w => w.started || w.ts).filter(Boolean), tmin = starts.length ? Math.min(...starts) : Date.now() / 1000 - 3600;
+  Object.values(N).forEach(n => { n.t = first[n.id] || tmin; });
+  Object.values(A).forEach(a => { const ts = a.works.map(id => W[id].started || W[id].ts).filter(Boolean); a.t = a.id === 'sextant' || !ts.length ? tmin : Math.min(...ts); const set = l => [...new Set(a.works.flatMap(id => W[id].nodes).concat(a.from_node ? [a.from_node] : []).filter(i => N[i] && N[i].lane === l))]; a.qs = set('question'); a.ss = set('source'); a.cs = set('claim'); a.total = a.works.reduce((s, id) => s + (W[id].agent === a.id && W[id].dur ? W[id].dur : 0), 0); });
+  return { ...d, self: d.self || { nodes: [], edges: [] }, A, W, N, nbr, tmin };
+}
+
+const DFILES = ['round.py', 'main.py', 'serve.py', 'tools.py', 'fleet.py', 'labs.py', 'ledger.py', 'provenance.py', 'signals.py', 'heal.py', 'reflect.py', 'selfmodel.py'];
+const DIMPORTS = [['main.py', 'round.py'], ['main.py', 'fleet.py'], ['main.py', 'ledger.py'], ['main.py', 'labs.py'], ['main.py', 'heal.py'], ['main.py', 'reflect.py'], ['serve.py', 'main.py'], ['serve.py', 'provenance.py'], ['round.py', 'tools.py'], ['tools.py', 'fleet.py'], ['tools.py', 'labs.py'], ['fleet.py', 'signals.py'], ['main.py', 'selfmodel.py']];
+const DTOOLS = { web_search: 'research', fetch_url: 'research', graph_query: 'reexamine', read_source: 'ingest', sandbox_run: 'lab', lab_run: 'lab', lab_record: 'lab', fleet_create: 'staff', source_add: 'staff', propose_publish: 'chat', plan_upgrade: 'drive', ship_app: 'drive' };
+function selfModel(b) {
+  const nodes = DFILES.map(f => ({ id: 'file:' + f, label: f, type: 'file', lane: 'module' })).concat(Object.keys(DTOOLS).map(t => ({ id: 'code:tools.' + t, label: t, type: 'tool', lane: 'tool' })));
+  const edges = DIMPORTS.map(([a, c]) => ({ a: 's:file:' + a, b: 's:file:' + c, rel: 'imports' })).concat(Object.keys(DTOOLS).map(t => ({ a: 's:code:tools.' + t, b: 's:file:tools.py', rel: 'defined_in' })));
+  b.works.filter(w => w.state === 'done' && w.agent === 'sextant').slice(0, 18).forEach(w => { const id = 'thought:' + w.id; nodes.push({ id, label: w.title + (w.note ? ' — ' + w.note : ''), type: 'thought', lane: 'thought', ts: w.ts }); edges.push({ a: 's:' + id, b: 'w:' + w.id, rel: 'about' }); Object.entries(DTOOLS).forEach(([t, k]) => { if (k === w.kind) edges.push({ a: 's:' + id, b: 's:code:tools.' + t, rel: 'used' }); }); });
+  return { nodes, edges };
+}
+class Component extends DCLogic {
+  cRef = React.createRef();
+  hRef = React.createRef();
+  state = { hdrH: 150, vh: 900, w: 1280, tier: 'owner', view: 'agent', pulse: '', tOpen: {}, tlAgent: '', dark: false, api: '/api', token: '', pw: '', D: null, live: false, sim: false, simSt: null, world: null, worldMode: 'auto', RP: null, rpKind: 'All', rpOpen: {}, why: '', conn: 'connecting…', sel: '', tpos: 1000, playing: false, mm: {}, mmAll: null, cmd: '', results: [], showConnect: false, ask: '', answer: '', toast: '' };
+  componentDidMount() {
+    this.onR = () => this.setState({ w: window.innerWidth, vh: window.innerHeight }); this.onR(); window.addEventListener('resize', this.onR);
+    if (window.ResizeObserver && this.hRef.current) { this.hro = new ResizeObserver(() => { const v = this.hRef.current ? this.hRef.current.offsetHeight : 150; if (v !== this.state.hdrH) this.setState({ hdrH: v }); }); this.hro.observe(this.hRef.current); }
+    if (!window.THREE && !window.__threeLoading) { window.__threeLoading = true; const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js'; sc.onload = () => this.forceUpdate(); document.head.appendChild(sc); }
+    let token = '', api = '/api', dark = false, tier = 'owner';
+    try { token = sessionStorage.getItem('oc_token') || ''; api = localStorage.getItem('oc_api') || '/api'; dark = localStorage.getItem('ex_theme') === 'dark'; const q = new URLSearchParams(location.search); api = q.get('api') || api; tier = q.get('tier') || tier; } catch (e) {}
+    let worldMode = 'auto'; try { worldMode = localStorage.getItem('ex_world') || 'auto'; } catch (e) {}
+    this.setState({ token, api, dark, tier, worldMode }, () => this.load());
+    this.iv = setInterval(() => { if (this.state.live || this.state.sim) this.load(true); }, 20000);
+    this.fv = setInterval(() => this.fireNext(), 2400);
+    this.st = setInterval(() => { if (this.state.sim && this.sim) this.setState({ simSt: this.sim.status() }); }, 2000);
+  }
+  componentWillUnmount() { clearInterval(this.st); clearTimeout(this._lsWait); if (this.sim) this.sim.stop(); clearInterval(this.fv); if (this.hro) this.hro.disconnect(); window.removeEventListener('resize', this.onR); clearInterval(this.iv); clearInterval(this.pl); clearTimeout(this.tt); clearTimeout(this._wait); if (this.ctl) this.ctl.dispose(); }
+  componentDidUpdate() { this.sync4d(); if (this._flash && this.ctl && this.ctl.fire) { const f = this._flash; this._flash = null; this.ctl.fire(f.keys, f.from); } }
+  say(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: '' }), 3000); }
+  async load(quiet) {
+    const s = this.state, base = trimSlash(s.api), owner = s.tier === 'owner', auth = owner && s.token ? { authorization: 'Bearer ' + s.token } : {};
+    let engine = false, why = '';
+    try { const hr = await fetch(base + '/health'), hj = await hr.json(); if (!hr.ok || !hj.ok) throw new Error('not the engine'); engine = true; } catch (e) { why = 'No engine answered at ' + s.api + ' (' + (e.message || e) + ').'; }
+    if (!engine) { if (quiet && this.state.live) return; this.setState({ live: false, why }); return this.startSim(); }
+    this.stopSim();
+    try {
+      let r = await fetch(base + (owner ? '/owner/brain?n=300' : '/public/provenance?n=300'), { headers: auth });
+      if (owner && r.status === 404) r = await fetch(base + '/owner/provenance?n=300', { headers: auth });
+      if (r.status === 401) return this.setState({ showConnect: true, live: false, sim: false, D: index(build({}, {}, [], [], false)), RP: null, world: null, why: 'The engine is up. Sign in to see the owner view, or pick another tier.', conn: 'engine up · sign in' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json(); if (!d || !Array.isArray(d.agents)) throw new Error('that address is not the engine');
+      const rp = await this.engineReprice(base, owner, auth);
+      this.setState({ D: index(d), live: true, sim: false, world: d.world || null, RP: rp, why: '', conn: 'live · ' + new Date().toLocaleTimeString() });
+    } catch (e) { if (!(quiet && this.state.live)) this.setState({ live: false, why: String(e.message || e), conn: 'engine error' }); }
+  }
+  async engineReprice(base, owner, auth) {
+    try { const r = await fetch(base + (owner && auth.authorization ? '/owner/reprice' : '/public/reprice'), { headers: auth }); if (!r.ok) return null; const j = await r.json(); return { board: j.board || [], limits: j.limits || [], due: j.due || [], watchlist: j.watchlist || [], world: j.world || null }; } catch (e) { return null; }
+  }
+  startSim() {
+    const s = this.state;
+    if (!window.LiveSim) { if (!this._lsWait) this._lsWait = setTimeout(() => { this._lsWait = null; this.load(); }, 300); return; }
+    if (this.sim && s.sim) return;
+    if (!this.sim) this.sim = window.LiveSim.create({ onChange: e => this.simChanged(e) });
+    this.sim.setMode(s.worldMode === 'live' ? 'live' : 'sim'); this.sim.start();
+    this.setState({ sim: true, live: false, world: null, simSt: this.sim.status(), D: this.simD(), RP: this.simRP(), conn: 'simulation · ' + new Date().toLocaleTimeString() });
+  }
+  stopSim() { if (this.sim) this.sim.stop(); }
+  simD() {
+    const snap = this.sim.snapshot(), pub = this.state.tier !== 'owner', b = build(snap.nodes, snap.edges, snap.agents, snap.tasks, pub);
+    b.self = selfModel(b); b.world = { mode: this.state.worldMode }; return index(b);
+  }
+  simRP() { const pub = this.state.tier !== 'owner'; return { board: this.sim.board(pub), limits: pub ? this.sim.publicLimits() : this.sim.limits(), due: this.sim.due(5), watchlist: this.sim.watchlist(), world: { local: true } }; }
+  simChanged(evt) {
+    if (!this.sim || !this.state.sim) return;
+    const t = evt && evt.type, structural = ['start', 'done', 'failed', 'cycle', 'hire', 'pub', 'reset', 'limit', 'mode'].indexOf(t) >= 0;
+    if (!structural) return this.setState({ simSt: this.sim.status() });
+    if (t === 'done' && evt.ids && evt.ids.length) this._flash = { keys: evt.ids.map(i => 'n:' + i).concat(evt.task ? ['w:' + evt.task.id] : []), from: 'a:sextant' };
+    this.setState({ simSt: this.sim.status(), D: this.simD(), RP: this.simRP(), conn: 'simulation · ' + new Date().toLocaleTimeString() });
+  }
+  async postOwner(path, body, method) {
+    const s = this.state, r = await fetch(trimSlash(s.api) + path, { method: method || 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + s.token }, body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(typeof j.detail === 'string' ? j.detail : 'HTTP ' + r.status); return j;
+  }
+  async act(fn, ok) { try { await fn(); if (ok) this.say(ok); } catch (e) { this.say(String(e.message || e)); } }
+  copy(t) { try { navigator.clipboard.writeText(t); this.say('Copied'); } catch (e) { this.say('Copy failed'); } }
+  setWorld(m) {
+    try { localStorage.setItem('ex_world', m); } catch (e) {}
+    const s = this.state; this.setState({ worldMode: m });
+    if (s.live) return this.act(async () => { const j = await this.postOwner('/owner/world', { mode: m }); this.say('World: ' + j.mode + ' (setting ' + j.setting + ')'); this.load(true); });
+    if (s.sim && this.sim) { this.sim.setMode(m === 'live' ? 'live' : 'sim'); this.simChanged({ type: 'mode' }); }
+  }
+  worldAction(a) {
+    const s = this.state;
+    if (s.sim && this.sim) {
+      if (a === 'pause') { if (s.simSt && s.simSt.paused) this.sim.resume(); else this.sim.pause(); }
+      else if (a === 'turn') this.sim.turnNow();
+      else if (a === 'reset') { if (this._rc) { this._rc = false; this.sim.reset(); this.say('Fresh institute: nothing carried over from this browser'); } else { this._rc = true; this.say('Press Reset again to wipe this browser’s simulation'); setTimeout(() => { this._rc = false; }, 4000); } }
+      return;
+    }
+    if (a === 'turn' && s.live) this.act(async () => { const j = await this.postOwner('/owner/world', { turn: true }); this.say(j.items.length + ' items written; SEXTANT is reading them'); this.load(true); });
+  }
+  repriceNow(asset) {
+    const s = this.state;
+    if (s.sim && this.sim) { this.sim.repriceNow(asset); return this.say('SEXTANT is repricing ' + asset); }
+    this.act(async () => { await this.postOwner('/owner/say', { text: 'Reprice ' + asset + ' now with the repricing method: gather sources, record it with reprice_record, and tell me what moved most.', to: 'sextant' }); this.load(true); }, 'Repriced ' + asset);
+  }
+  setPub(r, on) {
+    const s = this.state;
+    if (s.sim && this.sim) return this.act(async () => { this.sim.setPub(r.id, on); }, on ? 'Published to the public tiers' : 'Retracted');
+    this.act(async () => { await this.postOwner('/owner/reprice/' + r.id + '/publish?on=' + on); this.load(true); }, on ? 'Published' : 'Retracted');
+  }
+  limitAct(l, patch, ok) {
+    const s = this.state;
+    if (s.sim && this.sim) { this.sim.noteLimit(l.id, patch); return this.say(ok); }
+    this.act(async () => { await this.postOwner('/owner/limits/' + l.id, patch, 'PUT'); this.load(true); }, ok);
+  }
+  hireFor(id) {
+    const s = this.state, n = s.D.N[id];
+    if (s.sim && this.sim) return this.act(async () => { this.sim.hire(id, 'owner'); }, 'A watcher now serves this question');
+    this.act(async () => { await this.postOwner('/owner/fleet', { name: 'watch-' + slugOf(id).slice(0, 20), role: 'watcher for ' + (n ? n.label : id).slice(0, 40), prompt: 'Send anything that bears on this question; skip repeats.', from_node: id, why: 'The owner asked for a standing watch on this question.', sources: [], where: 'child', every: 900 }); this.load(true); }, 'A watcher now serves this question');
+  }
+  publishNode(n) {
+    const s = this.state;
+    if (s.sim && this.sim) return this.act(async () => { this.sim.publishNode(n.id); }, 'Published to the public tiers');
+    this.act(async () => { await this.postOwner('/owner/publish', { title: 'Publish: ' + n.label, node_ids: [n.id], edge_ids: [], note: '', sources: [] }); }, 'Proposed; approve it in the console’s Publish tab');
+  }
+  worldVals(s, owner) {
+    const st = s.simSt, w = s.live ? s.world : null, canEngine = s.live && owner && !!s.token;
+    let label = 'CONNECTING', tone = 'var(--mut2)', pulse = false, ticker = s.why || 'Looking for the engine…', note = '';
+    if (s.live) {
+      const m = w && w.mode; label = m === 'live' ? 'PRODUCTION · REAL FEEDS' : m === 'sim' ? 'ENGINE · WORLD SIMULATED' : 'ENGINE CONNECTED'; tone = m === 'sim' ? 'var(--acc)' : 'var(--grn)'; pulse = true;
+      ticker = w && w.turns != null ? w.turns + ' world turns · ' + w.items + ' items written · ' + w.rejected + ' repeats dropped' + (w.last ? ' · last ' + ago(w.last) : '') + (w.model ? ' · ' + w.model : '') : (m === 'live' ? 'Reading the real feeds.' : 'Connected to the engine.');
+      note = m === 'sim' ? 'A DSPy world-agent writes the papers, filings and feeds that arrive; SEXTANT runs real rounds on them, and everything that rests on them is flagged simulated and can never be published. With THRESHOLD_ENV=production this switches to the real feeds by itself.' : m === 'live' ? 'Only the real feeds feed the graph. Nothing is simulated.' : 'Showing what the engine reports.';
+    } else if (s.sim && st) {
+      const real = st.mode === 'live';
+      label = !st.ready ? 'NO ENGINE · NO MODEL' : real ? 'LIVE SOURCES · IN THIS BROWSER' : 'SIMULATION · IN THIS BROWSER'; tone = !st.ready ? 'var(--mut2)' : real ? 'var(--grn)' : 'var(--acc)'; pulse = st.ready && !st.paused;
+      ticker = !st.ready ? 'This page has no model to run the simulation with. Open it where one is provided, or connect the engine.' : (st.paused ? 'Paused' : st.busy ? (st.detail || 'Working…') + ' · ' + (fmtDur(Date.now() / 1000 - st.since) || '0s') : 'Idle · next turn in ' + st.nextIn + 's') + ' · ' + st.items + ' items (' + st.real + ' real) · ' + st.calls + ' model calls' + (st.errors ? ' · ' + st.errors + ' errors' : '');
+      note = real ? 'Live: only sources this browser can reach are read (news index, papers, discussion, spot prices); nothing about the world is invented. Claude stands in for SEXTANT. Connect the engine to run the real DSPy agent.' : 'No engine answered at ' + s.api + '. Claude plays the world and SEXTANT here; real sources are read wherever this browser can reach them, and every item says whether it is real or simulated. Saved in this browser. The engine switches to the real feeds by itself in production.';
+    } else if (s.token && s.why) { label = 'ENGINE UP · SIGN IN'; }
+    const ctl = (s.sim && !!this.sim) || canEngine;
+    return {
+      wLabel: label, wTicker: ticker, wNote: note, wCtl: ctl, wIsSim: s.sim && !!this.sim,
+      wChip: 'display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:11px;letter-spacing:0.06em;font-weight:600;background:var(--sunk);border:1px solid ' + tone + ';color:var(--ink);white-space:nowrap;',
+      wDot: dot(tone, 8) + (pulse ? 'animation:pulse 1.4s infinite;' : ''),
+      wModes: [['sim', 'Simulate', 'The world is written by an agent when real sources have nothing new'], ['auto', 'Auto', 'Simulated in development, live in production'], ['live', 'Live', 'Real sources only; nothing about the world is invented']].map(([id, lb, tip]) => ({ label: lb, tip, st: B.seg(s.worldMode === id), fn: () => (s.live && !canEngine ? this.say('Only the owner can change where the engine’s world comes from') : this.setWorld(id)) })),
+      wPauseLabel: st && st.paused ? 'Resume' : 'Pause', wPause: () => this.worldAction('pause'), wTurn: () => this.worldAction('turn'), wReset: () => this.worldAction('reset'),
+      wPaces: [['calm', 'Calm'], ['normal', 'Normal'], ['fast', 'Fast']].map(([id, lb]) => ({ label: lb, st: B.seg(!!st && st.pace === id), fn: () => this.sim && this.sim.setPace(id) })),
+    };
+  }
+  worldLists(s, D) {
+    if (s.sim && this.sim) { const f = this.sim.feed(6); return f.length ? [{ title: 'World, just now', items: f.map(x => ({ label: x.title, sub: (x.real ? 'real' : 'simulated') + ' · ' + (x.stance || x.kind), dot: dot(x.real ? 'var(--grn)' : 'var(--acc)', 7), fn: () => this.pickKey(D.N[x.beat] ? 'n:' + x.beat : 'a:sextant') })) }] : []; }
+    const w = s.live && s.world; return w && w.recent && w.recent.length ? [{ title: 'World, just now', items: w.recent.slice(-6).reverse().map(t => ({ label: t, sub: 'simulated', dot: dot('var(--acc)', 7), fn: () => {} })) }] : [];
+  }
+  nodeCtas(s, D, id, owner) {
+    const n = D.N[id], base = /^https?:/.test(s.api) ? trimSlash(s.api) : location.origin + trimSlash(s.api), out = [];
+    out.push({ label: 'Copy as API call', fn: () => this.copy('curl ' + base + '/v1/graph/node/' + encodeURIComponent(id) + '?hops=2 -H "Authorization: Bearer $THRESHOLD_KEY"'), st: B.mini });
+    if (owner && n.lane === 'question' && (s.sim || s.live)) out.push({ label: 'Hire a watcher', fn: () => this.hireFor(id), st: B.mini });
+    if (owner && !n.pub && !n.sim && (s.sim || s.live)) out.push({ label: s.sim ? 'Publish this' : 'Propose for the public', fn: () => this.publishNode(n), st: B.mini });
+    return out;
+  }
+  rpVals(s, owner) {
+    const RP = s.RP || { board: [], limits: [], due: [], watchlist: [] }, lv = { visitor: 0, member: 1, pro: 2, api: 2, owner: 3 }[s.tier], all = RP.board || [], wl = RP.watchlist || [];
+    const kinds = ['All'].concat(Array.from(new Set(wl.map(w => w.kind).concat(all.map(r => r.kind)))));
+    const mx = Math.max.apply(null, [25].concat(all.reduce((a, r) => a.concat([Math.abs(r.rerate_low), Math.abs(r.rerate_high), Math.abs(r.expected_rerate)]), []))), S = Math.ceil(mx / 25) * 25, pos = x => Math.max(0, Math.min(100, (x + S) / (2 * S) * 100));
+    const base = /^https?:/.test(s.api) ? trimSlash(s.api) : location.origin + trimSlash(s.api), due0 = (RP.due || [])[0], openN = (RP.limits || []).filter(l => l.status !== 'lifted').length;
+    const com = all.filter(r => r.kind === 'commodity'), eq = all.filter(r => r.kind === 'equity'), bn = b => all.filter(r => r.basis === b).length;
+    const rows = all.filter(r => s.rpKind === 'All' || r.kind === s.rpKind).map(r => {
+      const open = !!s.rpOpen[r.id], lo = pos(r.rerate_low), hi = pos(r.rerate_high), neg = r.expected_rerate < 0, persona = lv >= 2 ? 'scholar' : 'civilian';
+      const mk = r.market != null ? 'Market ' + Number(r.market).toLocaleString() + ' ' + r.unit + ' as of ' + r.as_of + (r.fair_low != null ? ' · fair ' + Number(r.fair_low).toLocaleString() + ' to ' + Number(r.fair_high).toLocaleString() : '') : 'No sourced market price here: the move is against the last cited price, not an absolute value.';
+      const ctas = [{ label: open ? 'Hide detail' : (lv >= 1 ? 'Scenarios and sources' : 'Why'), fn: () => this.setState(x => ({ rpOpen: { ...x.rpOpen, [r.id]: !x.rpOpen[r.id] } })), st: B.mini }];
+      if (owner) {
+        ctas.push({ label: 'Ask why', fn: () => { this.setState({ sel: s.D && s.D.N['val:' + slugOf(r.asset)] ? 'n:val:' + slugOf(r.asset) : 'a:sextant' }); this.askAgent('Why is ' + r.asset + ' repriced ' + sgn(r.expected_rerate) + ', and what would change your mind?'); }, st: B.mini });
+        ctas.push({ label: 'Reprice now', fn: () => this.repriceNow(r.asset), st: B.on });
+        if (r.publishable !== false) ctas.push({ label: r.pub ? 'Retract' : 'Publish', fn: () => this.setPub(r, !r.pub), st: B.mini });
+      }
+      ctas.push({ label: 'Copy API call', fn: () => this.copy('curl ' + base + '/v1/reprice/' + encodeURIComponent(r.asset) + ' -H "Authorization: Bearer $THRESHOLD_KEY" -H "X-Persona: ' + persona + '"'), st: B.mini });
+      if (lv < 2) ctas.push({ label: 'See drivers and sources as Pro', fn: () => this.setState({ tier: 'pro' }, () => this.load()), st: B.mini });
+      return {
+        id: r.id, asset: r.asset, kind: r.kind, conf: r.confidence + ' confidence', age: r.age_h < 1 ? 'just now' : r.age_h + ' h ago', basis: r.basis, basisSt: chipS(r.basis === 'real' ? 'var(--grn)' : r.basis === 'simulated' ? 'var(--acc)' : 'var(--mut)'),
+        showPub: owner, pubLabel: r.pub ? 'published' : r.publishable === false ? 'cannot be published' : 'private', pubSt: chipS(r.pub ? 'var(--grn)' : 'var(--mut2)'),
+        zeroSt: 'position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--mut2);', segSt: 'position:absolute;top:3px;bottom:3px;left:' + lo + '%;width:' + Math.max(1.5, hi - lo) + '%;border-radius:5px;background:var(--acc);opacity:.4;', tickSt: 'position:absolute;top:0;bottom:0;left:calc(' + pos(r.expected_rerate) + '% - 2px);width:4px;border-radius:2px;background:var(--ink);',
+        expected: sgn(r.expected_rerate), expSt: 'color:' + (neg ? 'var(--accink)' : 'var(--grn)') + ';', range: sgn(r.rerate_low) + ' to ' + sgn(r.rerate_high), market: mk, why: r.why, open,
+        whySt: 'font-size:13.5px;line-height:1.5;color:var(--body);' + (open ? '' : 'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;'),
+        hasScen: lv >= 1, scen: (r.scenarios || []).map(x => ({ name: x.name, note: x.note || '', val: sgn(x.rerate_pct) + ' · p ' + Math.round(x.p * 100) + '%', bar: 'display:block;height:100%;width:' + Math.round(x.p * 100) + '%;background:var(--acc);' })),
+        hasDrv: lv >= 2, drv: (r.drivers || []).map(x => ({ name: x.name, dir: x.direction > 0 ? '↑' : '↓', st: 'color:' + (x.direction > 0 ? 'var(--grn)' : 'var(--accink)') + ';font-weight:700;', w: Math.round(x.weight * 100) + '%', ev: (x.evidence || []).join(', ') })),
+        hasSrc: lv >= 2, src: (r.sources || []).map(x => ({ label: x.label, url: x.url || '', hasUrl: !!x.url, noUrl: !x.url, basis: x.basis, st: chipS(x.basis === 'real' ? 'var(--grn)' : 'var(--acc)'), asof: x.as_of || '' })),
+        lims: (r.limits || []).slice(0, lv >= 1 ? 6 : 1), hasSpark: (r.history || []).length > 1, spark: (r.history || []).map(h2 => ({ st: 'flex:1;min-width:3px;border-radius:2px;height:' + Math.max(4, Math.round(Math.abs(h2[1]) / S * 34)) + 'px;background:' + (h2[1] < 0 ? 'var(--accink)' : 'var(--grn)') + ';opacity:.7;' })), ctas,
+      };
+    });
+    const mean = rs => (rs.length ? sgn(rs.reduce((a, r) => a + r.expected_rerate, 0) / rs.length) : '—');
+    return {
+      isReprice: s.view === 'reprice', rpRows: rows, rpEmpty: !rows.length, rpCta: owner && !!due0 && (s.sim || s.live), rpCtaLabel: due0 ? 'Reprice ' + due0.asset + ' now' : '', rpCtaFn: () => due0 && this.repriceNow(due0.asset),
+      rpEmptyText: all.length ? 'No records of this kind yet.' : s.sim ? 'SEXTANT prices one asset every third cycle, once the graph holds at least two sourced items. Next up: ' + (due0 ? due0.asset : '—') + '. Nothing is shown until a record passes the gate.' : owner ? 'The agent reprices the most overdue name on its watchlist every twenty minutes or so. Next up: ' + (due0 ? due0.asset : '—') + '. Nothing is shown until it has recorded one.' : 'Nothing has been approved for publication yet.',
+      rpNote: 'Made by the Institute’s own agent with its own tools. The code refuses one-sided, unsourced or inconsistent records and computes every expected value itself.',
+      rpDisclaimer: 'Analysis, not advice. The Institute does not manage money. Every figure is a scenario-weighted estimate with its limits attached.' + (s.sim ? ' In this simulation, records that rest on simulated sources are marked and can never be published.' : ''),
+      rpKinds: kinds.map(k => ({ label: k, st: chipBtn(s.rpKind === k), fn: () => this.setState({ rpKind: k }) })),
+      rpKpis: [{ v: all.length + ' of ' + wl.length, l: 'assets priced, of the watchlist' }, { v: mean(eq), l: 'average expected re-rate, GPU-chain equities' }, { v: com.length ? sgn(Math.min.apply(null, com.map(r => r.expected_rerate))) + ' to ' + sgn(Math.max.apply(null, com.map(r => r.expected_rerate))) : '—', l: 'commodities, lowest to highest expected re-rate' }, { v: bn('real') + ' / ' + bn('mixed') + ' / ' + bn('simulated'), l: 'records by basis: real / mixed / simulated' }, { v: String(openN), l: 'open limitations behind these numbers' }, { v: due0 ? due0.asset : '—', l: 'priced next' }],
+    };
+  }
+  limVals(s, owner) {
+    const L = (s.RP && s.RP.limits) || [], cnt = st => L.filter(l => l.status === st).length, total = L.length || 1, needs = L.filter(l => l.owner_needed && l.status !== 'lifted').length;
+    const tone = st => (st === 'lifted' ? 'var(--grn)' : st === 'working' ? 'var(--ink)' : 'var(--acc)');
+    const groups = ['access', 'coverage', 'data', 'method', 'model'].map(a => ({ a, items: L.filter(l => l.area === a) })).filter(g => g.items.length).map(g => ({ title: g.a, n: g.items.length, items: g.items.map(l => {
+      const ctas = [];
+      if (owner && l.status !== 'lifted') {
+        ctas.push({ label: 'Ask the agent', fn: () => { this.setState({ sel: 'a:sextant' }); this.askAgent('What is the smallest real step toward lifting limitation ' + l.id + ': ' + l.text + '?'); }, st: B.mini });
+        if (l.status === 'open') ctas.push({ label: 'Mark working', fn: () => this.limitAct(l, { status: 'working' }, 'Marked working'), st: B.mini });
+        if (l.owner_needed) ctas.push({ label: 'I have provided this', fn: () => this.limitAct(l, { status: 'working', plan: 'Owner provided: ' + l.owner_needed }, 'Noted; the agent will pick it up'), st: B.on });
+      }
+      if (owner && l.status === 'lifted') ctas.push({ label: 'Reopen', fn: () => this.limitAct(l, { status: 'open' }, 'Reopened'), st: B.mini });
+      return { id: l.id, text: l.text, status: l.status, stSt: chipS(tone(l.status)), sev: '●'.repeat(l.severity) + '○'.repeat(3 - l.severity), by: l.by ? 'raised by ' + l.by : '', lifts: l.lifts_by || 'unknown', hasPlan: !!l.plan, plan: l.plan || '', needs: !!l.owner_needed && l.status !== 'lifted' && owner, need: l.owner_needed || '', ctas };
+    }) }));
+    const src = s.sim && this.sim ? Object.values(this.sim.srcHealth()).map(x => ({ label: x.label, text: x.ok === null ? 'not tried yet' : x.ok ? x.n + ' reads · last ' + ago(x.last) : 'unreachable (' + x.err + ') · tried ' + x.fail + ' times', dot: dot(x.ok ? 'var(--grn)' : x.ok === false ? 'var(--acc)' : 'var(--mut2)', 8) })) : [];
+    return {
+      isLimits: s.view === 'limits', lmGroups: groups, lmSrc: src, lmHasSrc: src.length > 0,
+      lmNote: 'Each limitation says what would lift it. The agent works the list down on its own clock, and a limitation is only marked lifted with evidence.' + (owner ? '' : ' Only the owner can act on them.'),
+      lmKpis: [{ v: String(cnt('open')), l: 'open' }, { v: String(cnt('working')), l: 'being worked' }, { v: String(cnt('lifted')), l: 'lifted' }, { v: String(needs), l: 'waiting on the owner' }],
+      lmBar: 'display:block;height:100%;width:' + Math.round(cnt('lifted') / total * 100) + '%;background:var(--grn);',
+    };
+  }
+  async signIn() {
+    const s = this.state; try { localStorage.setItem('oc_api', s.api); } catch (e) {}
+    try {
+      const r = await fetch(s.api.replace(/\/$/, '') + '/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: s.pw }) });
+      const j = await r.json().catch(() => ({})); if (!r.ok || !j.token) throw new Error(typeof j.detail === 'string' ? j.detail : 'sign-in failed (' + r.status + ')');
+      try { sessionStorage.setItem('oc_token', j.token); } catch (e) {}
+      this.setState({ token: j.token, pw: '', tier: 'owner', showConnect: false }, () => this.load());
+    } catch (e) { this.say(String(e.message || e)); }
+  }
+  sync4d() {
+    const s = this.state, el = this.cRef.current;
+    const is4 = (s.view === 'agent' || s.view === 'inst') && !this.locked();
+    if (!is4 || !el || !s.D) { if (this.ctl) { this.ctl.dispose(); this.ctl = null; } return; }
+    if (this.ctl && this._el !== el) { this.ctl.dispose(); this.ctl = null; }
+    if (!this.ctl) {
+      if (!window.Connectome || !window.THREE) { if (!this._wait) this._wait = setTimeout(() => { this._wait = null; this.forceUpdate(); }, 250); return; }
+      this.ctl = window.Connectome.mount(el, { onPick: k => this.pickKey(k) }); this._el = el; this._d = this._sel = this._t = undefined;
+      if (!this.ctl) return;
+    }
+    if (this._d !== s.D || this._mode !== s.view + s.tier) { this.ctl.setData(this.cdata(s.D, s.view)); this._d = s.D; this._mode = s.view + s.tier; this._sel = this._t = undefined; }
+    const T = this.tAt(s.tpos); if (this._t !== T) { this.ctl.setTime(T); this._t = T; }
+    if (this._sel !== s.sel) { this.ctl.select(s.sel, s.sel ? this.related(s.sel) : null); this._sel = s.sel; }
+  }
+  locked() { return this.state.view === 'agent' && !['owner', 'pro'].includes(this.state.tier); }
+  cdata(D, mode) {
+    const nodes = [], edges = [], inst = mode === 'inst', skip = id => inst && id === 'sextant';
+    D.agents.forEach(a => { if (!skip(a.id)) nodes.push({ key: 'a:' + a.id, lane: 'agent', label: aname(a), t: D.A[a.id].t, size: a.id === 'sextant' ? 1.7 : 1 }); });
+    D.works.forEach(w => { const t = w.started || w.ts; nodes.push({ key: 'w:' + w.id, lane: 'work', label: w.title, t, size: w.state === 'ongoing' ? 1.6 : 1, hot: w.state === 'ongoing', tip: w.kind + ' · ' + w.state + (w.dur != null ? ' · took ' + fmtDur(w.dur) : '') + (w.sim ? ' · simulated input' : '') }); if (!skip(w.agent)) edges.push({ a: 'a:' + w.agent, b: 'w:' + w.id, t, w: 0.7 }); if (w.origin) edges.push({ a: 'a:' + w.origin, b: 'w:' + w.id, t }); w.nodes.forEach(i => edges.push({ a: 'w:' + w.id, b: 'n:' + i, t, w: 0.45 })); });
+    D.nodes.forEach(n => nodes.push({ key: 'n:' + n.id, lane: n.lane, label: n.label, t: D.N[n.id].t, size: 1 + Math.min(1.2, (n.refs || 0) * 0.15), tip: n.type + ' · read ' + (n.refs || 0) + ' times · ' + (n.pub ? 'published' : 'private') + (n.sim ? ' · simulated' : '') }));
+    D.edges.forEach(e => edges.push({ a: 'n:' + e.a, b: 'n:' + e.b, t: Math.max(D.N[e.a].t, D.N[e.b].t), w: e.w }));
+    D.agents.forEach(a => { if (!skip(a.id) && a.from_node && D.N[a.from_node]) edges.push({ a: 'a:' + a.id, b: 'n:' + a.from_node, t: D.A[a.id].t }); });
+    if (!inst) {
+      const ok = new Set(), thoughts = this.state.tier === 'owner';
+      (D.self.nodes || []).forEach(n => { if (n.lane === 'thought' && !thoughts) return; ok.add('s:' + n.id); nodes.push({ key: 's:' + n.id, lane: n.lane, label: n.label, t: n.ts || D.tmin, size: n.lane === 'thought' ? 0.9 : 1 }); if (n.lane !== 'module') edges.push({ a: 'a:sextant', b: 's:' + n.id, t: n.ts || D.tmin }); });
+      (D.self.edges || []).forEach(e => { if ((!e.a.startsWith('s:') || ok.has(e.a)) && (!e.b.startsWith('s:') || ok.has(e.b))) edges.push({ a: e.a, b: e.b, t: D.tmin }); });
+    }
+    return { nodes, edges };
+  }
+  fireNext() {
+    const s = this.state, D = s.D; if (!this.ctl || !this.ctl.fire || !D || s.playing || !(s.view === 'agent' || s.view === 'inst') || this.locked()) return;
+    const pool = D.works.filter(w => w.state === 'ongoing').concat(D.works.filter(w => w.state === 'done').sort((x, y) => (y.ts || 0) - (x.ts || 0)).slice(0, 10)); if (!pool.length) return;
+    this._fi = ((this._fi || 0) + 1) % pool.length; const w = pool[this._fi];
+    const from = s.view === 'agent' ? 'a:sextant' : w.origin ? 'a:' + w.origin : w.agent !== 'sextant' ? 'a:' + w.agent : '';
+    this.ctl.fire(['w:' + w.id].concat(w.nodes.map(n => 'n:' + n)), from);
+    this.setState({ pulse: w.title });
+  }
+  timeline(D, s) {
+    const only = s.tlAgent && D.A[s.tlAgent] ? s.tlAgent : '';
+    const ws = D.works.filter(w => !only || w.agent === only || w.origin === only).slice().sort((x, y) => (y.started || y.ts || 0) - (x.started || x.ts || 0)), days = {};
+    ws.forEach(w => { const k = new Date((w.started || w.ts) * 1000).toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'short' }); (days[k] = days[k] || []).push(w); });
+    const chip = on => 'min-height:28px;padding:0 10px;border-radius:999px;cursor:pointer;font-size:12px;border:1px solid ' + (on ? 'var(--ink)' : 'var(--fldline)') + ';background:' + (on ? 'var(--ink)' : 'var(--surf)') + ';color:' + (on ? 'var(--bg)' : 'var(--ink)') + ';';
+    return {
+      tlNote: (only ? 'Only ' + aname(D.A[only]) + '’s work and finds. ' : '') + 'Every piece of work, newest first, grouped by day. Click a row for the detail.',
+      tlChips: [{ label: 'All agents', st: chip(!only), fn: () => this.setState({ tlAgent: '' }) }].concat(D.agents.map(a => ({ label: aname(a), st: chip(only === a.id), fn: () => this.setState({ tlAgent: a.id }) }))),
+      tlDays: Object.entries(days).map(([day, list]) => ({ day, n: list.length + ' items · ' + (fmtDur(list.reduce((t, w) => t + (w.dur || 0), 0)) || '0s'), items: list.map(w => { const a = D.A[w.agent], o = w.origin && D.A[w.origin], on = s.sel === 'w:' + w.id, c = { research: '#3b5bdb', reexamine: '#0f8ba8', lab: '#8a4fd6', staff: '#c98a1b', ingest: '#2e7d5b', find: '#2e7d5b', drive: '#c2417a', chat: 'var(--ink)' }[w.kind] || 'var(--mut)';
+        return { time: new Date((w.started || w.ts) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), title: w.title, who: aname(a) + (o ? ' ← found by ' + aname(o) : ''), meta: [w.state, w.dur != null ? fmtDur(w.dur) : '', w.energy != null ? 'ΔE ' + w.energy : '', w.nodes.length + ' nodes'].filter(Boolean).join(' · '), kind: w.kind, kSt: M + 'font-size:10px;padding:1px 7px;border-radius:999px;border:1px solid ' + c + ';color:' + c + ';white-space:nowrap;', open: !!s.tOpen[w.id], note: w.note || 'Notes are owner-only.', fn: () => this.setState(x => ({ sel: 'w:' + w.id, tOpen: { ...x.tOpen, [w.id]: !x.tOpen[w.id] } })), st: 'padding:7px 9px;border-radius:10px;cursor:pointer;background:' + (on ? 'var(--acctint)' : 'transparent') + ';' }; }) })),
+    };
+  }
+  related(key) {
+    const D = this.state.D, F = new Set([key]), [k, id] = split(key);
+    if (k === 's') { (D.self.edges || []).forEach(e => { if (e.a === key) F.add(e.b); if (e.b === key) F.add(e.a); }); F.add('a:sextant'); return F; }
+    const addW = wid => { const w = D.W[wid]; if (!w) return; F.add('w:' + wid); F.add('a:' + w.agent); if (w.origin) F.add('a:' + w.origin); w.nodes.forEach(n => F.add('n:' + n)); };
+    if (k === 'a' && D.A[id]) { D.A[id].works.forEach(wid => { F.add('w:' + wid); D.W[wid].nodes.forEach(n => F.add('n:' + n)); }); if (D.A[id].from_node) F.add('n:' + D.A[id].from_node); }
+    if (k === 'w' && D.W[id]) { addW(id); D.W[id].nodes.forEach(n => (D.nbr[n] || []).forEach(x => F.add('n:' + x.id))); }
+    if (k === 'n' && D.N[id]) { D.N[id].works.forEach(addW); (D.nbr[id] || []).forEach(x => F.add('n:' + x.id)); D.agents.forEach(a => { if (a.from_node === id) F.add('a:' + a.id); }); }
+    return F;
+  }
+  tAt(p) { const D = this.state.D; return !D || p >= 1000 ? null : D.tmin + (Date.now() / 1000 - D.tmin) * p / 1000; }
+  pickKey(k) { this.setState({ sel: k || '', answer: '', results: [], cmd: '' }); }
+  play() {
+    clearInterval(this.pl);
+    if (this.state.playing) return this.setState({ playing: false });
+    this.setState({ playing: true, view: this.state.view === 'inst' ? 'inst' : 'agent', tpos: this.state.tpos >= 1000 ? 0 : this.state.tpos });
+    this.pl = setInterval(() => { const p = Math.min(1000, this.state.tpos + 5); this.setState({ tpos: p }); if (p >= 1000) { clearInterval(this.pl); this.setState({ playing: false }); } }, 60);
+  }
+  describe(key) { const D = this.state.D, [k, id] = split(key); return k === 'a' ? 'agent ' + id : k === 'w' ? 'the work "' + ((D.W[id] || {}).title || id) + '"' : 'the node ' + id + ' "' + ((D.N[id] || {}).label || '') + '"'; }
+  async askAgent(text) {
+    const s = this.state; text = (text || '').trim(); if (!text) return;
+    if (s.sim && s.tier === 'owner' && this.sim) { this.setState({ answer: 'Thinking…', ask: '' }); try { const a = await this.sim.ask(text, s.sel ? this.describe(s.sel) : ''); this.setState({ answer: a }); } catch (e) { this.setState({ answer: String(e.message || e) }); } return; }
+    if (!(s.tier === 'owner' && s.live)) return this.setState({ answer: 'Not sent. ' + (s.tier !== 'owner' ? 'A question runs a real round, so only the owner can ask from here.' : 'This is demo data; connect the engine to ask.') });
+    this.setState({ answer: 'Thinking…', ask: '' });
+    try { const r = await fetch(s.api.replace(/\/$/, '') + '/owner/say', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + s.token }, body: JSON.stringify({ text: 'About ' + (s.sel ? this.describe(s.sel) : 'the institute') + ': ' + text, to: 'sextant' }) }); const j = await r.json(); this.setState({ answer: j.answer || (typeof j.detail === 'string' ? j.detail : 'No answer.') }); } catch (e) { this.setState({ answer: String(e.message || e) }); }
+  }
+  search(q) {
+    const D = this.state.D; q = (q || '').trim().toLowerCase(); if (!D || q.length < 2) return [];
+    const out = [];
+    D.agents.forEach(a => { if (('#' + a.num + ' ' + a.name + ' ' + a.role).toLowerCase().includes(q)) out.push({ kind: 'agent', key: 'a:' + a.id, label: aname(a), sub: a.role }); });
+    D.nodes.forEach(n => { if ((n.id + ' ' + n.label).toLowerCase().includes(q)) out.push({ kind: n.lane, key: 'n:' + n.id, label: n.label, sub: n.type }); });
+    D.works.forEach(w => { if ((w.title + ' ' + w.kind).toLowerCase().includes(q)) out.push({ kind: 'work', key: 'w:' + w.id, label: w.title, sub: w.kind + ' · ' + w.state }); });
+    return out.slice(0, 14);
+  }
+  run(c) {
+    const low = (c || '').trim().toLowerCase(); if (!low) return;
+    if (['4d', 'connectome', 'brain', 'agent'].includes(low)) return this.setState({ view: 'agent', cmd: '', results: [] });
+    if (['inst', 'graph', 'institute graph'].includes(low)) return this.setState({ view: 'inst', cmd: '', results: [] });
+    if (['timeline', 'time', 'history'].includes(low)) return this.setState({ view: 'time', cmd: '', results: [] });
+    if (['finance', 'money', 'backtest', 'backtests'].includes(low)) return this.setState({ view: 'finance', cmd: '', results: [] });
+    if (['reprice', 'prices', 'fair'].includes(low)) return this.setState({ view: 'reprice', cmd: '', results: [] });
+    if (['limits', 'limitations'].includes(low)) return this.setState({ view: 'limits', cmd: '', results: [] });
+    if (low === 'map' || low === 'markmap') return this.setState({ view: 'map', cmd: '', results: [] });
+    if (low === 'play') { this.setState({ cmd: '', results: [] }); return this.play(); }
+    if (low === 'now') return this.setState({ tpos: 1000, cmd: '', results: [] });
+    if (low === 'institute' || low === 'home') return this.setState({ sel: '', cmd: '', results: [] });
+    if (low.startsWith('ask ')) { this.setState({ cmd: '', results: [] }); return this.askAgent(c.trim().slice(4)); }
+    const m = low.match(/^(agent|work|node|where|show)\s+(.+)/), hits = this.search(m ? m[2] : low);
+    if (hits.length) { this.pickKey(hits[0].key); if (m && m[1] === 'where') this.setState({ view: this.state.view === 'inst' ? 'inst' : 'agent' }); return; }
+    this.say('Nothing matches “' + c.trim() + '”');
+  }
+  tree(D, sel) {
+    const W = id => D.W[id], recent = ids => ids.slice().sort((x, y) => (W(y).ts || 0) - (W(x).ts || 0));
+    const cap = (arr, f) => (arr.length > 24 ? arr.slice(0, 24) : arr).map(f).filter(Boolean).concat(arr.length > 24 ? [{ key: '', kind: 'more', label: '+' + (arr.length - 24) + ' more', sub: '', kids: [] }] : []);
+    const nL = (id, deep, rel) => { const n = D.N[id]; if (!n) return null; return { key: 'n:' + id, kind: n.lane, label: n.label, sub: (rel ? rel + ' · ' : '') + n.works.length + ' work', kids: deep ? cap((D.nbr[id] || []).filter(x => D.N[x.id]), x => nL(x.id, false, x.rel)) : [] }; };
+    const wL = (id, deep) => { const w = W(id); return { key: 'w:' + id, kind: 'work', label: w.title, sub: w.dur != null ? fmtDur(w.dur) : w.state, kids: deep ? w.nodes.map(i => nL(i, false)).filter(Boolean) : [] }; };
+    const aL = (id, deep) => { const a = D.A[id]; if (!a) return null; return { key: 'a:' + id, kind: 'agent', label: aname(a), sub: a.works.length + ' work', kids: deep ? cap(recent(a.works), wid => wL(wid, true)) : [] }; };
+    const G = (label, kids) => ({ key: '', kind: 'group', label: label + ' · ' + kids.length, sub: '', kids });
+    const of = (ids, l) => ids.filter(i => D.N[i] && D.N[i].lane === l).map(i => nL(i, true));
+    if (!sel) return { key: '', kind: 'root', label: 'Threshold Institute', sub: D.works.length + ' work', kids: D.agents.map(a => aL(a.id, true)) };
+    const [k, id] = split(sel);
+    if (k === 'a' && D.A[id]) { const a = D.A[id]; return { ...aL(id, false), kids: [G('Work it did', cap(recent(a.works), wid => wL(wid, true))), G('Questions it asked', a.qs.map(i => nL(i, true))), G('Sources it read', a.ss.map(i => nL(i, true))), G('Claims it touched', a.cs.map(i => nL(i, true))), G('Hired for', a.from_node && D.N[a.from_node] ? [nL(a.from_node, true)] : [])].filter(g => g.kids.length) }; }
+    if (k === 'w' && D.W[id]) { const w = W(id), same = [...new Set(w.nodes.flatMap(i => (D.N[i] || { works: [] }).works))].filter(x => x !== id); return { ...wL(id, false), kids: [G('Agent', [aL(w.agent, false)].filter(Boolean)), G('Found by', w.origin ? [aL(w.origin, false)].filter(Boolean) : []), G('Questions', of(w.nodes, 'question')), G('Claims', of(w.nodes, 'claim')), G('Sources and papers', of(w.nodes, 'source')), G('Other work on the same nodes', cap(recent(same), x => wL(x, false)))].filter(g => g.kids.length) }; }
+    if (k === 'n' && D.N[id]) {
+      const n = D.N[id], direct = new Set((D.nbr[id] || []).map(x => x.id));
+      const agentsOf = [...new Set(n.works.flatMap(x => [W(x).agent, W(x).origin]).filter(Boolean).concat(D.agents.filter(a => a.from_node === id).map(a => a.id)))];
+      const two = [...new Set((D.nbr[id] || []).flatMap(x => (D.nbr[x.id] || []).map(y => y.id)))].filter(y => y !== id && !direct.has(y) && D.N[y] && D.N[y].lane === 'source');
+      return { ...nL(id, false), kids: [G('Work on it', cap(recent(n.works), x => ({ ...wL(x, false), kids: [aL(W(x).agent, false)].filter(Boolean) }))), G('Agents', agentsOf.map(x => aL(x, false)).filter(Boolean)), G('Connected', cap((D.nbr[id] || []).filter(x => D.N[x.id]), x => nL(x.id, true, x.rel))), G('Connected papers, two hops away', two.map(y => nL(y, false)))].filter(g => g.kids.length) };
+    }
+    return { key: '', kind: 'root', label: 'Nothing selected', sub: '', kids: [] };
+  }
+  renderVals() {
+    const s = this.state, D = s.D || index({ agents: [], works: [], nodes: [], edges: [], hidden: 0 }), now = Date.now() / 1000, wide = s.w >= 1200, mid = s.w >= 860, owner = s.tier === 'owner';
+    const [sk, sid] = s.sel ? split(s.sel) : ['', ''];
+    const mx = Math.max(1, ...D.agents.map(a => D.A[a.id].works.length));
+    // — markmap: the tree of whatever is selected, laid out left to right —
+    const root = this.tree(D, s.sel), rid = s.sel || 'root', colW = 236, rowH = 30, pillW = 204, items = [], links = [], ymap = {};
+    let leaf = 12, maxD = 0;
+    const open = (path, depth) => { const v = s.mm[rid + path]; return v != null ? v : s.mmAll != null ? s.mmAll : depth < 2; };
+    const walk = (n, depth, path) => { maxD = Math.max(maxD, depth); const kids = (n.kids || []).filter(Boolean), op = kids.length > 0 && open(path, depth); let y; if (op) { const ys = kids.map((c, i) => walk(c, depth + 1, path + '.' + i)); y = (ys[0] + ys[ys.length - 1]) / 2; kids.forEach((c, i) => links.push({ from: path, to: path + '.' + i, kind: c.kind })); } else { y = leaf; leaf += rowH; } ymap[path] = { y, depth }; items.push({ n, depth, path, y, open: op, hasKids: kids.length > 0 }); return y; };
+    walk(root, 0, '0');
+    const mmW = 24 + (maxD + 1) * colW, mmH = leaf + 12;
+    const mmSvg = React.createElement('svg', { width: mmW, height: mmH, style: { position: 'absolute', left: 0, top: 0, pointerEvents: 'none' } }, links.map((l, i) => { const a = ymap[l.from], b = ymap[l.to], x1 = 12 + a.depth * colW + pillW, y1 = a.y + 12, x2 = 12 + b.depth * colW, y2 = b.y + 12; return React.createElement('path', { key: i, d: 'M' + x1 + ' ' + y1 + ' C' + (x1 + 26) + ' ' + y1 + ' ' + (x2 - 26) + ' ' + y2 + ' ' + x2 + ' ' + y2, fill: 'none', style: { stroke: (LN[l.kind] || LN.group)[1], strokeOpacity: 0.5, strokeWidth: 1.4 } }); }));
+    const toggle = it => () => this.setState(x => ({ mm: { ...x.mm, [rid + it.path]: !it.open } }));
+    const mm = items.map(it => { const n = it.n, isRoot = it.depth === 0, grp = n.kind === 'group' || n.kind === 'more', on = n.key && n.key === s.sel, c = (LN[n.kind] || LN.group)[1]; return {
+      st: 'position:absolute;left:' + (12 + it.depth * colW - (it.hasKids ? 22 : 0)) + 'px;top:' + it.y + 'px;width:' + (pillW + (it.hasKids ? 22 : 0)) + 'px;height:24px;display:flex;align-items:center;gap:4px;',
+      hasKids: it.hasKids, glyph: it.open ? '−' : '+', toggle: toggle(it), tSt: 'flex:none;width:18px;height:18px;padding:0;border-radius:5px;border:1px solid var(--fldline);background:var(--surf);cursor:pointer;font-size:12px;line-height:1;display:grid;place-items:center;',
+      fn: n.key ? () => this.pickKey(n.key) : it.hasKids ? toggle(it) : () => {}, title: n.label + (n.sub ? ' · ' + n.sub : ''),
+      lSt: 'flex:1;min-width:0;height:24px;display:flex;align-items:center;gap:6px;padding:0 9px;box-sizing:border-box;border-radius:' + (grp ? 6 : 12) + 'px;cursor:pointer;font-size:12px;text-align:left;border:1px solid ' + (on ? 'var(--acc)' : grp ? 'transparent' : 'var(--line)') + ';background:' + (isRoot ? 'var(--ink)' : grp ? 'var(--sunk)' : on ? 'var(--acctint)' : 'var(--bg)') + ';color:' + (isRoot ? 'var(--bg)' : 'var(--ink)') + ';font-weight:' + (isRoot || grp ? 600 : 400) + ';',
+      dot: grp || isRoot ? 'display:none;' : dot(c, 7), label: n.label, sub: n.sub, subSt: M + 'font-size:9.5px;opacity:.65;flex:none;max-width:86px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' }; });
+    // — details of the selection —
+    const row = (k, v) => ({ k, v: v == null || v === '' ? '—' : String(v), link: false, plain: true, fn: () => {} });
+    const link = (k, v, key) => ({ k, v, link: true, plain: false, fn: () => this.pickKey(key) });
+    const pv = (label, fn, primary) => ({ label, fn, st: primary ? B.on : B.mini });
+    const toMap = () => this.setState({ view: 'map' }), to4d = () => this.setState({ view: s.view === 'inst' ? 'inst' : 'agent' });
+    let d = { kicker: '', title: '', meta: [], hasNote: false, note: '', pivots: [] }, kc = 'var(--mut)';
+    if (sk === 'a' && D.A[sid]) { const a = D.A[sid], own = a.works.filter(x => D.W[x].agent === sid), cnt = st => own.filter(x => D.W[x].state === st).length; kc = LN.agent[1];
+      d = { kicker: 'Agent #' + a.num + ' · ' + (a.where || 'agent') + ' · ' + a.status, title: /^agent #/.test(a.name) ? (a.role || 'Agent #' + a.num) : a.name, hasNote: false, note: '', meta: [row('role', a.role), row('work', own.length + ' · ' + cnt('done') + ' done, ' + cnt('ongoing') + ' ongoing, ' + cnt('planned') + ' planned'), row('reported', (a.works.length - own.length) + ' finds that became rounds'), row('time spent', fmtDur(a.total) || '0s'), row('asked', a.qs.length + ' questions'), row('read', a.ss.length + ' sources'), ...(a.from_node && D.N[a.from_node] ? [link('hired for', D.N[a.from_node].label, 'n:' + a.from_node)] : []), ...(sid !== 'sextant' && owner ? [row('found', (a.items || 0) + ' items · ' + (a.errors || 0) + ' errors')] : [])],
+        pivots: [pv('Markmap of its work', toMap, true), pv('Where it sits in 4D', to4d), pv('Replay its history', () => { this.setState({ tpos: 0 }); setTimeout(() => this.play(), 30); })] }; }
+    if (sk === 'w' && D.W[sid]) { const w = D.W[sid], ag = D.A[w.agent], or = w.origin && D.A[w.origin]; kc = LN.work[1];
+      d = { kicker: 'Work · ' + w.kind + ' · ' + w.state + (w.sim ? ' · simulated input' : ''), title: w.title, hasNote: !!w.note, note: w.note || '', meta: [link('agent', aname(ag), 'a:' + w.agent), ...(or ? [link('found by', aname(or), 'a:' + w.origin)] : []), row('started', fmtT(w.started)), row(w.state === 'planned' ? 'queued' : 'finished', w.state === 'ongoing' ? 'running for ' + fmtDur(now - (w.started || now)) : fmtT(w.ts)), row('took', w.dur != null ? fmtDur(w.dur) : '—'), row('energy', w.energy == null ? '—' : 'ΔE ' + (w.energy > 0 ? '+' : '') + w.energy), row('touched', w.nodes.length + ' nodes')],
+        pivots: [pv('Markmap of this work', toMap, true), pv('Show in 4D', to4d), pv('Its agent', () => this.pickKey('a:' + w.agent))] }; }
+    if (sk === 'n' && D.N[sid]) { const n = D.N[sid], latest = n.works.slice().sort((x, y) => (D.W[y].ts || 0) - (D.W[x].ts || 0))[0]; kc = (LN[n.lane] || LN.claim)[1];
+      d = { kicker: (LN[n.lane] || LN.claim)[0] + ' · ' + n.type + ' · ' + (n.pub ? 'published' : 'private') + (n.sim ? ' · simulated' : ''), title: n.label, hasNote: false, note: '', meta: [row('id', n.id), row('work on it', n.works.length), row('connected', (D.nbr[sid] || []).length + ' nodes'), row('first seen', fmtT(n.t)), ...(latest ? [link('latest work', D.W[latest].title, 'w:' + latest)] : [])],
+        pivots: [pv('Markmap: work, agents, connected papers', toMap, true), pv('Show in 4D', to4d)] }; }
+    if (sk === 's') { const n = (D.self.nodes || []).find(x => x.id === sid); if (n) { kc = (LN[n.lane] || LN.claim)[1]; d = { kicker: (LN[n.lane] || LN.claim)[0] + ' · part of the agent itself', title: n.label, hasNote: false, note: '', meta: [row('id', n.id), row('kind', n.type), ...(n.ts ? [row('when', fmtT(n.ts))] : [])], pivots: [pv('Show in the agent brain', () => this.setState({ view: 'agent' }), true)] }; } }
+    if (sk === 'n' && D.N[sid]) d.pivots = d.pivots.concat(this.nodeCtas(s, D, sid, owner));
+    const T = this.tAt(s.tpos), byT = T == null ? D.works.length : D.works.filter(w => (w.started || w.ts) <= T).length, nByT = T == null ? D.nodes.length : D.nodes.filter(n => D.N[n.id].t <= T).length;
+    const totalDur = D.works.reduce((a, w) => a + (w.dur || 0), 0), top = (arr, f, n) => arr.slice().sort((a, b) => f(b) - f(a)).slice(0, n);
+    return {
+      dark: s.dark ? DARK : '', themeLabel: s.dark ? 'Light' : 'Dark', toggleTheme: () => { const v = !s.dark; try { localStorage.setItem('ex_theme', v ? 'dark' : 'light'); } catch (e) {} this.setState({ dark: v }); },
+      mini: B.mini, on: B.on, fld: B.fld,
+      tiers: [['owner', 'Owner'], ['pro', 'Pro'], ['member', 'Member'], ['visitor', 'Visitor'], ['api', 'API']].map(([id, label]) => ({ label, st: B.seg(s.tier === id), fn: () => this.setState({ tier: id, sel: '' }, () => this.load()) })),
+      hdrPos: s.vh >= 760 ? 'position:sticky;top:0;' : 'position:relative;',
+      dock: [['Graph', [['agent', 'Agent brain'], ['inst', 'Institute'], ['map', 'Markmap'], ['time', 'Timeline']]], ['Money', [['finance', 'Finance'], ['reprice', 'Reprice']]], ['Trust', [['limits', 'Limits']]]].map(([label, items]) => ({ label, items: items.map(([id, l]) => ({ label: l, st: B.seg(s.view === id), fn: () => this.setState({ view: id }) })) })),
+      views: [['agent', 'Agent brain'], ['inst', 'Institute graph'], ['map', 'Markmap'], ['time', 'Timeline'], ['reprice', 'Reprice'], ['limits', 'Limits']].map(([id, label]) => ({ label, st: B.seg(s.view === id), fn: () => this.setState({ view: id }) })),
+      connDot: dot(s.live ? 'var(--grn)' : 'var(--acc)', 8) + (s.live || s.sim ? 'animation:pulse 1.6s infinite;' : ''), conn: s.conn,
+      toggleConnect: () => this.setState({ showConnect: !s.showConnect }), reload: () => this.load(),
+      api: s.api, onApi: e => this.setState({ api: e.target.value }), pw: s.pw, onPw: e => this.setState({ pw: e.target.value }), pwKey: e => { if (e.key === 'Enter') this.signIn(); }, signIn: () => this.signIn(),
+      connNote: 'Owner reads /owner/provenance with your session; Pro, Member, Visitor and API read /public/provenance, which only carries published nodes and numbers the agents. ' + (s.token ? 'A session is stored for this tab.' : 'No session yet.'),
+      ...this.worldVals(s, owner), ...this.rpVals(s, owner), ...this.limVals(s, owner), tagS: 'padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--mut);font-size:11px;white-space:nowrap;', capS: 'font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--mut);',
+      cmd: s.cmd, onCmd: e => { const v = e.target.value; this.setState({ cmd: v, results: this.search(v) }); }, cmdKey: e => { if (e.key === 'Enter') this.run(s.cmd); if (e.key === 'Escape') this.setState({ cmd: '', results: [] }); },
+      hasResults: s.results.length > 0, results: s.results.map(r => ({ ...r, fn: () => this.pickKey(r.key), kSt: M + 'font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:' + (LN[r.kind] || LN.claim)[1] + ';' })),
+      gridSt: s.view === 'finance' ? 'grid-template-columns:minmax(0,1fr);' : wide ? 'grid-template-columns:232px minmax(0,1fr) 320px;' : mid ? 'grid-template-columns:minmax(0,1fr) 300px;' : 'grid-template-columns:minmax(0,1fr);',
+      agentsSt: s.view === 'finance' ? 'display:none;' : wide ? 'position:sticky;top:' + ((s.vh >= 760 ? s.hdrH : 0) + 12) + 'px;max-height:calc(100vh - ' + ((s.vh >= 760 ? s.hdrH : 0) + 24) + 'px);overflow-y:auto;' : 'grid-column:1/-1;', legendSt: wide ? 'flex-basis:100%;' : '',
+      agentListSt: wide ? 'display:grid;grid-template-columns:minmax(0,1fr);gap:6px;' : 'display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;',
+      detailSt: s.view === 'finance' ? 'display:none;' : mid ? 'position:sticky;top:' + ((s.vh >= 760 ? s.hdrH : 0) + 12) + 'px;max-height:calc(100vh - ' + ((s.vh >= 760 ? s.hdrH : 0) + 24) + 'px);overflow-y:auto;' : '',
+      agentNote: D.agents.length + ' · ' + D.works.length + ' work items',
+      agents: D.agents.map(a => { const A = D.A[a.id], on = s.sel === 'a:' + a.id; return { num: a.num, name: /^agent #/.test(a.name) ? (a.role || 'agent') : a.name, role: /^agent #/.test(a.name) ? 'numbered at this tier' : (a.role || '—'), nw: A.works.length, nq: A.qs.length, ns: A.ss.length, time: fmtDur(A.total) || '0s', fn: () => this.pickKey('a:' + a.id),
+        numSt: M + 'font-size:11px;padding:1px 6px;border-radius:6px;flex:none;background:' + (on ? 'var(--btn)' : 'var(--sunk)') + ';color:' + (on ? 'var(--btntxt)' : 'var(--body)') + ';',
+        dot: dot(a.status === 'running' ? 'var(--grn)' : a.status === 'paused' ? 'var(--mut2)' : 'var(--acc)', 7) + (a.status === 'running' ? 'animation:pulse 1.6s infinite;' : ''),
+        bar: 'display:block;height:100%;background:var(--acc);width:' + Math.round(A.works.length / mx * 100) + '%;',
+        st: 'display:grid;gap:4px;' + (wide ? '' : 'flex:0 0 210px;') + 'padding:10px 11px;border-radius:12px;cursor:pointer;text-align:left;border:1px solid ' + (on ? 'var(--acc)' : 'var(--line)') + ';background:' + (on ? 'var(--acctint)' : 'var(--surf)') + ';' }; }),
+      legend: (s.view === 'agent' ? ['agent', 'work', 'question', 'claim', 'source', 'tool', 'module', 'thought'] : ['agent', 'work', 'question', 'claim', 'source']).map(k => ({ label: LN[k][0], dot: dot(LN[k][1], 9) })),
+      is4d: s.view === 'agent' || s.view === 'inst', show4d: (s.view === 'agent' || s.view === 'inst') && !this.locked(), lockedBrain: s.view === 'agent' && this.locked(), openInst: () => this.setState({ view: 'inst' }), isMap: s.view === 'map', isTime: s.view === 'time', isFinance: s.view === 'finance', finDark: s.dark, isReprice: s.view === 'reprice', isLimits: s.view === 'limits', ...this.timeline(D, s), cRef: this.cRef, hRef: this.hRef, canvasH: wide ? '66vh' : '56vh',
+      c4Title: s.sel ? (d.title || 'Selection') : s.view === 'agent' ? 'SEXTANT’s brain · the agent is the institute' : 'The institute graph, without the agent',
+      c4Sub: (s.pulse ? 'Thinking about: ' + s.pulse + ' · ' : '') + (s.sel ? 'Lit: everything connected to it. Click empty space to clear.' : s.view === 'agent' ? 'Its tools, its own source and its thoughts wrap the institute it runs.' : 'Sub-agents on the crown, then work, questions, claims and sources.'),
+      play: () => this.play(), playLabel: s.playing ? 'Pause' : '▶ Play history', tpos: s.tpos, onT: e => { clearInterval(this.pl); this.setState({ tpos: Number(e.target.value), playing: false }); }, toNow: () => { clearInterval(this.pl); this.setState({ tpos: 1000, playing: false }); },
+      tLabel: T == null ? 'now · everything' : fmtT(T), tNote: byT + ' of ' + D.works.length + ' work items and ' + nByT + ' of ' + D.nodes.length + ' nodes existed at this point. Nodes born in the last six hours of the cursor glow larger.',
+      mmTitle: s.sel ? d.title : 'The whole institute', mm, mmSvg, mmW, mmH,
+      mmExpand: () => this.setState({ mm: {}, mmAll: true }), mmCollapse: () => this.setState({ mm: {}, mmAll: false }), toRoot: () => this.setState({ sel: '', mm: {}, mmAll: null }),
+      hasSel: !!s.sel, noSel: !s.sel, d, dKickSt: 'font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:' + kc + ';',
+      ask: s.ask, onAsk: e => this.setState({ ask: e.target.value }), askKey: e => { if (e.key === 'Enter') this.askAgent(s.ask); }, sendAsk: () => this.askAgent(s.ask), hasAnswer: !!s.answer, answer: s.answer,
+      askNote: owner && s.sim ? 'SEXTANT answers in this browser from the graph, the repricing board and the limitations it holds.' : owner && s.live ? 'Runs a real chat round with this selection as context. The answer also lands in the console’s Live tab.' : owner ? 'Nothing is running here to answer: connect the engine, or open this where a model is provided.' : 'Only the owner can ask from here. Members ask through the site chat.',
+      ovText: 'Every agent, every piece of work, every question it asked and every source it read, in one graph. The 4D view adds time: press Play to watch the institute grow. Click anything to drill in; the markmap shows its tree.' + (s.tier === 'api' ? ' GET /public/provenance returns this structure.' : ''),
+      ovKpis: [[D.agents.length, 'agents'], [D.works.filter(w => w.state === 'done').length, 'work done'], [D.works.filter(w => w.state === 'ongoing').length, 'ongoing'], [D.nodes.filter(n => n.lane === 'question').length, 'questions'], [D.nodes.filter(n => n.lane === 'source').length, 'sources'], [fmtDur(totalDur) || '0s', 'time spent'], [(s.RP && s.RP.board ? s.RP.board.length : 0), 'assets repriced'], [((s.RP && s.RP.limits) || []).filter(l => l.status !== 'lifted').length, 'open limits']].map(([v, l]) => ({ v: String(v), l })),
+      hasHidden: !!D.hidden, hiddenNote: D.hidden + ' links to private nodes are hidden at this tier.',
+      ovLists: [
+        ...this.worldLists(s, D), { title: 'Busiest agents', items: top(D.agents, a => D.A[a.id].works.length, 4).map(a => ({ label: aname(a), sub: D.A[a.id].works.length + ' work', dot: dot(LN.agent[1], 7), fn: () => this.pickKey('a:' + a.id) })) },
+        { title: 'Most-read sources', items: top(D.nodes.filter(n => n.lane === 'source'), n => n.refs, 5).map(n => ({ label: n.label, sub: n.refs + ' reads', dot: dot(LN.source[1], 7), fn: () => this.pickKey('n:' + n.id) })) },
+        { title: 'Questions with the most work', items: top(D.nodes.filter(n => n.lane === 'question'), n => D.N[n.id].works.length, 5).map(n => ({ label: n.label, sub: D.N[n.id].works.length + ' work', dot: dot(LN.question[1], 7), fn: () => this.pickKey('n:' + n.id) })) },
+        { title: 'Running now', items: D.works.filter(w => w.state === 'ongoing').map(w => ({ label: w.title, sub: fmtDur(now - (w.started || now)), dot: dot(LN.work[1], 7) + 'animation:pulse 1.4s infinite;', fn: () => this.pickKey('w:' + w.id) })) },
+      ].filter(L => L.items.length),
+      hasToast: !!s.toast, toast: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

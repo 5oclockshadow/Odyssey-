@@ -1,0 +1,10 @@
+# Tests in Docker, no model and no network: docker compose -f docker-compose.test.yml run --rm engine  (or `up --abort-on-container-exit`)
+x-py: &py
+  image: python:3.12-slim
+  environment: { PIP_DISABLE_PIP_VERSION_CHECK: "1", PYTHONDONTWRITEBYTECODE: "1" }
+  command: sh -c "pip install -q -r requirements.txt && python -m pytest -q"
+services:
+  engine: { <<: *py, working_dir: /app, volumes: ["./apps/engine:/app"] }
+  hub:    { <<: *py, working_dir: /app, volumes: ["./apps/mcp-hub:/app"] }
+  ops:    { <<: *py, working_dir: /app, volumes: ["./apps/ops:/app"] }
+  tester: { <<: *py, working_dir: /app, volumes: ["./apps/tester:/app"], environment: { TESTER_LOOP: "off", TESTER_LIVE: "off", PIP_DISABLE_PIP_VERSION_CHECK: "1", PYTHONDONTWRITEBYTECODE: "1" } }

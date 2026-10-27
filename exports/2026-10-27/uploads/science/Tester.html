@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saltline · Tester Agent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="suite-theme.css">
+<script src="suite-theme.js"></script>
+<script src="suite-launcher.js"></script>
+<script src="suite-nav.js"></script>
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<style>
+body{margin:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:13.5px;line-height:1.5}
+a{color:var(--color-accent-300)}a:hover{color:var(--color-accent-200)}
+:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}
+.mono{font-family:var(--font-mono)}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--color-neutral-800) 48px,var(--color-neutral-800) calc(100% - 48px),transparent)}
+.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--color-bg) 88%,transparent);backdrop-filter:blur(12px)}
+.top-in{display:flex;align-items:center;gap:18px;padding:11px 20px;flex-wrap:wrap}
+.brand{flex:none;white-space:nowrap;display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.brand .mk{box-sizing:border-box;flex:none;width:26px;height:26px;border-radius:7px;border:1px solid var(--color-accent);display:grid;place-items:center;color:var(--color-accent-300);box-shadow:0 0 18px color-mix(in srgb,var(--color-accent) 45%,transparent)}
+.links{display:flex;gap:2px;flex-wrap:wrap}.links a{color:var(--color-neutral-400);text-decoration:none;padding:6px 10px;border-radius:var(--radius-md);font-size:13px}.links a:hover{color:var(--color-text);background:var(--color-neutral-900)}.links a.on{color:var(--color-text);background:var(--color-accent-900)}
+.sp{flex:1}
+.btn{white-space:nowrap}
+.mk i.ph{font-size:15px;line-height:1;display:block}
+.page{padding:16px 20px 60px;display:flex;flex-direction:column;gap:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+.kpi{background:var(--color-surface);border-radius:var(--radius-md);padding:10px 12px;box-shadow:var(--shadow-sm)}
+.kpi span{display:block;font-size:11px;color:var(--color-neutral-500);text-transform:uppercase;letter-spacing:.06em}.kpi b{font:500 21px var(--font-mono)}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.prog{flex:1;min-width:160px;height:4px;background:var(--color-neutral-900);border-radius:3px;overflow:hidden}.prog i{display:block;height:100%;width:0;background:var(--color-accent);box-shadow:0 0 10px var(--color-accent);transition:width .2s}
+.grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) 380px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);min-width:0}
+.phd{display:flex;align-items:center;gap:8px;padding:12px 14px 0;font-weight:600}.phd i{color:var(--color-accent-300)}
+.phd .r{margin-left:auto;color:var(--color-neutral-500);font-size:12px;font-weight:400}
+.pb{padding:12px 14px 14px}
+#gwrap{position:relative;height:560px;margin:10px 14px 14px;border-radius:var(--radius-md);background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--color-accent) 8%,var(--color-bg)),var(--color-bg) 70%);overflow:hidden}
+#g{width:100%;height:100%;display:block;cursor:grab}
+.tip{position:absolute;pointer-events:none;z-index:5;max-width:280px;background:var(--color-surface);box-shadow:var(--shadow-lg);border-radius:var(--radius-md);padding:9px 11px;font-size:12.5px;display:none}
+.tip b{font-weight:600;display:block;margin-bottom:2px}.tip .k{color:var(--color-neutral-500);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.hopw{position:absolute;left:10px;top:10px;z-index:4;background:color-mix(in srgb,var(--color-surface) 92%,transparent);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);padding:9px 10px;width:230px}
+.hopw .t{font-size:11px;color:var(--color-neutral-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.hopw .sel{font-weight:600;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hopw .lst{max-height:150px;overflow:auto;margin-top:8px;display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--color-neutral-300)}
+.hopw .lst div{display:flex;gap:6px;align-items:center;cursor:pointer}.hopw .lst div:hover{color:var(--color-text)}
+.legend{position:absolute;right:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:70%}
+.legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-neutral-400);background:color-mix(in srgb,var(--color-surface) 85%,transparent);padding:3px 8px;border-radius:999px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.spinS{position:absolute;right:12px;top:12px;font-size:11px;color:var(--color-neutral-500);display:flex;gap:6px;align-items:center}
+.side{display:flex;flex-direction:column;gap:14px}
+.feed{max-height:250px;overflow:auto;display:flex;flex-direction:column;gap:7px}
+.ins{padding:8px 10px;border-radius:var(--radius-md);background:var(--color-bg);font-size:12.5px;color:var(--color-neutral-300);animation:in .35s ease-out}
+.ins .h{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--color-neutral-500);margin-bottom:2px}
+.ins .h b{font-weight:600;color:var(--color-accent-300);letter-spacing:.06em}
+.ins.act{box-shadow:inset 2px 0 0 var(--color-accent)}
+@keyframes in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.chat{display:flex;flex-direction:column;height:360px}
+.chat .who{font-size:12px;color:var(--color-neutral-400);padding:0 14px}
+.chat .who b{font-weight:600;color:var(--color-text)}
+.msgs{flex:1;overflow:auto;padding:8px 14px;display:flex;flex-direction:column;gap:8px}
+.msg{font-size:13px;padding:8px 11px;border-radius:11px;max-width:90%;white-space:pre-wrap}
+.msg.u{align-self:flex-end;background:var(--color-accent-900);color:var(--color-accent-100)}.msg.a{align-self:flex-start;background:var(--color-bg);color:var(--color-neutral-200)}
+.cf{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--color-neutral-900)}
+.cf input{flex:1;background:var(--color-bg);border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);color:var(--color-text);padding:8px 10px;font:13px var(--font-body)}
+.lower{display:grid;gap:14px;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+@media(max-width:1100px){.lower{grid-template-columns:1fr}}
+.tw{max-height:420px;overflow:auto}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th{position:sticky;top:0;background:var(--color-surface);text-align:left;font-weight:600;color:var(--color-neutral-500);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:7px 8px;border-bottom:1px solid var(--color-neutral-800)}
+table.t td{padding:7px 8px;border-bottom:1px solid var(--color-neutral-900);white-space:nowrap}
+table.t tr.rw{cursor:pointer}table.t tr.rw:hover td{background:var(--color-neutral-900)}
+.pass{color:var(--ok)}.fail{color:var(--bad)}
+.qt{width:100%;border-collapse:collapse;font-size:12px}
+.qt th,.qt td{padding:5px 6px;text-align:center}.qt th{font-weight:600;color:var(--color-neutral-500);font-size:11px}
+.qt td:first-child{text-align:left;color:var(--color-neutral-300);white-space:nowrap}
+.qt td.c{font-family:var(--font-mono);border-radius:4px}
+.hebb div{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:4px 0;color:var(--color-neutral-300)}
+.hebb i.b{display:block;height:3px;background:var(--color-accent);border-radius:2px;margin-top:2px}
+.ctg{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(236px,1fr))}
+.ct{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border-radius:var(--radius-md);background:var(--color-bg);font-size:12.5px}
+.ct i{margin-top:1px}.ct .nm{flex:1;min-width:0}.ct .nm b{font-weight:600;display:block}.ct .nm .fn{font:500 10px var(--font-mono);color:var(--color-accent-300)}.ct .nm .dt{color:var(--color-neutral-500);font-size:11px}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,100%);background:var(--color-surface);box-shadow:var(--shadow-lg);z-index:50;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.dh{padding:16px 18px;display:flex;gap:10px;align-items:flex-start}
+.db{padding:0 18px 24px;overflow:auto;flex:1}
+.as{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--color-neutral-900);font-size:12.5px}
+.as i{margin-top:2px}.as .d{color:var(--color-neutral-500);margin-left:auto;text-align:right;max-width:55%}
+.db h4{font-weight:600;margin:16px 0 6px}
+.dbody{font-size:13px;color:var(--color-neutral-300)}.dbody h4{font-size:13px;margin:10px 0 4px}.dbody p{margin:0 0 8px}
+.cite{font:500 10px var(--font-mono);color:var(--color-accent-300);background:var(--color-accent-900);border-radius:4px;padding:0 4px}
+.gap{font-size:11.5px;color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent);border-radius:4px;padding:1px 6px}
+.spin{width:12px;height:12px;border:2px solid var(--color-accent-800);border-top-color:var(--color-accent);border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.note{color:var(--color-neutral-500);font-size:12px}
+</style>
+</head>
+<body>
+<div data-suite-nav="tester"></div>
+<span data-nav-extra="" style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--color-neutral-400)"><span class="note mono" id="ver" style="font-size:11px"></span><span class="note" id="status">idle</span></span>
+<div class="page">
+  <div class="kpis">
+    <div class="kpi"><span>Tests</span><b id="kT">0</b></div><div class="kpi"><span>Pass rate</span><b id="kP">—</b></div><div class="kpi"><span>Assertions</span><b id="kA">0</b></div>
+    <div class="kpi"><span>Recall</span><b id="kR">—</b></div><div class="kpi"><span>Coverage</span><b id="kC">—</b></div><div class="kpi"><span>Cache hit</span><b id="kH">—</b></div>
+    <div class="kpi"><span>Self-tests</span><b id="kST">—</b></div><div class="kpi"><span>Claude calls</span><b id="kL">0</b></div><div class="kpi"><span>Q updates</span><b id="kQ">0</b></div><div class="kpi"><span>ε explore</span><b id="kE">—</b></div>
+  </div>
+  <div class="ctrl">
+    <button class="btn btn-primary" id="run3"><i class="ph ph-sparkle"></i> Run 3 · full Claude</button>
+    <button class="btn btn-primary" id="run100"><i class="ph ph-play"></i> Run 100 · agent</button>
+    <button class="btn btn-secondary" id="runCode"><i class="ph ph-code"></i> Self-test the code</button>
+    <button class="btn btn-secondary" id="stop" disabled><i class="ph ph-stop"></i> Stop</button>
+    <button class="btn btn-ghost" id="clear"><i class="ph ph-trash"></i> Clear results</button>
+    <div class="prog"><i id="pb"></i></div><span class="note mono" id="pt"></span>
+  </div>
+  <div class="grid">
+    <section class="panel"><div class="phd"><i class="ph ph-graph"></i>Connectome<span class="r" id="gN"></span></div>
+      <div id="gwrap"><svg id="g"></svg><div class="tip" id="tip"></div>
+        <div class="hopw"><div class="t">Neighbourhood</div><div class="sel" id="hsel">Click a node to select</div>
+          <div class="seg" id="hops"><button class="seg-opt on" data-h="1">1 hop</button><button class="seg-opt" data-h="2">2 hops</button><button class="seg-opt" data-h="3">3 hops</button></div>
+          <div class="lst" id="hlst"></div></div>
+        <div class="spinS" id="spinS"><i class="ph ph-arrows-clockwise"></i> free spin</div>
+        <div class="legend"><span><i class="dot" style="background:var(--ok)"></i>test pass</span><span><i class="dot" style="background:var(--bad)"></i>test fail</span><span><i class="dot" style="background:var(--color-accent)"></i>product</span><span><i class="dot" style="background:var(--color-accent-300)"></i>entity</span><span><i class="dot" style="background:var(--warn)"></i>failure mode</span><span><i class="dot" style="background:var(--color-neutral-400)"></i>region / sector</span><span><i class="dot" style="background:var(--color-section-ghost,#4c5397)"></i>section</span><span><i class="dot" style="background:var(--color-neutral-300)"></i>module</span><span><i class="dot" style="background:var(--info)"></i>fn</span><span><i class="dot" style="background:#c6893f"></i>data</span><span><i class="dot" style="background:#7d9b57"></i>tool</span></div>
+      </div></section>
+    <div class="side">
+      <section class="panel"><div class="phd"><i class="ph ph-megaphone"></i>Intelligence → tester<span class="r" id="insN">0</span></div><div class="pb"><div class="feed" id="feed"><div class="note">Insights from the graph, Hebbian links and the Q-table are pushed here and acted on by the tester.</div></div></div></section>
+      <section class="panel chat"><div class="phd"><i class="ph ph-chats-circle"></i>Chat<span class="r"><button class="btn btn-ghost" id="toAgent" style="padding:2px 8px">talk to agent</button></span></div><div class="who" id="who">Talking to <b>Tester agent</b></div><div class="msgs" id="msgs"></div><form class="cf" id="cf"><input id="ci" placeholder="Ask about failures, strategy, a node…" autocomplete="off"><button class="btn btn-primary btn-icon" aria-label="Send"><i class="ph ph-paper-plane-tilt"></i></button></form></section>
+    </div>
+  </div>
+  <section class="panel" id="codePanel"><div class="phd"><i class="ph ph-code"></i>Code self-tests <span class="note" style="font-weight:400">— the tester testing this codebase</span><span class="r" id="codeR">not run</span></div><div class="pb" id="codeBody"><div class="note">Press <b style="color:var(--color-text)">Self-test the code</b> to run live assertions against the suite engine — chunking, RAPTOR ingestion, the graph retriever, the Redis-style cache, the Q-table and Hebbian learning.</div></div></section>
+  <div class="lower">
+    <section class="panel"><div class="phd"><i class="ph ph-list-checks"></i>Results<span class="r" id="resN"></span></div><div class="pb tw"><table class="t"><thead><tr><th>ID</th><th>Case</th><th>Product</th><th>Faults</th><th>Asserts</th><th>Recall</th><th>Cov.</th><th>ms</th><th>Mode</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+    <div class="side">
+      <section class="panel"><div class="phd"><i class="ph ph-brain"></i>Q-table · section × strategy</div><div class="pb" id="qt"></div></section>
+      <section class="panel"><div class="phd"><i class="ph ph-link-simple"></i>Hebbian · strongest links</div><div class="pb hebb" id="hb"></div></section>
+    </div>
+  </div>
+</div>
+<aside class="drawer" id="dr"><div class="dh"><div style="flex:1"><div class="note" id="drk"></div><h3 style="font-weight:600;font-size:17px;margin:2px 0 0" id="drt"></h3></div><button class="btn btn-ghost btn-icon" id="drx" aria-label="Close"><i class="ph ph-x"></i></button></div><div class="db" id="drb"></div></aside>
+
+<script type="module">
+import * as C from './suite-core.js';
+import * as FD from './features-data.js';
+const { esc } = C, $ = s => document.querySelector(s);
+const cache = new C.RedisLite(), qt = new C.QTable(C.db.get('q', null));
+let R = C.db.get('tests', []), H = C.db.get('hebbG', {}), INS = C.db.get('insights', []), run = null, llmTotal = R.reduce((a, r) => a + ((r.metrics || {}).llmCalls || 0), 0);
+const persist = () => { C.db.set('tests', R.slice(-300)); C.db.set('hebbG', H); C.db.set('insights', INS.slice(-80)); qt.save(); };
+
+/* ---------- running ---------- */
+async function runBatch(n, full) {
+  if (run) return; run = { stop: false };
+  $('#stop').disabled = false; $('#run3').disabled = $('#run100').disabled = true;
+  const base = full ? 1000 + R.filter(r => r.llm).length : R.filter(r => !r.llm).length;
+  for (let k = 0; k < n && !run.stop; k++) {
+    const i = base + k, c = C.makeCase(i);
+    if (full) c.product = ['dossier', 'permit', 'baseline'][k % 3];
+    const sampleLLM = !full && (i % 10 === 0);
+    $('#status').innerHTML = `<span class="spin"></span> ${c.id} · ${esc(c.name)}`;
+    $('#pt').textContent = `${k + 1}/${n}`; $('#pb').style.width = (k / n * 100) + '%';
+    const res = await C.runCase(c, { qt, cache, llmSections: full ? 99 : sampleLLM ? 2 : 0, useLLMSummaries: full, onStep: s => $('#status').innerHTML = `<span class="spin"></span> ${c.id} · ${s}` });
+    res.id = full ? 'F' + String(i - 999).padStart(2, '0') : res.id;
+    llmTotal += res.metrics.llmCalls || 0;
+    R.push(res); learn(res); C.emit('test', { id: res.id, name: res.name, pass: res.pass, ok: res.asserts.filter(a => a.ok).length, n: res.asserts.length, product: res.product, llm: res.llm });
+    if (R.length % 5 === 0 || full) think();
+    persist(); paint();
+    await new Promise(r => setTimeout(r, full ? 50 : 140));
+  }
+  $('#pb').style.width = '100%'; think(true); persist(); paint();
+  $('#status').textContent = run.stop ? 'stopped' : `done · ${n} run`;
+  run = null; $('#stop').disabled = true; $('#run3').disabled = $('#run100').disabled = false;
+}
+$('#run3').onclick = () => runBatch(3, true);
+$('#run100').onclick = () => runBatch(100, false);
+$('#stop').onclick = () => run && (run.stop = true);
+$('#clear').onclick = () => { if (run) return; R = []; H = {}; INS = []; llmTotal = 0; persist(); C.emit('test', { cleared: true }); paint(); $('#feed').innerHTML = '<div class="note">Cleared.</div>'; };
+
+let CODE = C.db.get('selftests', null);
+async function runCode() {
+  if (run) return; run = { stop: false };
+  $('#stop').disabled = false; $('#run3').disabled = $('#run100').disabled = $('#runCode').disabled = true;
+  $('#status').innerHTML = '<span class="spin"></span> self-testing the suite engine…';
+  try {
+    CODE = await C.selfTests(cache);
+    for (const m of ['suite-hazards.js', 'suite-codegraph.js', 'suite-forecast.js', 'suite-agent.js', 'suite-resilience.js']) { try { const M = await import('./' + m), h = await M.selfTests(); CODE = { ...CODE, items: CODE.items.concat(h.items), total: CODE.total + h.total, passed: CODE.passed + h.passed }; } catch (e) { CODE = { ...CODE, items: CODE.items.concat([{ name: m + ' loads', module: m, fn: 'import', ok: false, detail: e.message, ms: 0 }]), total: CODE.total + 1 }; } }
+    CODE.pass = CODE.passed === CODE.total; C.db.set('selftests', CODE);
+    const failed = CODE.items.filter(i => !i.ok);
+    push('CODE SELF-TEST', `Ran ${CODE.total} assertions against the live engine — ${CODE.passed}/${CODE.total} passed${failed.length ? ': ' + failed.map(f => f.fn + '()').join(', ') + ' failing' : ' · all green'}.`, failed.length > 0);
+    failed.forEach(f => push('CODE FAILURE', `${f.module} · ${f.fn}() — ${f.name}: ${f.detail}`, true));
+    C.emit('selftest', { passed: CODE.passed, total: CODE.total });
+  } catch (e) { $('#status').textContent = 'self-test error: ' + e.message; }
+  persist(); paintCode(); paint();
+  if (CODE) $('#status').textContent = `self-test · ${CODE.passed}/${CODE.total} passed`;
+  run = null; $('#stop').disabled = true; $('#run3').disabled = $('#run100').disabled = $('#runCode').disabled = false;
+}
+$('#runCode').onclick = runCode;
+function paintCode() {
+  $('#kST').textContent = CODE ? CODE.passed + '/' + CODE.total : '—';
+  if (!CODE) return;
+  $('#codeR').innerHTML = `${CODE.passed}/${CODE.total} passed · engine v${esc(CODE.version || '')}`;
+  const byMod = {}; CODE.items.forEach(i => (byMod[i.module] = byMod[i.module] || []).push(i));
+  $('#codeBody').innerHTML = Object.entries(byMod).map(([m, items]) => `<div class="note" style="margin:4px 0 6px">${esc(m)} · ${items.filter(x => x.ok).length}/${items.length}</div><div class="ctg">${items.map(i => `<div class="ct"><i class="ph ${i.ok ? 'ph-check-circle pass' : 'ph-x-circle fail'}"></i><div class="nm"><b>${esc(i.name)}</b><span class="fn">${esc(i.fn)}()</span> <span class="dt">· ${esc(i.detail)} · ${i.ms}ms</span></div></div>`).join('')}</div>`).join('');
+}
+
+/* ---------- cross-test Hebbian over entity co-activation ---------- */
+function learn(res) {
+  for (const k in H) H[k] *= 0.99;
+  for (const [a, b] of res.coact || []) { const k = [a, b].sort().join('|'); H[k] = (H[k] || 0) + 0.12 * (1 - (H[k] || 0)); }
+}
+
+/* ---------- insights: graph + Hebbian + Q-table → directives the tester acts on ---------- */
+let lastSig = '';
+function push(kind, text, act) { INS.push({ kind, text, act: !!act, t: Date.now() }); C.emit('insight', { kind, text }); }
+function think(final) {
+  if (!R.length) return;
+  const last = R.slice(-20), fails = {};
+  last.forEach(r => r.asserts.filter(a => !a.ok).forEach(a => { (fails[a.name] = fails[a.name] || []).push(r); }));
+  const sig = Object.keys(fails).join(',') + '|' + Math.round(qt.eps * 100) + '|' + R.length;
+  if (sig === lastSig && !final) return; lastSig = sig;
+  for (const [name, rs] of Object.entries(fails)) if (rs.length >= 2) {
+    const fc = {}; rs.forEach(r => r.faults.forEach(f => fc[f] = (fc[f] || 0) + 1)); const top = Object.entries(fc).sort((a, b) => b[1] - a[1])[0];
+    const pc = {}; rs.forEach(r => pc[r.product] = (pc[r.product] || 0) + 1); const tp = Object.entries(pc).sort((a, b) => b[1] - a[1])[0];
+    push('FAILURE CLUSTER', `“${name}” failed in ${rs.length} of the last ${last.length} tests${top ? ` · common fault: ${top[0]}` : ''}${tp ? ` · mostly ${tp[0]}` : ''}. Re-weighting that case family in the next batch.`, true);
+  }
+  const weak = Object.keys(qt.Q).map(s => [s, ...qt.best(s)]).sort((a, b) => a[2] - b[2])[0];
+  if (weak) push('Q-TABLE', `Weakest section: ${C.SECTIONS[weak[0]] ? C.SECTIONS[weak[0]].t : weak[0]} — best strategy so far ${weak[1]} (Q ${weak[2].toFixed(2)}). Retriever will prefer ${weak[1]} there.`, true);
+  const best = Object.entries(H).sort((a, b) => b[1] - a[1])[0];
+  if (best) push('HEBBIAN', `Strongest co-activation: ${best[0].replace('|', ' ↔ ')} (w ${best[1].toFixed(2)}). These entities travel together in retrieved evidence.`);
+  if (R.length >= 10 && qt.eps > 0.06) { const old = qt.eps; qt.eps = Math.max(0.05, +(qt.eps * 0.8).toFixed(3)); push('POLICY', `Q-table has ${qt.n} updates — exploration ε ${old.toFixed(2)} → ${qt.eps.toFixed(2)} (exploiting learned strategies).`, true); }
+  const cs = cache.stats(); push('CACHE', `Redis-style cache ${Math.round(cs.hitRate * 100)}% hit over ${cs.ops} ops · ${cs.keys} keys.`);
+}
+
+/* ---------- connectome ---------- */
+const COL = { test: r => r.pass ? 'var(--ok)' : 'var(--bad)', codetest: r => r.pass ? 'var(--ok)' : 'var(--bad)', product: 'var(--color-accent)', entity: 'var(--color-accent-300)', failure: 'var(--warn)', region: 'var(--color-neutral-400)', sector: 'var(--color-neutral-500)', section: '#4c5397', module: 'var(--color-neutral-300)', fn: 'var(--info)', data: '#c6893f', tool: '#7d9b57' };
+let nodes = [], links = [], adj = new Map(), byId = new Map();
+function buildGraph() {
+  const N = new Map(), L = [], add = (id, type, label, extra) => { if (!N.has(id)) N.set(id, { id, type, label, ...extra }); return N.get(id); }, ln = (a, b, t, w = .3) => L.push({ source: a, target: b, t, w });
+  const fnId = (m, f) => 'FN:' + m + '::' + f, ENG = 'suite-core.js';
+  // codebase: every module + its functions
+  C.CODE_MODULES.forEach(m => { add('M:' + m.id, 'module', m.id, { role: m.role, info: m.role + ' · ' + m.fns.length + ' functions' }); m.fns.forEach(f => { add(fnId(m.id, f), 'fn', f, { module: m.id }); ln('M:' + m.id, fnId(m.id, f), 'defines', .25); }); });
+  // products + sections, wired to the code that implements them
+  C.PRODUCTS.forEach(p => { add('P:' + p.id, 'product', p.name, { info: p.short }); p.sections.filter(s => s !== 'gaps').forEach(s => { add('Q:' + s, 'section', C.SECTIONS[s].t); ln('P:' + p.id, 'Q:' + s, 'has', .2); ln(fnId(ENG, 'GraphRetriever'), 'Q:' + s, 'serves', .05); }); ln(fnId(ENG, 'buildDossier'), 'P:' + p.id, 'builds', .12); });
+  // data fixtures: emitted by makeCase, consumed by ingest
+  C.DATA_FIXTURES.forEach(d => { add('D:' + d, 'data', d, {}); ln(fnId(ENG, 'makeCase'), 'D:' + d, 'emits', .12); ln('D:' + d, fnId(ENG, 'ingest'), 'feeds', .12); });
+  // the 200 tools, by domain, offered by Field Tools
+  (FD.DOMAINS || []).forEach(dm => { const id = 'TD:' + dm[0]; add(id, 'tool', dm[0], { info: dm[1].length + ' tools' }); ln('M:Field Tools.html', id, 'offers', .1); });
+  // entity frequency across case runs
+  const ec = {}; R.forEach(r => r.entities.forEach(e => ec[e] = (ec[e] || 0) + 1));
+  const topE = new Set(Object.entries(ec).sort((a, b) => b[1] - a[1]).slice(0, 24).map(e => e[0]));
+  const engineFns = ['ingest', 'GraphRetriever', 'QTable', 'hebb', 'buildDossier'];
+  R.slice(-60).forEach(r => {
+    const t = add('T:' + r.id, 'test', r.id + ' · ' + r.name, { r });
+    add('R:' + r.region, 'region', r.region); ln(t.id, 'R:' + r.region, 'region', .12);
+    add('X:' + r.sector, 'sector', r.sector); ln(t.id, 'X:' + r.sector, 'sector', .12);
+    ln(t.id, 'P:' + r.product, 'product', .15);
+    engineFns.forEach(f => ln(t.id, fnId(ENG, f), 'exercises', .05));
+    r.asserts.filter(a => !a.ok).forEach(a => { add('F:' + a.name, 'failure', a.name); ln(t.id, 'F:' + a.name, 'failed', .5); });
+    r.entities.filter(e => topE.has(e)).slice(0, 4).forEach(e => { add('E:' + e, 'entity', e, { n: ec[e] }); ln(t.id, 'E:' + e, 'retrieved', .1); });
+  });
+  // code self-tests → the function each verifies
+  if (CODE) CODE.items.forEach((it, k) => { const id = 'CT:' + k; add(id, 'codetest', it.name, { r: { pass: it.ok }, it }); const f = fnId(it.module, it.fn); ln(id, N.has(f) ? f : 'M:' + it.module, it.ok ? 'verifies' : 'failed', .4); });
+  // Hebbian co-activation among entities
+  Object.entries(H).sort((a, b) => b[1] - a[1]).slice(0, 34).forEach(([k, w]) => { const [a, b] = k.split('|'); if (topE.has(a) && topE.has(b)) ln('E:' + a, 'E:' + b, 'hebb', w); });
+  const old = new Map(nodes.map(n => [n.id, n]));
+  nodes = [...N.values()].map(n => { const o = old.get(n.id); return o ? Object.assign(o, n) : n; });
+  links = L.filter(l => N.has(l.source) && N.has(l.target));
+  adj = new Map(nodes.map(n => [n.id, new Set()])); byId = new Map(nodes.map(n => [n.id, n]));
+  links.forEach(l => { const a = l.source.id || l.source, b = l.target.id || l.target; adj.get(a).add(b); adj.get(b).add(a); });
+}
+const svg = d3.select('#g'), wrap = $('#gwrap'), root = svg.append('g'), spinG = root.append('g'), gL = spinG.append('g'), gN = spinG.append('g'), gT = spinG.append('g');
+let zt = d3.zoomIdentity, angle = 0, spinning = true, sel = null, hopK = 1, hood = null;
+svg.call(d3.zoom().scaleExtent([.3, 4]).on('zoom', e => { zt = e.transform; place(); }));
+const sim = d3.forceSimulation().force('charge', d3.forceManyBody().strength(-60)).force('link', d3.forceLink().id(d => d.id).distance(l => l.t === 'hebb' ? 40 : l.t === 'has' ? 60 : 34).strength(l => l.t === 'hebb' ? .3 : .25)).force('center', d3.forceCenter(0, 0)).force('col', d3.forceCollide().radius(d => rad(d) + 2)).on('tick', tick);
+const rad = d => d.type === 'module' ? 12 : d.type === 'product' ? 11 : d.type === 'section' ? 7 : d.type === 'failure' ? 7 : d.type === 'data' ? 6 : d.type === 'tool' ? 5.5 : d.type === 'fn' ? 4.5 : d.type === 'codetest' ? 3.6 : d.type === 'entity' ? 3 + Math.min(7, Math.sqrt(d.n || 1)) : d.type === 'test' ? 3.2 : 5;
+const col = d => typeof COL[d.type] === 'function' ? COL[d.type](d.r) : COL[d.type];
+function place() { const w = wrap.clientWidth, h = wrap.clientHeight; root.attr('transform', `translate(${zt.x + zt.k * w / 2},${zt.y + zt.k * h / 2}) scale(${zt.k})`); spinG.attr('transform', `rotate(${angle})`); }
+function drawGraph() {
+  buildGraph(); $('#gN').textContent = nodes.length + ' nodes · ' + links.length + ' edges';
+  const L = gL.selectAll('line').data(links); L.exit().remove(); L.enter().append('line');
+  gL.selectAll('line').attr('stroke', d => d.t === 'hebb' ? 'var(--color-accent-500)' : d.t === 'failed' ? 'var(--warn)' : 'var(--color-neutral-800)').attr('stroke-opacity', d => d.t === 'hebb' ? .35 + d.w * .6 : d.t === 'failed' ? .5 : .55).attr('stroke-width', d => d.t === 'hebb' ? 1 + d.w * 2.5 : .8);
+  const N = gN.selectAll('circle').data(nodes, d => d.id); N.exit().remove();
+  N.enter().append('circle').attr('stroke', 'var(--color-bg)').attr('stroke-width', 1).style('cursor', 'pointer')
+    .on('mouseenter', (e, d) => { spinning = false; $('#spinS').innerHTML = '<i class="ph ph-pause"></i> paused'; showTip(e, d); })
+    .on('mousemove', (e, d) => showTip(e, d))
+    .on('mouseleave', () => { spinning = true; $('#spinS').innerHTML = '<i class="ph ph-arrows-clockwise"></i> free spin'; $('#tip').style.display = 'none'; })
+    .on('click', (e, d) => { e.stopPropagation(); select(d.id); });
+  gN.selectAll('circle').attr('r', rad).attr('fill', col);
+  const T = gT.selectAll('text').data(nodes.filter(n => n.type === 'product' || n.type === 'failure' || n.type === 'module' || (n.type === 'entity' && (n.n || 0) > 3)), d => d.id); T.exit().remove();
+  T.enter().append('text').attr('font-size', 9.5).attr('fill', 'var(--color-neutral-300)').attr('dx', 8).attr('dy', 3).style('pointer-events', 'none').attr('paint-order', 'stroke').attr('stroke', 'var(--color-bg)').attr('stroke-width', 3);
+  gT.selectAll('text').text(d => d.label.length > 26 ? d.label.slice(0, 25) + '…' : d.label);
+  sim.nodes(nodes); sim.force('link').links(links); sim.alpha(.6).restart(); highlight();
+}
+function tick() { gL.selectAll('line').attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y); gN.selectAll('circle').attr('cx', d => d.x).attr('cy', d => d.y); gT.selectAll('text').attr('x', d => d.x).attr('y', d => d.y).attr('transform', d => `rotate(${-angle},${d.x},${d.y})`); }
+(function spin() { if (spinning && !sel) { angle = (angle + 0.06) % 360; place(); gT.selectAll('text').attr('transform', d => `rotate(${-angle},${d.x},${d.y})`); } requestAnimationFrame(spin); })();
+new ResizeObserver(place).observe(wrap);
+function detail(d) {
+  const deg = (adj.get(d.id) || new Set()).size;
+  if (d.type === 'test') { const r = d.r; return `<span class="k">Test</span><b>${esc(d.label)}</b>${r.asserts.filter(a => a.ok).length}/${r.asserts.length} assertions · recall ${Math.round((r.metrics.recall || 0) * 100)}% · coverage ${Math.round((r.metrics.coverage || 0) * 100)}%<br>faults: ${r.faults.join(', ') || 'none'} · ${r.ms} ms`; }
+  if (d.type === 'section') { const [a, v] = qt.best(d.id.slice(2)); return `<span class="k">Dossier section</span><b>${esc(d.label)}</b>Q-best: ${a} (${v.toFixed(2)})<br>${Object.entries(qt.row(d.id.slice(2))).map(([k, x]) => k + ' ' + x.toFixed(2)).join(' · ')}`; }
+  if (d.type === 'entity') { const top = Object.entries(H).filter(([k]) => k.split('|').includes(d.label)).sort((a, b) => b[1] - a[1]).slice(0, 3); return `<span class="k">Entity</span><b>${esc(d.label)}</b>in ${d.n || 0} tests' evidence${top.length ? '<br>Hebbian: ' + top.map(([k, w]) => k.split('|').find(x => x !== d.label) + ' ' + w.toFixed(2)).join(', ') : ''}`; }
+  if (d.type === 'failure') return `<span class="k">Failure mode</span><b>${esc(d.label)}</b>${deg} failing tests linked`;
+  if (d.type === 'module') return `<span class="k">Code module · ${esc(d.role || '')}</span><b>${esc(d.label)}</b>${esc(d.info || '')} · ${deg} links`;
+  if (d.type === 'fn') return `<span class="k">Function · ${esc(d.module || '')}</span><b>${esc(d.label)}()</b>exercised by ${deg} nodes in the graph`;
+  if (d.type === 'data') return `<span class="k">Data fixture</span><b>${esc(d.label)}</b>emitted by makeCase(), consumed by ingest()`;
+  if (d.type === 'tool') return `<span class="k">Tool domain</span><b>${esc(d.label)}</b>${esc(d.info || '')}`;
+  if (d.type === 'codetest') { const it = d.it || {}; return `<span class="k">Self-test · ${it.ok ? 'PASS' : 'FAIL'}</span><b>${esc(d.label)}</b>${esc(it.module || '')} · ${esc(it.fn || '')}()<br>${esc(it.detail || '')}`; }
+  if (d.type === 'product') return `<span class="k">Product</span><b>${esc(d.label)}</b>${esc(d.info || '')}`;
+  return `<span class="k">${esc(d.type)}</span><b>${esc(d.label)}</b>${deg} connections`;
+}
+function showTip(e, d) { const t = $('#tip'), b = wrap.getBoundingClientRect(); t.innerHTML = detail(d); t.style.display = 'block'; t.style.left = Math.min(b.width - 290, e.clientX - b.left + 14) + 'px'; t.style.top = Math.min(b.height - 120, e.clientY - b.top + 10) + 'px'; }
+function select(id) {
+  sel = id && byId.has(id) ? id : null; highlight();
+  const d = sel && byId.get(sel);
+  $('#who').innerHTML = d ? `Talking to <b>${esc(d.label)}</b> <span class="note">(${d.type})</span>` : 'Talking to <b>Tester agent</b>';
+  if (d && d.type === 'test') openDrawer(d.r);
+}
+svg.on('click', () => select(null));
+function highlight() {
+  if (!sel) { hood = null; gN.selectAll('circle').attr('opacity', 1).attr('stroke', 'var(--color-bg)'); gL.selectAll('line').attr('opacity', 1); $('#hsel').textContent = 'Click a node to select'; $('#hlst').innerHTML = ''; return; }
+  const seen = new Map([[sel, 0]]); let fr = [sel];
+  for (let k = 1; k <= hopK; k++) { const nx = []; fr.forEach(u => (adj.get(u) || []).forEach(v => { if (!seen.has(v)) { seen.set(v, k); nx.push(v); } })); fr = nx; }
+  hood = seen;
+  gN.selectAll('circle').attr('opacity', d => seen.has(d.id) ? 1 : .12).attr('stroke', d => d.id === sel ? 'var(--color-text)' : 'var(--color-bg)').attr('stroke-width', d => d.id === sel ? 2 : 1);
+  gL.selectAll('line').attr('opacity', d => seen.has(d.source.id) && seen.has(d.target.id) ? 1 : .06);
+  const d = byId.get(sel); $('#hsel').textContent = d.label;
+  const byType = {}; [...seen.keys()].filter(x => x !== sel).forEach(x => { const n = byId.get(x); (byType[n.type] = byType[n.type] || []).push(n); });
+  $('#hlst').innerHTML = `<div class="note">${seen.size - 1} nodes within ${hopK} hop${hopK > 1 ? 's' : ''} · ${Object.entries(byType).map(([t, a]) => a.length + ' ' + t).join(', ')}</div>` + [...seen.entries()].filter(([x]) => x !== sel).sort((a, b) => a[1] - b[1]).slice(0, 40).map(([x, k]) => { const n = byId.get(x); return `<div data-go="${esc(x)}"><i class="dot" style="background:${col(n)}"></i><span class="mono note">${k}</span>${esc(n.label.slice(0, 34))}</div>`; }).join('');
+  $('#hlst').querySelectorAll('[data-go]').forEach(el => el.onclick = () => select(el.dataset.go));
+}
+document.querySelectorAll('#hops [data-h]').forEach(b => b.onclick = () => { hopK = +b.dataset.h; document.querySelectorAll('#hops [data-h]').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); }); highlight(); });
+
+/* ---------- chat ---------- */
+const CH = { agent: [] }; let chatKey = () => sel || 'agent';
+function renderChat() { const m = CH[chatKey()] || (CH[chatKey()] = []); $('#msgs').innerHTML = (m.length ? m : [{ r: 'a', t: sel ? 'Ask me about this node and its neighbourhood.' : 'I run the test suite. Ask me why something failed, what the graph is learning, or what to test next.' }]).map(x => `<div class="msg ${x.r}">${esc(x.t)}</div>`).join(''); $('#msgs').scrollTop = 1e6; }
+$('#toAgent').onclick = () => select(null);
+new MutationObserver(renderChat).observe($('#who'), { childList: true });
+$('#cf').onsubmit = async e => {
+  e.preventDefault(); const q = $('#ci').value.trim(); if (!q) return; $('#ci').value = '';
+  const key = chatKey(), m = CH[key] || (CH[key] = []); m.push({ r: 'u', t: q }); renderChat();
+  if (!C.hasClaude()) { m.push({ r: 'a', t: 'Chat needs the assistant runtime, which is not available here.' }); renderChat(); return; }
+  const d = sel && byId.get(sel);
+  const ctx = { totals: summary(), codeHealth: CODE ? (CODE.passed + '/' + CODE.total + ' self-tests passing' + (CODE.items.filter(i => !i.ok).length ? '; failing: ' + CODE.items.filter(i => !i.ok).map(i => i.fn + '()').join(', ') : '')) : 'self-tests not run', recentInsights: INS.slice(-8).map(i => i.kind + ': ' + i.text), qtable: Object.fromEntries(Object.keys(qt.Q).map(s => [s, qt.best(s)])), hebbianTop: Object.entries(H).sort((a, b) => b[1] - a[1]).slice(0, 8), failures: R.slice(-30).filter(r => !r.pass).map(r => r.id + ' ' + r.name + ': ' + r.asserts.filter(a => !a.ok).map(a => a.name + ' (' + a.detail + ')').join('; ')).slice(0, 12) };
+  if (d) { ctx.node = { id: d.id, type: d.type, label: d.label, detail: detail(d).replace(/<[^>]+>/g, ' ') }; ctx.neighbourhood = hood ? [...hood.entries()].filter(([x]) => x !== sel).slice(0, 40).map(([x, k]) => k + '-hop ' + byId.get(x).type + ': ' + byId.get(x).label) : []; if (d.type === 'test') ctx.test = { asserts: d.r.asserts, metrics: d.r.metrics, sections: d.r.sections.map(s => ({ t: s.title, strategy: s.strategy, coverage: s.coverage, missing: s.missing })) }; }
+  $('#msgs').insertAdjacentHTML('beforeend', '<div class="msg a"><span class="spin"></span></div>'); $('#msgs').scrollTop = 1e6;
+  try { const t = await window.claude.complete({ system: `You are ${d ? 'the node "' + d.label + '" in the Saltline tester connectome, speaking about yourself and your neighbourhood' : 'the Saltline tester agent'}. The system tests a dossier SaaS pipeline: document ingestion → RAPTOR tree → knowledge graph → graph retriever (DSPy-style) with Redis-style cache → dossier drafting; Hebbian links and a Q-table learn retrieval strategy. Answer from the data only, concisely (under 140 words). Data: ${JSON.stringify(ctx).slice(0, 9000)}`, messages: m.slice(-8).map(x => ({ role: x.r === 'u' ? 'user' : 'assistant', content: x.t })), max_tokens: 450 }); m.push({ r: 'a', t: t.trim() }); llmTotal++; }
+  catch (err) { m.push({ r: 'a', t: 'Could not answer: ' + err.message }); }
+  renderChat(); paintKpi();
+};
+
+/* ---------- drawer ---------- */
+function openDrawer(r) {
+  $('#drk').textContent = `${r.id} · ${r.product} · ${r.region}${r.llm ? ' · Claude' : ''}`; $('#drt').textContent = r.name;
+  $('#drb').innerHTML = `<h4>Assertions</h4>${r.asserts.map(a => `<div class="as"><i class="ph ${a.ok ? 'ph-check-circle pass' : 'ph-x-circle fail'}"></i><span>${esc(a.name)}</span><span class="d">${esc(a.detail)}</span></div>`).join('')}
+  <h4>Pipeline</h4><div class="note">${Object.entries(r.metrics).map(([k, v]) => k + ' ' + (typeof v === 'number' && v < 1 && v > 0 ? Math.round(v * 100) + '%' : v)).join(' · ')}</div>
+  <h4>Sections</h4>${r.sections.map(s => `<div class="as"><span>${esc(s.title)}</span><span class="d">${s.strategy} · ${Math.round(s.coverage * 100)}%${s.missing.length ? ' · missing ' + esc(s.missing.join(', ')) : ''}</span></div>${s.body ? `<div class="dbody">${C.mdToHtml(s.body)}</div>` : ''}`).join('')}`;
+  $('#dr').classList.add('on');
+}
+$('#drx').onclick = () => $('#dr').classList.remove('on');
+
+/* ---------- paint ---------- */
+function summary() { const n = R.length, p = R.filter(r => r.pass).length, as = R.reduce((a, r) => a + r.asserts.length, 0), m = k => n ? R.reduce((a, r) => a + (r.metrics[k] || 0), 0) / n : 0; return { tests: n, passed: p, assertions: as, recall: m('recall'), coverage: m('coverage') }; }
+function paintKpi() { const s = summary(), cs = cache.stats(); $('#kT').textContent = s.tests; $('#kP').textContent = s.tests ? Math.round(s.passed / s.tests * 100) + '%' : '—'; $('#kA').textContent = s.assertions; $('#kR').textContent = s.tests ? Math.round(s.recall * 100) + '%' : '—'; $('#kC').textContent = s.tests ? Math.round(s.coverage * 100) + '%' : '—'; $('#kH').textContent = cs.ops ? Math.round(cs.hitRate * 100) + '%' : '—'; $('#kL').textContent = llmTotal; $('#kQ').textContent = qt.n; $('#kE').textContent = qt.eps.toFixed(2); }
+function paint() {
+  paintKpi();
+  $('#resN').textContent = R.length + ' runs';
+  $('#rows').innerHTML = R.slice().reverse().map((r, k) => `<tr class="rw" data-r="${R.length - 1 - k}"><td class="mono">${r.id}</td><td>${esc(r.name)}</td><td>${r.product}</td><td class="note">${r.faults.join(', ') || '—'}</td><td class="${r.pass ? 'pass' : 'fail'} mono">${r.asserts.filter(a => a.ok).length}/${r.asserts.length}</td><td class="mono">${Math.round((r.metrics.recall || 0) * 100)}%</td><td class="mono">${Math.round((r.metrics.coverage || 0) * 100)}%</td><td class="mono note">${r.ms}</td><td>${r.llm ? '<span class="tag tag-accent">Claude</span>' : '<span class="tag tag-neutral">agent</span>'}</td></tr>`).join('') || '<tr><td colspan="9" class="note">No runs yet. Start with Run 3, then Run 100.</td></tr>';
+  document.querySelectorAll('[data-r]').forEach(tr => tr.onclick = () => openDrawer(R[+tr.dataset.r]));
+  const secs = Object.keys(C.SECTIONS).filter(s => s !== 'gaps');
+  $('#qt').innerHTML = `<table class="qt"><tr><th></th>${C.ACTIONS.map(a => `<th>${a}</th>`).join('')}</tr>${secs.map(s => { const row = qt.row(s), b = qt.best(s)[0]; return `<tr><td>${esc(C.SECTIONS[s].t)}</td>${C.ACTIONS.map(a => `<td class="c" style="background:color-mix(in srgb,var(--color-accent) ${Math.round(Math.max(0, row[a]) * 55)}%,transparent);${a === b ? 'box-shadow:inset 0 0 0 1px var(--color-accent-300)' : ''}">${row[a].toFixed(2)}</td>`).join('')}</tr>`; }).join('')}</table>`;
+  const hs = Object.entries(H).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  $('#hb').innerHTML = hs.length ? hs.map(([k, w]) => `<div><span style="flex:1">${esc(k.replace('|', ' ↔ '))}<i class="b" style="width:${Math.round(w * 100)}%"></i></span><span class="mono note">${w.toFixed(2)}</span></div>`).join('') : '<div class="note">Links appear as tests co-retrieve evidence.</div>';
+  $('#insN').textContent = INS.length;
+  if (INS.length) $('#feed').innerHTML = INS.slice(-30).reverse().map(i => `<div class="ins${i.act ? ' act' : ''}"><div class="h"><b>${esc(i.kind)}</b>${i.act ? '→ tester acted' : ''}<span class="sp"></span>${new Date(i.t).toLocaleTimeString()}</div>${esc(i.text)}</div>`).join('');
+  drawGraph();
+}
+window.tester = { runBatch, runCode, selfTests: () => C.selfTests(cache), get R() { return R; }, get CODE() { return CODE; }, select };
+paint(); paintCode(); renderChat();
+$('#ver').textContent = 'v' + C.SUITE.version;
+</script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    html, body { height: 100%; margin: 0; overflow: hidden; background: var(--color-bg); }
+    a { color: var(--color-accent); } a:hover { color: var(--color-accent-400); }
+    @keyframes tg-bloom { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+    @keyframes tg-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+    @keyframes tg-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes tg-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</helmet>
+<div data-screen-label="Strata" style="position: fixed; inset: 0; display: grid; grid-template-rows: auto auto minmax(0, 1fr); background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); font-size: 14px;">
+  <header style="display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin-right: var(--space-2);">
+      <span style="width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--color-accent); box-shadow: 0 0 10px var(--color-accent-600);"></span>
+      <span>Thought Graph</span>
+      <span class="tag tag-neutral">Strata</span>
+    </div>
+    <form onSubmit="{{ onSeedSubmit }}" style="display: flex; gap: var(--space-2); flex: 1 1 240px; max-width: 440px;">
+      <input class="input" value="{{ seedText }}" onChange="{{ onSeedText }}" placeholder="Any input: a question, a plan, a worry…" aria-label="Seed input">
+      <button type="submit" class="btn btn-primary">Explore</button>
+    </form>
+    <label style="display: flex; align-items: center; gap: var(--space-2); font-size: 12px; color: var(--color-neutral-400);">
+      <span>Wild</span>
+      <input type="range" min="0" max="100" step="5" value="{{ wild }}" onChange="{{ onWild }}" style="width: 96px; accent-color: var(--color-accent);" aria-label="Wildness">
+      <span style="min-width: 22px; font-variant-numeric: tabular-nums; color: var(--color-neutral-300);">{{ wild }}</span>
+    </label>
+    <div style="display: flex; align-items: center; gap: var(--space-2); margin-left: auto;">
+      <span style="font-size: 12px; color: var(--color-neutral-500); font-variant-numeric: tabular-nums;">{{ count }}</span>
+      <button type="button" class="{{ autoBtnClass }}" onClick="{{ toggleAuto }}">{{ autoLabel }}</button>
+      <button type="button" class="{{ liveBtnClass }}" onClick="{{ toggleLive }}" title="Expand with Claude when the helper is available">{{ liveLabel }}</button>
+    </div>
+  </header>
+
+  <div style="display: flex; align-items: center; gap: var(--space-3); padding: 5px var(--space-4); font-size: 11px; color: var(--color-neutral-500); overflow: hidden; white-space: nowrap; min-height: 30px; background: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat top / 100% 1px, linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+    <span style="{{ dotStyle }}"></span>
+    <span style="color: var(--color-neutral-400); flex: none;">{{ status }}</span>
+    <sc-for list="{{ ticker }}" as="t" hint-placeholder-count="0">
+      <span style="{{ t.style }}"><span class="{{ t.tagClass }}" style="font-size: 10px; padding: 1px 6px; margin-right: 6px;">{{ t.kind }}</span>{{ t.text }}</span>
+    </sc-for>
+  </div>
+
+  <div style="position: relative; min-height: 0; display: grid;">
+    <div ref="{{ canvasRef }}" onClick="{{ onCanvasClick }}" style="position: relative; overflow: auto; min-height: 0;">
+      <div style="{{ layerStyle }}" onClick="{{ onCanvasClick }}">
+        <sc-for list="{{ lanes }}" as="l" hint-placeholder-count="4">
+          <div style="{{ l.style }}">
+            <div style="position: absolute; left: 0; right: 0; top: 0; height: 1px; background: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent);"></div>
+            <div style="position: absolute; left: var(--space-4); top: var(--space-3); display: grid; gap: 2px; pointer-events: none;">
+              <div class="card-kicker" style="{{ l.kickerStyle }}">{{ l.label }}</div>
+              <div style="font-size: 11px; color: var(--color-neutral-600);">{{ l.hint }}</div>
+              <div style="font-size: 11px; color: var(--color-neutral-500); margin-top: 4px;">{{ l.count }}</div>
+            </div>
+          </div>
+        </sc-for>
+        <sc-for list="{{ cols }}" as="c" hint-placeholder-count="4">
+          <div style="{{ c.style }}">{{ c.label }}</div>
+          <div style="{{ c.lineStyle }}"></div>
+        </sc-for>
+        <svg style="{{ svgStyle }}">
+          <sc-for list="{{ edges }}" as="e" hint-placeholder-count="0">
+            <path d="{{ e.d }}" style="{{ e.style }}"></path>
+          </sc-for>
+        </svg>
+        <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="0">
+          <div style="{{ n.style }}" onMouseEnter="{{ n.onEnter }}" onMouseLeave="{{ n.onLeave }}" onClick="{{ n.onClick }}" onDoubleClick="{{ n.onDouble }}">
+            <div style="{{ n.ringStyle }}"></div>
+            <div style="{{ n.labelStyle }}">{{ n.label }}</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ showHover }}" hint-placeholder-val="{{ false }}">
+          <div class="card elev-md" style="{{ hov.style }}">
+            <div class="card-kicker">{{ hov.kicker }}</div>
+            <div class="card-title" style="font-size: 14px;">{{ hov.label }}</div>
+            <p class="card-body">{{ hov.detail }}</p>
+            <div class="card-meta"><span>{{ hov.meta }}</span></div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+      <div class="elev-lg" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 10; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--space-6); padding: var(--space-4) var(--space-4) var(--space-3); background: var(--color-surface); max-height: 52%; min-height: 0; animation: tg-rise .22s ease-out both;">
+        <div style="display: flex; flex-direction: column; gap: var(--space-2); min-height: 0; overflow: auto;">
+          <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+            <span class="tag tag-outline">{{ sel.planeLabel }}</span>
+            <span class="tag tag-neutral">{{ sel.moduleType }}</span>
+            <span style="font-size: 11px; color: var(--color-neutral-500);">{{ sel.hopFromSeed }}</span>
+          </div>
+          <div class="card-title" style="font-size: 17px; text-wrap: pretty;">{{ sel.label }}</div>
+          <p class="card-body" style="opacity: 0.85; font-size: 13px; flex: none;">{{ sel.detail }}</p>
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-4); align-items: end;">
+            <div style="display: grid; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-neutral-500);"><span>Grounding</span><span style="color: var(--color-neutral-300);">{{ sel.gPct }} · {{ sel.gWord }}</span></div>
+              <div style="height: 3px; border-radius: 2px; background: var(--color-neutral-800);"><div style="{{ sel.gBar }}"></div></div>
+            </div>
+            <div style="font-size: 11px; color: var(--color-neutral-500);">via {{ sel.via }} · {{ sel.time }}</div>
+          </div>
+          <sc-if value="{{ sel.hasEvidence }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; gap: 3px;">
+              <sc-for list="{{ sel.evidence }}" as="ev" hint-placeholder-count="1">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-neutral-300);">
+                  <svg width="12" height="12" viewBox="0 0 256 256" fill="var(--color-accent-400)"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.61,87.61,0,0,1-3.33,24H174.16a157.44,157.44,0,0,0,0-48h38.51A87.61,87.61,0,0,1,216,128ZM102,168H154a115.11,115.11,0,0,1-26,45A115.27,115.27,0,0,1,102,168Zm-3.9-16a140.84,140.84,0,0,1,0-48h59.88a140.84,140.84,0,0,1,0,48ZM40,128a87.61,87.61,0,0,1,3.33-24H81.84a157.44,157.44,0,0,0,0,48H43.33A87.61,87.61,0,0,1,40,128ZM154,88H102a115.11,115.11,0,0,1,26-45A115.27,115.27,0,0,1,154,88Zm52.33,0H170.71a135.28,135.28,0,0,0-22.3-45.6A88.29,88.29,0,0,1,206.37,88ZM107.59,42.4A135.28,135.28,0,0,0,85.29,88H49.63A88.29,88.29,0,0,1,107.59,42.4ZM49.63,168H85.29a135.28,135.28,0,0,0,22.3,45.6A88.29,88.29,0,0,1,49.63,168Zm98.78,45.6a135.28,135.28,0,0,0,22.3-45.6h35.66A88.29,88.29,0,0,1,148.41,213.6Z"></path></svg>
+                  <span>{{ ev.src }}</span><span style="color: var(--color-neutral-600);">{{ ev.year }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ sel.hasChallenge }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; line-height: 1.45; color: var(--color-accent-300);">{{ sel.challenge }}</div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-1);">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div class="seg" role="radiogroup" aria-label="Hops">
+                <label class="seg-opt" style="padding: 4px 10px; font-size: 12px;"><input type="radio" name="hop" checked="{{ sel.hop1 }}" onChange="{{ sel.setHop1 }}">1 hop</label>
+                <label class="seg-opt" style="padding: 4px 10px; font-size: 12px;"><input type="radio" name="hop" checked="{{ sel.hop2 }}" onChange="{{ sel.setHop2 }}">2</label>
+                <label class="seg-opt" style="padding: 4px 10px; font-size: 12px;"><input type="radio" name="hop" checked="{{ sel.hop3 }}" onChange="{{ sel.setHop3 }}">3</label>
+              </div>
+              <span style="font-size: 12px; color: var(--color-neutral-500);">{{ sel.hopCount }}</span>
+            </div>
+            <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center;">
+              <span class="card-kicker">Paths</span>
+              <sc-for list="{{ sel.paths }}" as="p" hint-placeholder-count="3">
+                <button type="button" class="btn btn-ghost" style="flex-direction: column; align-items: flex-start; gap: 0; padding: 3px 8px;" onClick="{{ p.onPick }}">
+                  <span style="font-size: 13px;">{{ p.label }}</span>
+                  <span style="font-size: 10px; font-weight: 400; color: var(--color-neutral-500);">{{ p.hint }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: var(--space-2); min-height: 0;">
+          <div style="display: flex; align-items: center; gap: var(--space-2);">
+            <span class="card-kicker">Chat with this thought</span>
+            <button type="button" class="btn btn-ghost btn-icon" style="margin-left: auto; width: 28px; height: 28px; color: var(--color-neutral-400);" onClick="{{ closeSel }}" aria-label="Close">
+              <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+            </button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 60px; overflow: auto; padding: var(--space-2); border-radius: var(--radius-md); background: var(--color-bg);">
+            <sc-if value="{{ sel.noChat }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size: 12px; color: var(--color-neutral-600); text-wrap: pretty;">Ask why it is grounded, what would break it, or where it goes next.</div>
+            </sc-if>
+            <sc-for list="{{ sel.chat }}" as="m" hint-placeholder-count="0">
+              <div style="{{ m.style }}">{{ m.text }}</div>
+            </sc-for>
+            <sc-if value="{{ sel.thinking }}" hint-placeholder-val="{{ false }}">
+              <div style="align-self: flex-start; font-size: 12px; color: var(--color-neutral-500); animation: tg-pulse 1.2s ease-in-out infinite;">thinking…</div>
+            </sc-if>
+          </div>
+          <form onSubmit="{{ sendChat }}" style="display: flex; gap: var(--space-2);">
+            <input class="input" style="min-height: 34px; font-size: 13px; background: var(--color-bg);" value="{{ chatText }}" onChange="{{ onChatText }}" placeholder="Ask this thought…" aria-label="Chat with this thought">
+            <button type="submit" class="btn btn-primary btn-icon" style="width: 34px; height: 34px; flex: none;" aria-label="Send">
+              <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M227.32,28.68a16,16,0,0,0-15.66-4.08l-.15,0L19.57,82.84a16,16,0,0,0-2.49,29.8L102,154l41.3,84.87A15.86,15.86,0,0,0,157.74,248q.69,0,1.4-.06a15.88,15.88,0,0,0,14-11.51l58.2-191.94c0-.05,0-.1,0-.15A16,16,0,0,0,227.32,28.68ZM157.83,231.85l-.05.14,0-.07-40.06-82.3,48-48a8,8,0,0,0-11.31-11.31l-48,48L24.08,98.25l-.07,0,.14,0L216,40Z"></path></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;seed&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Teach a city to sleep better&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Graph&quot;},&quot;wildness&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:40,&quot;min&quot;:0,&quot;max&quot;:100,&quot;step&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Graph&quot;},&quot;autoStart&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Agent&quot;},&quot;laneHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:150,&quot;min&quot;:110,&quot;max&quot;:260,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Layout&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, seedText: this.props.seed || 'Teach a city to sleep better', hover: null, sel: null, hop: 1, wild: this.props.wildness ?? 40, auto: false, live: false, status: 'Loading…', chatText: '', w: 1100, h: 640 };
+  canvasRef = React.createRef();
+  lanes = ['wild', 'principles', 'concepts', 'facts'];
+  chats = {}; hopMap = null; rootHops = new Map(); timer = null; pending = null;
+
+  async componentDidMount() {
+    this.E = await import('./thought-engine.js');
+    await this.E.loadModules('reasoning_modules.json');
+    const el = this.canvasRef.current;
+    if (el) { this.ro = new ResizeObserver(() => this.measure()); this.ro.observe(el); }
+    this.measure();
+    this.reset(this.state.seedText);
+    window.addEventListener('keydown', this.onKey);
+    if (this.props.autoStart) this.setAuto(true);
+  }
+  componentWillUnmount() { this.dead = true; window.removeEventListener('keydown', this.onKey); if (this.ro) this.ro.disconnect(); clearTimeout(this.autoT); clearTimeout(this.timer); }
+  componentDidUpdate(prev) {
+    if (prev.wildness !== this.props.wildness && this.props.wildness != null) this.setState({ wild: this.props.wildness });
+    if (prev.seed !== this.props.seed && this.props.seed && this.E) { this.setState({ seedText: this.props.seed }); this.reset(this.props.seed); }
+    if (prev.autoStart !== this.props.autoStart && this.E) this.setAuto(!!this.props.autoStart);
+    if (prev.laneHeight !== this.props.laneHeight) this.kick();
+  }
+  measure = () => {
+    const el = this.canvasRef.current; if (!el) return;
+    const r = el.getBoundingClientRect(); if (!r.width || !r.height) return;
+    this.setState({ w: r.width, h: r.height }); this.kick();
+  };
+  geom() {
+    const { w, h } = this.state, left = 230, top = 40;
+    const colGap = Math.max(250, (w - left - 190) / 4), laneH = Math.max(this.props.laneHeight ?? 150, (h - top) / 4);
+    return { left, top, colGap, laneH, layerW: left + 4 * colGap + 200, layerH: top + 4 * laneH };
+  }
+  layoutOpts() { const G = this.geom(); return { hops: this.rootHops, lanes: this.lanes, top: G.top, left: G.left, colGap: G.colGap, h: G.layerH, maxHop: 3 }; }
+  reset(seed) {
+    const E = this.E, G = this.geom();
+    this.g = E.createGraph(seed, { w: G.left * 2, h: G.layerH }); const root = E.seedGraph(this.g, 6);
+    this.chats = {}; this.hopMap = null; this.rootHops = E.hops(this.g, root.id, 3);
+    for (const n of this.g.nodes) { n.x = G.left; n.y = G.top + G.laneH * 2.5; }
+    this.setState({ ready: true, sel: null, hover: null, status: `Seeded "${E.short(seed, 40)}"` });
+    this.kick();
+  }
+  kick() { if (!this.timer && this.g) { this.last = performance.now(); this.timer = setTimeout(this.loop, 16); } }
+  loop = () => {
+    this.timer = null; if (this.dead || !this.g) return;
+    const now = performance.now(), steps = Math.min(6, Math.max(1, Math.round((now - this.last) / 16))); this.last = now;
+    let e = 0;
+    for (let i = 0; i < steps; i++) e = this.E.layoutStrata(this.g, this.layoutOpts());
+    this.forceUpdate();
+    if (e > 0.25) this.timer = setTimeout(this.loop, 16);
+  };
+  afterChange() {
+    this.rootHops = this.E.hops(this.g, this.g.nodes[0].id, 3);
+    if (this.state.sel) this.hopMap = this.E.hops(this.g, this.state.sel, 3);
+    this.kick();
+  }
+  setAuto(on) {
+    clearTimeout(this.autoT);
+    this.setState({ auto: on, status: on ? 'Auto on' : 'Auto paused' });
+    if (on) this.autoT = setTimeout(this.autoStep, 400);
+  }
+  autoStep = async () => {
+    if (this.dead || !this.state.auto || !this.g) return;
+    if (this.g.nodes.length >= 90) { this.setState({ auto: false, status: 'Paused at 90 thoughts' }); return; }
+    const { wild, live } = this.state;
+    await this.E.autoTick(this.g, { wild, live });
+    if (this.dead || !this.state.auto) return;
+    this.afterChange();
+    this.setState({ status: `Auto · ${this.g.trace.at(-1).t}` });
+    this.autoT = setTimeout(this.autoStep, live ? 4500 : 1600);
+  };
+  toggleLive() {
+    if (!this.E.liveAvailable()) { this.setState({ live: false, status: 'Live AI needs the Claude helper — scripted engine' }); return; }
+    this.setState(s => ({ live: !s.live, status: s.live ? 'Live AI off' : 'Live AI on' }));
+  }
+  select(id) {
+    if (!id) { this.hopMap = null; this.setState({ sel: null }); return; }
+    this.hopMap = this.E.hops(this.g, id, 3);
+    this.setState({ sel: id, hover: null });
+  }
+  expandFrom(id, moduleId) {
+    const { wild, live } = this.state, mod = this.E.moduleById(moduleId);
+    this.setState({ status: `${mod.type}…` });
+    this.E.expand(this.g, id, moduleId, { wild, live }).then(added => {
+      if (this.dead) return;
+      this.afterChange();
+      this.setState({ status: `${added.length} new thought${added.length === 1 ? '' : 's'}` });
+    });
+  }
+  sendChat = (e) => {
+    e.preventDefault();
+    const { sel, chatText, live } = this.state; if (!sel || !chatText.trim()) return;
+    const list = this.chats[sel] = this.chats[sel] || [];
+    list.push({ role: 'me', text: chatText.trim() });
+    this.pending = sel; this.setState({ chatText: '' });
+    this.E.chatReply(this.g, sel, chatText.trim(), { live, history: list.slice(0, -1) }).then(t => { if (this.dead) return; list.push({ role: 'node', text: t }); this.pending = null; this.forceUpdate(); });
+  };
+  onKey = (e) => { if (e.key === 'Escape') this.select(null); };
+  onCanvasClick = (e) => { if (e.target === e.currentTarget) this.select(null); };
+
+  renderVals() {
+    const E = this.E, g = this.g, s = this.state, G = this.geom();
+    const base = {
+      ready: s.ready, seedText: s.seedText, wild: s.wild,
+      onSeedText: e => this.setState({ seedText: e.target.value }), onSeedSubmit: e => { e.preventDefault(); if (s.seedText.trim() && this.E) this.reset(s.seedText.trim()); },
+      onWild: e => this.setState({ wild: +e.target.value }),
+      autoLabel: s.auto ? 'Auto · on' : 'Auto', autoBtnClass: s.auto ? 'btn btn-primary' : 'btn btn-secondary', toggleAuto: () => this.E && this.setAuto(!s.auto),
+      liveLabel: s.live ? 'Live AI · on' : 'Live AI', liveBtnClass: s.live ? 'btn btn-primary' : 'btn btn-secondary', toggleLive: () => this.E && this.toggleLive(),
+      status: s.status, count: g ? `${g.nodes.length} thoughts · ${g.edges.length} edges` : '', ticker: [],
+      dotStyle: { width: 6, height: 6, borderRadius: '50%', flex: 'none', background: s.auto ? 'var(--color-accent)' : 'var(--color-neutral-600)', boxShadow: s.auto ? '0 0 8px var(--color-accent)' : 'none', animation: s.auto ? 'tg-pulse 1.4s ease-in-out infinite' : 'none' },
+      canvasRef: this.canvasRef, onCanvasClick: this.onCanvasClick,
+      chatText: s.chatText, onChatText: e => this.setState({ chatText: e.target.value }), sendChat: this.sendChat, closeSel: () => this.select(null),
+      layerStyle: { position: 'relative', width: G.layerW, height: G.layerH }, svgStyle: { position: 'absolute', left: 0, top: 0, width: G.layerW, height: G.layerH, overflow: 'visible', pointerEvents: 'none' },
+      lanes: [], cols: [], nodes: [], edges: [], showHover: false, hov: null, hasSel: false, sel: null,
+    };
+    const planeMeta = E ? E.PLANE_OF : {};
+    base.lanes = this.lanes.map((id, i) => {
+      const c = g ? g.nodes.filter(n => n.plane === id).length : 0;
+      return { id, label: planeMeta[id] ? planeMeta[id].label : id, hint: planeMeta[id] ? planeMeta[id].hint : '', count: g ? `${c} thought${c === 1 ? '' : 's'}` : '',
+        style: { position: 'absolute', left: 0, right: 0, top: G.top + i * G.laneH, height: G.laneH, background: i % 2 ? 'linear-gradient(to right, var(--color-surface), transparent 72%)' : 'transparent' },
+        kickerStyle: { color: id === 'wild' ? 'var(--color-accent-500)' : id === 'facts' ? 'var(--color-accent-300)' : 'var(--color-accent-400)' } };
+    });
+    base.cols = ['Seed', '1 hop', '2 hops', '3 hops', 'Beyond'].map((label, h) => ({ id: h, label,
+      style: { position: 'absolute', left: G.left + h * G.colGap - 40, top: 12, width: 80, textAlign: 'center', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-neutral-500)' },
+      lineStyle: { position: 'absolute', left: G.left + h * G.colGap, top: G.top, height: G.layerH - G.top, width: 0, borderLeft: '1px dashed var(--color-neutral-900)' } }));
+    if (!g) return base;
+    const H = this.hopMap, hop = s.hop;
+    const inHop = n => !H || (H.has(n.id) && H.get(n.id) <= hop);
+    const rootHop = n => this.rootHops.has(n.id) ? this.rootHops.get(n.id) : 4;
+    base.nodes = g.nodes.map(n => {
+      const dim = !inHop(n), isSel = n.id === s.sel, isHov = n.id === s.hover;
+      const size = n.root ? 20 : E.clamp(9 + n.deg * 2, 9, 16), col = E.groundColor(n.g), dash = n.g < 0.3 ? 'dashed' : 'solid';
+      return {
+        id: n.id, label: n.label,
+        style: { position: 'absolute', left: 0, top: 0, transform: `translate(${n.x}px, ${n.y}px)`, opacity: dim ? 0.3 : 1, zIndex: isSel || isHov ? 3 : 1, transition: 'opacity .25s', pointerEvents: dim ? 'none' : 'auto' },
+        ringStyle: { position: 'absolute', width: size, height: size, left: -size / 2, top: -size / 2, borderRadius: '50%', border: `1.5px ${dash} ${col}`, background: n.root ? 'var(--color-accent-900)' : 'var(--color-bg)', cursor: 'pointer', animation: 'tg-bloom .5s ease-out both', transition: 'box-shadow .2s',
+          boxShadow: isSel ? '0 0 0 4px var(--color-accent-900), 0 0 18px var(--color-accent-600)' : isHov ? '0 0 0 3px var(--color-accent-900), 0 0 12px var(--color-accent-800)' : n.root ? '0 0 14px var(--color-accent-800)' : 'none' },
+        labelStyle: { position: 'absolute', left: size / 2 + 7, top: -8, width: 150, fontSize: n.root ? 13 : 12, lineHeight: '15px', fontWeight: n.root ? 500 : 400, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', cursor: 'pointer', textWrap: 'pretty',
+          color: isSel || isHov || n.root ? 'var(--color-text)' : 'var(--color-neutral-400)', textShadow: '0 1px 6px var(--color-bg)' },
+        onEnter: () => this.setState({ hover: n.id }), onLeave: () => this.setState(st => st.hover === n.id ? { hover: null } : null),
+        onClick: e => { e.stopPropagation(); this.select(n.id); }, onDouble: e => { e.stopPropagation(); this.expandFrom(n.id, E.pickModule(s.wild).id); },
+      };
+    });
+    base.edges = g.edges.map(e => {
+      const a = g.byId.get(e.a), b = g.byId.get(e.b);
+      const [p, q] = a.x <= b.x ? [a, b] : [b, a];
+      const dx = q.x - p.x, cx = Math.max(60, Math.abs(dx) / 2);
+      const d = `M ${p.x} ${p.y} C ${p.x + cx} ${p.y}, ${q.x - cx} ${q.y}, ${q.x} ${q.y}`;
+      const lit = inHop(a) && inHop(b);
+      const active = (s.hover && (e.a === s.hover || e.b === s.hover)) || (s.sel && (e.a === s.sel || e.b === s.sel));
+      return { id: e.id, d, style: { fill: 'none', stroke: active ? 'var(--color-accent-400)' : 'var(--color-accent-700)', strokeWidth: active ? 1.5 : 1, strokeDasharray: e.kind === 'bridge' ? '3 5' : 'none', opacity: lit ? (active ? 1 : 0.5) : 0.12, transition: 'opacity .25s, stroke .2s' } };
+    });
+    const hn = s.hover && s.hover !== s.sel ? g.byId.get(s.hover) : null;
+    if (hn) {
+      const W = 260, left = hn.x + 18 + W > G.layerW ? hn.x - W - 18 : hn.x + 18, top = E.clamp(hn.y - 20, 8, Math.max(8, G.layerH - 170));
+      base.showHover = true;
+      base.hov = { style: { position: 'absolute', left, top, width: W, pointerEvents: 'none', zIndex: 5, animation: 'tg-fade .15s ease-out both' },
+        kicker: `${E.PLANE_OF[hn.plane].label} · ${rootHop(hn) > 3 ? 'beyond 3 hops' : rootHop(hn) === 0 ? 'seed' : rootHop(hn) + ' hop' + (rootHop(hn) === 1 ? '' : 's') + ' from seed'} · ${hn.module ? E.moduleById(hn.module).type : 'Seed'}`, label: hn.label, detail: hn.detail,
+        meta: `${Math.round(hn.g * 100)}% ${E.groundWord(hn.g)} · via ${hn.via} · ${hn.t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` };
+    }
+    const sn = s.sel ? g.byId.get(s.sel) : null;
+    if (sn) {
+      const within = H ? [...H.values()].filter(d => d > 0 && d <= hop).length : 0;
+      const bubble = me => ({ alignSelf: me ? 'flex-end' : 'flex-start', maxWidth: me ? '85%' : '94%', padding: '6px 10px', borderRadius: 'var(--radius-md)', background: me ? 'var(--color-accent-900)' : 'var(--color-neutral-900)', color: me ? 'var(--color-accent-100)' : 'var(--color-neutral-200)', fontSize: 12, lineHeight: 1.45 });
+      const chat = (this.chats[sn.id] || []).map((m, i) => ({ id: i, text: m.text, style: bubble(m.role === 'me') }));
+      const rh = rootHop(sn);
+      base.hasSel = true;
+      base.sel = {
+        planeLabel: E.PLANE_OF[sn.plane].label, moduleType: sn.module ? E.moduleById(sn.module).type : 'Seed input', label: sn.label, detail: sn.detail,
+        hopFromSeed: rh === 0 ? 'the seed' : rh > 3 ? 'beyond 3 hops from the seed' : `${rh} hop${rh === 1 ? '' : 's'} from the seed`,
+        gPct: Math.round(sn.g * 100) + '%', gWord: E.groundWord(sn.g), gBar: { height: 3, borderRadius: 2, width: Math.round(sn.g * 100) + '%', background: E.groundColor(sn.g), transition: 'width .4s' },
+        via: sn.via, time: sn.t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        hasEvidence: sn.evidence.length > 0, evidence: sn.evidence.map((e, i) => ({ id: i, src: e.src, year: e.year })), hasChallenge: !!sn.challenge, challenge: sn.challenge,
+        hop1: hop === 1, hop2: hop === 2, hop3: hop === 3, setHop1: () => this.setState({ hop: 1 }), setHop2: () => this.setState({ hop: 2 }), setHop3: () => this.setState({ hop: 3 }),
+        hopCount: `${within} within ${hop} hop${hop === 1 ? '' : 's'}`,
+        paths: E.paths(s.wild).map(p => ({ id: p.kind, label: p.label, hint: p.module.type, onPick: () => this.expandFrom(sn.id, p.module.id) })),
+        chat, noChat: chat.length === 0 && this.pending !== sn.id, thinking: this.pending === sn.id,
+      };
+    }
+    const tagFor = { select: 'tag tag-accent', adapt: 'tag tag-accent', implement: 'tag tag-accent', ai: 'tag tag-outline', internet: 'tag tag-outline', time: 'tag tag-neutral', graph: 'tag tag-neutral' };
+    base.ticker = [...g.trace].reverse().slice(0, 3).map((t, i) => ({ id: t.i, kind: t.kind.toUpperCase(), text: E.short(t.text.replace(/^[A-Z]+ · /, ''), 70), tagClass: tagFor[t.kind] || 'tag tag-neutral', style: { display: 'inline-flex', alignItems: 'center', opacity: [1, 0.65, 0.4][i], animation: 'tg-fade .25s ease-out both', flex: 'none' } }));
+    return base;
+  }
+}
+</script>
+</body>
+</html>

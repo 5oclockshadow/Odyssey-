@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; } a { color: var(--color-accent-300); } a:hover { color: var(--color-accent-200); } code { font-family: ui-monospace, Menlo, monospace; font-size: .92em; color: var(--color-accent-200); }</style>
+</helmet>
+<div data-screen-label="100 repos" style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);">
+<div style="max-width:1200px;padding:56px clamp(20px,5vw,72px) 120px;display:grid;gap:48px;">
+  <header style="display:grid;gap:16px;max-width:860px;">
+    <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Coming-out party · proposed by the Builder</span>
+    <h1 style="margin:0;font-size:clamp(36px,5vw,52px);line-height:1.05;letter-spacing:-0.02em;font-weight:500;">One hundred repos from one seeded brain</h1>
+    <p style="margin:0;font-size:19px;line-height:1.45;color:var(--color-neutral-300);">Each repo packages something the institute already has in code or in research. Open repos are the top of every funnel; open-core and API repos are where it earns. Release in five waves, flagship first.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;"><span class="tag tag-accent">{{ nOpen }} open</span><span class="tag tag-neutral">{{ nCore }} open-core</span><span class="tag tag-outline">{{ nApi }} paid API</span></div>
+  </header>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
+    <sc-for list="{{ waves }}" as="w" hint-placeholder-count="5">
+      <div class="card" style="display:grid;gap:6px;align-content:start;"><span class="card-kicker">{{ w.name }} · {{ w.when }}</span><span style="font-size:22px;font-weight:500;">{{ w.n }} repos</span><span class="card-body" style="font-size:13px;">{{ w.what }}</span></div>
+    </sc-for>
+  </section>
+
+  <section class="card elev-sm" style="display:grid;gap:10px;max-width:880px;">
+    <span class="card-kicker">The bar every repo clears before it ships</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px 20px;font-size:14px;line-height:1.5;color:var(--color-neutral-200);">
+      <span>Tests in CI, no network, no model</span><span><code>docker compose up</code> in one line</span><span>README names the finding and hypothesis</span><span>Licence, secrets scan, dependency audit</span><span>A runnable example under 60 seconds</span><span>Links back to the site and the graph</span>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:16px;">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <sc-for list="{{ cats }}" as="c" hint-placeholder-count="11"><button class="btn {{ c.cls }}" style="font-size:12px;" onClick="{{ c.pick }}">{{ c.name }}</button></sc-for>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <sc-for list="{{ lines }}" as="c" hint-placeholder-count="4"><button class="btn {{ c.cls }}" style="font-size:12px;" onClick="{{ c.pick }}">{{ c.name }}</button></sc-for>
+      <span style="font-size:13px;color:var(--color-neutral-400);align-self:center;">{{ shown }} shown</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:12px;">
+      <sc-for list="{{ repos }}" as="r" hint-placeholder-count="12">
+        <div class="card" style="display:grid;gap:8px;align-content:start;">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--color-accent-200);">{{ r.name }}</span><span class="{{ r.tag }}" style="font-size:10px;padding:1px 7px;">{{ r.line }}</span></div>
+          <span class="card-body" style="font-size:13px;line-height:1.5;">{{ r.what }}</span>
+          <span class="card-meta" style="font-size:11px;">{{ r.cat }} · W{{ r.wave }} · from {{ r.from }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+// [name, what, from, line] line: o open · c open-core · a paid API. First repo of each category ships in W0.
+const CATS = {
+  'Seed · Rex': [['seed-gen', 'Generate hypergraph seeds at any size and depth, reproducible from one integer.', 'Plan v4 §05', 'o'], ['seed-shuffle', 'Degree-preserving shuffled seeds: the control every graph-AI claim should run.', 'Plan v4 H5', 'o'], ['seed-lint', 'Validate a seed.yaml: blocks present, types acyclic, constraints satisfiable.', 'seed spec', 'o'], ['horn-closure', 'Horn-clause constraints compiled to fast transitive closure.', 'Plan v4 P3', 'o'], ['energy-halt', 'Consistency energy as a halting rule for any agent loop.', 'engine signature', 'o'], ['hyperedge', 'Sparse incidence matrices for hypergraphs, numpy and torch.', 'seed spec', 'o'], ['graph-merge', 'Merge new evidence into a live graph with retraction and provenance.', 'round.py', 'c'], ['ontology-drift', 'Measure type sprawl and constraint violations over time.', 'Blueprint v3', 'o'], ['pubpriv', 'Public/private graph split with opaque ids for unpublished nodes.', 'publishing.py', 'o'], ['seed-curate', 'Hosted curation of domain seeds with review queues.', 'H7', 'a']],
+  'Cognition · Jarvis': [['one-signature', 'One DSPy Signature, six ordered fields, the whole agent.', 'signature.py', 'o'], ['field-order-bench', 'Benchmark reasoning-first vs answer-first field order.', 'Report v3', 'o'], ['gepa-runner', 'Run GEPA on your trajectories with a frozen split.', 'Plan v4 §06', 'o'], ['rank-split', 'Split deep output schemas into ranked emissions.', 'Plan v4 §06', 'o'], ['schema-depth', 'Measure where each model breaks on nested schemas.', 'dspy-router-test', 'o'], ['signature-lint', 'Catch untyped, undescribed or misordered DSPy fields.', 'Report v3', 'o'], ['trajectory-store', 'Store and replay agent trajectories as graph nodes.', 'observe.py', 'o'], ['reflect-loop', 'Nightly reflection round with a Q-table over actions.', 'reflect.py', 'o'], ['compiled-programs', 'GEPA-compiled programs per substrate rung, served.', 'Blueprint v3 §07', 'a'], ['prompt-cache', 'Content-addressed cache for compiled prompts.', 'engine', 'o']],
+  'Substrates': [['lstm-substrate', 'An LSTM that plugs into Bridago as a substrate, CPU only.', 'Plan v4 H3', 'o'], ['minlstm-cpu', 'minLSTM trained in parallel, served on CPU.', 'Plan v4 §04', 'o'], ['xlstm-serve', 'xLSTM inference server with constant memory per step.', 'Plan v4 §04', 'o'], ['tiny-tf', 'Train a ~50M transformer on seed → query → answer only.', 'Plan v4 §07', 'o'], ['ladder', 'Run one task across 30B, 8B, 1–3B, tiny TF and LSTM.', 'Plan v4 §07', 'o'], ['small-fast', 'The small/fast inference server, one container.', 'small/fast', 'c'], ['cpu-bench', 'Tokens per second and cost per round on commodity CPUs.', 'Blueprint v3', 'o'], ['hgnn-baseline', 'Hypergraph GNN baseline with no language model.', 'Plan v4 §07', 'o'], ['rung-router', 'Route each call to the smallest rung that passes.', 'register', 'a'], ['cpu-appliance', 'On-prem Bridago appliance: seed, substrate, API.', 'Blueprint v3 §05', 'a']],
+  'Harness · eval': [['anima-harness', 'The full Anima experiment: one cell, one row.', 'Plan v4 §09', 'o'], ['frozen-split', 'Evaluation splits agents cannot read, with tamper checks.', 'Blueprint v2', 'o'], ['hidden-eval', 'Run evaluations the model cannot detect.', 'q-evals', 'o'], ['reachability-bench', 'Inferred vs observed reachability on generated graphs.', 'Plan v4', 'o'], ['single-fact', 'Measure how much of an answer is one retrieved fact.', 'Plan v4 §11', 'o'], ['replicate', 'Reproduce any published cell from its generator seed.', 'Plan v4', 'o'], ['results-schema', 'Parquet schema for agent experiment results.', 'run.py', 'o'], ['leak-detector', 'Find test-set leakage into seeds and prompts.', 'Blueprint v3', 'o'], ['probe-kit', 'Linear and nonlinear probes for graph structure in hidden states.', 'Report v3 Part 7', 'o'], ['replication-hub', 'Hosted outside-replication programme.', 'Blueprint v3 §05', 'a']],
+  'Agent ops': [['oversight', 'Oversee the overseers: rank every fire, watch every agent.', 'oversight.py', 'o'], ['heal', 'Turn error spans into incidents with a located fix.', 'heal.py', 'o'], ['self-upgrade-gate', 'Let agents propose diffs; tests and owner gate the merge.', 'upgrades.py', 'o'], ['sandbox', 'Run untrusted agent code in a throwaway container.', 'sandbox.py', 'o'], ['ship-app', 'Agents ship small apps to a port range, health-checked.', 'tools.py', 'o'], ['mindful-gate', 'Caps, quiet hours, spacing and disclosure for agent posts.', 'mindful.py', 'o'], ['day-brief', "The owner's day compiled from what the agents did.", 'day.py', 'o'], ['register', 'Staff register: role holders, shadows, promotions.', 'Blueprint v2', 'o'], ['audit', 'Append-only audit for every approval and login.', 'auth.py', 'o'], ['agent-ops-cloud', 'Hosted oversight for other people\'s agent fleets.', 'oversight.py', 'a']],
+  'Observability': [['otel-graph', 'OpenTelemetry spans written into the graph.', 'observe.py', 'o'], ['phoenix-bridge', 'Ship agent rounds to Phoenix with graph links.', 'observe.py', 'o'], ['trace-stats', 'Per-tool latency and failure stats from traces.', 'reflect.py', 'o'], ['cost-per-round', 'Token and CPU cost per round by role and rung.', 'Blueprint v3', 'o'], ['graph-diff', 'Readable diffs between two graph versions.', 'engine', 'o'], ['energy-board', 'Live energy and drift for a running graph.', 'day.py', 'o'], ['token-ledger', 'Budget caps and spend alarms for agent fleets.', 'oversight.py', 'o'], ['round-record', 'Every round as a JSONL record you can query.', 'engine', 'o'], ['drift-alarm', 'Alert when types multiply or deletions spike.', 'Blueprint v3', 'o'], ['fleet-observe', 'Hosted observability across many Bridago instances.', 'Blueprint v3', 'c']],
+  'Visual': [['graph3d', 'A 3D graph viewer for any node/hyperedge JSON.', 'graph3d.js', 'o'], ['traverse', 'Watch a query traverse the graph wave by wave.', 'anima3d.js', 'o'], ['hop-view', '1–3 hop neighbourhoods with private nodes greyed.', 'publishing.py', 'o'], ['ladder-chart', 'The seeded vs unseeded chart for any results file.', 'Anima site', 'o'], ['seed-inspector', 'Browse a seed file block by block.', 'seed spec', 'o'], ['register-board', 'The staff register as a live board.', 'Blueprint v2', 'o'], ['overseer-ui', 'The Overseer page, standalone.', 'Overseer.dc.html', 'o'], ['graph-embed', 'Embed a live graph query in any page.', 'Anima site', 'o'], ['notebook-graph', 'Jupyter widget for Bridago graphs.', 'graph3d.js', 'o'], ['nocturne-graph', 'A dark theme kit for graph UIs.', 'design system', 'o']],
+  'Integrations · MCP': [['mcp-hub', 'One MCP hub with install audit and market search.', 'apps/mcp-hub', 'o'], ['mcp-graph', 'MCP server exposing a Bridago graph to any client.', 'mcp-hub', 'o'], ['mcp-seed', 'MCP tools to generate, lint and shuffle seeds.', 'seed-gen', 'o'], ['paper-to-claims', 'Turn papers into source and claim nodes with quote spans.', 'feeds.py', 'o'], ['repo-to-graph', 'Turn a codebase into a seeded graph.', 'Builder', 'o'], ['sql-to-seed', 'Turn relational schemas into seeds with constraints.', 'seed spec', 'c'], ['feeds', 'Feed ingestion with dedupe and provenance.', 'feeds.py', 'o'], ['pr-agent', 'An agent that opens PRs only through the test gate.', 'heal.py', 'o'], ['slack-gate', 'Approve agent actions from Slack.', 'mindful.py', 'o'], ['bridago-api', 'Metered Bridago API: seed, query, round.', 'serve.py', 'a']],
+  'Domain seeds': [['seed-law-tiers', 'Federal, provincial and municipal rules for a water body.', 'institute.yaml', 'c'], ['seed-sector-value', 'Reported AI use vs measured value by sector.', 'institute.yaml', 'c'], ['seed-phone-compute', 'Paid compute on idle phones: costs and payouts.', 'institute.yaml', 'c'], ['seed-compliance', 'Regulatory obligations as typed constraints.', 'Catalogue', 'a'], ['seed-clinical', 'Care pathways with contraindications as constraints.', 'Catalogue', 'a'], ['seed-supply', 'Supply-chain dependencies and single points of failure.', 'Catalogue', 'a'], ['seed-codebase', 'Seeds for large codebases: modules, owners, risks.', 'repo-to-graph', 'a'], ['seed-finance', 'Market regimes and their indicators.', 'regime-lens', 'a'], ['seed-curriculum', 'Curricula with prerequisites as closure.', 'Catalogue', 'a'], ['seed-travel', 'Travel operations: routes, constraints, disruptions.', 'Catalogue', 'a']],
+  'Studio · sites': [['style-studio', 'Generate a site from a brief, assembled from small calls.', 'Style Studio', 'o'], ['studio-kit', '12 structures × 8 looks, deterministic.', 'studio-kit.js', 'o'], ['site-from-graph', 'Publish a graph as a site with public/private split.', 'Anima site', 'o'], ['tmpltz', 'Every finding becomes a template.', 'Tmpltz', 'c'], ['report-kit', 'Research reports with tagged claims and sources.', 'Plan v4', 'o'], ['deck-from-findings', 'Slides from a set of graph findings.', 'Studio', 'o'], ['tier-auth', 'Visitor/Member/Pro/Owner tiers for a graph site.', 'Anima site', 'o'], ['ask-widget', 'Ask panel that asks a clarifying question back.', 'Anima site', 'o'], ['popups', 'Contextual suggestions, clarifications and questions.', 'Anima site', 'o'], ['studio-cloud', 'Hosted Studio with export.', 'Style Studio', 'a']],
+};
+const LINE = { o: ['open', 'tag tag-accent'], c: ['open-core', 'tag tag-neutral'], a: ['paid API', 'tag tag-outline'] };
+const ALL = Object.entries(CATS).flatMap(([cat, rs]) => rs.map(([name, what, from, l], i) => ({ name: 'anima/' + name, what, from, cat, l, wave: i === 0 ? 0 : 1 + (i - 1) % 4 })));
+const WAVES = [['W0', 'launch day', 'The flagship of each category: harness, seed generator, one signature, LSTM substrate, oversight, the viewer.'], ['W1', 'week 1', 'Controls and benchmarks: shuffle, schema depth, frozen split.'], ['W2', 'week 2', 'Ops and observability: heal, sandbox, cost per round.'], ['W3', 'week 3', 'Integrations and visuals: MCP servers, embeds, notebook.'], ['W4', 'week 4', 'Open-core seeds and paid APIs, with the first results.']];
+
+class Component extends DCLogic {
+  state = { cat: 'All', line: 'all' };
+  renderVals() {
+    const s = this.state, rs = ALL.filter(r => (s.cat === 'All' || r.cat === s.cat) && (s.line === 'all' || r.l === s.line));
+    const count = l => ALL.filter(r => r.l === l).length;
+    return {
+      nOpen: count('o'), nCore: count('c'), nApi: count('a'), shown: rs.length,
+      waves: WAVES.map(([name, when, what], i) => ({ name, when, what, n: ALL.filter(r => r.wave === i).length })),
+      cats: ['All', ...Object.keys(CATS)].map(name => ({ name, cls: s.cat === name ? 'btn-primary' : 'btn-ghost', pick: () => this.setState({ cat: name }) })),
+      lines: [['all', 'All lines'], ['o', 'Open'], ['c', 'Open-core'], ['a', 'Paid API']].map(([id, name]) => ({ name, cls: s.line === id ? 'btn-primary' : 'btn-ghost', pick: () => this.setState({ line: id }) })),
+      repos: rs.map(r => ({ ...r, line: LINE[r.l][0], tag: LINE[r.l][1] })),
+    };
+  }
+}
+</script>
+</body>
+</html>

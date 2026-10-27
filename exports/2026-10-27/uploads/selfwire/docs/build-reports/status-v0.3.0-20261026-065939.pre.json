@@ -1,0 +1,11 @@
+{
+  "phase": "pre",
+  "timestamp": "2026-10-26T06:59:39Z",
+  "version": "0.3.0",
+  "plan": [
+    "full pytest run",
+    "audit with that run",
+    "moat policy snapshot",
+    "git history"
+  ]
+}

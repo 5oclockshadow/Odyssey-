@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    html, body { height: 100%; margin: 0; overflow: hidden; background: var(--color-bg); }
+    a { color: var(--color-accent); } a:hover { color: var(--color-accent-400); }
+    @keyframes tg-bloom { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+    @keyframes tg-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+    @keyframes tg-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</helmet>
+<div data-screen-label="Sphere" style="position: fixed; inset: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); font-size: 14px;">
+  <header style="display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); flex-wrap: wrap; border-bottom: 1px solid var(--color-divider);">
+    <div style="display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; margin-right: var(--space-2);">
+      <span style="width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--color-accent); box-shadow: 0 0 10px var(--color-accent-600);"></span>
+      <span>Thought Graph</span>
+      <span class="tag tag-neutral">Sphere</span>
+    </div>
+    <form onSubmit="{{ onSeedSubmit }}" style="display: flex; gap: var(--space-2); flex: 1 1 240px; max-width: 440px;">
+      <input class="input" value="{{ seedText }}" onChange="{{ onSeedText }}" placeholder="Any input — the current graph is saved before a new one grows" aria-label="Seed input">
+      <button type="submit" class="btn btn-primary">Explore</button>
+    </form>
+    <label style="display: flex; align-items: center; gap: var(--space-2); font-size: 12px; color: var(--color-neutral-400);">
+      <span>Wild</span>
+      <input type="range" min="0" max="100" step="5" value="{{ wild }}" onChange="{{ onWild }}" style="width: 96px; accent-color: var(--color-accent);" aria-label="Wildness">
+      <span style="min-width: 22px; font-variant-numeric: tabular-nums; color: var(--color-neutral-300);">{{ wild }}</span>
+    </label>
+    <div style="display: flex; align-items: center; gap: var(--space-2); margin-left: auto;">
+      <span style="font-size: 12px; color: var(--color-neutral-500); font-variant-numeric: tabular-nums;">{{ count }}</span>
+      <button type="button" class="{{ autoBtnClass }}" onClick="{{ toggleAuto }}">{{ autoLabel }}</button>
+      <button type="button" class="{{ liveBtnClass }}" onClick="{{ toggleLive }}" title="Expand with Claude when the helper is available">{{ liveLabel }}</button>
+      <button type="button" class="btn btn-secondary" style="gap: 8px;" onClick="{{ openMcp }}" aria-label="MCP servers">
+        <svg width="15" height="15" viewBox="0 0 256 256" fill="currentColor"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path></svg>
+        <span style="font-size: 12px; color: var(--color-neutral-400);">{{ mcpSummary }}</span>
+      </button>
+    </div>
+  </header>
+
+  <div style="display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: 0;">
+    <aside style="display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--color-divider);">
+      <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4) var(--space-2);">
+        <div class="card-kicker">Retrace</div>
+        <button type="button" class="btn btn-ghost" style="margin-left: auto; padding: 2px 6px; font-size: 12px;" onClick="{{ snapshotNow }}">Save now</button>
+      </div>
+      <div style="padding: 0 var(--space-4) var(--space-3); font-size: 11px; color: var(--color-neutral-600); text-wrap: pretty;">Every seed edit saves the graph it replaces. Open a save, then scrub time to retrace it step by step.</div>
+      <div style="display: flex; flex-direction: column; gap: 2px; padding: 0 var(--space-2) var(--space-3); overflow: auto; min-height: 0;">
+        <sc-for list="{{ hist }}" as="h" hint-placeholder-count="2">
+          <button type="button" class="btn btn-ghost" style="{{ h.style }}" onClick="{{ h.onOpen }}">
+            <span style="{{ h.dot }}"></span>
+            <span style="display: grid; gap: 1px; min-width: 0; text-align: left;">
+              <span style="font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ h.seed }}</span>
+              <span style="font-size: 10px; font-weight: 400; color: var(--color-neutral-500);">{{ h.meta }}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+    </aside>
+
+    <div ref="{{ canvasRef }}" onPointerDown="{{ onPointerDown }}" onPointerMove="{{ onPointerMove }}" onPointerUp="{{ onPointerUp }}" onPointerLeave="{{ onPointerUp }}" onWheel="{{ onWheel }}" onClick="{{ onCanvasClick }}" style="position: relative; overflow: hidden; cursor: grab; background: radial-gradient(circle at 50% 46%, var(--color-surface) 0%, var(--color-bg) 60%);">
+      <svg style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none;">
+        <sc-for list="{{ shells }}" as="r" hint-placeholder-count="0">
+          <circle cx="{{ r.cx }}" cy="{{ r.cy }}" r="{{ r.r }}" style="{{ r.style }}"></circle>
+        </sc-for>
+        <sc-for list="{{ edges }}" as="e" hint-placeholder-count="0">
+          <line x1="{{ e.x1 }}" y1="{{ e.y1 }}" x2="{{ e.x2 }}" y2="{{ e.y2 }}" style="{{ e.style }}"></line>
+        </sc-for>
+      </svg>
+      <div style="position: absolute; left: 0; top: 0; pointer-events: none;">
+        <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="0">
+          <div style="{{ n.style }}" onMouseEnter="{{ n.onEnter }}" onMouseLeave="{{ n.onLeave }}" onClick="{{ n.onClick }}" onDoubleClick="{{ n.onDouble }}">
+            <div style="{{ n.ringStyle }}"></div>
+            <div style="{{ n.labelStyle }}">{{ n.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ showHover }}" hint-placeholder-val="{{ false }}">
+        <div class="card elev-md" style="{{ hov.style }}">
+          <div class="card-kicker">{{ hov.kicker }}</div>
+          <div class="card-title" style="font-size: 14px;">{{ hov.label }}</div>
+          <p class="card-body">{{ hov.detail }}</p>
+          <div class="card-meta"><span>{{ hov.meta }}</span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+        <div class="card elev-lg" style="{{ sel.style }}" onWheel="{{ stop }}" onPointerDown="{{ stop }}">
+          <div style="display: flex; align-items: center; gap: var(--space-2);">
+            <span class="tag tag-outline">{{ sel.planeLabel }}</span>
+            <span class="tag tag-neutral">{{ sel.moduleType }}</span>
+            <button type="button" class="btn btn-ghost btn-icon" style="margin-left: auto; width: 28px; height: 28px; color: var(--color-neutral-400);" onClick="{{ closeSel }}" aria-label="Close">
+              <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+            </button>
+          </div>
+          <div class="card-title" style="font-size: 16px; text-wrap: pretty;">{{ sel.label }}</div>
+          <p class="card-body" style="opacity: 0.85;">{{ sel.detail }}</p>
+          <div style="display: grid; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-neutral-500);"><span>Grounding</span><span style="color: var(--color-neutral-300);">{{ sel.gPct }} · {{ sel.gWord }}</span></div>
+            <div style="height: 3px; border-radius: 2px; background: var(--color-neutral-800);"><div style="{{ sel.gBar }}"></div></div>
+            <div style="font-size: 11px; color: var(--color-neutral-500);">via {{ sel.via }} · {{ sel.time }} · {{ sel.born }}</div>
+          </div>
+          <sc-if value="{{ sel.hasEvidence }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; gap: 3px;">
+              <sc-for list="{{ sel.evidence }}" as="ev" hint-placeholder-count="1">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-neutral-300);">
+                  <svg width="12" height="12" viewBox="0 0 256 256" fill="var(--color-accent-400)"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.61,87.61,0,0,1-3.33,24H174.16a157.44,157.44,0,0,0,0-48h38.51A87.61,87.61,0,0,1,216,128ZM102,168H154a115.11,115.11,0,0,1-26,45A115.27,115.27,0,0,1,102,168Zm-3.9-16a140.84,140.84,0,0,1,0-48h59.88a140.84,140.84,0,0,1,0,48ZM40,128a87.61,87.61,0,0,1,3.33-24H81.84a157.44,157.44,0,0,0,0,48H43.33A87.61,87.61,0,0,1,40,128ZM154,88H102a115.11,115.11,0,0,1,26-45A115.27,115.27,0,0,1,154,88Zm52.33,0H170.71a135.28,135.28,0,0,0-22.3-45.6A88.29,88.29,0,0,1,206.37,88ZM107.59,42.4A135.28,135.28,0,0,0,85.29,88H49.63A88.29,88.29,0,0,1,107.59,42.4ZM49.63,168H85.29a135.28,135.28,0,0,0,22.3,45.6A88.29,88.29,0,0,1,49.63,168Zm98.78,45.6a135.28,135.28,0,0,0,22.3-45.6h35.66A88.29,88.29,0,0,1,148.41,213.6Z"></path></svg>
+                  <span>{{ ev.src }}</span><span style="color: var(--color-neutral-600);">{{ ev.year }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ sel.hasChallenge }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; line-height: 1.45; color: var(--color-accent-300);">{{ sel.challenge }}</div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+            <div class="seg" role="radiogroup" aria-label="Hops for this thought">
+              <label class="seg-opt" style="padding: 4px 10px; font-size: 12px;"><input type="radio" name="hop" checked="{{ sel.hop1 }}" onChange="{{ sel.setHop1 }}">1 hop</label>
+              <label class="seg-opt" style="padding: 4px 10px; font-size: 12px;"><input type="radio" name="hop" checked="{{ sel.hop2 }}" onChange="{{ sel.setHop2 }}">2</label>
+              <label class="seg-opt" style="padding: 4px 10px; font-size: 12px;"><input type="radio" name="hop" checked="{{ sel.hop3 }}" onChange="{{ sel.setHop3 }}">3</label>
+            </div>
+            <span style="font-size: 12px; color: var(--color-neutral-500);">{{ sel.hopCount }}</span>
+          </div>
+          <div style="display: grid; gap: var(--space-1);">
+            <div class="card-kicker">Paths from here</div>
+            <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+              <sc-for list="{{ sel.paths }}" as="p" hint-placeholder-count="3">
+                <button type="button" class="btn btn-ghost" style="flex-direction: column; align-items: flex-start; gap: 0; padding: 4px 8px;" onClick="{{ p.onPick }}">
+                  <span style="font-size: 13px;">{{ p.label }}</span>
+                  <span style="font-size: 10px; font-weight: 400; color: var(--color-neutral-500);">{{ p.hint }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; max-height: 170px; overflow: auto;">
+            <sc-for list="{{ sel.chat }}" as="m" hint-placeholder-count="0">
+              <div style="{{ m.style }}">{{ m.text }}</div>
+            </sc-for>
+            <sc-if value="{{ sel.thinking }}" hint-placeholder-val="{{ false }}">
+              <div style="align-self: flex-start; font-size: 12px; color: var(--color-neutral-500); animation: tg-pulse 1.2s ease-in-out infinite;">thinking…</div>
+            </sc-if>
+          </div>
+          <form onSubmit="{{ sendChat }}" style="display: flex; gap: var(--space-2);">
+            <input class="input" style="min-height: 32px; font-size: 13px;" value="{{ chatText }}" onChange="{{ onChatText }}" placeholder="Interrogate this thought…" aria-label="Chat with this thought">
+            <button type="submit" class="btn btn-primary btn-icon" style="width: 32px; height: 32px; flex: none;" aria-label="Send">
+              <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M227.32,28.68a16,16,0,0,0-15.66-4.08l-.15,0L19.57,82.84a16,16,0,0,0-2.49,29.8L102,154l41.3,84.87A15.86,15.86,0,0,0,157.74,248q.69,0,1.4-.06a15.88,15.88,0,0,0,14-11.51l58.2-191.94c0-.05,0-.1,0-.15A16,16,0,0,0,227.32,28.68ZM157.83,231.85l-.05.14,0-.07-40.06-82.3,48-48a8,8,0,0,0-11.31-11.31l-48,48L24.08,98.25l-.07,0,.14,0L216,40Z"></path></svg>
+            </button>
+          </form>
+        </div>
+      </sc-if>
+
+      <div style="position: absolute; right: var(--space-4); top: var(--space-3); font-size: 11px; color: var(--color-neutral-600); pointer-events: none; text-align: right;">drag to turn · wheel to zoom · click a thought to interrogate it</div>
+      <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: var(--space-3) var(--space-4); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3); align-items: center; background: linear-gradient(to top, var(--color-bg) 60%, transparent);" onPointerDown="{{ stop }}">
+        <button type="button" class="btn btn-secondary btn-icon" style="width: 32px; height: 32px;" onClick="{{ togglePlay }}" aria-label="Replay growth">
+          <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="{{ playPath }}"></path></svg>
+        </button>
+        <div style="display: grid; gap: 4px; min-width: 0;">
+          <input type="range" min="0" max="{{ tMax }}" step="1" value="{{ t }}" onChange="{{ onTime }}" style="width: 100%; min-width: 0; accent-color: var(--color-accent);" aria-label="Time — which step of the graph's growth to show">
+          <div style="display: flex; justify-content: space-between; gap: var(--space-3); font-size: 11px; color: var(--color-neutral-500); min-width: 0;">
+            <span style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto;"><span style="{{ dotStyle }}"></span><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">{{ status }}</span></span>
+            <span style="font-variant-numeric: tabular-nums; white-space: nowrap; flex: none;">{{ timeLabel }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ showMcp }}" hint-placeholder-val="{{ false }}">
+    <div class="dialog-backdrop" style="z-index: 20;" onClick="{{ closeMcp }}">
+      <div class="dialog" role="dialog" aria-modal="true" style="width: min(720px, 100%); max-height: 90vh; overflow: auto;" onClick="{{ stop }}">
+        <div class="dialog-title">MCP servers</div>
+        <div class="dialog-body" style="text-wrap: pretty;">The agent's tools and the sources it learns from. Toggle a server or edit the JSON directly; the trace and auto mode follow what is enabled.</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-2);">
+          <sc-for list="{{ servers }}" as="sv" hint-placeholder-count="4">
+            <button type="button" class="btn btn-secondary" style="{{ sv.style }}" onClick="{{ sv.onToggle }}">
+              <span style="{{ sv.dot }}"></span>
+              <span style="display: grid; gap: 1px; min-width: 0; text-align: left;">
+                <span style="font-size: 13px;">{{ sv.name }}</span>
+                <span style="font-size: 10px; font-weight: 400; color: var(--color-neutral-500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ sv.role }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+        <textarea class="input" spellcheck="false" style="min-height: 220px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 12px; line-height: 1.5; background: var(--color-bg);" value="{{ mcpText }}" onChange="{{ onMcpText }}" aria-label="MCP configuration JSON"></textarea>
+        <sc-if value="{{ hasMcpError }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 12px; color: var(--color-accent-300);">{{ mcpError }}</div>
+        </sc-if>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-ghost" onClick="{{ resetMcp }}">Reset to defaults</button>
+          <button type="button" class="btn btn-secondary" onClick="{{ closeMcp }}">Close</button>
+          <button type="button" class="btn btn-primary" onClick="{{ applyMcp }}">Apply JSON</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;seed&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Teach a city to sleep better&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Graph&quot;},&quot;wildness&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:40,&quot;min&quot;:0,&quot;max&quot;:100,&quot;step&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Graph&quot;},&quot;autoStart&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Agent&quot;},&quot;autoRotate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sphere&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, seedText: this.props.seed || 'Teach a city to sleep better', hover: null, sel: null, wild: this.props.wildness ?? 40, auto: false, live: false, status: 'Loading…', chatText: '', w: 1000, h: 700, yaw: 0.6, pitch: 0.3, k: 1, t: 0, playing: false, curId: null, showMcp: false, mcpText: '', mcpError: '' };
+  canvasRef = React.createRef();
+  chats = {}; hopDepth = {}; p3 = new Map(); hopMap = null; rootHops = new Map(); hist = []; drag = null; timer = null; pending = null; follow = true;
+  DEFAULT_MCP = { mcpServers: {
+    'graph-intelligence': { command: 'npx', args: ['-y', '@thoughtgraph/mcp-graph'], role: 'hops · neighbours · centrality · frontier', tools: ['hops', 'neighbors', 'centrality', 'paths'] },
+    'sequential-thinking': { command: 'npx', args: ['-y', '@modelcontextprotocol/server-sequential-thinking'], role: 'SELECT → ADAPT → IMPLEMENT' },
+    time: { command: 'uvx', args: ['mcp-server-time'], role: 'timestamps · recency' },
+    fetch: { command: 'uvx', args: ['mcp-server-fetch'], role: 'internet grounding' },
+    slack: { command: 'npx', args: ['-y', '@modelcontextprotocol/server-slack'], role: 'source · #urbanism', disabled: false },
+    gmail: { command: 'npx', args: ['-y', 'mcp-gmail'], role: 'source · newsletters' },
+    discord: { command: 'npx', args: ['-y', 'mcp-discord'], role: 'source · #nightshift' },
+    telegram: { command: 'npx', args: ['-y', 'mcp-telegram'], role: 'source · neighbour chats' },
+    'ios-health': { command: 'npx', args: ['-y', 'mcp-ios-shortcuts'], role: 'source · sleep data' },
+    windows: { command: 'npx', args: ['-y', '@modelcontextprotocol/server-filesystem', '~/Exports'], role: 'source · local files' },
+    shopify: { command: 'npx', args: ['-y', '@shopify/dev-mcp'], role: 'source · orders', disabled: true },
+  } };
+
+  async componentDidMount() {
+    this.E = await import('./thought-engine.js');
+    await this.E.loadModules('reasoning_modules.json');
+    const el = this.canvasRef.current;
+    if (el) { this.ro = new ResizeObserver(() => this.measure()); this.ro.observe(el); }
+    this.measure();
+    this.loadMcp(); this.loadHistory();
+    const cur = this.read('tg-sphere-current');
+    if (cur && cur.nodes && cur.nodes.length) this.adopt(this.E.restore(cur, { w: this.state.w, h: this.state.h }), cur.seed, 'Restored the graph you left'); else this.reset(this.state.seedText, false);
+    window.addEventListener('keydown', this.onKey);
+    this.tick();
+    if (this.props.autoStart) this.setAuto(true);
+  }
+  componentWillUnmount() { this.dead = true; window.removeEventListener('keydown', this.onKey); if (this.ro) this.ro.disconnect(); clearTimeout(this.autoT); clearTimeout(this.timer); clearTimeout(this.playT); clearTimeout(this.saveT); }
+  componentDidUpdate(prev) {
+    if (prev.wildness !== this.props.wildness && this.props.wildness != null) this.setState({ wild: this.props.wildness });
+    if (prev.seed !== this.props.seed && this.props.seed && this.E) { this.setState({ seedText: this.props.seed }); this.reset(this.props.seed, true); }
+    if (prev.autoStart !== this.props.autoStart && this.E) this.setAuto(!!this.props.autoStart);
+  }
+  read(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (e) { return null; } }
+  write(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) { /* storage full or blocked */ } }
+  measure = () => {
+    const el = this.canvasRef.current; if (!el) return;
+    const r = el.getBoundingClientRect(); if (!r.width || !r.height) return;
+    if (this.g) { this.g.cx = r.width / 2; this.g.cy = r.height / 2 - 28; }
+    this.setState({ w: r.width, h: r.height });
+  };
+  gap() { const { w, h } = this.state; return this.E.clamp(Math.min(w * 0.42, h * 0.62) / 3.1, 60, 130); }
+
+  // ── graph lifecycle ─────────────────────────────────────────────
+  adopt(g, seed, status) {
+    this.g = g; g.cx = this.state.w / 2; g.cy = this.state.h / 2 - 28;
+    this.chats = {}; this.hopDepth = {}; this.p3 = new Map(); this.hopMap = null; this.follow = true;
+    this.refreshHops();
+    this.setState({ ready: true, seedText: seed, sel: null, hover: null, t: Math.max(0, g.nodes.length - 1), playing: false, status: status || `Seeded "${this.E.short(seed, 40)}"` });
+    this.persistSoon();
+  }
+  reset(seed, saveCurrent) {
+    if (saveCurrent && this.g && this.g.nodes.length) this.snapshot('seed edit');
+    const g = this.E.createGraph(seed, { w: this.state.w, h: this.state.h }); this.E.seedGraph(g, 6);
+    this.adopt(g, seed, `Seeded "${this.E.short(seed, 40)}" · ${g.nodes.length} thoughts`);
+    this.setState({ curId: null });
+  }
+  refreshHops() {
+    const root = this.g.nodes[0]; this.rootHops = root ? this.E.hops(this.g, root.id, 3) : new Map();
+    if (this.state.sel && this.g.byId.has(this.state.sel)) this.hopMap = this.E.hops(this.g, this.state.sel, 3);
+    this.g.nodes.forEach((n, i) => this.place(n, i));
+    const gap = this.gap(); let maxShell = 1;
+    for (const n of this.g.nodes) { const h = this.rootHops.has(n.id) ? this.rootHops.get(n.id) : 4; const sh = Math.min(h, 3.6); this.p3.get(n.id).tr = h === 0 ? 0 : sh * gap; if (sh > maxShell) maxShell = sh; }
+    this.maxShell = maxShell;
+  }
+  fit() { const { w, h } = this.state; return this.E.clamp(Math.min(w * 0.4, h * 0.5 - 40) / ((this.maxShell || 1) * this.gap() + 30), 0.6, 2.2); }
+  afterChange(status) {
+    this.refreshHops();
+    if (this.follow) this.setState({ t: this.g.nodes.length - 1 });
+    if (status) this.setState({ status });
+    this.persistSoon();
+  }
+  persistSoon() { clearTimeout(this.saveT); this.saveT = setTimeout(() => { if (this.g) this.write('tg-sphere-current', this.E.serialize(this.g)); }, 600); }
+
+  // ── retrace history ─────────────────────────────────────────────
+  loadHistory() { const h = this.read('tg-sphere-history'); this.hist = Array.isArray(h) ? h : []; }
+  snapshot(reason) {
+    if (!this.g) return;
+    const d = this.E.serialize(this.g);
+    const entry = { id: 'h' + Date.now(), seed: this.g.seed, at: new Date().toISOString(), n: d.nodes.length, reason, data: d };
+    this.hist = [entry, ...this.hist.filter(h => h.id !== this.state.curId)].slice(0, 24);
+    this.write('tg-sphere-history', this.hist);
+    this.setState({ curId: entry.id, status: `Saved "${this.E.short(this.g.seed, 30)}" · ${d.nodes.length} thoughts` });
+    return entry;
+  }
+  openHist(id) {
+    const entry = this.hist.find(h => h.id === id); if (!entry) return;
+    if (this.g && this.g.nodes.length && this.state.curId !== id) this.snapshot('before retrace');
+    this.setAuto(false);
+    this.adopt(this.E.restore(entry.data, { w: this.state.w, h: this.state.h }), entry.seed, `Retracing "${this.E.short(entry.seed, 30)}" · scrub time to replay ${entry.n} steps`);
+    this.hist = this.hist.filter(h => h.id !== 'tmp');
+    this.setState({ curId: id });
+  }
+
+  // ── 3D placement + render loop ──────────────────────────────────
+  rnd(i) { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }
+  place(n, i) {
+    if (this.p3.has(n.id)) return;
+    let dir = [0, 0, 0];
+    if (n.parent) {
+      const pp = this.p3.get(n.parent), pd = pp && (pp.dir[0] || pp.dir[1] || pp.dir[2]) ? pp.dir : null;
+      if (!pd) { const k = this.g.nodes.filter(m => m.parent === n.parent).indexOf(n); const y = 1 - 2 * ((k % 12) + 0.5) / 12, rad = Math.sqrt(1 - y * y), th = k * 2.39996 + 0.7; dir = [Math.cos(th) * rad, y, Math.sin(th) * rad]; }
+      else { const v = [pd[0] + (this.rnd(i * 3 + 1) - 0.5) * 1.1, pd[1] + (this.rnd(i * 3 + 2) - 0.5) * 1.1, pd[2] + (this.rnd(i * 3 + 3) - 0.5) * 1.1]; const L = Math.hypot(...v) || 1; dir = v.map(c => c / L); }
+    }
+    this.p3.set(n.id, { dir, r: 0, tr: 0 });
+  }
+  project(pt) {
+    const { yaw, pitch } = this.state, k = this.state.k * this.fit(), cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    const x1 = pt[0] * cy + pt[2] * sy, z1 = -pt[0] * sy + pt[2] * cy, y1 = pt[1] * cp - z1 * sp, z2 = pt[1] * sp + z1 * cp;
+    const persp = 900 / (900 - z2 * k);
+    return { x: this.g.cx + x1 * k * persp, y: this.g.cy + y1 * k * persp, s: persp };
+  }
+  tick = () => {
+    this.timer = null; if (this.dead) return;
+    const now = performance.now(), dt = Math.min(400, now - (this.last || now)); this.last = now;
+    if (this.g) {
+      let moving = false;
+      const a = 1 - Math.pow(0.88, dt / 33);
+      for (const p of this.p3.values()) { const d = p.tr - p.r; if (Math.abs(d) > 0.2) { p.r += d * a; moving = true; } else p.r = p.tr; }
+      if (!this.drag && !this.state.sel && !this.state.hover && (this.props.autoRotate ?? true)) { this.state.yaw += 0.0022 * dt / 33; moving = true; }
+      if (moving || this.dirty) { this.dirty = false; this.forceUpdate(); }
+    }
+    this.timer = setTimeout(this.tick, 33);
+  };
+
+  // ── agent ───────────────────────────────────────────────────────
+  agentOpts() { const on = name => { const s = this.mcp && this.mcp.mcpServers && this.mcp.mcpServers[name]; return !!s && !s.disabled; }; return { wild: this.state.wild, live: this.state.live, graphIntel: on('graph-intelligence'), servers: { time: on('time'), internet: on('fetch'), sequential: on('sequential-thinking') } }; }
+  setAuto(on) { clearTimeout(this.autoT); this.setState({ auto: on, status: on ? 'Auto · self-discovery on' : 'Auto · paused' }); if (on) { this.follow = true; this.autoT = setTimeout(this.autoStep, 400); } }
+  autoStep = async () => {
+    if (this.dead || !this.state.auto || !this.g) return;
+    if (this.g.nodes.length >= 90) { this.setState({ auto: false, status: 'Auto · paused at 90 thoughts — reseed to keep going' }); return; }
+    const o = this.agentOpts();
+    this.setState({ status: o.graphIntel ? 'Auto · GRAPH picks the frontier…' : 'Auto · SELECT a reasoning module…' });
+    const r = await this.E.autoTick(this.g, o);
+    if (this.dead || !this.state.auto) return;
+    this.afterChange(`Auto · ${r.mod.type} → "${this.E.short(r.target.label, 32)}" → ${r.added.length} new · ${this.g.trace.at(-1).t}`);
+    this.autoT = setTimeout(this.autoStep, o.live ? 4500 : 1600);
+  };
+  toggleLive() {
+    if (!this.E.liveAvailable()) { this.setState({ live: false, status: 'Live AI needs the Claude helper in this viewer — running the scripted engine' }); return; }
+    this.setState(s => ({ live: !s.live, status: s.live ? 'Live AI off · scripted engine' : 'Live AI on · Claude expands and answers' }));
+  }
+  expandFrom(id, moduleId) {
+    const mod = this.E.moduleById(moduleId);
+    this.setState({ status: `${mod.type} on "${this.E.short(this.g.byId.get(id).label, 32)}"…` });
+    this.E.expand(this.g, id, moduleId, this.agentOpts()).then(added => { if (this.dead) return; this.afterChange(`${mod.type} → ${added.length} new thought${added.length === 1 ? '' : 's'} · ${this.g.nodes.length} total`); });
+  }
+  select(id) {
+    if (!id) { this.hopMap = null; this.setState({ sel: null }); return; }
+    this.hopMap = this.E.hops(this.g, id, 3);
+    this.setState({ sel: id, hover: null });
+  }
+  sendChat = (e) => {
+    e.preventDefault();
+    const { sel, chatText } = this.state; if (!sel || !chatText.trim()) return;
+    const list = this.chats[sel] = this.chats[sel] || [];
+    list.push({ role: 'me', text: chatText.trim() });
+    this.pending = sel; this.setState({ chatText: '' });
+    this.E.chatReply(this.g, sel, chatText.trim(), { live: this.state.live, history: list.slice(0, -1) }).then(t => { if (this.dead) return; list.push({ role: 'node', text: t }); this.pending = null; this.forceUpdate(); });
+  };
+
+  // ── time (4th dimension) ────────────────────────────────────────
+  setTime(t) { const max = Math.max(0, this.g.nodes.length - 1); t = this.E.clamp(Math.round(t), 0, max); this.follow = t >= max; this.setState({ t }); }
+  togglePlay = () => {
+    if (this.state.playing) { clearTimeout(this.playT); this.setState({ playing: false }); return; }
+    const max = this.g.nodes.length - 1; if (this.state.t >= max) this.setTime(0);
+    this.setState({ playing: true });
+    const step = () => { if (this.dead || !this.state.playing) return; const nt = this.state.t + 1; this.setTime(nt); if (nt >= this.g.nodes.length - 1) { this.setState({ playing: false }); return; } this.playT = setTimeout(step, 320); };
+    this.playT = setTimeout(step, 320);
+  };
+
+  // ── MCP config ──────────────────────────────────────────────────
+  loadMcp() { const saved = this.read('tg-mcp-config'); this.mcp = saved && saved.mcpServers ? saved : JSON.parse(JSON.stringify(this.DEFAULT_MCP)); this.setState({ mcpText: JSON.stringify(this.mcp, null, 2), mcpError: '' }); }
+  saveMcp() { this.write('tg-mcp-config', this.mcp); this.setState({ mcpText: JSON.stringify(this.mcp, null, 2), mcpError: '' }); }
+  toggleServer(name) { const s = this.mcp.mcpServers[name]; if (!s) return; s.disabled = !s.disabled; this.saveMcp(); this.setState({ status: `MCP · ${name} ${s.disabled ? 'off' : 'on'}` }); }
+  applyMcp = () => { try { const j = JSON.parse(this.state.mcpText); if (!j.mcpServers || typeof j.mcpServers !== 'object') throw new Error('Expected a top-level "mcpServers" object'); this.mcp = j; this.saveMcp(); this.setState({ status: `MCP · ${Object.keys(j.mcpServers).length} servers configured` }); } catch (e) { this.setState({ mcpError: 'JSON error: ' + e.message }); } };
+
+  // ── input ───────────────────────────────────────────────────────
+  onKey = (e) => { if (e.key === 'Escape') { if (this.state.showMcp) this.setState({ showMcp: false }); else this.select(null); } };
+  onCanvasClick = (e) => { if (e.target === e.currentTarget && !this.moved) this.select(null); };
+  onPointerDown = (e) => { if (e.target !== e.currentTarget) return; this.drag = { x: e.clientX, y: e.clientY, yaw: this.state.yaw, pitch: this.state.pitch }; this.moved = false; };
+  onPointerMove = (e) => {
+    if (!this.drag) return;
+    const dx = e.clientX - this.drag.x, dy = e.clientY - this.drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) this.moved = true;
+    this.setState({ yaw: this.drag.yaw + dx * 0.008, pitch: this.E.clamp(this.drag.pitch + dy * 0.008, -1.3, 1.3) });
+  };
+  onPointerUp = () => { this.drag = null; };
+  onWheel = (e) => { this.setState(s => ({ k: this.E.clamp(s.k * (e.deltaY < 0 ? 1.1 : 0.9), 0.5, 2.6) })); };
+  stop = (e) => { e.stopPropagation(); };
+
+  renderVals() {
+    const E = this.E, g = this.g, s = this.state;
+    const servers = this.mcp ? Object.entries(this.mcp.mcpServers).map(([name, cfg]) => ({ id: name, name, role: cfg.role || [cfg.command, ...(cfg.args || [])].join(' '), onToggle: () => this.toggleServer(name),
+      style: { justifyContent: 'flex-start', gap: 10, padding: '6px 10px', borderColor: cfg.disabled ? 'var(--color-divider)' : 'var(--color-accent-700)', opacity: cfg.disabled ? 0.7 : 1 },
+      dot: { width: 8, height: 8, borderRadius: '50%', flex: 'none', border: '1.5px solid ' + (cfg.disabled ? 'var(--color-neutral-600)' : 'var(--color-accent)'), background: cfg.disabled ? 'transparent' : 'var(--color-accent-900)', boxShadow: cfg.disabled ? 'none' : '0 0 8px var(--color-accent-600)' } })) : [];
+    const onCount = servers.filter(x => !this.mcp.mcpServers[x.name].disabled).length;
+    const hist = this.hist.map(h => { const cur = h.id === s.curId; return { id: h.id, seed: h.seed, meta: `${h.n} thoughts · ${new Date(h.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${h.reason}`, onOpen: () => this.openHist(h.id),
+      style: { justifyContent: 'flex-start', gap: 8, padding: '5px 8px', width: '100%', color: cur ? 'var(--color-text)' : 'var(--color-neutral-300)', background: cur ? 'var(--color-accent-900)' : 'transparent' },
+      dot: { width: 7, height: 7, borderRadius: '50%', flex: 'none', border: '1.5px solid ' + (cur ? 'var(--color-accent)' : 'var(--color-neutral-600)') } }; });
+    const base = {
+      ready: s.ready, seedText: s.seedText, wild: s.wild, hist,
+      onSeedText: e => this.setState({ seedText: e.target.value }), onSeedSubmit: e => { e.preventDefault(); if (s.seedText.trim() && this.E) this.reset(s.seedText.trim(), true); },
+      onWild: e => this.setState({ wild: +e.target.value }), snapshotNow: () => this.snapshot('saved by you'),
+      autoLabel: s.auto ? 'Auto · on' : 'Auto', autoBtnClass: s.auto ? 'btn btn-primary' : 'btn btn-secondary', toggleAuto: () => this.E && this.setAuto(!s.auto),
+      liveLabel: s.live ? 'Live AI · on' : 'Live AI', liveBtnClass: s.live ? 'btn btn-primary' : 'btn btn-secondary', toggleLive: () => this.E && this.toggleLive(),
+      status: s.status, count: g ? `${g.nodes.length} thoughts · ${g.edges.length} edges` : '',
+      dotStyle: { width: 6, height: 6, borderRadius: '50%', flex: 'none', background: s.auto ? 'var(--color-accent)' : 'var(--color-neutral-600)', boxShadow: s.auto ? '0 0 8px var(--color-accent)' : 'none', animation: s.auto ? 'tg-pulse 1.4s ease-in-out infinite' : 'none' },
+      canvasRef: this.canvasRef, onPointerDown: this.onPointerDown, onPointerMove: this.onPointerMove, onPointerUp: this.onPointerUp, onWheel: this.onWheel, onCanvasClick: this.onCanvasClick, stop: this.stop,
+      chatText: s.chatText, onChatText: e => this.setState({ chatText: e.target.value }), sendChat: this.sendChat, closeSel: () => this.select(null),
+      t: s.t, tMax: g ? Math.max(0, g.nodes.length - 1) : 0, onTime: e => this.setTime(+e.target.value), togglePlay: this.togglePlay,
+      playPath: s.playing ? 'M200,32H160a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,200,32Zm0,176H160V48h40ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Zm0,176H56V48H96Z' : 'M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z',
+      timeLabel: '', showMcp: s.showMcp, openMcp: () => this.setState({ showMcp: true }), closeMcp: () => this.setState({ showMcp: false, mcpError: '' }), servers, mcpSummary: this.mcp ? `MCP ${onCount}/${servers.length}` : 'MCP',
+      mcpText: s.mcpText, onMcpText: e => this.setState({ mcpText: e.target.value, mcpError: '' }), applyMcp: this.applyMcp, resetMcp: () => { this.mcp = JSON.parse(JSON.stringify(this.DEFAULT_MCP)); this.saveMcp(); }, hasMcpError: !!s.mcpError, mcpError: s.mcpError,
+      shells: [], nodes: [], edges: [], showHover: false, hov: null, hasSel: false, sel: null,
+    };
+    if (!g) return base;
+    const H = this.hopMap, hop = s.sel ? (this.hopDepth[s.sel] || 1) : 1, gap = this.gap();
+    const shown = i => i <= s.t;
+    const inHop = n => !H || (H.has(n.id) && H.get(n.id) <= hop);
+    const lastShown = g.nodes[Math.min(s.t, g.nodes.length - 1)];
+    base.timeLabel = `step ${Math.min(s.t, g.nodes.length - 1) + 1} / ${g.nodes.length}${lastShown ? ' · ' + lastShown.t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : ''}${s.t < g.nodes.length - 1 ? ' · past' : ' · now'}`;
+    base.shells = [1, 2, 3].filter(i => i <= Math.ceil(this.maxShell || 1)).map(i => ({ id: i, cx: g.cx, cy: g.cy, r: gap * i * s.k * this.fit(), style: { fill: 'none', stroke: 'var(--color-accent-800)', strokeDasharray: '2 8', strokeWidth: 1, opacity: 0.55 - i * 0.12 } }));
+    const pos = new Map();
+    g.nodes.forEach((n, i) => { const p = this.p3.get(n.id); if (!p) return; pos.set(n.id, this.project([p.dir[0] * p.r, p.dir[1] * p.r, p.dir[2] * p.r])); });
+    base.nodes = g.nodes.map((n, i) => {
+      const p = pos.get(n.id) || { x: g.cx, y: g.cy, s: 1 }, depth = E.clamp((p.s - 0.72) / 0.56, 0, 1);
+      const hidden = !shown(i), dim = !inHop(n), isSel = n.id === s.sel, isHov = n.id === s.hover;
+      const size = (n.root ? 22 : E.clamp(9 + n.deg * 2, 9, 18)) * (0.7 + 0.5 * depth), col = E.groundColor(n.g), dash = n.g < 0.3 ? 'dashed' : 'solid';
+      const showLabel = isSel || isHov || n.root || (H && inHop(n) && depth > 0.3) || depth > (g.nodes.length > 30 ? 0.72 : 0.55);
+      return {
+        id: n.id, label: n.label,
+        style: { position: 'absolute', left: 0, top: 0, transform: `translate(${p.x}px, ${p.y}px)`, display: hidden ? 'none' : 'block', opacity: dim ? 0.25 : 0.35 + 0.65 * depth, zIndex: isSel || isHov ? 5 : Math.round(depth * 3) + 1, transition: 'opacity .25s', pointerEvents: dim ? 'none' : 'auto' },
+        ringStyle: { position: 'absolute', width: size, height: size, left: -size / 2, top: -size / 2, borderRadius: '50%', border: `1.5px ${dash} ${col}`, background: n.root ? 'var(--color-accent-900)' : 'var(--color-bg)', cursor: 'pointer', animation: 'tg-bloom .5s ease-out both', transition: 'box-shadow .2s',
+          boxShadow: isSel ? '0 0 0 4px var(--color-accent-900), 0 0 18px var(--color-accent-600)' : isHov ? '0 0 0 3px var(--color-accent-900), 0 0 12px var(--color-accent-800)' : n.root ? '0 0 14px var(--color-accent-800)' : 'none' },
+        labelStyle: { position: 'absolute', left: size / 2 + 7, top: -8, width: 150, fontSize: n.root ? 13 : 12, lineHeight: '15px', fontWeight: n.root ? 500 : 400, display: showLabel ? '-webkit-box' : 'none', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', cursor: 'pointer', textWrap: 'pretty',
+          color: isSel || isHov || n.root ? 'var(--color-text)' : 'var(--color-neutral-400)', textShadow: '0 1px 6px var(--color-bg)' },
+        onEnter: () => this.setState({ hover: n.id }), onLeave: () => this.setState(st => st.hover === n.id ? { hover: null } : null),
+        onClick: e => { e.stopPropagation(); this.select(n.id); }, onDouble: e => { e.stopPropagation(); this.expandFrom(n.id, E.pickModule(s.wild).id); },
+      };
+    });
+    const idx = new Map(g.nodes.map((n, i) => [n.id, i]));
+    base.edges = g.edges.filter(e => shown(idx.get(e.a)) && shown(idx.get(e.b))).map(e => {
+      const a = pos.get(e.a), b = pos.get(e.b), na = g.byId.get(e.a), nb = g.byId.get(e.b);
+      const lit = inHop(na) && inHop(nb), depth = E.clamp(((a.s + b.s) / 2 - 0.72) / 0.56, 0, 1);
+      const active = (s.hover && (e.a === s.hover || e.b === s.hover)) || (s.sel && (e.a === s.sel || e.b === s.sel));
+      return { id: e.id, x1: a.x, y1: a.y, x2: b.x, y2: b.y, style: { stroke: active ? 'var(--color-accent-400)' : 'var(--color-accent-700)', strokeWidth: active ? 1.5 : 1, strokeDasharray: e.kind === 'bridge' ? '3 5' : 'none', opacity: lit ? (active ? 1 : 0.2 + 0.45 * depth) : 0.08, transition: 'stroke .2s' } };
+    });
+    const hn = s.hover && s.hover !== s.sel ? g.byId.get(s.hover) : null;
+    if (hn) {
+      const p = pos.get(hn.id), W = 260, left = p.x + 18 + W > s.w ? p.x - W - 18 : p.x + 18, top = E.clamp(p.y - 20, 8, Math.max(8, s.h - 230));
+      base.showHover = true;
+      base.hov = { style: { position: 'absolute', left, top, width: W, pointerEvents: 'none', zIndex: 6, animation: 'tg-fade .15s ease-out both' },
+        kicker: `${E.PLANE_OF[hn.plane].label} · ${hn.module ? E.moduleById(hn.module).type : 'Seed'}`, label: hn.label, detail: hn.detail,
+        meta: `${Math.round(hn.g * 100)}% ${E.groundWord(hn.g)} · via ${hn.via} · step ${idx.get(hn.id) + 1}` };
+    }
+    const sn = s.sel ? g.byId.get(s.sel) : null;
+    if (sn) {
+      const p = pos.get(sn.id), W = 340, left = p.x + 22 + W > s.w ? Math.max(8, p.x - W - 22) : p.x + 22, top = E.clamp(p.y - 60, 8, Math.max(8, s.h - 560));
+      const within = H ? [...H.values()].filter(d => d > 0 && d <= hop).length : 0;
+      const bubble = me => ({ alignSelf: me ? 'flex-end' : 'flex-start', maxWidth: me ? '85%' : '94%', padding: '6px 10px', borderRadius: 'var(--radius-md)', background: me ? 'var(--color-accent-900)' : 'var(--color-neutral-900)', color: me ? 'var(--color-accent-100)' : 'var(--color-neutral-200)', fontSize: 12, lineHeight: 1.45 });
+      const setHop = h => () => { this.hopDepth[sn.id] = h; this.forceUpdate(); };
+      base.hasSel = true;
+      base.sel = {
+        style: { position: 'absolute', left, top, width: W, zIndex: 8, maxHeight: s.h - 70, overflow: 'auto', cursor: 'default', animation: 'tg-fade .18s ease-out both' },
+        planeLabel: E.PLANE_OF[sn.plane].label, moduleType: sn.module ? E.moduleById(sn.module).type : 'Seed input', label: sn.label, detail: sn.detail,
+        gPct: Math.round(sn.g * 100) + '%', gWord: E.groundWord(sn.g), gBar: { height: 3, borderRadius: 2, width: Math.round(sn.g * 100) + '%', background: E.groundColor(sn.g), transition: 'width .4s' },
+        via: sn.via, time: sn.t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), born: `step ${idx.get(sn.id) + 1}`,
+        hasEvidence: sn.evidence.length > 0, evidence: sn.evidence.map((e, i) => ({ id: i, src: e.src, year: e.year })), hasChallenge: !!sn.challenge, challenge: sn.challenge,
+        hop1: hop === 1, hop2: hop === 2, hop3: hop === 3, setHop1: setHop(1), setHop2: setHop(2), setHop3: setHop(3),
+        hopCount: `${within} thought${within === 1 ? '' : 's'} within ${hop} hop${hop === 1 ? '' : 's'} of this one`,
+        paths: E.paths(s.wild).map(p => ({ id: p.kind, label: p.label, hint: p.module.type, onPick: () => this.expandFrom(sn.id, p.module.id) })),
+        chat: (this.chats[sn.id] || []).map((m, i) => ({ id: i, text: m.text, style: bubble(m.role === 'me') })), thinking: this.pending === sn.id,
+      };
+    }
+    return base;
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Archivo+Black&family=JetBrains+Mono:wght@400;600&family=Instrument+Serif:ital@0;1&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&family=Space+Grotesk:wght@500;700&family=Manrope:wght@500;700;800&display=swap">
+  <style>body { margin: 0; background: #ecebe7; color: #111; } a { color: #111; } a:hover { color: #e30613; }</style>
+</helmet>
+<div data-screen-label="App patterns" style="min-height:100vh;background:#ecebe7;color:#111;font-family:var(--font-body);padding:48px 48px 96px;display:grid;gap:36px;">
+  <header style="display:grid;gap:12px;max-width:900px;">
+    <span style="font:600 12px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Anima Institute · phone app · 10 patterns × 4 tiers</span>
+    <h1 style="margin:0;font:800 56px/0.95 'Archivo',sans-serif;letter-spacing:-0.04em;">Same content, ten layouts. Click a tier above any phone.</h1>
+    <p style="margin:0;font:400 17px/1.5 'Archivo',sans-serif;color:#444;max-width:760px;">Each phone has its own floating switch for Owner, Researcher, API and Subscriber. The content per tier is identical across patterns, so only the layout and look change. Each shows its suggestion popup in its own style. Sample data.</p>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><span style="font:600 12px 'JetBrains Mono',monospace;">Switch all ten:</span>
+      <div style="display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;"><sc-for list="{{ call }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+    </div>
+  </header>
+
+  <section data-screen-label="Turn 1" style="display:flex;flex-wrap:wrap;gap:44px 36px;align-items:flex-start;">
+
+    <div id="1a" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1a" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1a</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Nocturne baseline</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">The bound design system: cards, tab bar, popup card.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c1 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);display:grid;grid-template-rows:minmax(0,1fr) auto;position:relative;">
+          <div style="overflow:hidden;padding:40px 16px 16px;display:grid;gap:10px;align-content:start;background:radial-gradient(ellipse 90% 40% at 0% 0%, var(--color-accent-900) 0%, transparent 60%);">
+            <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">{{ p1.kicker }}</span>
+            <h3 style="margin:0;font-size:40px;line-height:1;font-weight:500;letter-spacing:-0.02em;">{{ p1.headline }}</h3>
+            <p style="margin:0;font-size:13px;line-height:1.5;color:var(--color-neutral-300);">{{ p1.sub }}</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"><sc-for list="{{ p1.stats }}" as="s" hint-placeholder-count="3"><div class="card" style="padding:8px;display:grid;gap:2px;"><span style="font-size:15px;font-weight:500;">{{ s.v }}</span><span style="font-size:10px;line-height:1.3;color:var(--color-neutral-400);">{{ s.k }}</span></div></sc-for></div>
+            <sc-for list="{{ p1.items }}" as="x" hint-placeholder-count="4"><div class="card" style="padding:9px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;"><span style="font-size:13px;font-weight:500;">{{ x.t }}</span><span class="tag tag-neutral" style="font-size:10px;padding:1px 6px;align-self:start;">{{ x.tag }}</span><span style="grid-column:1 / -1;font-size:11px;color:var(--color-neutral-400);">{{ x.s }}</span></div></sc-for>
+            <div style="display:flex;gap:6px;"><button class="btn btn-primary" style="font-size:12px;">{{ p1.act0 }}</button><button class="btn btn-ghost" style="font-size:12px;">{{ p1.act1 }}</button></div>
+          </div>
+          <div class="card elev-lg" style="position:absolute;left:12px;right:12px;bottom:64px;padding:10px 12px;display:grid;gap:4px;border-color:var(--color-accent-700);"><span class="card-kicker">Suggestion</span><span style="font-size:12.5px;line-height:1.4;">{{ p1.sugg }}</span></div>
+          <nav style="display:flex;justify-content:space-around;padding:10px 6px 16px;border-top:1px solid var(--color-neutral-800);font-size:11px;"><span style="color:var(--color-accent-200);">{{ p1.tab0 }}</span><sc-for list="{{ p1.tabsRest }}" as="t" hint-placeholder-count="3"><span style="color:var(--color-neutral-400);">{{ t }}</span></sc-for></nav>
+        </div>
+      </div>
+    </div>
+
+    <div id="1b" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1b" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1b</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Swiss grid</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">Huge numeral, hard rules, numbered rows; the popup is a red footer band.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c2 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#fff;color:#111;font-family:'Archivo',sans-serif;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;gap:12px;padding:38px 16px 8px;border-bottom:2px solid #111;font:700 10.5px 'Archivo',sans-serif;text-transform:uppercase;"><span style="color:#e30613;">{{ p2.tab0 }}</span><sc-for list="{{ p2.tabsRest }}" as="t" hint-placeholder-count="3"><span>{{ t }}</span></sc-for></div>
+          <div style="overflow:hidden;padding:12px 16px;display:grid;gap:10px;align-content:start;">
+            <span style="font:600 10.5px 'Archivo',sans-serif;text-transform:uppercase;letter-spacing:0.06em;">{{ p2.kicker }}</span>
+            <h3 style="margin:0;font:800 66px/0.84 'Archivo',sans-serif;letter-spacing:-0.06em;color:#e30613;">{{ p2.headline }}</h3>
+            <p style="margin:0;font:500 13px/1.4 'Archivo',sans-serif;">{{ p2.sub }}</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid #111;border-bottom:2px solid #111;"><sc-for list="{{ p2.stats }}" as="s" hint-placeholder-count="3"><div style="padding:8px 6px;border-right:1px solid #111;display:grid;gap:2px;"><span style="font:800 17px 'Archivo',sans-serif;letter-spacing:-0.03em;">{{ s.v }}</span><span style="font:500 9.5px/1.25 'Archivo',sans-serif;">{{ s.k }}</span></div></sc-for></div>
+            <sc-for list="{{ p2.items }}" as="x" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;padding:5px 0;border-bottom:1px solid #111;"><span style="font:800 22px/1 'Archivo',sans-serif;color:#e30613;">{{ x.num }}</span><div style="display:grid;gap:4px;"><span style="font:700 13px/1.2 'Archivo',sans-serif;">{{ x.t }}</span><div style="height:4px;background:#eee;"><div style="height:100%;width:{{ x.w }};background:#111;"></div></div><span style="font:400 10.5px 'Archivo',sans-serif;">{{ x.s }}</span></div></div></sc-for>
+          </div>
+          <div style="background:#e30613;color:#fff;padding:12px 16px 20px;display:grid;gap:8px;"><span style="font:700 13px/1.3 'Archivo',sans-serif;">→ {{ p2.sugg }}</span><div style="display:flex;gap:14px;font:800 11px 'Archivo',sans-serif;text-transform:uppercase;"><span style="border-bottom:2px solid #fff;">{{ p2.act0 }}</span><span>{{ p2.act1 }}</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="1c" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1c" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1c</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Terminal</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">Everything as a command session; the popup is a hint comment.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c3 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#0b0f0a;color:#9dff8a;font-family:'JetBrains Mono',monospace;display:grid;grid-template-rows:minmax(0,1fr) auto;">
+          <div style="overflow:hidden;padding:42px 14px 12px;display:grid;gap:8px;align-content:start;font-size:11.5px;line-height:1.5;">
+            <span style="color:#5f7a58;">anima institute · tty1 · {{ p3.kicker }}</span>
+            <span><span style="color:#ffd84a;">{{ p3.user }}@anima</span>:~$ {{ p3.cmd }}</span>
+            <span style="font-size:34px;line-height:1;font-weight:600;color:#d7ffd0;">{{ p3.headline }}</span>
+            <span style="color:#bfe8b6;">{{ p3.sub }}</span>
+            <sc-for list="{{ p3.stats }}" as="s" hint-placeholder-count="3"><span><span style="color:#5f7a58;">›</span> {{ s.k }} <span style="color:#ffd84a;">{{ s.v }}</span></span></sc-for>
+            <span style="color:#2c4a27;">──────────────────────────────</span>
+            <sc-for list="{{ p3.items }}" as="x" hint-placeholder-count="4"><div style="display:grid;gap:1px;"><span>[{{ x.tag }}] {{ x.t }}</span><span style="color:#5f7a58;">{{ x.bar }} {{ x.s }}</span></div></sc-for>
+            <span style="color:#ff9d5c;"># hint: {{ p3.sugg }}</span>
+            <span>$ {{ p3.act0Cmd }} <span style="background:#9dff8a;color:#0b0f0a;">▌</span></span>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;padding:10px 14px 18px;border-top:1px dashed #2c4a27;font-size:11px;"><span style="background:#9dff8a;color:#0b0f0a;padding:0 4px;">{{ p3.tab0 }}</span><sc-for list="{{ p3.tabsRest }}" as="t" hint-placeholder-count="3"><span>{{ t }}</span></sc-for></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="1d" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1d" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1d</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Editorial</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">A daily edition per tier; the popup is a pull quote.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c4 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#f3eee3;color:#1d1a16;display:grid;grid-template-rows:minmax(0,1fr) auto;">
+          <div style="overflow:hidden;padding:40px 18px 12px;display:grid;gap:10px;align-content:start;">
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid #1d1a16;padding-bottom:6px;font:400 italic 14px 'Instrument Serif',serif;"><span>The Anima Review</span><span>{{ p4.role }} edition</span></div>
+            <span style="font:500 10px 'Newsreader',serif;letter-spacing:0.14em;text-transform:uppercase;color:#a3341f;">{{ p4.kicker }}</span>
+            <h3 style="margin:0 0 6px;font:400 italic 62px/1 'Instrument Serif',serif;letter-spacing:-0.02em;">{{ p4.headline }}</h3>
+            <p style="margin:0;font:400 14.5px/1.5 'Newsreader',serif;"><span style="float:left;font:400 48px/0.8 'Instrument Serif',serif;padding:5px 6px 0 0;color:#a3341f;">{{ p4.drop }}</span>{{ p4.subRest }}</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid #1d1a16;border-bottom:1px solid #1d1a16;padding:8px 0;"><sc-for list="{{ p4.stats }}" as="s" hint-placeholder-count="3"><div style="display:grid;"><span style="font:400 22px/1 'Instrument Serif',serif;">{{ s.v }}</span><span style="font:400 italic 11px/1.3 'Newsreader',serif;">{{ s.k }}</span></div></sc-for></div>
+            <span style="font:500 10px 'Newsreader',serif;letter-spacing:0.14em;text-transform:uppercase;">In this issue</span>
+            <sc-for list="{{ p4.items }}" as="x" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;border-bottom:1px dotted #1d1a16;padding:3px 0 5px;"><span style="font:400 17px/1.15 'Instrument Serif',serif;">{{ x.t }}</span><span style="font:400 italic 12px 'Newsreader',serif;color:#a3341f;">{{ x.tag }}</span></div></sc-for>
+            <blockquote style="margin:4px 0 0;padding:8px 0 0;border-top:3px double #1d1a16;font:400 italic 19px/1.2 'Instrument Serif',serif;color:#a3341f;">“{{ p4.sugg }}”</blockquote>
+          </div>
+          <nav style="display:flex;justify-content:center;gap:14px;padding:10px 6px 18px;border-top:1px solid #1d1a16;font:400 15px 'Instrument Serif',serif;"><span style="font-style:italic;text-decoration:underline;">{{ p4.tab0 }}</span><sc-for list="{{ p4.tabsRest }}" as="t" hint-placeholder-count="3"><span>{{ t }}</span></sc-for></nav>
+        </div>
+      </div>
+    </div>
+
+    <div id="1e" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1e" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1e</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Bento</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">Coloured tiles of varied weight; the popup is a dashed tile; floating dock.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c5 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#121212;color:#fff;font-family:'Syne',sans-serif;position:relative;">
+          <div style="height:100%;overflow:hidden;padding:38px 10px 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px;align-content:start;box-sizing:border-box;">
+            <div style="grid-column:1 / -1;background:#c6ff3d;color:#121212;border-radius:22px;padding:14px;display:grid;gap:4px;"><span style="font:700 10px 'Syne',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">{{ p5.kicker }}</span><span style="font:800 50px/0.9 'Syne',sans-serif;letter-spacing:-0.04em;">{{ p5.headline }}</span><span style="font:500 11.5px/1.35 'Syne',sans-serif;">{{ p5.sub }}</span></div>
+            <sc-for list="{{ p5.stats }}" as="s" hint-placeholder-count="3"><div style="background:{{ s.bg }};color:#121212;border-radius:22px;padding:12px;display:grid;gap:2px;min-height:64px;align-content:end;"><span style="font:800 20px 'Syne',sans-serif;">{{ s.v }}</span><span style="font:600 10px/1.25 'Syne',sans-serif;">{{ s.k }}</span></div></sc-for>
+            <div style="background:#262626;border-radius:22px;padding:11px;display:grid;gap:4px;border:1.5px dashed #c6ff3d;"><span style="font:700 9.5px 'Syne',sans-serif;text-transform:uppercase;color:#c6ff3d;">Suggestion</span><span style="font:500 10.5px/1.3 'Syne',sans-serif;">{{ p5.sugg }}</span></div>
+            <sc-for list="{{ p5.items }}" as="x" hint-placeholder-count="4"><div style="grid-column:1 / -1;background:#1f1f1f;border-radius:18px;padding:9px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;align-items:center;"><span style="font:600 12.5px/1.2 'Syne',sans-serif;">{{ x.t }}</span><span style="font:800 14px 'Syne',sans-serif;color:#c6ff3d;">{{ x.tag }}</span><div style="grid-column:1 / -1;height:5px;border-radius:3px;background:#333;"><div style="height:100%;width:{{ x.w }};border-radius:3px;background:#c6ff3d;"></div></div></div></sc-for>
+          </div>
+          <nav style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:4px;padding:5px;border-radius:999px;background:#fff;color:#121212;font:700 10.5px 'Syne',sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.5);"><span style="background:#121212;color:#c6ff3d;border-radius:999px;padding:6px 11px;">{{ p5.tab0 }}</span><sc-for list="{{ p5.tabsRest }}" as="t" hint-placeholder-count="3"><span style="padding:6px 7px;">{{ t }}</span></sc-for></nav>
+        </div>
+      </div>
+    </div>
+
+    <div id="1f" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1f" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1f</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Card stack</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">One decision at a time, swipe to act; the popup is a top banner.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c6 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#ebe7ff;color:#1c1640;font-family:'DM Sans',sans-serif;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;">
+          <div style="margin:38px 12px 0;padding:10px 12px;border-radius:14px;background:#1c1640;color:#fff;display:flex;gap:8px;align-items:start;font:500 11.5px/1.35 'DM Sans',sans-serif;box-shadow:0 8px 20px rgba(28,22,64,0.25);"><span style="color:#b9a8ff;">✦</span><span>{{ p6.sugg }}</span></div>
+          <div style="padding:14px 18px 0;display:grid;gap:6px;"><span style="font:700 10px 'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:0.08em;color:#6b4dff;">{{ p6.kicker }}</span><span style="font:700 34px/1 'DM Sans',sans-serif;letter-spacing:-0.03em;">{{ p6.headline }}</span><div style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ p6.stats }}" as="s" hint-placeholder-count="3"><span style="font:500 10.5px 'DM Sans',sans-serif;padding:3px 8px;border-radius:999px;background:#fff;"><b>{{ s.v }}</b> {{ s.k }}</span></sc-for></div></div>
+          <div style="position:relative;margin:16px 18px 0;">
+            <sc-for list="{{ p6.items }}" as="x" hint-placeholder-count="4"><div style="position:absolute;left:0;right:0;top:{{ x.top }};transform:scale({{ x.sc }});transform-origin:top center;z-index:{{ x.z }};opacity:{{ x.op }};height:290px;box-sizing:border-box;border-radius:26px;background:#fff;border:1px solid #d6cffb;box-shadow:0 12px 30px rgba(28,22,64,0.12);padding:18px;display:grid;gap:8px;align-content:start;"><span style="font:700 10px 'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:0.08em;color:#6b4dff;">{{ x.num }} of 04 · {{ x.tag }}</span><span style="font:700 24px/1.1 'DM Sans',sans-serif;letter-spacing:-0.02em;">{{ x.t }}</span><span style="font:400 13px/1.4 'DM Sans',sans-serif;color:#5b5580;">{{ x.s }}</span><div style="height:8px;border-radius:4px;background:#ebe7ff;margin-top:6px;"><div style="height:100%;width:{{ x.w }};border-radius:4px;background:#6b4dff;"></div></div></div></sc-for>
+            <div style="position:absolute;left:0;right:0;top:348px;display:flex;justify-content:center;gap:28px;"><div style="display:grid;justify-items:center;gap:4px;"><span style="width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid #d6cffb;display:grid;place-items:center;font:700 20px 'DM Sans',sans-serif;">✕</span><span style="font:500 10.5px 'DM Sans',sans-serif;">{{ p6.act1 }}</span></div><div style="display:grid;justify-items:center;gap:4px;"><span style="width:52px;height:52px;border-radius:50%;background:#6b4dff;color:#fff;display:grid;place-items:center;font:700 20px 'DM Sans',sans-serif;">✓</span><span style="font:500 10.5px 'DM Sans',sans-serif;">{{ p6.act0 }}</span></div></div>
+          </div>
+          <nav style="display:flex;justify-content:space-around;padding:10px 6px 18px;font:500 11px 'DM Sans',sans-serif;"><span style="color:#6b4dff;font-weight:700;">{{ p6.tab0 }}</span><sc-for list="{{ p6.tabsRest }}" as="t" hint-placeholder-count="3"><span style="color:#5b5580;">{{ t }}</span></sc-for></nav>
+        </div>
+      </div>
+    </div>
+
+    <div id="1g" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1g" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1g</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Timeline</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">Now at the top, history below; the popup is the dashed "next" node.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c7 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#fff;color:#141a26;font-family:'IBM Plex Sans',sans-serif;display:grid;grid-template-rows:minmax(0,1fr) auto;">
+          <div style="overflow:hidden;padding:40px 16px 12px;display:grid;gap:12px;align-content:start;">
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font:600 13px 'IBM Plex Sans',sans-serif;">{{ p7.role }}</span><span style="font:500 10.5px 'IBM Plex Mono',monospace;color:#0050ff;">{{ p7.kicker }}</span></div>
+            <div style="display:flex;gap:6px;"><sc-for list="{{ p7.stats }}" as="s" hint-placeholder-count="3"><div style="flex:1;padding:6px 8px;border:1px solid #d5dbe8;border-radius:10px;display:grid;"><span style="font:600 14px 'IBM Plex Sans',sans-serif;">{{ s.v }}</span><span style="font:400 9.5px/1.25 'IBM Plex Sans',sans-serif;color:#5c667a;">{{ s.k }}</span></div></sc-for></div>
+            <div style="position:relative;display:grid;gap:14px;padding-left:26px;">
+              <div style="position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:#d5dbe8;"></div>
+              <div style="position:relative;display:grid;gap:3px;"><span style="position:absolute;left:-24px;top:3px;width:14px;height:14px;border-radius:50%;background:#0050ff;box-shadow:0 0 0 4px #d9e4ff;"></span><span style="font:600 10px 'IBM Plex Mono',monospace;color:#0050ff;">NOW</span><span style="font:600 30px/1 'IBM Plex Sans',sans-serif;letter-spacing:-0.02em;">{{ p7.headline }}</span><span style="font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;color:#3b4456;">{{ p7.sub }}</span></div>
+              <sc-for list="{{ p7.items }}" as="x" hint-placeholder-count="4"><div style="position:relative;display:grid;gap:2px;"><span style="position:absolute;left:-21px;top:4px;width:8px;height:8px;border-radius:50%;background:#fff;border:2px solid #0050ff;"></span><span style="font:500 10px 'IBM Plex Mono',monospace;color:#5c667a;">{{ x.s }}</span><span style="font:500 13.5px/1.25 'IBM Plex Sans',sans-serif;">{{ x.t }}</span></div></sc-for>
+              <div style="position:relative;padding:10px;border:1.5px dashed #0050ff;border-radius:10px;display:grid;gap:6px;"><span style="position:absolute;left:-23px;top:12px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px dashed #0050ff;"></span><span style="font:600 10px 'IBM Plex Mono',monospace;color:#0050ff;">NEXT · SUGGESTED</span><span style="font:400 12.5px/1.4 'IBM Plex Sans',sans-serif;">{{ p7.sugg }}</span><div style="display:flex;gap:6px;"><span style="background:#0050ff;color:#fff;padding:5px 10px;border-radius:8px;font:500 11px 'IBM Plex Sans',sans-serif;">{{ p7.act0 }}</span><span style="border:1px solid #d5dbe8;padding:4px 10px;border-radius:8px;font:500 11px 'IBM Plex Sans',sans-serif;">{{ p7.act1 }}</span></div></div>
+            </div>
+          </div>
+          <nav style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:1px solid #e4e8f0;font:500 11px 'IBM Plex Sans',sans-serif;"><span style="color:#0050ff;font-weight:600;">{{ p7.tab0 }}</span><sc-for list="{{ p7.tabsRest }}" as="t" hint-placeholder-count="3"><span style="color:#5c667a;">{{ t }}</span></sc-for></nav>
+        </div>
+      </div>
+    </div>
+
+    <div id="1h" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1h" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1h</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Graph-first</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">The tier's focus as a node with its neighbours; detail in a bottom sheet.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c8 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#0d1030;color:#eef0ff;font-family:'Space Grotesk',sans-serif;display:grid;grid-template-rows:auto auto minmax(0,1fr);">
+          <div style="padding:40px 16px 0;display:flex;justify-content:space-between;font:500 10.5px 'Space Grotesk',sans-serif;"><span style="color:#ff7a59;">{{ p8.kicker }}</span><span>{{ p8.role }}</span></div>
+          <div style="position:relative;width:300px;height:300px;margin:6px auto 0;">
+            <div style="position:absolute;inset:38px;border-radius:50%;border:1px dashed #3a4080;"></div>
+            <div style="position:absolute;inset:0;border-radius:50%;border:1px solid #1f2456;"></div>
+            <sc-for list="{{ p8.items }}" as="x" hint-placeholder-count="4"><div style="position:absolute;left:150px;top:150px;width:112px;height:1px;background:#4a52a8;transform-origin:0 0;transform:rotate({{ x.deg }});"></div></sc-for>
+            <div style="position:absolute;left:150px;top:150px;transform:translate(-50%,-50%);width:108px;height:108px;border-radius:50%;background:#ff7a59;color:#0d1030;display:grid;place-items:center;text-align:center;font:700 25px/1 'Space Grotesk',sans-serif;letter-spacing:-0.03em;box-shadow:0 0 0 8px rgba(255,122,89,0.18);">{{ p8.headline }}</div>
+            <sc-for list="{{ p8.items }}" as="x" hint-placeholder-count="4"><div style="position:absolute;left:{{ x.x }};top:{{ x.y }};transform:translate(-50%,-50%);width:94px;display:grid;justify-items:center;gap:4px;text-align:center;"><span style="min-width:34px;height:24px;padding:0 7px;border-radius:999px;background:#1a1f55;border:1.5px solid #8b93ff;display:grid;place-items:center;font:700 10px 'Space Grotesk',sans-serif;">{{ x.tag }}</span><span style="font:500 9.5px/1.2 'Space Grotesk',sans-serif;">{{ x.t }}</span></div></sc-for>
+          </div>
+          <div style="margin-top:6px;border-radius:24px 24px 0 0;background:#eef0ff;color:#0d1030;padding:10px 16px 16px;display:grid;gap:9px;align-content:start;">
+            <span style="justify-self:center;width:38px;height:4px;border-radius:2px;background:#b8bce0;"></span>
+            <p style="margin:0;font:500 12.5px/1.45 'Space Grotesk',sans-serif;">{{ p8.sub }}</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"><sc-for list="{{ p8.stats }}" as="s" hint-placeholder-count="3"><div style="display:grid;padding:6px 8px;border-radius:10px;background:#fff;"><span style="font:700 14px 'Space Grotesk',sans-serif;">{{ s.v }}</span><span style="font:500 9px/1.25 'Space Grotesk',sans-serif;color:#555b8a;">{{ s.k }}</span></div></sc-for></div>
+            <div style="display:flex;gap:8px;align-items:start;padding:8px 10px;border-radius:12px;background:#ffe3da;font:500 11.5px/1.35 'Space Grotesk',sans-serif;"><span style="color:#ff5a33;">●</span><span>{{ p8.sugg }}</span></div>
+            <div style="display:flex;justify-content:space-around;font:700 10.5px 'Space Grotesk',sans-serif;padding-top:4px;"><span style="color:#ff5a33;">{{ p8.tab0 }}</span><sc-for list="{{ p8.tabsRest }}" as="t" hint-placeholder-count="3"><span style="color:#555b8a;">{{ t }}</span></sc-for></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="1i" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1i" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1i</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Brutalist</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">Shouting type, thick borders, block buttons; the popup is a sticker.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c9 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#ffde00;color:#000;font-family:'Archivo',sans-serif;display:grid;grid-template-rows:minmax(0,1fr) auto;position:relative;">
+          <div style="overflow:hidden;padding:40px 12px 12px;display:grid;gap:8px;align-content:start;">
+            <div style="display:flex;justify-content:space-between;gap:8px;font:400 9.5px 'Archivo Black',sans-serif;text-transform:uppercase;white-space:nowrap;"><span>Anima/{{ p9.roleUp }}</span><span style="overflow:hidden;text-overflow:ellipsis;min-width:0;">{{ p9.kicker }}</span></div>
+            <h3 style="margin:8px 0 0;font:400 52px/0.9 'Archivo Black',sans-serif;text-transform:uppercase;letter-spacing:-0.04em;">{{ p9.headline }}</h3>
+            <p style="margin:0;padding:8px;border:3px solid #000;background:#fff;font:600 12.5px/1.35 'Archivo',sans-serif;">{{ p9.sub }}</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);border:3px solid #000;"><sc-for list="{{ p9.stats }}" as="s" hint-placeholder-count="3"><div style="padding:6px;border-right:3px solid #000;display:grid;"><span style="font:400 15px 'Archivo Black',sans-serif;">{{ s.v }}</span><span style="font:600 9px/1.2 'Archivo',sans-serif;text-transform:uppercase;">{{ s.k }}</span></div></sc-for></div>
+            <sc-for list="{{ p9.items }}" as="x" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;border:3px solid #000;background:#fff;"><span style="padding:6px 8px;font:700 12.5px/1.2 'Archivo',sans-serif;">{{ x.t }}</span><span style="display:grid;place-items:center;background:#000;color:#ffde00;font:400 11px 'Archivo Black',sans-serif;text-transform:uppercase;">{{ x.tag }}</span></div></sc-for>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"><span style="background:#000;color:#ffde00;padding:12px 6px;text-align:center;font:400 12px 'Archivo Black',sans-serif;text-transform:uppercase;">{{ p9.act0 }}</span><span style="border:3px solid #000;padding:9px 6px;text-align:center;font:400 12px 'Archivo Black',sans-serif;text-transform:uppercase;">{{ p9.act1 }}</span></div>
+          </div>
+          <div style="position:absolute;right:12px;bottom:62px;width:176px;padding:10px;background:#fff;border:3px solid #000;transform:rotate(-4deg);box-shadow:6px 6px 0 #000;display:grid;gap:4px;"><span style="font:400 11px 'Archivo Black',sans-serif;color:#e30613;">HEY →</span><span style="font:700 11.5px/1.3 'Archivo',sans-serif;">{{ p9.sugg }}</span></div>
+          <nav style="display:flex;justify-content:space-around;padding:12px 6px 18px;background:#000;color:#ffde00;font:400 10.5px 'Archivo Black',sans-serif;text-transform:uppercase;"><span style="text-decoration:underline;">{{ p9.tab0 }}</span><sc-for list="{{ p9.tabsRest }}" as="t" hint-placeholder-count="3"><span style="opacity:0.7;">{{ t }}</span></sc-for></nav>
+        </div>
+      </div>
+    </div>
+
+    <div id="1j" style="display:grid;gap:10px;width:340px;">
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1j" style="font:700 12px 'JetBrains Mono',monospace;background:#111;color:#fff;padding:3px 8px;border-radius:6px;text-decoration:none;">1j</a><span style="font:700 16px 'Archivo',sans-serif;white-space:nowrap;">Chat-first</span></div>
+      <span style="font:400 12.5px/1.4 'Archivo',sans-serif;color:#555;">SEXTANT is the interface: it briefs you, asks a clarifying question, nudges.</span>
+      <div style="position:relative;padding-top:20px;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;border-radius:999px;background:#111;box-shadow:0 8px 24px rgba(0,0,0,0.28);"><sc-for list="{{ c10 }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+        <div style="height:720px;border-radius:40px;overflow:hidden;border:8px solid #111;background:#f5f5f2;color:#141414;font-family:'Manrope',sans-serif;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="padding:38px 16px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e2dc;background:#fff;"><div style="display:flex;gap:8px;align-items:center;"><span style="width:30px;height:30px;border-radius:50%;background:#141414;color:#f5f5f2;display:grid;place-items:center;font:800 13px 'Manrope',sans-serif;">S</span><div style="display:grid;"><span style="font:800 14px 'Manrope',sans-serif;">SEXTANT</span><span style="font:500 10px 'Manrope',sans-serif;color:#777;">{{ p10.role }} · cites the graph</span></div></div><span style="font:700 18px 'Manrope',sans-serif;">☰</span></div>
+          <div style="overflow:hidden;padding:12px;display:grid;gap:8px;align-content:start;">
+            <div style="max-width:92%;padding:10px 12px;border-radius:16px 16px 16px 4px;background:#fff;border:1px solid #e2e2dc;font:500 13px/1.45 'Manrope',sans-serif;"><b style="font-weight:800;font-size:20px;">{{ p10.headline }}.</b> {{ p10.sub }}</div>
+            <div style="max-width:92%;display:flex;gap:5px;flex-wrap:wrap;"><sc-for list="{{ p10.stats }}" as="s" hint-placeholder-count="3"><span style="padding:4px 9px;border-radius:999px;background:#e9e9e3;font:600 10.5px 'Manrope',sans-serif;"><b style="font-weight:800;">{{ s.v }}</b> {{ s.k }}</span></sc-for></div>
+            <div style="max-width:92%;border-radius:16px;background:#fff;border:1px solid #e2e2dc;overflow:hidden;"><sc-for list="{{ p10.items }}" as="x" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:8px 12px;border-bottom:1px solid #eeeee8;"><span style="font:600 12px/1.25 'Manrope',sans-serif;">{{ x.t }}</span><span style="font:800 11px 'Manrope',sans-serif;color:#2c6bff;">{{ x.tag }}</span></div></sc-for></div>
+            <div style="max-width:92%;padding:10px 12px;border-radius:16px 16px 16px 4px;background:#141414;color:#f5f5f2;display:grid;gap:8px;"><span style="font:700 10px 'Manrope',sans-serif;letter-spacing:0.08em;text-transform:uppercase;color:#9cc0ff;">One question first</span><span style="font:500 13px/1.4 'Manrope',sans-serif;">{{ p10.ask }}</span><div style="display:flex;gap:6px;"><span style="padding:6px 11px;border-radius:999px;background:#f5f5f2;color:#141414;font:700 11px 'Manrope',sans-serif;">{{ p10.act0 }}</span><span style="padding:5px 11px;border-radius:999px;border:1px solid #f5f5f2;font:700 11px 'Manrope',sans-serif;">{{ p10.act1 }}</span></div></div>
+            <span style="font:500 italic 11px/1.4 'Manrope',sans-serif;color:#777;padding:0 6px;">Suggestion: {{ p10.sugg }}</span>
+          </div>
+          <div style="padding:8px 12px 18px;display:grid;gap:8px;background:#fff;border-top:1px solid #e2e2dc;"><div style="display:flex;gap:5px;overflow:hidden;"><span style="white-space:nowrap;padding:4px 9px;border-radius:999px;background:#141414;color:#fff;font:700 10px 'Manrope',sans-serif;">{{ p10.tab0 }}</span><sc-for list="{{ p10.tabsRest }}" as="t" hint-placeholder-count="3"><span style="white-space:nowrap;padding:4px 9px;border-radius:999px;border:1px solid #d8d8d0;font:600 10px 'Manrope',sans-serif;">{{ t }}</span></sc-for></div><div style="display:flex;gap:8px;"><div style="flex:1;padding:10px 14px;border-radius:999px;background:#f0f0ea;font:500 12px 'Manrope',sans-serif;color:#888;">Ask the institute…</div><span style="width:38px;height:38px;border-radius:50%;background:#2c6bff;color:#fff;display:grid;place-items:center;font:800 16px 'Manrope',sans-serif;">↑</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ROLES = [['owner', 'Owner'], ['research', 'Researcher'], ['api', 'API'], ['sub', 'Subscriber']];
+const M = {
+  owner: { kicker: 'Today · Thu 16 Oct', headline: '5 fires', sub: 'About 10 minutes. 214 lower items are held back with a reason.', cmd: 'overseer --top', act0Cmd: 'approve --batch posts', ask: 'Batch the four post approvals, or go one by one?',
+    stats: [['$412', 'of $450 spend'], ['2 / 10', 'agents need you'], ['1', 'shadow winning']],
+    items: [['Spend near the monthly cap', 'owner · $412 of $450', '80', 80], ['KeyError in round.merge', 'maintainer · patch ready', '74', 74], ['Scout is silent', 'overseer · 14 h, expected 6 h', '69', 69], ['LSTM shadow beats 1–3B', 'registrar · 7 days', '45', 45]],
+    actions: ['Approve batch', 'Later'], sugg: '4 post drafts pass the mindful gate. Approve them as one batch?', tabs: ['Today', 'Agents', 'Pipes', 'Publish', 'Config'] },
+  research: { kicker: 'Search · public graph', headline: 'H5', sub: 'Shuffled-seed control. Refuted if the shuffle keeps more than 20% of the gain. Read in P3.', cmd: 'graph search "shuffled seed"', act0Cmd: 'graph open H5', ask: 'Open H5 in the graph, or read where it is cited?',
+    stats: [['8', 'hypotheses, all open'], ['5', 'reports'], ['2', 'private graphs cleared']],
+    items: [['H5 · Shuffled-seed control', 'hypothesis · 0 hops', 'H5', 95], ['H4 · The LSTM signature', 'hypothesis · 1 hop', 'H4', 80], ['Seed v4', 'artifact · 1 hop', 'seed', 70], ['TRM on ARC-AGI-1', 'source · 2 hops', 'source', 55]],
+    actions: ['Open node', 'Ask about it'], sugg: 'Searching for the LSTM? H4 is the test that isolates it.', tabs: ['Search', 'Read', 'Graph', 'Chat', 'Me'] },
+  api: { kicker: 'acme-labs · October', headline: '18,420', sub: 'calls this month. Auto-routing picked the smallest rung that cleared the bar.', cmd: 'usage --month', act0Cmd: 'keys copy production', ask: 'See savings by rung, or open the playground?',
+    stats: [['$86.40', 'of $200 cap'], ['140 ms', 'p50 latency'], ['63%', 'answered on CPU']],
+    items: [['LSTM · CPU', '41% of calls · $0.05 / 1k', '41%', 41], ['1–3B', '24% · $0.40 / 1k', '24%', 24], ['Tiny · CPU', '22% · $0.10 / 1k', '22%', 22], ['8B and 30B', '13% · $1.20–4.00 / 1k', '13%', 13]],
+    actions: ['Copy key', 'Playground'], sugg: 'Two-thirds of your calls ran on CPU rungs. See what that saved.', tabs: ['Usage', 'Keys', 'Try', 'Billing'] },
+  sub: { kicker: 'This week · Member', headline: 'P3', sub: 'The small grid is running: 30B, small and LSTM at depth 1–3. Published either way.', cmd: 'digest --week', act0Cmd: 'read companion-d', ask: 'Read Companion D, or ask about it first?',
+    stats: [['3 / 6', 'phases done'], ['38 / 50', 'questions left'], ['5', 'reports']],
+    items: [['Companion D: who is exposed if H0 holds', 'report · 15 Oct', 'D', 90], ['Debt share of AI capex: 32%', 'indicator · Companion B', 'B', 70], ['Does the cheap brain work?', 'report · Companion A', 'A', 60], ['Seeded Substrate Plan v4', 'core paper · 13 Oct', 'P', 50]],
+    actions: ['Read', 'Ask SEXTANT'], sugg: 'You read Companion A. H5 is the control it says nobody has run.', tabs: ['Home', 'Library', 'Ask', 'Plan'] },
+};
+const ANG = [-135, -45, 45, 135];
+const SBG = ['#ff6bd6', '#6b8bff', '#ffffff'];
+function model(id) {
+  const m = M[id], role = ROLES.find(r => r[0] === id)[1];
+  return {
+    ...m, role, roleUp: role.toUpperCase(), user: id, drop: m.sub[0], subRest: m.sub.slice(1),
+    tab0: m.tabs[0], tabsRest: m.tabs.slice(1), act0: m.actions[0], act1: m.actions[1],
+    stats: m.stats.map(([v, k], i) => ({ v, k, bg: SBG[i] })),
+    items: m.items.map(([t, s, tag, n], j) => {
+      const a = ANG[j] * Math.PI / 180, b = Math.round(n / 10);
+      return { t, s, tag, w: n + '%', num: '0' + (j + 1), bar: '█'.repeat(b) + '░'.repeat(10 - b),
+        x: Math.round(150 + 112 * Math.cos(a)) + 'px', y: Math.round(150 + 112 * Math.sin(a)) + 'px', deg: ANG[j] + 'deg',
+        top: j * 16 + 'px', sc: (1 - j * 0.05).toFixed(2), z: String(10 - j), op: (1 - j * 0.2).toFixed(2) };
+    }),
+  };
+}
+const MODELS = Object.fromEntries(ROLES.map(([id]) => [id, model(id)]));
+const pill = on => `min-height:30px;padding:0 10px;border:0;border-radius:999px;font:600 11px 'Archivo',sans-serif;cursor:pointer;white-space:nowrap;background:${on ? '#fff' : 'transparent'};color:${on ? '#111' : '#cfcfcf'};`;
+
+class Component extends DCLogic {
+  state = { r: {} };
+  renderVals() {
+    const r = this.state.r, o = {};
+    for (let i = 1; i <= 10; i++) {
+      const cur = r[i] || 'owner';
+      o['p' + i] = MODELS[cur];
+      o['c' + i] = ROLES.map(([id, l]) => ({ l, style: pill(id === cur), pick: () => this.setState(s => ({ r: { ...s.r, [i]: id } })) }));
+    }
+    const vals = Array.from({ length: 10 }, (_, i) => r[i + 1] || 'owner');
+    const same = vals.every(v => v === vals[0]) ? vals[0] : null;
+    o.call = ROLES.map(([id, l]) => ({ l, style: pill(id === same), pick: () => this.setState({ r: Object.fromEntries(Array.from({ length: 10 }, (_, i) => [i + 1, id])) }) }));
+    return o;
+  }
+}
+</script>
+</body>
+</html>

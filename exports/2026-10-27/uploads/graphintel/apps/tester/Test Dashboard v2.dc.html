@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <script src="testkit.js"></script>
+  <script src="../ops/src/connectome.js"></script>
+  <style>
+    html, body { margin: 0; background: #161826; }
+    a { color: #9184d9; }
+    a:hover { color: #d2cefd; }
+  </style>
+</helmet>
+<div data-screen-label="Test Dashboard" style="min-height:100vh;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:14px;">
+  <header style="position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--color-bg) 94%,transparent);backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--color-neutral-800);">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 16px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0;flex-wrap:wrap;">
+        <span style="display:flex;align-items:center;gap:8px;font-size:17px;font-weight:500;"><i class="ph ph-flask" style="font-size:20px;color:var(--color-accent);" aria-hidden="true"></i>Tester</span>
+        <span class="{{ resultCls }}">{{ resultLabel }}</span>
+        <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);overflow-wrap:anywhere;">{{ statusLine }}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <div class="seg" role="radiogroup" aria-label="Screen sizes for a full run">
+          <label class="seg-opt" style="padding:6px 10px;font-size:12.5px;"><input type="radio" name="tk2-sizes" checked="{{ sizesQuick }}" onChange="{{ pickQuick }}">Phone + laptop</label>
+          <label class="seg-opt" style="padding:6px 10px;font-size:12.5px;"><input type="radio" name="tk2-sizes" checked="{{ sizesAll }}" onChange="{{ pickAll }}">Six sizes</label>
+        </div>
+        <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-secondary" onClick="{{ stop }}"><i class="ph ph-stop" aria-hidden="true"></i>Stop</button></sc-if>
+        <sc-if value="{{ idle }}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-primary" onClick="{{ runAll }}"><i class="ph ph-play" aria-hidden="true"></i>Run everything</button></sc-if>
+      </div>
+    </div>
+    <div style="height:2px;background:var(--color-neutral-900);"><div style="height:100%;background:var(--color-accent);width:{{ progPct }};transition:width .4s;"></div></div>
+    <nav role="tablist" aria-label="Sections" style="display:flex;gap:2px;padding:0 10px;overflow-x:auto;scrollbar-width:none;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="7">
+        <button type="button" role="tab" aria-selected="{{ t.on }}" onClick="{{ t.pick }}" style="{{ t.st }}" style-hover="color:var(--color-text);"><i class="{{ t.icon }}" style="font-size:16px;" aria-hidden="true"></i>{{ t.label }}<sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><span style="{{ t.badgeSt }}">{{ t.badge }}</span></sc-if></button>
+      </sc-for>
+    </nav>
+  </header>
+
+  <main style="flex:1 1 auto;display:grid;align-content:start;gap:14px;padding:16px;min-width:0;">
+    <section aria-label="Live app" style="{{ stageSt }}">
+      <div style="flex:999 1 520px;min-width:0;display:grid;gap:10px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+          <div style="display:grid;gap:2px;margin-right:auto;min-width:0;flex:1 1 160px;"><span class="card-kicker">{{ liveGroup }}</span><span style="font-size:17px;font-weight:500;overflow-wrap:anywhere;">{{ liveTitle }}</span></div>
+          <div class="seg" role="radiogroup" aria-label="Live width" style="flex-wrap:wrap;max-width:100%;">
+            <sc-for list="{{ widthOpts }}" as="w" hint-placeholder-count="6"><label class="seg-opt" title="{{ w.title }}" style="padding:6px 9px;font-size:12.5px;"><input type="radio" name="tk2-live-w" checked="{{ w.on }}" onChange="{{ w.pick }}"><i class="{{ w.icon }}" aria-hidden="true"></i>{{ w.label }}</label></sc-for>
+          </div>
+          <button type="button" class="btn btn-secondary" onClick="{{ checkPage }}" disabled="{{ running }}"><i class="ph ph-check-circle" aria-hidden="true"></i>Check this page</button>
+          <a class="btn btn-ghost" href="{{ liveHref }}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out" aria-hidden="true"></i>Open</a>
+        </div>
+        <div ref="{{ liveBox }}" style="position:relative;height:clamp(360px,64vh,760px);overflow:hidden;border-radius:var(--radius-lg);background:#0f1018;box-shadow:var(--shadow-sm);">
+          <iframe ref="{{ liveRef }}" title="Live app view" style="position:absolute;left:0;top:0;border:0;background:#161826;transform-origin:0 0;{{ liveSt }}"></iframe>
+          <div style="position:absolute;left:10px;bottom:10px;right:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;">
+            <span class="tag tag-neutral">{{ liveSize }}</span>
+            <sc-if value="{{ liveStep }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">{{ liveStep }}</span></sc-if>
+          </div>
+        </div>
+        <div style="display:grid;gap:4px;">
+          <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 56%,transparent);">{{ pageFailHead }}</span>
+          <sc-for list="{{ pageFails }}" as="f" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline;font-size:13px;line-height:1.45;"><span class="tag tag-outline">{{ f.word }}</span><span style="overflow-wrap:anywhere;">{{ f.text }}</span></div></sc-for>
+        </div>
+      </div>
+      <aside aria-label="Pages" style="order:-1;flex:1 1 240px;max-width:100%;display:grid;align-content:start;gap:8px;min-width:0;">
+        <input class="input" aria-label="Find a page" value="{{ pageQ }}" onChange="{{ onPageQ }}" placeholder="Find a page">
+        <div style="display:grid;gap:10px;max-height:min(calc(64vh + 90px),{{ listMax }});overflow:auto;padding-right:2px;">
+          <sc-for list="{{ pageGroups }}" as="g" hint-placeholder-count="4">
+            <div style="display:grid;gap:1px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 52%,transparent);padding:2px 6px;">{{ g.name }}</span>
+              <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3">
+                <button type="button" onClick="{{ p.open }}" aria-current="{{ p.on }}" style="{{ p.st }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><span style="{{ p.dot }}"></span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.label }}</span><sc-if value="{{ p.n }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;font-size:11px;color:var(--color-accent-300);">{{ p.n }}</span></sc-if></button>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </aside>
+    </section>
+
+    <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;gap:14px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div class="card elev-sm" style="gap:6px;padding:14px;">
+              <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:color-mix(in srgb,var(--color-text) 60%,transparent);"><i class="{{ k.icon }}" aria-hidden="true"></i>{{ k.label }}</span>
+              <span style="font-size:28px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.1;">{{ k.value }}</span>
+              <span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 58%,transparent);">{{ k.sub }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px;align-items:start;">
+          <div class="card elev-sm" style="gap:4px;padding:14px;">
+            <h2 style="margin:0 0 6px;font-size:16px;">Suites</h2>
+            <sc-for list="{{ suites }}" as="s" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 2px;">
+                <i class="{{ s.icon }}" style="font-size:20px;color:var(--color-accent-300);" aria-hidden="true"></i>
+                <div style="display:grid;gap:2px;min-width:0;"><span style="font-size:14px;">{{ s.name }}</span><span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 58%,transparent);overflow-wrap:anywhere;">{{ s.line }}</span></div>
+                <span class="{{ s.cls }}">{{ s.state }}</span>
+                <button type="button" class="btn btn-ghost" onClick="{{ s.run }}" disabled="{{ running }}">Run</button>
+              </div>
+            </sc-for>
+          </div>
+          <div class="card elev-sm" style="gap:8px;padding:14px;">
+            <h2 style="margin:0;font-size:16px;">Recent runs</h2>
+            <sc-for list="{{ runs }}" as="r" hint-placeholder-count="0">
+              <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13px;"><span style="{{ r.dot }}"></span><span>{{ r.when }}</span><span style="color:color-mix(in srgb,var(--color-text) 62%,transparent);font-variant-numeric:tabular-nums;">{{ r.what }}</span></div>
+            </sc-for>
+            <sc-if value="{{ noRuns }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">No full run yet. Run everything three times in a row with nothing failing to set the baseline.</span></sc-if>
+            <div style="display:flex;gap:6px;align-items:center;margin-top:4px;"><sc-for list="{{ passDots }}" as="d" hint-placeholder-count="3"><span style="{{ d }}"></span></sc-for><span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ passLine }}</span></div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isFailures }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:12px;">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <input class="input" aria-label="Search failures" value="{{ fq }}" onChange="{{ onFq }}" placeholder="Search failures" style="flex:1 1 240px;width:auto;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <sc-for list="{{ kindChips }}" as="c" hint-placeholder-count="5"><button type="button" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}" style="{{ c.st }}">{{ c.label }}<span style="opacity:0.7;font-variant-numeric:tabular-nums;">{{ c.n }}</span></button></sc-for>
+          </div>
+        </div>
+        <div class="card elev-sm" style="padding:6px 10px;overflow-x:auto;">
+          <table class="table" style="min-width:640px;">
+            <thead><tr><th style="width:96px;">Kind</th><th>Where</th><th>What</th><th style="width:70px;text-align:right;">Seen</th><th style="width:70px;"></th></tr></thead>
+            <tbody>
+              <sc-for list="{{ failRows }}" as="f" hint-placeholder-count="0">
+                <tr><td><span class="tag tag-outline">{{ f.word }}</span></td><td style="font-size:13px;overflow-wrap:anywhere;">{{ f.where }}</td><td style="font-size:13px;line-height:1.45;overflow-wrap:anywhere;">{{ f.what }}</td><td style="text-align:right;font-variant-numeric:tabular-nums;font-size:13px;">{{ f.seen }}</td><td><button type="button" class="btn btn-ghost" onClick="{{ f.open }}">Open</button></td></tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <sc-if value="{{ noFailRows }}" hint-placeholder-val="{{ true }}"><p style="margin:10px 4px;font-size:13px;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ noFailLine }}</p></sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSuites }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:12px;align-items:start;">
+        <div class="card elev-sm" style="gap:8px;padding:14px;">
+          <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-test-tube" style="font-size:18px;color:var(--color-accent-300);" aria-hidden="true"></i><h2 style="margin:0;font-size:16px;margin-right:auto;">Own tests</h2><span class="{{ testsCls }}">{{ testsState }}</span></div>
+          <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ testsLine }}</span>
+          <div style="display:grid;gap:2px;max-height:320px;overflow:auto;">
+            <sc-for list="{{ testRows }}" as="t" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;align-items:baseline;font-size:12.5px;padding:3px 0;"><span class="{{ t.cls }}" style="justify-content:center;">{{ t.st }}</span><span style="overflow-wrap:anywhere;font-family:ui-monospace,Menlo,monospace;">{{ t.name }}</span></div></sc-for>
+          </div>
+        </div>
+        <div class="card elev-sm" style="gap:8px;padding:14px;">
+          <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-magnifying-glass" style="font-size:18px;color:var(--color-accent-300);" aria-hidden="true"></i><h2 style="margin:0;font-size:16px;margin-right:auto;">Code audit</h2><span class="{{ auditCls }}">{{ auditState }}</span></div>
+          <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ auditLine }}</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;">
+            <sc-for list="{{ checkTiles }}" as="c" hint-placeholder-count="8"><div style="display:grid;gap:2px;padding:10px;border-radius:var(--radius-md);background:var(--color-bg);"><span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ c.name }}</span><span style="font-size:20px;font-variant-numeric:tabular-nums;">{{ c.n }}</span><span style="font-size:11px;color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ c.secs }}</span></div></sc-for>
+          </div>
+        </div>
+        <div class="card elev-sm" style="gap:8px;padding:14px;">
+          <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-brackets-curly" style="font-size:18px;color:var(--color-accent-300);" aria-hidden="true"></i><h2 style="margin:0;font-size:16px;margin-right:auto;">JavaScript</h2><span class="{{ jsCls }}">{{ jsState }}</span></div>
+          <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ jsLine }}</span>
+        </div>
+        <div class="card elev-sm" style="gap:8px;padding:14px;">
+          <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-browsers" style="font-size:18px;color:var(--color-accent-300);" aria-hidden="true"></i><h2 style="margin:0;font-size:16px;margin-right:auto;">Pages × sizes</h2><span class="{{ uiCls }}">{{ uiState }}</span></div>
+          <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ uiLine }}</span>
+          <div style="max-height:420px;overflow:auto;">
+            <table class="table" style="font-size:12.5px;">
+              <thead><tr><th>Page</th><sc-for list="{{ matrixCols }}" as="c" hint-placeholder-count="2"><th style="text-align:center;">{{ c }}</th></sc-for></tr></thead>
+              <tbody><sc-for list="{{ matrix }}" as="m" hint-placeholder-count="0"><tr><td><button type="button" class="btn btn-ghost" style="font-size:12.5px;padding:2px 4px;" onClick="{{ m.open }}">{{ m.label }}</button></td><sc-for list="{{ m.cells }}" as="x" hint-placeholder-count="2"><td style="text-align:center;"><span role="img" aria-label="{{ x.aria }}" title="{{ x.aria }}" style="{{ x.dot }}"></span></td></sc-for></tr></sc-for></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isGraph }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;align-items:start;">
+        <div class="card elev-sm" style="gap:8px;padding:10px;grid-column:span 2;min-width:0;">
+          <div ref="{{ graphRef }}" style="position:relative;height:clamp(380px,68vh,760px);border-radius:var(--radius-md);overflow:hidden;background:#161826;"></div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px 12px;"><sc-for list="{{ legend }}" as="l" hint-placeholder-count="8"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:color-mix(in srgb,var(--color-text) 72%,transparent);"><span style="{{ l.dot }}"></span>{{ l.label }}</span></sc-for></div>
+        </div>
+        <div class="card elev-sm" style="gap:10px;padding:14px;min-width:0;">
+          <input class="input" aria-label="Find a node" value="{{ gq }}" onChange="{{ onGq }}" placeholder="Find a file, test, route, finding…">
+          <sc-for list="{{ gHits }}" as="h" hint-placeholder-count="0"><button type="button" class="btn btn-ghost" style="justify-content:flex-start;text-align:left;font-size:13px;overflow-wrap:anywhere;" onClick="{{ h.go }}">{{ h.label }}</button></sc-for>
+          <span class="card-kicker">{{ selKind }}</span>
+          <span class="card-title" style="font-size:16px;overflow-wrap:anywhere;">{{ selTitle }}</span>
+          <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ graphLine }}</span>
+          <div style="display:grid;gap:10px;max-height:52vh;overflow:auto;">
+            <sc-for list="{{ selGroups }}" as="g" hint-placeholder-count="0">
+              <div style="display:grid;gap:2px;"><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 56%,transparent);">{{ g.head }}</span>
+                <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="0"><button type="button" onClick="{{ i.go }}" style="display:flex;align-items:baseline;gap:8px;padding:3px 4px;border:0;border-radius:var(--radius-sm);background:transparent;color:inherit;font:inherit;font-size:13px;text-align:left;cursor:pointer;overflow-wrap:anywhere;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><span style="{{ i.dot }}"></span>{{ i.label }}</button></sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isReport }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:12px;align-items:start;">
+        <div class="card elev-sm" style="gap:10px;padding:14px;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><h2 style="margin:0;font-size:16px;margin-right:auto;">Step 9 report</h2><button type="button" class="btn btn-secondary" onClick="{{ copyReport }}"><i class="ph ph-copy" aria-hidden="true"></i>Copy</button><button type="button" class="btn btn-secondary" onClick="{{ downloadReport }}"><i class="ph ph-download-simple" aria-hidden="true"></i>Download</button></div>
+          <pre style="margin:0;white-space:pre-wrap;font:12.5px/1.6 ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 88%,transparent);max-height:70vh;overflow:auto;">{{ report }}</pre>
+        </div>
+        <div class="card elev-sm" style="gap:8px;padding:14px;">
+          <h2 style="margin:0;font-size:16px;">Fixed so far</h2>
+          <sc-for list="{{ fixed }}" as="x" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;font-size:13px;line-height:1.5;"><i class="ph ph-check" style="color:var(--color-accent-300);margin-top:3px;" aria-hidden="true"></i><span>{{ x }}</span></div></sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isLog }}" hint-placeholder-val="{{ false }}">
+      <div class="card elev-sm" style="padding:14px;">
+        <pre style="margin:0;white-space:pre-wrap;font:12px/1.55 ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 78%,transparent);max-height:72vh;overflow:auto;">{{ logText }}</pre>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = 'tk_dash_v2';
+const PAL = { agent: '#e9e9ed', tool: '#e3c27a', module: '#94a6c9', work: '#9184d9', question: '#e0a07e', claim: '#8fcfb0', thought: '#f0e2c0', source: '#c9a6e8' };
+const LEG = [['agent', 'Agents'], ['tool', 'Tools'], ['module', 'Code, pages, routes, services'], ['work', 'Tests and checks'], ['question', 'Findings'], ['claim', 'Fixes'], ['thought', 'Lessons'], ['source', 'Data']];
+const THEME = { bg: '#161826', fog: 0.03, shell: '#5d5294', shellOpacity: 0.07, halo: 0.07, haloSize: 2, flow: '#d2cefd', spark: '#f5f4ff', labelBg: 'rgba(35,37,50,.88)', labelInk: '#cfd3e5', labelSel: '#f3f5fe', labelLine: '#3f424d', lanes: PAL };
+const SIZES = [[320, 'XS', 'Phone small', 'ph ph-device-mobile'], [390, 'Phone', 'Phone', 'ph ph-device-mobile'], [768, 'Tablet', 'Tablet portrait', 'ph ph-device-tablet'], [1024, 'Tablet L', 'Tablet landscape', 'ph ph-device-tablet-camera'], [1440, 'Laptop', 'Laptop', 'ph ph-laptop'], [1920, 'TV', 'TV', 'ph ph-television']];
+const QUICK = [390, 1440], ALL = SIZES.map(s => s[0]);
+const SUITES = [['tests', 'Own tests', 'ph ph-test-tube', 'pytest for TESTER, in Python in this tab'], ['audit', 'Code audit', 'ph ph-magnifying-glass', 'every file read into the graph, then the static checks'], ['js', 'JavaScript', 'ph ph-brackets-curly', 'every script and page script parses'], ['ui', 'Pages', 'ph ph-browsers', 'every page at each size, then its tabs and views']];
+const TABS = [['overview', 'Overview', 'ph ph-squares-four'], ['live', 'Live app', 'ph ph-monitor-play'], ['failures', 'Failures', 'ph ph-warning-circle'], ['suites', 'Suites', 'ph ph-list-checks'], ['graph', 'Graph', 'ph ph-graph'], ['report', 'Report', 'ph ph-file-text'], ['log', 'Log', 'ph ph-terminal-window']];
+const KINDS = ['console', 'request', 'scroll', 'offscreen', 'a11y', 'cmd', 'api', 'secret'];
+const WORD = { scroll: 'scroll', offscreen: 'offscreen', rendering: 'console', console: 'console', request: 'request', a11y: 'a11y', blank: 'console', harness: 'cmd' };
+const FIXED = [
+  'apps/ops/fixtures/owner-snapshot.json was cut off mid-string; completed.',
+  'Console, Tmpltz, Unphz and Anima crashed on load and on every click: componentDidUpdate read a previous state the runtime never passes.',
+  'Anima App: a hole in the skins list and a saved index past its end crashed five design actions; swatches had no name; the phone now zooms to fit and its tab bar shrinks.',
+  'Institute: nine matrix cells and Anima: one citation link had no name; Institute header links wrap on a phone.',
+  'Walkthrough v1, Anima Field Notebook, Owner Console (New sub-agent), Landscape 2026: content wider than the screen.',
+  'Console and Agent space: desktop workspaces scroll inside the page instead of widening it; space.html rebuilt.',
+  'apps/engine/test_engine.py: a test never checked its second publish.',
+  'TESTER: false alarms removed (schemes, bundler blocks, Dockerfiles built elsewhere, canvas pages, code shown as text); pyflakes lint; rules for the runtime traps found here.'
+];
+const short = p => p.replace(/^apps\//, '').replace(/\.dc\.html$/, '').replace(/\.html$/, '');
+const groupOf = p => /^apps\/ops\//.test(p) ? 'Owner console and ops' : /^apps\/site\//.test(p) ? 'Site' : /^apps\/mobile\//.test(p) ? 'Mobile' : /^apps\//.test(p) ? 'Web and hub' : /^research\//.test(p) ? 'Research' : /^marketing\//.test(p) ? 'Marketing' : 'Walkthroughs';
+const dot = (c, d, ring) => 'width:' + (d || 8) + 'px;height:' + (d || 8) + 'px;border-radius:50%;flex:none;display:inline-block;' + (ring ? 'box-shadow:inset 0 0 0 1.5px ' + c + ';' : 'background:' + c + ';');
+const ago = t => { if (!t) return 'never'; const x = Math.max(0, (Date.now() - t) / 1000); return x < 90 ? Math.round(x) + 's ago' : x < 5400 ? Math.round(x / 60) + ' min ago' : (x / 3600).toFixed(1) + ' h ago'; };
+
+class Component extends DCLogic {
+  liveRef = React.createRef();
+  liveBox = React.createRef();
+  graphRef = React.createRef();
+  state = { tab: 'overview', files: [], pages: [], py: 'idle', status: 'Loading the file list…', suites: {}, fails: [], warns: 0, graph: null, sel: 'agent:tester', running: false, passes: 0, history: [], log: [], livePage: 'apps/ops/src/Explorer.dc.html', liveW: 1440, liveStep: '', boxW: 900, boxH: 560, sizes: 'quick', ui: {}, uiWidths: QUICK, testLines: [], audit: {}, jsFiles: 0, prog: { done: 0, total: 0 }, pageQ: '', fq: '', fkind: '', gq: '' };
+
+  componentDidMount() {
+    try { document.title = 'Tester · Bridago'; document.documentElement.lang = 'en'; } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) this.setState({ suites: s.suites || {}, fails: s.fails || [], warns: s.warns || 0, passes: s.passes || 0, history: s.history || [], sizes: s.sizes || 'quick', ui: s.ui || {}, uiWidths: s.uiWidths || QUICK, testLines: s.testLines || [], audit: s.audit || {}, jsFiles: s.jsFiles || 0 }); } catch (e) {}
+    if (!window.THREE && !window.__threeLoading) { window.__threeLoading = true; const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js'; sc.onload = () => this.forceUpdate(); document.head.appendChild(sc); }
+    this.ro = new ResizeObserver(() => { const b = this.liveBox.current; if (b && (b.clientWidth !== this.state.boxW || b.clientHeight !== this.state.boxH)) this.setState({ boxW: b.clientWidth, boxH: b.clientHeight }); });
+    if (this.liveBox.current) this.ro.observe(this.liveBox.current);
+    this._rz = () => this.forceUpdate(); window.addEventListener('resize', this._rz);
+    this.boot();
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this._rz); this.stopFlag = true; if (this.ro) this.ro.disconnect(); if (this.ctl) this.ctl.dispose(); clearTimeout(this._w); clearTimeout(this._gw); }
+  componentDidUpdate() {
+    const f = this.liveRef.current;
+    if (f && !this.state.running && this._shown !== this.state.livePage) { this._shown = this.state.livePage; f.src = TestKit.root + this.state.livePage.split('/').map(encodeURIComponent).join('/'); }
+    this.mountGraph();
+  }
+  log(t) { this.setState(s => ({ log: s.log.concat(new Date().toLocaleTimeString() + '  ' + t).slice(-400) })); }
+  save() { const s = this.state; try { localStorage.setItem(KEY, JSON.stringify({ suites: s.suites, fails: s.fails.slice(0, 500), warns: s.warns, passes: s.passes, history: s.history, sizes: s.sizes, ui: s.ui, uiWidths: s.uiWidths, testLines: s.testLines.slice(0, 200), audit: s.audit, jsFiles: s.jsFiles })); } catch (e) {} }
+  async boot() {
+    if (!window.TestKit) { this._w = setTimeout(() => this.boot(), 200); return; }
+    try {
+      const files = await TestKit.manifest('');
+      const pages = files.filter(f => /\.html$/.test(f) && !/^apps\/web\/dist\//.test(f));
+      this.setState({ files, pages, status: files.length + ' files · ' + pages.length + ' pages · starting Python' });
+      this.py = TestKit.python(files, m => this.log(m)).then(() => { this.setState({ py: 'ready', status: files.length + ' files · ' + pages.length + ' pages · Python ready' }); return this.audit(true); }, e => this.setState({ py: 'failed', status: 'Python did not start: ' + e.message }));
+    } catch (e) { this.setState({ status: 'Could not read the file list: ' + e.message }); }
+  }
+  mountGraph() {
+    const el = this.graphRef.current, g = this.state.graph;
+    if (this.ctl && this._gel !== el) { this.ctl.dispose(); this.ctl = null; this._g = null; }
+    if (!el || !g) return;
+    if (!this.ctl) {
+      if (!window.Connectome || !window.THREE) { if (!this._gw) this._gw = setTimeout(() => { this._gw = null; this.forceUpdate(); }, 250); return; }
+      this.ctl = window.Connectome.mount(el, { onPick: k => k && this.setState({ sel: k }), theme: THEME, behaviour: { labels: 'agents', idleResume: 10 }, font: '500 11px Inter, system-ui, sans-serif' });
+      this._gel = el; this._sel = null; if (!this.ctl) return;
+    }
+    if (this._g !== g) { this._g = g; this.ctl.setData(g); this._sel = null; }
+    if (this._sel !== this.state.sel) { this._sel = this.state.sel; this.ctl.select(this.state.sel, new Set([this.state.sel].concat(((this.adj || {})[this.state.sel] || []).map(x => x.k)))); }
+  }
+  setGraph(g) {
+    const adj = {}, nodes = {};
+    g.nodes.forEach(n => { nodes[n.key] = n; adj[n.key] = []; });
+    g.edges.forEach(e => { if (adj[e.a] && adj[e.b]) { adj[e.a].push({ k: e.b, rel: e.rel, out: true }); adj[e.b].push({ k: e.a, rel: e.rel, out: false }); } });
+    this.adj = adj; this.nodes = nodes; this.setState({ graph: g });
+  }
+  suite(id, patch) { this.setState(s => ({ suites: { ...s.suites, [id]: { ...(s.suites[id] || {}), ...patch } } })); }
+  addFails(list) { this.setState(s => ({ fails: s.fails.concat(list) })); }
+  async ready() { if (this.state.py !== 'ready') { this.log('waiting for Python'); await this.py; } if (this.state.py !== 'ready') throw new Error('Python is not available in this tab'); }
+
+  async tests() {
+    this.suite('tests', { st: 'running', line: 'pytest -q in apps/tester' });
+    try {
+      await this.ready(); await TestKit.sync(this.state.files, m => this.log(m));
+      const r = await TestKit.runPython('tests'), n = k => +((r.tail.match(new RegExp('(\\d+) ' + k)) || [])[1] || 0);
+      const p = n('passed'), f = n('failed') + n('error'), sk = n('skipped');
+      this.setState({ testLines: r.lines });
+      this.suite('tests', { st: f || r.code ? 'failed' : 'passed', line: p + ' passed, ' + f + ' failed, ' + sk + ' skipped · ' + r.seconds + 's', p, f, sk, secs: r.seconds });
+      this.addFails(r.lines.filter(l => /^(FAILED|ERROR)/.test(l)).map(l => ({ word: 'cmd', where: 'apps/tester', text: l.replace(/^(FAILED|ERROR) /, ''), src: 'tests' })));
+    } catch (e) { this.suite('tests', { st: 'failed', line: e.message }); this.addFails([{ word: 'cmd', where: 'apps/tester', text: 'the tests could not run: ' + e.message, src: 'tests' }]); }
+  }
+  async audit(quiet) {
+    if (!quiet) this.suite('audit', { st: 'running', line: 'reading every file into the graph' });
+    try {
+      await this.ready(); if (!quiet) await TestKit.sync(this.state.files);
+      const r = await TestKit.runPython('audit');
+      this.setGraph(r.graph);
+      const err = r.findings.filter(f => f.severity === 'error'), warn = r.findings.length - err.length;
+      if (!quiet) {
+        this.setState({ audit: r.status });
+        this.suite('audit', { st: err.length ? 'failed' : 'passed', line: r.stats.nodes + ' nodes, ' + r.stats.edges + ' edges · ' + err.length + ' errors, ' + warn + ' warnings · ' + r.seconds + 's', f: err.length, secs: r.seconds });
+        this.addFails(err.map(f => ({ word: f.check === 'secrets' ? 'secret' : f.check === 'routes' ? 'api' : 'cmd', where: f.file || f.check, text: f.title, key: 'finding:' + f.key, src: 'audit' })));
+        this.setState(s => ({ warns: s.warns + warn }));
+      }
+    } catch (e) { if (!quiet) { this.suite('audit', { st: 'failed', line: e.message }); this.addFails([{ word: 'cmd', where: 'audit', text: 'the audit could not run: ' + e.message, src: 'audit' }]); } }
+  }
+  async js() {
+    this.suite('js', { st: 'running', line: 'parsing scripts' });
+    const t0 = performance.now(), bad = await TestKit.jsSuite(this.state.files), secs = Math.round((performance.now() - t0) / 100) / 10, n = this.state.files.filter(f => /\.(m?js|html)$/.test(f) && !/^apps\/web\/dist\//.test(f)).length;
+    this.setState({ jsFiles: n });
+    this.suite('js', { st: bad.length ? 'failed' : 'passed', line: n + ' files · ' + bad.length + ' syntax problems · ' + secs + 's', f: bad.length, secs });
+    this.addFails(bad.map(b => ({ word: 'console', where: b.file + ':' + b.line, text: b.msg, key: 'file:' + b.file, src: 'js' })));
+  }
+  async ui(pages, widths, keep) {
+    pages = pages || this.state.pages; widths = widths || (this.state.sizes === 'all' ? ALL : QUICK);
+    const t0 = performance.now(); let checks = 0, bad = 0;
+    if (!keep) this.setState({ ui: {}, uiWidths: widths });
+    this.suite('ui', { st: 'running', line: pages.length + ' pages × ' + widths.length + ' sizes' });
+    this.setState({ prog: { done: 0, total: pages.length * widths.length } });
+    await TestKit.uiSuite({ frame: this.liveRef.current, pages, widths, stop: () => this.stopFlag,
+      onOpen: (p, w) => this.setState({ livePage: p, liveW: w, liveStep: '' }),
+      onStep: r => {
+        checks++; if (r.fails.length) bad++;
+        this.setState(s => {
+          const ui = { ...s.ui }, cell = { ...((ui[r.page] || {})[r.width] || { n: 0 }) };
+          if (!r.step) cell.ran = true; cell.n += r.fails.length; ui[r.page] = { ...(ui[r.page] || {}), [r.width]: cell };
+          return { ui, liveStep: r.step, prog: r.step ? s.prog : { ...s.prog, done: s.prog.done + 1 },
+            fails: s.fails.concat(r.fails.map(([k, m]) => ({ word: WORD[k] || k, where: short(r.page) + ' @' + r.width + (r.step ? ' after "' + r.step + '"' : ''), text: m, key: 'file:' + r.page, page: r.page, width: r.width, src: 'ui' }))) };
+        });
+      } });
+    const secs = Math.round((performance.now() - t0) / 1000);
+    if (!keep) this.suite('ui', { st: bad ? 'failed' : this.stopFlag ? 'stopped' : 'passed', line: checks + ' checks · ' + bad + ' failed · ' + secs + 's', f: bad, secs });
+    this._shown = null; this.setState({ liveStep: '' });
+  }
+  async run(ids) {
+    if (this.state.running) return;
+    this.stopFlag = false;
+    this.setState(s => ({ running: true, fails: ids.length > 1 ? [] : s.fails.filter(f => !ids.includes(f.src)), warns: ids.length > 1 || ids.includes('audit') ? 0 : s.warns }));
+    for (const id of ids) { if (this.stopFlag) break; this.log('suite ' + id); await this[id](); }
+    const full = ids.length === SUITES.length && !this.stopFlag;
+    this.setState(s => {
+      const clean = !s.fails.length, passes = full ? (clean ? s.passes + 1 : 0) : s.passes;
+      const history = full ? s.history.concat({ ts: Date.now(), fails: s.fails.length, secs: SUITES.reduce((a, [k]) => a + ((s.suites[k] || {}).secs || 0), 0) }).slice(-12) : s.history;
+      return { running: false, passes, history, prog: { done: 0, total: 0 } };
+    }, () => this.save());
+  }
+  async checkPage() {
+    if (this.state.running) return;
+    const p = this.state.livePage, w = this.state.liveW;
+    this.stopFlag = false;
+    this.setState(s => ({ running: true, fails: s.fails.filter(f => !(f.page === p && f.width === w)) }));
+    await this.ui([p], [w], true);
+    this.setState({ running: false, prog: { done: 0, total: 0 } }, () => this.save());
+  }
+  report() {
+    const s = this.state, t = s.suites.tests || {}, done = SUITES.every(([k]) => s.suites[k] && ['passed', 'failed'].includes(s.suites[k].st));
+    return ['PROJECT: Python services (FastAPI) and Design Component pages, tests: pytest -q in apps/engine, apps/mcp-hub, apps/ops and apps/tester, plus TESTER\'s checks; start: docker compose up -d',
+      'OWN TESTS: ' + (t.st ? 'apps/tester ' + (t.p || 0) + ' passed, ' + (t.f || 0) + ' failed, ' + (t.sk || 0) + ' skipped in this tab; engine, mcp-hub and ops suites run in the tester container' : 'not run yet'),
+      'CHECKER: ' + (done ? (s.fails.length ? 'FAILED' : 'PASSED') : 'not run yet') + ', ' + s.fails.length + ' failures, ' + s.warns + ' warnings',
+      'FIXED:', ...FIXED.map(x => '  - ' + x),
+      'NOT FIXED:', ...(s.fails.length ? s.fails.slice(0, 80).map(f => '  FAIL ' + f.word + ' ' + f.where + ': ' + f.text) : ['  none']),
+      'MANUAL CHECKS: not done; they need a person (Step 7, 1–12)',
+      'CLEAN PASSES: ' + s.passes + '/3' + (s.history.length ? ' · last runs: ' + s.history.slice(-3).map(h => h.fails + ' failures in ' + h.secs + 's').join('; ') : ''),
+      'NEW CODE NEEDS APPROVAL: yes'].join('\n');
+  }
+  renderVals() {
+    const s = this.state, wide = (s.boxW || 900) > 0, sc = Math.min(1, (s.boxW || 900) / s.liveW), done = SUITES.filter(([k]) => s.suites[k] && ['passed', 'failed'].includes(s.suites[k].st)).length;
+    const onLive = s.tab === 'live', size = SIZES.find(x => x[0] === s.liveW) || [s.liveW, s.liveW + 'px', s.liveW + 'px'];
+    const fq = s.fq.trim().toLowerCase(), kinds = {}, groups = {};
+    s.fails.forEach(f => { kinds[f.word] = (kinds[f.word] || 0) + 1; });
+    s.fails.forEach(f => { if ((s.fkind && f.word !== s.fkind) || (fq && !(f.where + ' ' + f.text).toLowerCase().includes(fq))) return; const k = f.word + '|' + (f.page || f.where).replace(/ after .*/, '') + '|' + (f.width || '') + '|' + f.text.replace(/\d+/g, '#'); (groups[k] = groups[k] || { f, n: 0 }).n++; });
+    const pagesIn = s.pages.filter(p => !s.pageQ || p.toLowerCase().includes(s.pageQ.toLowerCase())), pg = {};
+    pagesIn.forEach(p => { (pg[groupOf(p)] = pg[groupOf(p)] || []).push(p); });
+    const pageState = p => { const c = s.ui[p]; if (!c) return 'idle'; return Object.values(c).some(x => x.n) ? 'fail' : 'pass'; };
+    const pfails = s.fails.filter(f => f.page === s.livePage);
+    const node = this.nodes && this.nodes[s.sel], rel = {};
+    ((this.adj || {})[s.sel] || []).forEach(x => { const n = this.nodes[x.k]; if (!n) return; const h = (x.out ? '' : 'by ') + (x.rel || 'linked').replace(/_/g, ' '); (rel[h] = rel[h] || []).push({ label: n.label, dot: dot(PAL[n.lane] || '#9397ab', 7), go: () => this.setState({ sel: x.k }) }); });
+    const gq = s.gq.trim().toLowerCase(), hits = gq && this.nodes ? Object.values(this.nodes).filter(n => (n.label + ' ' + n.key).toLowerCase().includes(gq)).slice(0, 8) : [];
+    const st = x => x === 'passed' ? 'tag tag-accent' : x === 'failed' ? 'tag tag-outline' : 'tag tag-neutral';
+    const tabBadge = { failures: s.fails.length ? String(s.fails.length) : '', suites: done ? done + '/4' : '', graph: s.graph ? String(s.graph.nodes.length) : '' };
+    const last = s.history[s.history.length - 1];
+    return {
+      liveRef: this.liveRef, liveBox: this.liveBox, graphRef: this.graphRef,
+      resultLabel: done < SUITES.length ? 'Not run' : s.fails.length ? 'FAILED' : 'PASSED', resultCls: done < SUITES.length ? 'tag tag-neutral' : s.fails.length ? 'tag tag-outline' : 'tag tag-accent',
+      statusLine: s.running ? 'Running · ' + (s.prog.total ? s.prog.done + ' of ' + s.prog.total + ' page checks' : 'code checks') : s.status, running: s.running, idle: !s.running,
+      progPct: s.running ? (s.prog.total ? Math.round(s.prog.done / s.prog.total * 100) : 8) + '%' : '0%',
+      sizesQuick: s.sizes === 'quick', sizesAll: s.sizes === 'all', pickQuick: () => this.setState({ sizes: 'quick' }, () => this.save()), pickAll: () => this.setState({ sizes: 'all' }, () => this.save()),
+      runAll: () => this.run(SUITES.map(x => x[0])), stop: () => { this.stopFlag = true; this.log('stopping after the current check'); },
+      tabs: TABS.map(([id, label, icon]) => { const on = s.tab === id, b = tabBadge[id] || ''; return { label, icon, on, badge: b, pick: () => this.setState({ tab: id }), badgeSt: 'margin-left:2px;padding:1px 7px;border-radius:999px;font-size:11px;font-variant-numeric:tabular-nums;background:' + (id === 'failures' && s.fails.length ? 'var(--color-accent-800)' : 'var(--color-neutral-800)') + ';color:var(--color-neutral-100);', st: 'display:inline-flex;align-items:center;gap:7px;padding:10px 12px 9px;border:0;border-bottom:2px solid ' + (on ? 'var(--color-accent)' : 'transparent') + ';background:transparent;color:' + (on ? 'var(--color-text)' : 'color-mix(in srgb,var(--color-text) 62%,transparent)') + ';font:inherit;font-size:13.5px;font-weight:' + (on ? 500 : 400) + ';cursor:pointer;white-space:nowrap;' }; }),
+      stageSt: onLive ? 'display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;min-width:0;' : 'position:fixed;left:-12000px;top:0;width:1600px;display:flex;flex-wrap:wrap;gap:14px;',
+      listMax: (typeof window !== 'undefined' && window.innerWidth < 800) ? '220px' : '100vh', liveGroup: groupOf(s.livePage), liveTitle: short(s.livePage), liveSize: size[2] + ' · ' + s.liveW + 'px' + (sc < 1 ? ' · shown at ' + Math.round(sc * 100) + '%' : ''), liveStep: s.liveStep ? 'clicked: ' + s.liveStep : '',
+      liveHref: TestKit && TestKit.root ? TestKit.root + s.livePage.split('/').map(encodeURIComponent).join('/') : '#',
+      widthOpts: SIZES.map(([w, label, title, icon]) => ({ label, title: title + ' · ' + w + 'px', icon, on: s.liveW === w, pick: () => this.setState({ liveW: w }) })),
+      liveSt: 'width:' + s.liveW + 'px;height:' + Math.round((s.boxH || 560) / sc) + 'px;transform:scale(' + sc + ');',
+      checkPage: () => this.checkPage(),
+      pageFailHead: pfails.length ? pfails.length + ' failure' + (pfails.length > 1 ? 's' : '') + ' on this page' : s.ui[s.livePage] ? 'Nothing failed on this page' : 'Not checked yet',
+      pageFails: pfails.slice(0, 20).map(f => ({ word: f.word, text: (f.width ? '@' + f.width + ' ' : '') + f.text })),
+      pageQ: s.pageQ, onPageQ: e => this.setState({ pageQ: e.target.value }),
+      pageGroups: Object.keys(pg).map(name => ({ name, items: pg[name].map(p => { const on = p === s.livePage, ps = pageState(p), n = s.fails.filter(f => f.page === p).length; return { label: short(p).replace(/^(ops|site|mobile|web|hub)\/(src\/)?/, ''), on, n: n ? String(n) : '', open: () => { this._shown = null; this.setState({ livePage: p, liveStep: '' }); }, dot: ps === 'fail' ? dot('var(--color-accent-400)', 7, true) : ps === 'pass' ? dot('var(--color-accent)', 7) : dot('var(--color-neutral-700)', 7), st: 'display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border:0;border-radius:var(--radius-md);background:' + (on ? 'color-mix(in srgb,var(--color-accent) 14%,transparent)' : 'transparent') + ';color:inherit;font:inherit;font-size:13px;text-align:left;cursor:pointer;min-width:0;' }; }) })),
+      isOverview: s.tab === 'overview', isFailures: s.tab === 'failures', isSuites: s.tab === 'suites', isGraph: s.tab === 'graph', isReport: s.tab === 'report', isLog: s.tab === 'log',
+      kpis: [
+        { icon: 'ph ph-seal-check', label: 'Result', value: done < SUITES.length ? '—' : s.fails.length ? 'Failed' : 'Passed', sub: done + ' of 4 suites have run' },
+        { icon: 'ph ph-repeat', label: 'Clean passes', value: s.passes + '/3', sub: s.passes >= 3 ? 'Baseline set' : 'Three in a row set the baseline' },
+        { icon: 'ph ph-warning-circle', label: 'Failures', value: String(s.fails.length), sub: s.warns + ' warnings' },
+        { icon: 'ph ph-clock', label: 'Last run', value: last ? ago(last.ts) : '—', sub: last ? last.secs + 's · ' + last.fails + ' failures' : 'not yet' }],
+      suites: SUITES.map(([id, name, icon, what]) => { const x = s.suites[id] || {}; return { name, icon, line: x.line || what, state: x.st || 'idle', cls: st(x.st), run: () => this.run([id]) }; }),
+      runs: s.history.slice().reverse().slice(0, 6).map(h => ({ when: new Date(h.ts).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' }), what: h.fails + ' failures · ' + h.secs + 's', dot: dot(h.fails ? 'var(--color-accent-400)' : 'var(--color-accent)', 8, !!h.fails) })), noRuns: !s.history.length,
+      passDots: [0, 1, 2].map(i => dot(i < s.passes ? 'var(--color-accent)' : 'var(--color-neutral-700)', 10)), passLine: s.passes >= 3 ? 'Baseline set: the shrink challenge is open' : (3 - s.passes) + ' more clean full run' + (3 - s.passes === 1 ? '' : 's') + ' to set the baseline',
+      fq: s.fq, onFq: e => this.setState({ fq: e.target.value }),
+      kindChips: [{ k: '', label: 'All', n: String(s.fails.length) }].concat(KINDS.filter(k => kinds[k]).map(k => ({ k, label: k, n: String(kinds[k]) }))).map(c => ({ label: c.label, n: c.n, on: s.fkind === c.k, pick: () => this.setState({ fkind: c.k }), st: 'display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;cursor:pointer;font:inherit;font-size:12.5px;border:1px solid ' + (s.fkind === c.k ? 'var(--color-accent)' : 'var(--color-neutral-700)') + ';background:' + (s.fkind === c.k ? 'color-mix(in srgb,var(--color-accent) 14%,transparent)' : 'transparent') + ';color:var(--color-text);' })),
+      failRows: Object.values(groups).slice(0, 400).map(({ f, n }) => ({ word: f.word, where: f.where.replace(/ after "[^"]*"/, ''), what: f.text, seen: n > 1 ? n + '×' : '1', open: () => { if (f.page) { this._shown = null; this.setState({ tab: 'live', livePage: f.page, liveW: f.width || 1440 }); } else if (f.key && this.nodes && this.nodes[f.key]) this.setState({ tab: 'graph', sel: f.key }); } })),
+      noFailRows: !Object.keys(groups).length, noFailLine: s.fails.length ? 'Nothing matches the filter.' : done ? 'Nothing failed.' : 'Run everything to check the whole repository.',
+      testsState: (s.suites.tests || {}).st || 'idle', testsCls: st((s.suites.tests || {}).st), testsLine: (s.suites.tests || {}).line || 'Not run yet',
+      testRows: s.testLines.map(l => { const m = l.match(/^(PASSED|FAILED|SKIPPED|ERROR)\s+(.*)$/) || [null, '', l]; return { st: (m[1] || '').toLowerCase() || 'line', cls: m[1] === 'PASSED' ? 'tag tag-accent' : m[1] === 'SKIPPED' ? 'tag tag-neutral' : 'tag tag-outline', name: m[2].replace(/^test_tester_graph\.py::/, '') }; }),
+      auditState: (s.suites.audit || {}).st || 'idle', auditCls: st((s.suites.audit || {}).st), auditLine: (s.suites.audit || {}).line || 'Not run yet',
+      checkTiles: Object.keys(s.audit).map(k => ({ name: k, n: String(s.audit[k].findings), secs: s.audit[k].seconds + 's' })),
+      jsState: (s.suites.js || {}).st || 'idle', jsCls: st((s.suites.js || {}).st), jsLine: (s.suites.js || {}).line || 'Not run yet',
+      uiState: (s.suites.ui || {}).st || 'idle', uiCls: st((s.suites.ui || {}).st), uiLine: (s.suites.ui || {}).line || 'Not run yet',
+      matrixCols: s.uiWidths.map(w => (SIZES.find(x => x[0] === w) || [w, w + ''])[1]),
+      matrix: Object.keys(s.ui).map(p => ({ label: short(p), open: () => { this._shown = null; this.setState({ tab: 'live', livePage: p }); }, cells: s.uiWidths.map(w => { const c = (s.ui[p] || {})[w]; return { aria: (c ? (c.n ? c.n + ' failures' : 'passed') : 'not run') + ' at ' + w + 'px', dot: c ? (c.n ? dot('var(--color-accent-400)', 10, true) : dot('var(--color-accent)', 10)) : dot('var(--color-neutral-800)', 10) }; }) })),
+      legend: LEG.map(([k, label]) => ({ label, dot: dot(PAL[k], 8) })),
+      gq: s.gq, onGq: e => this.setState({ gq: e.target.value }), gHits: hits.map(n => ({ label: n.label, go: () => this.setState({ sel: n.key, gq: '' }) })),
+      selKind: node ? (node.tip || node.lane) : 'Nothing selected', selTitle: node ? node.label : 'Click a dot, or find a node above.',
+      graphLine: s.graph ? s.graph.nodes.length + ' nodes · ' + s.graph.edges.length + ' edges · drag to turn, hover to hold still' : s.py === 'ready' ? 'Building the graph…' : 'Waiting for Python',
+      selGroups: Object.keys(rel).sort().map(h => ({ head: h + ' · ' + rel[h].length, items: rel[h].slice(0, 40) })),
+      report: this.report(), fixed: FIXED,
+      copyReport: () => { try { navigator.clipboard.writeText(this.report()); this.log('report copied'); } catch (e) {} },
+      downloadReport: () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([this.report()], { type: 'text/plain' })); a.download = 'test-report.txt'; document.body.appendChild(a); a.click(); a.remove(); },
+      logText: s.log.slice(-200).join('\n') || 'Nothing yet.'
+    };
+  }
+}
+</script>
+</body>
+</html>

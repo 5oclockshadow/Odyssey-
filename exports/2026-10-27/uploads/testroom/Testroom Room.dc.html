@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>body{margin:0;background:#ecebe7;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}a{color:#5d5294}a:hover{color:#423a6a}.dv-card a{color:#b5abfc}.dv-card a:hover{color:#d2cefd}:focus-visible{outline:2px solid #9184d9;outline-offset:2px}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}</style>
+</helmet>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">testroom: the room in three directions, then key screens in the direction of <a class="dv-oid" href="#1a">1a</a></span></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,320px));gap:28px;margin:0 0 28px;font:12px/1.6 system-ui,sans-serif;color:rgba(0,0,0,.68)">
+<p style="margin:0;text-wrap:pretty"><strong style="color:#1a1a1a;font-weight:600">Sources not seen.</strong> build-room.md, test-everything.md, Build Room.dc.html and Test Dashboard v7.dc.html weren’t reachable, so the layout, layer names, state names and the six gate conditions are inferred from the build prompt.</p>
+<p style="margin:0;text-wrap:pretty"><strong style="color:#1a1a1a;font-weight:600">Model.</strong> An item is one unit in one section. Sections follow the plan: L0 static, L1 units, L2 pages, L2e journeys, L4 world, L9 auth, data, L10 live. A blocked item always names whom it waits on.</p>
+<p style="margin:0;text-wrap:pretty"><strong style="color:#1a1a1a;font-weight:600">Data and look.</strong> This repository at round 37 of 500, K = 3, 106 items. The six author and three environment blockers echo stuck-56. Nocturne design system, with status hues added in OKLCH at matched lightness and chroma.</p>
+</div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Map: every item is a cell in its section. People and the gate sit on the right. 1440 px, round 37.</div>
+<div class="dv-card" style="width:1440px;background:#161826;border-color:#161826">
+<div data-screen-label="1a Room, map" style="width:1440px;background:radial-gradient(1100px 420px at 18% -12%,#1f2236 0%,#161826 62%);color:#e9e9ed;font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:1.5">
+<div style="display:flex;align-items:center;gap:20px;height:56px;padding:0 24px">
+<div style="display:flex;align-items:center;gap:9px"><div style="width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #9184d9;display:grid;place-items:center"><div style="width:6px;height:6px;border-radius:2px;background:#9184d9;box-shadow:0 0 8px #9184d9"></div></div><span style="font-size:15px;font-weight:500;letter-spacing:-0.01em">testroom</span></div>
+<div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca"><i class="ph ph-folder-simple" style="font-size:14px;color:#9397ab"></i><span>institute</span><span style="color:#9397ab">main @ 9c41e2a</span></div>
+<div style="display:flex;align-items:center;gap:8px;padding:4px 10px 4px 9px;border-radius:6px;background:#2b2741;box-shadow:inset 0 0 0 1px #423a6a"><span style="width:7px;height:7px;border-radius:50%;background:#9184d9;box-shadow:0 0 0 3px rgba(145,132,217,.18),0 0 10px #9184d9"></span><span style="color:#e7e5fe">Running</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b5abfc">r37 / 500 · K 3</span></div>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:#9397ab">Gate</span><div style="display:flex;gap:3px"><sc-for list="{{ gateSegs }}" as="g" hint-placeholder-count="6"><span style="width:14px;height:6px;border-radius:2px;background:{{ g.bg }}"></span></sc-for></div><span style="font-size:12px;color:#cfd3e5">Not ready · {{ gateMet }} of 6</span></div>
+<span title="⌈items ÷ ⌈K/2⌉⌉ + 3 × confirm" style="font-size:12px;color:#9397ab">Settles by <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;color:#cfd3e5">r{{ bound }}</span></span>
+<div style="display:flex;gap:8px">
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">Report<i class="ph ph-caret-down" style="font-size:12px"></i></button>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.12)"><i class="ph ph-stop" style="font-size:14px"></i>Stop</button>
+</div>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.14) 48px,rgba(233,233,237,.14) calc(100% - 48px),transparent)"></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:end;padding:22px 24px">
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="display:flex;gap:30px;flex-wrap:wrap">
+<sc-for list="{{ stats }}" as="s" hint-placeholder-count="6"><div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:26px;font-weight:500;letter-spacing:-0.02em;line-height:1.05">{{ s.v }}</span><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#b2b6ca"><span style="width:8px;height:8px;border-radius:2px;background:{{ s.bg }};box-shadow:{{ s.sh }}"></span>{{ s.l }}</span></div></sc-for>
+</div>
+<div style="display:flex;gap:2px;height:6px;max-width:660px;border-radius:3px;overflow:hidden"><sc-for list="{{ allSegs }}" as="g" hint-placeholder-count="6"><div style="flex:{{ g.f }} 1 0px;background:{{ g.bg }}"></div></sc-for></div>
+<div style="font-size:12px;color:#9397ab">{{ N }} items · {{ T.q }} queued start by r{{ startsBy }} at 2 fresh starts a round</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:baseline;gap:8px;font-size:12px"><span style="font-weight:500">Round 37</span><span style="color:#9397ab">3 slots: 2 fresh, 1 confirm</span></div>
+<div style="display:flex;gap:10px">
+<sc-for list="{{ slots }}" as="s" hint-placeholder-count="3"><div style="width:226px;padding:10px 12px;border-radius:8px;background:linear-gradient(180deg,#262839,#202230);box-shadow:inset 0 0 0 1px #313445;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab"><span>{{ s.kind }} · {{ s.sec }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;letter-spacing:0">{{ s.t }}</span></div><div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.id }}</div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;gap:5px"><sc-for list="{{ s.runs }}" as="d" hint-placeholder-count="3"><span style="width:10px;height:10px;border-radius:50%;background:{{ d.bg }};box-shadow:{{ d.sh }}"></span></sc-for></div><span style="font-size:11.5px;color:#b2b6ca">{{ s.note }}</span></div></div></sc-for>
+</div>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 392px;gap:24px;align-items:start;padding:0 24px 28px">
+<div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 18px 4px">
+<div style="display:flex;align-items:center;gap:12px;padding-bottom:10px">
+<span style="font-size:15px;font-weight:500">Sections</span><span style="font-size:12px;color:#9397ab">in plan order</span>
+<div style="flex:1"></div>
+<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:#b2b6ca"><sc-for list="{{ legend }}" as="l" hint-placeholder-count="8"><span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:{{ l.r }};background:{{ l.bg }};box-shadow:{{ l.sh }}"></span>{{ l.t }}</span></sc-for></div>
+</div>
+<sc-for list="{{ secs }}" as="s" hint-placeholder-count="8">
+<div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.1) 48px,rgba(233,233,237,.1) calc(100% - 48px),transparent)"></div>
+<div style="display:grid;grid-template-columns:172px minmax(0,1fr) 140px;gap:18px;align-items:start;padding:12px 0">
+<div style="display:flex;flex-direction:column;gap:3px;min-width:0"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;padding:1px 6px;border-radius:4px;background:#2b2741;color:#d2cefd">{{ s.id }}</span><span style="font-size:14px;font-weight:500">{{ s.name }}</span></div><span style="font-size:11.5px;color:#9397ab">{{ s.what }}</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:4px;padding-top:4px">
+<sc-for list="{{ s.cells }}" as="c" hint-placeholder-count="16">
+<div style="position:relative;flex:none">
+<button type="button" title="{{ c.tip }}" aria-label="{{ c.tip }}" style="display:block;width:14px;height:14px;padding:0;margin:0;border:0;border-radius:{{ c.r }};background:{{ c.bg }};box-shadow:{{ c.sh }};outline:{{ c.ol }};outline-offset:2px;cursor:pointer"></button>
+<sc-if value="{{ c.pop }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:24px;right:-10px;left:auto;z-index:5;width:300px;padding:12px 14px;border-radius:8px;background:#2a2c3b;box-shadow:0 0 0 1px #595d6c,0 16px 40px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:7px">
+<div style="position:absolute;top:-5px;right:12px;width:9px;height:9px;background:#2a2c3b;transform:rotate(45deg);box-shadow:-1px -1px 0 0 #595d6c"></div>
+<div style="display:flex;align-items:center;gap:8px"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#9397ab">L1</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px">repo:ledger-kit</span><div style="flex:1"></div><span style="font-size:11px;padding:2px 7px;border-radius:6px;background:#3f424d;color:#e4e7f5">Queued</span></div>
+<div style="font-size:12px;color:#cfd3e5;text-wrap:pretty">Inputs changed at r36: draft d2 from the author’s reply.</div>
+<div style="display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#b2b6ca"><i class="ph ph-fingerprint" style="font-size:14px;color:#9397ab"></i>4be1c0<i class="ph ph-arrow-right" style="font-size:11px;color:#9397ab"></i>0b5e12</div>
+<div style="font-size:12px;color:#b2b6ca">Fail 0/3 from r29. Runs again at r38.</div>
+<a href="#1d" style="font-size:12px;text-decoration:none">Open item card →</a>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;text-align:right">
+<div style="white-space:nowrap"><span style="font-size:15px;font-weight:500">{{ s.conf }}</span><span style="color:#9397ab"> / {{ s.n }} confirmed</span></div>
+<div style="display:flex;gap:1px;width:100%;height:3px;border-radius:2px;overflow:hidden"><sc-for list="{{ s.segs }}" as="g" hint-placeholder-count="3"><div style="flex:{{ g.f }} 1 0px;background:{{ g.bg }}"></div></sc-for></div>
+<div style="display:flex;flex-wrap:wrap;justify-content:flex-end;column-gap:8px;font-size:11.5px"><sc-for list="{{ s.flags }}" as="f" hint-placeholder-count="1"><span style="color:{{ f.c }}">{{ f.t }}</span></sc-for></div>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 18px 10px">
+<div style="display:flex;align-items:center;gap:12px;padding-bottom:8px">
+<span style="font-size:15px;font-weight:500">Events</span><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9397ab"><span style="width:6px;height:6px;border-radius:50%;background:oklch(0.72 0.11 155)"></span>Live from /events, the same lines testroom run prints</span>
+<div style="flex:1"></div>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-pause" style="font-size:13px"></i>Pause</button>
+</div>
+<sc-for list="{{ ev }}" as="e" hint-placeholder-count="10">
+<div style="display:grid;grid-template-columns:64px 30px 10px 250px minmax(0,1fr);gap:10px;align-items:center;padding:4px 0;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">
+<span style="color:#9397ab">{{ e.t }}</span><span style="color:#9397ab">{{ e.r }}</span><span style="width:6px;height:6px;border-radius:50%;background:{{ e.c }}"></span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:#9397ab">{{ e.sec }} </span>{{ e.id }}</span><span style="color:#cfd3e5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.m }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #2f3242;padding:14px 16px 6px">
+<div style="display:flex;align-items:center;gap:8px"><span style="font-size:15px;font-weight:500">Needs someone</span><span style="font-size:12px;padding:0 7px;border-radius:6px;background:oklch(0.33 0.06 80);color:oklch(0.88 0.08 80)">{{ T.bl }}</span></div>
+<div style="font-size:12px;color:#9397ab;margin-top:2px;text-wrap:pretty">Blocked items, by whose move it is. None of them re-runs until its inputs change.</div>
+<sc-for list="{{ needs }}" as="g" hint-placeholder-count="3">
+<div style="padding-top:12px">
+<div style="display:flex;align-items:center;gap:7px;padding-bottom:6px"><i class="{{ g.icon }}" style="font-size:15px;color:oklch(0.88 0.08 80)"></i><span style="font-weight:500">{{ g.who }}</span><span style="color:#9397ab">{{ g.n }}</span><div style="flex:1"></div><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#9397ab">{{ g.via }}</span></div>
+<sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
+<div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.1) 48px,rgba(233,233,237,.1) calc(100% - 48px),transparent)"></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 0">
+<div style="display:flex;flex-direction:column;gap:2px;min-width:0"><div style="display:flex;align-items:baseline;gap:6px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;white-space:nowrap;overflow:hidden"><span style="font-size:11px;color:#9397ab">{{ r.sec }}</span><span style="overflow:hidden;text-overflow:ellipsis">{{ r.id }}</span></div><div style="font-size:12px;color:#b2b6ca;text-wrap:pretty">{{ r.why }} <span style="color:#9397ab">{{ r.since }}</span></div></div>
+<button type="button" aria-label="{{ r.act }}: {{ r.id }}" style="display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">{{ r.act }}</button>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 16px 10px">
+<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:4px"><span style="font-size:15px;font-weight:500">Gate</span><span style="font-size:12px;color:#b2b6ca">Not ready · {{ gateMet }} of 6 conditions</span></div>
+<sc-for list="{{ gate }}" as="g" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 0"><i class="{{ g.icon }}" style="font-size:16px;color:{{ g.ic }}"></i><span style="font-size:12.5px">{{ g.t }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#9397ab">{{ g.d }}</span></div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Ledger: a row for every item that needs attention, grouped by section, over a console that mirrors the terminal.</div><div class="dv-card" style="width:1440px;background:#161826;border-color:#161826"><div data-screen-label="1b Room, ledger" style="width:1440px;background:#161826;color:#e9e9ed;font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:1.5">
+<div style="display:flex;align-items:center;gap:18px;height:52px;padding:0 24px">
+<div style="display:flex;align-items:center;gap:9px"><div style="width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #9184d9;display:grid;place-items:center"><div style="width:6px;height:6px;border-radius:2px;background:#9184d9;box-shadow:0 0 8px #9184d9"></div></div><span style="font-size:15px;font-weight:500;letter-spacing:-0.01em">testroom</span></div>
+<div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca"><i class="ph ph-folder-simple" style="font-size:14px;color:#9397ab"></i><span>institute</span><span style="color:#9397ab">main @ 9c41e2a</span></div>
+<div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#9184d9;box-shadow:0 0 0 3px rgba(145,132,217,.18),0 0 10px #9184d9"></span><span style="color:#e7e5fe">Running</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;color:#b5abfc">r37 / 500 · K 3</span></div>
+<div style="display:flex;align-items:center;gap:8px;width:230px"><div style="flex:1;height:4px;border-radius:2px;background:#2a2d3a;overflow:hidden"><div style="width:{{ prog }};height:100%;background:#9184d9"></div></div><span style="font-size:12px;color:#9397ab;white-space:nowrap">settles by r{{ bound }}</span></div>
+<div style="flex:1"></div>
+<span style="font-size:12px;color:#cfd3e5">Gate not ready · {{ gateMet }} of 6</span>
+<div style="display:flex;gap:8px">
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">Report<i class="ph ph-caret-down" style="font-size:12px"></i></button>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.12)"><i class="ph ph-stop" style="font-size:14px"></i>Stop</button>
+</div>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.14) 48px,rgba(233,233,237,.14) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;align-items:center;gap:8px;padding:14px 24px">
+<sc-for list="{{ filters }}" as="f" hint-placeholder-count="7"><button type="button" aria-pressed="{{ f.pressed }}" style="display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:8px;border:0;background:{{ f.bg }};box-shadow:{{ f.sh }};color:{{ f.fg }};font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">{{ f.l }}<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#9397ab">{{ f.n }}</span></button></sc-for>
+<div style="flex:1"></div>
+<label style="display:flex;align-items:center;gap:8px;width:280px;height:30px;padding:0 10px;border-radius:8px;background:#232532;box-shadow:inset 0 0 0 1px rgba(233,233,237,.16);color:#9397ab"><i class="ph ph-magnifying-glass" style="font-size:14px"></i><input type="text" aria-label="Filter items" placeholder="Filter by item, kind or note" style="flex:1;min-width:0;border:0;outline:0;background:transparent;color:#e9e9ed;font:12.5px Inter,system-ui,sans-serif"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;padding:0 5px;border-radius:4px;box-shadow:inset 0 0 0 1px #3f424d">/</span></label>
+<div role="group" aria-label="Order" style="display:inline-flex;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(233,233,237,.16)">
+<button type="button" aria-pressed="true" style="height:30px;padding:0 12px;border:0;border-radius:8px;background:transparent;box-shadow:inset 0 0 0 1px #9184d9;color:#9184d9;font:500 12px Inter,system-ui,sans-serif;cursor:pointer">Attention first</button>
+<button type="button" aria-pressed="false" style="height:30px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:#b2b6ca;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">Plan order</button>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:110px 250px 130px 64px 72px 160px 150px 100px minmax(0,1fr);gap:12px;padding:8px 24px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab;background:linear-gradient(to right,transparent,rgba(233,233,237,.16) 48px,rgba(233,233,237,.16) calc(100% - 48px),transparent) no-repeat bottom/100% 1px">
+<span>State</span><span>Item</span><span>Kind</span><span>Runs</span><span>Confirm</span><span>Fingerprint</span><span>Next</span><span>Waiting on</span><span>Note</span>
+</div>
+<sc-for list="{{ ledger }}" as="g" hint-placeholder-count="8">
+<div>
+<button type="button" aria-expanded="{{ g.open }}" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 24px;border:0;background:#1c1e2b;box-shadow:inset 0 -1px 0 #262938;color:#e9e9ed;font:13px Inter,system-ui,sans-serif;text-align:left;cursor:pointer" style-hover="background:#212331">
+<i class="{{ g.caret }}" style="font-size:13px;color:#9397ab"></i>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;padding:1px 6px;border-radius:4px;background:#2b2741;color:#d2cefd">{{ g.id }}</span>
+<span style="font-weight:500">{{ g.name }}</span><span style="font-size:12px;color:#9397ab">{{ g.what }}</span>
+<span style="flex:1"></span>
+<span style="font-size:12px;color:#b2b6ca">{{ g.sum }}</span>
+<span style="display:flex;gap:1px;width:120px;height:4px;border-radius:2px;overflow:hidden"><sc-for list="{{ g.segs }}" as="s" hint-placeholder-count="3"><span style="flex:{{ s.f }} 1 0px;background:{{ s.bg }}"></span></sc-for></span>
+<span style="width:64px;text-align:right;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">{{ g.frac }}</span>
+</button>
+<sc-for list="{{ g.rows }}" as="row" hint-placeholder-count="2">
+<div style="display:grid;grid-template-columns:110px 250px 130px 64px 72px 160px 150px 100px minmax(0,1fr);gap:12px;align-items:center;padding:7px 24px;background:linear-gradient(to right,transparent,rgba(233,233,237,.07) 48px,rgba(233,233,237,.07) calc(100% - 48px),transparent) no-repeat bottom/100% 1px" style-hover="background:rgba(233,233,237,.035)">
+<span><span style="font-size:11px;padding:2px 7px;border-radius:6px;white-space:nowrap;background:{{ row.bbg }};color:{{ row.bfg }}">{{ row.st }}</span></span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ row.id }}</span>
+<span style="font-size:12px;color:#b2b6ca">{{ row.kind }}</span>
+<span style="display:flex;gap:4px"><sc-for list="{{ row.runs }}" as="d" hint-placeholder-count="3"><span style="width:8px;height:8px;border-radius:50%;background:{{ d.bg }};box-shadow:{{ d.sh }}"></span></sc-for></span>
+<span style="display:flex;gap:3px"><sc-for list="{{ row.pips }}" as="p" hint-placeholder-count="3"><span style="width:14px;height:4px;border-radius:2px;background:{{ p.bg }};box-shadow:{{ p.sh }}"></span></sc-for></span>
+<span style="display:flex;align-items:baseline;gap:6px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#cfd3e5">{{ row.fp }}<span style="font-family:Inter,system-ui,sans-serif;font-size:11px;color:#b5abfc">{{ row.fpn }}</span></span>
+<span style="font-size:12px">{{ row.next }}</span>
+<span style="font-size:12px;color:{{ row.onc }}">{{ row.on }}</span>
+<span style="font-size:12px;color:#b2b6ca;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ row.note }}</span>
+</div>
+</sc-for>
+<sc-if value="{{ g.hasMore }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;padding:7px 24px 9px 146px;font-size:12px;color:#9397ab"><span>+ {{ g.more }}</span><button type="button" style="height:24px;padding:0 6px;border:0;border-radius:6px;background:transparent;color:#9184d9;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.1)">Show</button></div>
+</sc-if>
+</div>
+</sc-for>
+<div style="margin:18px 24px 24px;border-radius:8px;background:#10121b;box-shadow:inset 0 0 0 1px #262938">
+<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;box-shadow:inset 0 -1px 0 #222533">
+<i class="ph ph-terminal-window" style="font-size:15px;color:#9397ab"></i><span style="font-weight:500">Console</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">testroom run --rounds 500</span>
+<div style="flex:1"></div>
+<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#b2b6ca"><span style="width:26px;height:14px;border-radius:7px;background:#5d5294;position:relative"><span style="position:absolute;top:2px;right:2px;width:10px;height:10px;border-radius:50%;background:#e7e5fe"></span></span>Follow</span>
+</div>
+<div style="padding:10px 14px 12px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;line-height:1.75">
+<sc-for list="{{ evAsc }}" as="e" hint-placeholder-count="10"><div style="display:grid;grid-template-columns:72px 40px 44px 240px minmax(0,1fr);gap:8px;white-space:nowrap"><span style="color:#9397ab">{{ e.t }}</span><span style="color:#9397ab">{{ e.r }}</span><span style="color:#b5abfc">{{ e.sec }}</span><span style="overflow:hidden;text-overflow:ellipsis">{{ e.id }}</span><span style="color:{{ e.tc }};overflow:hidden;text-overflow:ellipsis">{{ e.m }}</span></div></sc-for>
+<div style="display:flex;align-items:center;gap:8px;color:#9397ab"><span>20:14:10</span><span>r37</span><span>slot 3 of 3 running</span><span style="width:7px;height:14px;background:#9184d9"></span></div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>On the hook: lanes by whose move it is. The room stalls when only the people lanes hold items.</div><div class="dv-card" style="width:1440px;background:#161826;border-color:#161826"><div data-screen-label="1c Room, on the hook" style="width:1440px;background:radial-gradient(1100px 420px at 18% -12%,#1f2236 0%,#161826 62%);color:#e9e9ed;font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:1.5">
+<div style="display:flex;align-items:center;gap:20px;height:56px;padding:0 24px">
+<div style="display:flex;align-items:center;gap:9px"><div style="width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #9184d9;display:grid;place-items:center"><div style="width:6px;height:6px;border-radius:2px;background:#9184d9;box-shadow:0 0 8px #9184d9"></div></div><span style="font-size:15px;font-weight:500;letter-spacing:-0.01em">testroom</span></div>
+<div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca"><i class="ph ph-folder-simple" style="font-size:14px;color:#9397ab"></i><span>institute</span><span style="color:#9397ab">main @ 9c41e2a</span></div>
+<div style="display:flex;align-items:center;gap:8px;padding:4px 10px 4px 9px;border-radius:6px;background:#2b2741;box-shadow:inset 0 0 0 1px #423a6a"><span style="width:7px;height:7px;border-radius:50%;background:#9184d9;box-shadow:0 0 0 3px rgba(145,132,217,.18),0 0 10px #9184d9"></span><span style="color:#e7e5fe">Running</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b5abfc">r37 / 500 · K 3</span></div>
+<div style="flex:1"></div>
+<span style="font-size:12px;color:#cfd3e5">Gate not ready · {{ gateMet }} of 6</span>
+<span style="font-size:12px;color:#9397ab">Settles by <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;color:#cfd3e5">r{{ bound }}</span></span>
+<div style="display:flex;gap:8px">
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">Report<i class="ph ph-caret-down" style="font-size:12px"></i></button>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.12)"><i class="ph ph-stop" style="font-size:14px"></i>Stop</button>
+</div>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.14) 48px,rgba(233,233,237,.14) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;flex-direction:column;gap:9px;padding:20px 24px">
+<div style="display:flex;align-items:baseline;gap:12px"><span style="font-size:15px;font-weight:500">Whose move</span><span style="font-size:12px;color:#9397ab">When only blocked items are left, the room stalls and names each blocker.</span></div>
+<div style="display:flex;gap:3px;height:10px"><sc-for list="{{ moves }}" as="m" hint-placeholder-count="5"><div style="flex:{{ m.f }} 1 0px;min-width:96px;border-radius:3px;background:{{ m.bg }}"></div></sc-for></div>
+<div style="display:flex;gap:3px"><sc-for list="{{ moves }}" as="m" hint-placeholder-count="5"><div style="flex:{{ m.f }} 1 0px;min-width:96px;display:flex;align-items:baseline;gap:6px;white-space:nowrap"><span style="font-size:18px;font-weight:500;letter-spacing:-0.01em">{{ m.n }}</span><span style="font-size:12px;color:#b2b6ca">{{ m.l }}</span></div></sc-for></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;align-items:stretch;padding:0 24px 28px">
+
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0;padding:12px;border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a">
+<div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:7px"><i class="ph ph-arrows-clockwise" style="font-size:15px;color:#b5abfc"></i><span style="font-weight:500">Scheduler</span><span style="color:#9397ab">{{ sched }}</span></div><span style="font-size:11.5px;color:#9397ab">Runs, queue and retries</span></div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab">Running · r37</span>
+<sc-for list="{{ slots }}" as="s" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:4px;padding:8px 9px;border-radius:6px;background:#262839;box-shadow:inset 0 0 0 1px #3a3560"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;overflow-wrap:anywhere">{{ s.id }}</span><div style="display:flex;align-items:center;gap:6px"><div style="display:flex;gap:4px"><sc-for list="{{ s.runs }}" as="d" hint-placeholder-count="3"><span style="width:8px;height:8px;border-radius:50%;background:{{ d.bg }};box-shadow:{{ d.sh }}"></span></sc-for></div><span style="font-size:11px;color:#b2b6ca;white-space:nowrap">{{ s.kind }} · {{ s.t }}</span></div></div></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<span style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab;padding-bottom:4px">Retry due</span>
+<sc-for list="{{ retries }}" as="r" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:baseline;padding:3px 0"><div style="display:flex;flex-direction:column;min-width:0"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;overflow-wrap:anywhere">{{ r.id }}</span><span style="font-size:11px;color:oklch(0.83 0.08 25)">{{ r.st }}</span></div><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#b2b6ca">{{ r.next }}</span></div></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab">Queued · {{ T.q }}</span>
+<sc-for list="{{ queuedBy }}" as="q" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:34px minmax(0,1fr);gap:6px;align-items:start"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#b2b6ca">{{ q.sec }}</span><div style="display:flex;flex-wrap:wrap;gap:3px;padding-top:3px"><sc-for list="{{ q.cells }}" as="c" hint-placeholder-count="3"><span title="{{ c.tip }}" style="width:10px;height:10px;border-radius:{{ c.r }};background:{{ c.bg }};box-shadow:{{ c.sh }}"></span></sc-for></div></div></sc-for>
+<span style="font-size:11.5px;color:#9397ab;text-wrap:pretty">2 fresh starts a round; all started by r{{ startsBy }}.</span>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px;border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a">
+<div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:7px"><i class="ph ph-seal-check" style="font-size:15px;color:oklch(0.85 0.08 155)"></i><span style="font-weight:500">Confirming</span><span style="color:#9397ab">{{ T.cing }}</span></div><span style="font-size:11.5px;color:#9397ab">Passing; needs 3 quiet rounds</span></div>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ confirming }}" as="c" hint-placeholder-count="8"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;padding:5px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 24px,rgba(233,233,237,.08) calc(100% - 24px),transparent) no-repeat bottom/100% 1px"><div style="display:flex;flex-direction:column;min-width:0"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;color:#9397ab">{{ c.sec }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;overflow-wrap:anywhere">{{ c.id }}</span></div><span style="display:flex;gap:2px"><sc-for list="{{ c.pips }}" as="p" hint-placeholder-count="3"><span style="width:10px;height:4px;border-radius:2px;background:{{ p.bg }};box-shadow:{{ p.sh }}"></span></sc-for></span></div></sc-for>
+</div>
+<span style="font-size:11.5px;color:#9397ab;text-wrap:pretty">Any change to an item’s inputs resets its count.</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px;border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a">
+<div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:7px"><i class="ph ph-robot" style="font-size:15px;color:oklch(0.83 0.08 25)"></i><span style="font-weight:500">Fixer agent</span><span style="color:#9397ab">{{ T.fl }}</span></div><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#9397ab">tester:8090/ask</span></div>
+<sc-for list="{{ fixer }}" as="f" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:4px;padding:9px 10px;border-radius:6px;background:#262839;box-shadow:inset 0 0 0 1px #313445"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;color:#9397ab">{{ f.sec }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;overflow-wrap:anywhere">{{ f.id }}</span><span style="font-size:11.5px;color:#cfd3e5;text-wrap:pretty">{{ f.why }}</span><span style="font-size:11px;color:oklch(0.83 0.08 25)">{{ f.tr }}</span></div></sc-for>
+<span style="font-size:11.5px;color:#9397ab;text-wrap:pretty">Verified fixes only, as exact find-and-replace edits. A fix that weakens a test is refused.</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px;border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #3a3a3c">
+<div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:7px"><i class="ph ph-user" style="font-size:15px;color:oklch(0.88 0.08 80)"></i><span style="font-weight:500">Author</span><span style="color:#9397ab">{{ author.n }}</span></div><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#9397ab">agent:8000/builder/say</span></div>
+<sc-for list="{{ author.rows }}" as="r" hint-placeholder-count="6"><div style="display:flex;flex-direction:column;gap:4px;padding:9px 10px;border-radius:6px;background:#2a2b37;box-shadow:inset 0 0 0 1px #3f3d3a"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;color:#9397ab">{{ r.sec }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;overflow-wrap:anywhere">{{ r.id }}</span><span style="font-size:11.5px;color:#cfd3e5;text-wrap:pretty">{{ r.why }}</span><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:2px"><span style="font-size:11px;color:#9397ab">{{ r.since }}</span><button type="button" aria-label="Reply: {{ r.id }}" style="height:24px;padding:0 9px;border-radius:7px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 11.5px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">Reply</button></div></div></sc-for>
+<span style="font-size:11.5px;color:#9397ab;text-wrap:pretty">Every message carries its own signed door, open 5 minutes.</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px;border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #3a3a3c">
+<div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:7px"><i class="ph ph-plugs" style="font-size:15px;color:oklch(0.88 0.08 80)"></i><span style="font-weight:500">Environment</span><span style="color:#9397ab">{{ env.n }}</span></div><span style="font-size:11.5px;color:#9397ab">What this machine lacks</span></div>
+<sc-for list="{{ env.rows }}" as="r" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:4px;padding:9px 10px;border-radius:6px;background:#2a2b37;box-shadow:inset 0 0 0 1px #3f3d3a"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;color:#9397ab">{{ r.sec }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;overflow-wrap:anywhere">{{ r.id }}</span><span style="font-size:11.5px;color:#cfd3e5;text-wrap:pretty">{{ r.why }}</span><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:2px"><span style="font-size:11px;color:#9397ab">{{ r.since }}</span><button type="button" aria-label="Unblock: {{ r.id }}" style="height:24px;padding:0 9px;border-radius:7px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 11.5px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">Unblock</button></div></div></sc-for>
+<button type="button" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;height:28px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.12)"><i class="ph ph-stethoscope" style="font-size:14px"></i>Run doctor</button>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px;border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #3a3a3c">
+<div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:7px"><i class="ph ph-crown-simple" style="font-size:15px;color:oklch(0.88 0.08 80)"></i><span style="font-weight:500">Owner</span><span style="color:#9397ab">{{ owner.n }}</span></div><span style="font-size:11.5px;color:#9397ab">Through the outbox</span></div>
+<sc-for list="{{ owner.rows }}" as="r" hint-placeholder-count="1"><div style="display:flex;flex-direction:column;gap:4px;padding:9px 10px;border-radius:6px;background:#2a2b37;box-shadow:inset 0 0 0 1px #3f3d3a"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;color:#9397ab">{{ r.sec }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;overflow-wrap:anywhere">{{ r.id }}</span><span style="font-size:11.5px;color:#cfd3e5;text-wrap:pretty">{{ r.why }}</span><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:2px"><span style="font-size:11px;color:#9397ab">{{ r.since }}</span><button type="button" aria-label="Reply: {{ r.id }}" style="height:24px;padding:0 9px;border-radius:7px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 11.5px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">Reply</button></div></div></sc-for>
+<div style="display:flex;flex-direction:column;gap:4px;padding:9px 10px;border-radius:6px;box-shadow:inset 0 0 0 1px #3f424d"><span style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab">Open question</span><span style="font-size:11.5px;color:#cfd3e5;text-wrap:pretty">Which GitHub organisation publishes anima/testroom?</span></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px;border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a">
+<div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:7px"><i class="ph ph-check-circle" style="font-size:15px;color:oklch(0.85 0.08 155)"></i><span style="font-weight:500">Confirmed</span><span style="color:#9397ab">{{ T.conf }}</span></div><span style="font-size:11.5px;color:#9397ab">Re-checked only when inputs change</span></div>
+<sc-for list="{{ doneBy }}" as="q" hint-placeholder-count="6"><div style="display:flex;flex-direction:column;gap:5px"><div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#b2b6ca"><span>{{ q.sec }}</span><span>{{ q.n }}</span></div><div style="display:flex;flex-wrap:wrap;gap:3px"><sc-for list="{{ q.cells }}" as="c" hint-placeholder-count="6"><span title="{{ c.tip }}" style="width:10px;height:10px;border-radius:{{ c.r }};background:{{ c.bg }};box-shadow:{{ c.sh }}"></span></sc-for></div></div></sc-for>
+</div>
+
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Item card for repo:ledger-kit after the author’s reply. Opens over <a class="dv-oid" href="#1a">1a</a>.</div><div class="dv-card" style="width:600px;background:#161826;border-color:#161826"><div data-screen-label="1d Item card" style="width:600px;background:#1b1d2b;color:#e9e9ed;font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:1.5">
+<div style="display:flex;align-items:center;gap:8px;height:48px;padding:0 14px 0 18px">
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;padding:1px 6px;border-radius:4px;background:#2b2741;color:#d2cefd">L1</span><span style="font-size:12px;color:#b2b6ca">Units</span><i class="ph ph-caret-right" style="font-size:11px;color:#9397ab"></i><span style="font-size:12px;color:#b2b6ca">12 of 31</span>
+<div style="flex:1"></div>
+<button type="button" aria-label="Previous item" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#b2b6ca;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-caret-up" style="font-size:15px"></i></button>
+<button type="button" aria-label="Next item" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#b2b6ca;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-caret-down" style="font-size:15px"></i></button>
+<button type="button" aria-label="Close item card" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#b2b6ca;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-x" style="font-size:15px"></i></button>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.14) 48px,rgba(233,233,237,.14) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px 18px">
+<div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:20px;letter-spacing:-0.01em">repo:ledger-kit</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:#b2b6ca"><span>Registry repo · python</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace">repos/ledger-kit</span><span>Wave 1 · builder claude</span></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:6px;padding:10px 12px;border-radius:8px;background:#232532;box-shadow:inset 0 0 0 1px #3f424d">
+<span style="font-size:11px;padding:2px 7px;border-radius:6px;background:#3f424d;color:#e4e7f5">Queued</span>
+<span style="flex:1;font-size:12.5px;text-wrap:pretty">Runs at r38. The author’s reply changed its inputs.</span>
+<span style="display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca"><i class="ph ph-fingerprint" style="font-size:14px;color:#9397ab"></i>4be1c0<i class="ph ph-arrow-right" style="font-size:11px;color:#9397ab"></i><span style="color:#e9e9ed">0b5e12</span></span>
+</div>
+<div style="display:flex;gap:8px;margin-top:6px">
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.12)"><i class="ph ph-play" style="font-size:14px"></i>Run now</button>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-robot" style="font-size:14px"></i>Ask fixer</button>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-files" style="font-size:14px"></i>Files</button>
+<button type="button" disabled style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;opacity:.45;cursor:not-allowed"><i class="ph ph-lock-simple-open" style="font-size:14px"></i>Unblock</button>
+</div>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.12) 48px,rgba(233,233,237,.12) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab">Triple check · last run r31</span><span style="font-size:12px;color:#9397ab">python 3.12 · pytest</span></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+<div style="display:flex;flex-direction:column;gap:2px;padding:9px 11px;border-radius:6px;background:#232532"><div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(0.68 0.13 25)"></span><span style="font-weight:500">Run 1</span><span style="font-size:12px;color:oklch(0.83 0.08 25)">fail</span></div><span style="font-size:12px;color:#b2b6ca">12 collected · 2 failed</span><span style="font-size:12px;color:#9397ab">0 skipped · 4.1 s</span></div>
+<div style="display:flex;flex-direction:column;gap:2px;padding:9px 11px;border-radius:6px;background:#232532"><div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(0.68 0.13 25)"></span><span style="font-weight:500">Run 2</span><span style="font-size:12px;color:oklch(0.83 0.08 25)">fail</span></div><span style="font-size:12px;color:#b2b6ca">12 collected · 2 failed</span><span style="font-size:12px;color:#9397ab">0 skipped · 4.0 s</span></div>
+<div style="display:flex;flex-direction:column;gap:2px;padding:9px 11px;border-radius:6px;background:#232532"><div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(0.68 0.13 25)"></span><span style="font-weight:500">Run 3</span><span style="font-size:12px;color:oklch(0.83 0.08 25)">fail</span></div><span style="font-size:12px;color:#b2b6ca">12 collected · 2 failed</span><span style="font-size:12px;color:#9397ab">0 skipped · 4.2 s</span></div>
+</div>
+<div style="font-size:12.5px;color:#cfd3e5;text-wrap:pretty">Fail 0/3. The same 2 tests failed in every run, so the result is consistent, not flaky.</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:6px;background:#141623;box-shadow:inset 0 0 0 1px #2a2d3a;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;line-height:1.6">
+<div><div>tests/test_money.py::test_round_half_up</div><div style="color:#b2b6ca;padding-left:16px">assert round_money(Decimal("10.005")) == Decimal("10.01")</div><div style="color:oklch(0.83 0.08 25);padding-left:16px">AssertionError: got Decimal("10.00")</div></div>
+<div><div>tests/test_ledger.py::test_balance_after_refund</div><div style="color:oklch(0.83 0.08 25);padding-left:16px">KeyError: 'refund'</div></div>
+</div>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.12) 48px,rgba(233,233,237,.12) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab">Timeline</span><span style="font-size:12px;color:#9397ab">r28 to r38</span></div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;gap:3px;height:20px">
+<span title="r28 queued" style="flex:1;border-radius:4px;box-shadow:inset 0 0 0 1px #595d6c"></span>
+<span title="r29 fail" style="flex:1;border-radius:4px;background:oklch(0.68 0.13 25)"></span>
+<span title="r30 fail" style="flex:1;border-radius:4px;background:oklch(0.68 0.13 25)"></span>
+<span title="r31 fail" style="flex:1;border-radius:4px;background:oklch(0.68 0.13 25)"></span>
+<span title="r32 blocked on author" style="flex:1;border-radius:4px;background:oklch(0.8 0.11 80)"></span>
+<span title="r33 blocked on author" style="flex:1;border-radius:4px;background:oklch(0.8 0.11 80)"></span>
+<span title="r34 blocked on author" style="flex:1;border-radius:4px;background:oklch(0.8 0.11 80)"></span>
+<span title="r35 blocked on author" style="flex:1;border-radius:4px;background:oklch(0.8 0.11 80)"></span>
+<span title="r36 reply taken" style="flex:1;border-radius:4px;background:oklch(0.8 0.11 80);box-shadow:0 0 0 2px #1b1d2b,0 0 0 3px #9184d9"></span>
+<span title="r37 queued" style="flex:1;border-radius:4px;box-shadow:inset 0 0 0 1px #595d6c"></span>
+<span title="r38 next run" style="flex:1;border-radius:4px;border:1px dashed #9184d9"></span>
+</div>
+<div style="display:flex;gap:3px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;color:#9397ab;text-align:center"><span style="flex:1">r28</span><span style="flex:1">r29</span><span style="flex:1">r30</span><span style="flex:1">r31</span><span style="flex:1">r32</span><span style="flex:1">r33</span><span style="flex:1">r34</span><span style="flex:1">r35</span><span style="flex:1;color:#d2cefd">r36</span><span style="flex:1;color:#e9e9ed">r37</span><span style="flex:1;color:#d2cefd">r38</span></div>
+</div>
+<div style="display:grid;grid-template-columns:56px minmax(0,1fr);gap:6px 10px;font-size:12.5px;padding-top:4px">
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">r29</span><span style="text-wrap:pretty">Fresh run, fail 0/3. Routed to the fixer.</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">r30</span><span style="text-wrap:pretty">Fixer draft d1, one edit to money.py. Failed verification.</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">r31</span><span style="text-wrap:pretty">No verified fix after 2 tries. Routed to the author with a signed door.</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">r32–35</span><span style="color:#b2b6ca;text-wrap:pretty">Waiting on the author. Not re-run: inputs unchanged and no backoff due.</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#d2cefd">r36</span><span style="text-wrap:pretty">Reply taken into draft d2. Fingerprint changed.</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#d2cefd">r38</span><span style="text-wrap:pretty">Runs with draft d2. Three quiet rounds after a pass confirm it.</span>
+</div>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.12) 48px,rgba(233,233,237,.12) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab">Reply from the author · r36</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#9397ab">20:13:55 · door d-7f3a</span></div>
+<div style="padding:10px 12px;border-radius:6px;background:#232532;font-size:12.5px;color:#cfd3e5;text-wrap:pretty">Rounding should be half-up for currency, and refunds were never registered in the ledger map. Patch below.</div>
+<div style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:18px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:6px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 24px,rgba(233,233,237,.08) calc(100% - 24px),transparent) no-repeat bottom/100% 1px"><i class="ph ph-check-circle" style="font-size:15px;color:oklch(0.85 0.08 155)"></i><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">src/ledger/money.py</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca">+6 −2</span><span style="font-size:12px;color:oklch(0.85 0.08 155)">Taken</span></div>
+<div style="display:grid;grid-template-columns:18px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:6px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 24px,rgba(233,233,237,.08) calc(100% - 24px),transparent) no-repeat bottom/100% 1px"><i class="ph ph-check-circle" style="font-size:15px;color:oklch(0.85 0.08 155)"></i><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">src/ledger/refunds.py</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca">new, +31</span><span style="font-size:12px;color:oklch(0.85 0.08 155)">Taken</span></div>
+<div style="display:grid;grid-template-columns:18px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:6px 0"><i class="ph ph-x-circle" style="font-size:15px;color:oklch(0.83 0.08 25)"></i><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;text-decoration:line-through;color:#b2b6ca">../../.env</span><span style="font-size:12px;color:#9397ab">leaves the item</span><span style="font-size:12px;color:oklch(0.83 0.08 25)">Dropped</span></div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px"><span style="font-size:11px;padding:3px 9px;border-radius:6px;background:#3f424d;color:#e4e7f5">Single code fence unwrapped</span><span style="font-size:11px;padding:3px 9px;border-radius:6px;background:#3f424d;color:#e4e7f5">No test file touched</span><span style="font-size:11px;padding:3px 9px;border-radius:6px;background:#3f424d;color:#e4e7f5">Secrets masked: 0</span></div>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.12) 48px,rgba(233,233,237,.12) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px">
+<span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab">Draft and inputs</span>
+<div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 12px;font-size:12.5px">
+<span style="color:#9397ab">Draft</span><span style="text-wrap:pretty">d2, laid over committed <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">4be1c0</span>. Tests run in <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">.testroom/scratch/ledger-kit-d2</span>.</span>
+<span style="color:#9397ab">Source</span><span style="text-wrap:pretty">Not written: edit is off. With edit on, the 2 changed files are written once the item passes, and the draft is spent.</span>
+<span style="color:#9397ab">Fingerprint</span><span style="text-wrap:pretty">14 files, 2 of them from d2 · requirements.txt, 3 of 3 pinned · python 3.12</span>
+<span style="color:#9397ab">Depends on</span><span style="display:flex;flex-direction:column;gap:3px"><span style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:oklch(0.72 0.11 155)"></span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">data fixtures/ledger</span><span style="color:#9397ab">confirmed r36</span></span><span style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:oklch(0.72 0.11 155)"></span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">L0 static:registry</span><span style="color:#9397ab">confirmed r19</span></span></span>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 18px 16px;font-size:12px;box-shadow:inset 0 1px 0 #262938"><a href="#1a" style="text-decoration:none">Events for this item</a><a href="#1f" style="text-decoration:none">In the report</a><div style="flex:1"></div><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#9397ab">GET /items/L1:repo:ledger-kit</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1e"><div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Stalled: only blocked items are left, each named with whom it waits on.</div><div class="dv-card" style="width:1440px;background:#161826;border-color:#161826"><div data-screen-label="1e Room, stalled" style="width:1440px;background:radial-gradient(1100px 420px at 18% -12%,#262532 0%,#161826 62%);color:#e9e9ed;font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:1.5">
+<div style="display:flex;align-items:center;gap:20px;height:56px;padding:0 24px">
+<div style="display:flex;align-items:center;gap:9px"><div style="width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #9184d9;display:grid;place-items:center"><div style="width:6px;height:6px;border-radius:2px;background:#9184d9;box-shadow:0 0 8px #9184d9"></div></div><span style="font-size:15px;font-weight:500;letter-spacing:-0.01em">testroom</span></div>
+<div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca"><i class="ph ph-folder-simple" style="font-size:14px;color:#9397ab"></i><span>institute</span><span style="color:#9397ab">main @ 9c41e2a</span></div>
+<div style="display:flex;align-items:center;gap:8px;padding:4px 10px 4px 9px;border-radius:6px;background:oklch(0.27 0.035 80);box-shadow:inset 0 0 0 1px oklch(0.42 0.06 80)"><span style="width:7px;height:7px;border-radius:50%;background:oklch(0.8 0.11 80)"></span><span style="color:oklch(0.92 0.05 80)">Stalled</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:oklch(0.88 0.08 80)">r{{ stallRound }} / 500 · K 3</span></div>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:#9397ab">Gate</span><div style="display:flex;gap:3px"><span style="width:14px;height:6px;border-radius:2px;background:oklch(0.72 0.11 155)"></span><span style="width:14px;height:6px;border-radius:2px;background:#3f424d"></span><span style="width:14px;height:6px;border-radius:2px;background:oklch(0.72 0.11 155)"></span><span style="width:14px;height:6px;border-radius:2px;background:#3f424d"></span><span style="width:14px;height:6px;border-radius:2px;background:oklch(0.72 0.11 155)"></span><span style="width:14px;height:6px;border-radius:2px;background:oklch(0.72 0.11 155)"></span></div><span style="font-size:12px;color:#cfd3e5">Not ready · 4 of 6</span></div>
+<div style="display:flex;gap:8px">
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">Report<i class="ph ph-caret-down" style="font-size:12px"></i></button>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.12)"><i class="ph ph-stop" style="font-size:14px"></i>Stop</button>
+</div>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.14) 48px,rgba(233,233,237,.14) calc(100% - 48px),transparent)"></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:40px;align-items:end;padding:26px 24px 22px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:10px"><i class="ph ph-hand-palm" style="font-size:24px;color:oklch(0.88 0.08 80)"></i><span style="font-size:26px;font-weight:500;letter-spacing:-0.015em">Stalled at round {{ stallRound }}</span></div>
+<p style="margin:0;max-width:720px;font-size:14px;color:#cfd3e5;text-wrap:pretty">{{ stallConf }} of {{ N }} items are confirmed. The other {{ T.bl }} are blocked and none can move without someone: 6 wait on the author, 3 on the environment and 1 on the owner.</p>
+</div>
+<p style="margin:0;font-size:12.5px;color:#9397ab;text-wrap:pretty">No state has changed for 5 rounds (stall_rounds). stop_on_stall is off, so the room keeps listening: a reply, an unblock or a file change starts the next round.</p>
+</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:24px;align-items:start;padding:0 24px 28px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #2f3242;padding:6px 18px 8px">
+<sc-for list="{{ needs }}" as="g" hint-placeholder-count="3">
+<div style="padding-top:12px">
+<div style="display:flex;align-items:center;gap:8px;padding-bottom:6px"><i class="{{ g.icon }}" style="font-size:16px;color:oklch(0.88 0.08 80)"></i><span style="font-size:14px;font-weight:500">{{ g.who }}</span><span style="color:#9397ab">{{ g.n }}</span><div style="flex:1"></div><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#9397ab">{{ g.via }}</span></div>
+<sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
+<div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.1) 48px,rgba(233,233,237,.1) calc(100% - 48px),transparent)"></div>
+<div style="display:grid;grid-template-columns:40px 220px minmax(0,1fr) 150px 84px;gap:14px;align-items:center;padding:9px 0">
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#9397ab">{{ r.sec }}</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.id }}</span>
+<span style="font-size:12.5px;color:#cfd3e5;text-wrap:pretty">{{ r.why }}</span>
+<span style="font-size:12px;color:#9397ab">{{ r.since }}</span>
+<button type="button" aria-label="{{ r.act }}: {{ r.id }}" style="justify-self:end;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">{{ r.act }}</button>
+</div>
+<sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px;margin:0 0 12px 54px;padding:12px 14px;border-radius:8px;background:#1b1d2b;box-shadow:inset 0 0 0 1px #3f424d">
+<div style="display:flex;align-items:center;gap:8px;font-size:12.5px"><i class="ph ph-chat-circle-text" style="font-size:15px;color:#b5abfc"></i><span>Reply as <span style="font-weight:500">owner</span> to <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">repo:quorum</span></span><div style="flex:1"></div><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#9397ab">POST /items/L1:repo:quorum/reply</span></div>
+<div role="textbox" aria-label="Reply text" aria-multiline="true" tabindex="0" style="display:flex;flex-direction:column;padding:10px 12px;border-radius:8px;background:#161826;box-shadow:inset 0 0 0 1px #9184d9;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;line-height:1.65;color:#cfd3e5">
+<div style="font-family:Inter,system-ui,sans-serif;font-size:12.5px">Quorum rounds up for odd member counts. One file below.</div>
+<div style="height:8px"></div>
+<div style="color:#9397ab">```python src/quorum/vote.py</div>
+<div>def threshold(members):</div>
+<div style="padding-left:30px">return members // 2 + 1</div>
+<div style="color:#9397ab">```</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:#b2b6ca"><i class="ph ph-check-circle" style="font-size:15px;color:oklch(0.85 0.08 155)"></i><span>1 file found: <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;color:#e9e9ed">src/quorum/vote.py</span> · inside the item · no test file touched</span><div style="flex:1"></div>
+<button type="button" style="height:28px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:#9184d9;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.1)">Cancel</button>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(145,132,217,.12)"><i class="ph ph-paper-plane-tilt" style="font-size:13px"></i>Send reply</button></div>
+<div style="font-size:11.5px;color:#9397ab;text-wrap:pretty">The file becomes draft d1 for this item; it re-runs next round. Paths outside the item are dropped.</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 16px 6px">
+<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:6px"><span style="font-size:15px;font-weight:500">Sections</span><span style="font-size:12px;color:#9397ab">{{ stallConf }} of {{ N }} confirmed</span></div>
+<sc-for list="{{ stallSecs }}" as="s" hint-placeholder-count="8">
+<div style="display:grid;grid-template-columns:46px minmax(0,1fr) 54px;gap:10px;align-items:start;padding:7px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 24px,rgba(233,233,237,.08) calc(100% - 24px),transparent) no-repeat bottom/100% 1px">
+<span style="justify-self:start;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;padding:1px 6px;border-radius:4px;background:#2b2741;color:#d2cefd">{{ s.id }}</span>
+<div style="display:flex;flex-wrap:wrap;gap:3px;padding-top:3px"><sc-for list="{{ s.cells }}" as="c" hint-placeholder-count="8"><span title="{{ c.tip }}" style="width:10px;height:10px;border-radius:{{ c.r }};background:{{ c.bg }};box-shadow:{{ c.sh }}"></span></sc-for></div>
+<span style="text-align:right;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca">{{ s.conf }}/{{ s.n }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border-radius:8px;background:#10121b;box-shadow:inset 0 0 0 1px #262938;padding:12px 14px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;line-height:1.75">
+<div style="color:#9397ab">$ testroom run</div>
+<div style="display:flex;gap:10px"><span style="color:#9397ab">r{{ stallRound }}</span><span style="color:oklch(0.88 0.08 80)">stall</span><span>{{ T.bl }} blocked · 0 runnable · 5 rounds unchanged</span></div>
+<div style="display:grid;grid-template-columns:92px 18px minmax(0,1fr);column-gap:8px;padding-left:38px">
+<span style="color:#b2b6ca">author</span><span>6</span><span style="color:#cfd3e5">quorum tidewater apps/vision sparrow graph.html@360 open-repo-card</span>
+<span style="color:#b2b6ca">environment</span><span>3</span><span style="color:#cfd3e5">vision-bench speechline openapi</span>
+<span style="color:#b2b6ca">owner</span><span>1</span><span style="color:#cfd3e5">site</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;color:#9397ab"><span>r{{ stallRound }}</span><span>waiting for a reply, an unblock or a file change</span><span style="width:7px;height:14px;background:#9184d9"></span></div>
+</div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1f"><div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>HTML report, gate ready. Markdown and JSON carry the same content.</div><div class="dv-card" style="width:1040px;background:#161826;border-color:#161826"><div data-screen-label="1f HTML report" style="width:1040px;background:#161826;color:#e9e9ed;font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.55">
+<div style="display:flex;align-items:center;gap:12px;height:52px;padding:0 40px">
+<div style="width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #9184d9;display:grid;place-items:center"><div style="width:6px;height:6px;border-radius:2px;background:#9184d9;box-shadow:0 0 8px #9184d9"></div></div><span style="font-size:15px;font-weight:500">testroom report</span>
+<div style="flex:1"></div>
+<div role="group" aria-label="Format" style="display:inline-flex;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(233,233,237,.16)">
+<button type="button" aria-pressed="false" style="height:28px;padding:0 11px;border:0;border-radius:8px;background:transparent;color:#b2b6ca;font:500 12px 'IBM Plex Mono',ui-monospace,monospace;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">.md</button>
+<button type="button" aria-pressed="false" style="height:28px;padding:0 11px;border:0;border-radius:8px;background:transparent;color:#b2b6ca;font:500 12px 'IBM Plex Mono',ui-monospace,monospace;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">.json</button>
+<button type="button" aria-pressed="true" style="height:28px;padding:0 11px;border:0;border-radius:8px;background:transparent;box-shadow:inset 0 0 0 1px #9184d9;color:#9184d9;font:500 12px 'IBM Plex Mono',ui-monospace,monospace;cursor:pointer">.html</button>
+</div>
+<button type="button" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-download-simple" style="font-size:14px"></i>Download</button>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.14) 48px,rgba(233,233,237,.14) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:38px 40px 0">
+<div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">institute · main @ 9c41e2a · finished r{{ doneRounds }} · 23 Oct 2026, 20:41</div>
+<div style="display:flex;align-items:center;gap:12px"><i class="ph ph-check-circle" style="font-size:32px;color:oklch(0.85 0.08 155)"></i><h1 style="margin:0;font-size:36px;font-weight:500;letter-spacing:-0.02em;line-height:1.1">Gate ready</h1></div>
+<p style="margin:0;max-width:620px;font-size:15px;color:#cfd3e5;text-wrap:pretty">All {{ N }} items are confirmed after {{ doneRounds }} rounds, inside the bound of {{ bound }}. Nothing is blocked.</p>
+</div>
+<div style="display:flex;gap:48px;padding:28px 40px">
+<div style="display:flex;flex-direction:column"><span style="font-size:26px;font-weight:500;letter-spacing:-0.02em">{{ N }}</span><span style="font-size:12px;color:#b2b6ca">items confirmed</span></div>
+<div style="display:flex;flex-direction:column"><span style="font-size:26px;font-weight:500;letter-spacing:-0.02em">{{ doneRounds }}</span><span style="font-size:12px;color:#b2b6ca">rounds, bound {{ bound }}</span></div>
+<div style="display:flex;flex-direction:column"><span style="font-size:26px;font-weight:500;letter-spacing:-0.02em">10</span><span style="font-size:12px;color:#b2b6ca">blockers cleared</span></div>
+<div style="display:flex;flex-direction:column"><span style="font-size:26px;font-weight:500;letter-spacing:-0.02em">3</span><span style="font-size:12px;color:#b2b6ca">verified fixes</span></div>
+</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;padding:0 40px 32px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 16px 8px">
+<div style="font-size:15px;font-weight:500;padding-bottom:6px">Six conditions</div>
+<div style="display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:6px 10px;align-items:center;font-size:13px">
+<i class="ph ph-check-circle" style="font-size:16px;color:oklch(0.85 0.08 155)"></i><span>Every planned section ran</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">8 of 8</span>
+<i class="ph ph-check-circle" style="font-size:16px;color:oklch(0.85 0.08 155)"></i><span>Every item confirmed</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">{{ N }} of {{ N }}</span>
+<i class="ph ph-check-circle" style="font-size:16px;color:oklch(0.85 0.08 155)"></i><span>No fail or flaky result</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">0</span>
+<i class="ph ph-check-circle" style="font-size:16px;color:oklch(0.85 0.08 155)"></i><span>No vacuous suite</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">0</span>
+<i class="ph ph-check-circle" style="font-size:16px;color:oklch(0.85 0.08 155)"></i><span>No secrets in source, events, reports</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">1 masked</span>
+<i class="ph ph-check-circle" style="font-size:16px;color:oklch(0.85 0.08 155)"></i><span>Packed repos clear the bar</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#9397ab">6 of 6</span>
+</div>
+</div>
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 16px 8px">
+<div style="font-size:15px;font-weight:500;padding-bottom:6px">Cleared along the way</div>
+<div style="display:grid;grid-template-columns:18px 104px minmax(0,1fr);gap:6px 10px;align-items:center;font-size:13px">
+<i class="ph ph-user" style="font-size:15px;color:#b2b6ca"></i><span>Author</span><span style="color:#cfd3e5">6 items · 11 files taken, 2 paths dropped</span>
+<i class="ph ph-plugs" style="font-size:15px;color:#b2b6ca"></i><span>Environment</span><span style="color:#cfd3e5">3 items · torch, ffmpeg, docker</span>
+<i class="ph ph-crown-simple" style="font-size:15px;color:#b2b6ca"></i><span>Owner</span><span style="color:#cfd3e5">1 item · links.site set</span>
+<i class="ph ph-robot" style="font-size:15px;color:#b2b6ca"></i><span>Fixer agent</span><span style="color:#cfd3e5">3 verified fixes · 0 tests weakened</span>
+</div>
+</div>
+</div>
+<div style="padding:0 40px 32px">
+<div style="font-size:18px;font-weight:500;padding-bottom:10px">Sections</div>
+<div style="display:grid;grid-template-columns:60px 120px 70px 90px 110px minmax(0,1fr);gap:14px;padding:6px 0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9397ab;background:linear-gradient(to right,transparent,rgba(233,233,237,.16) 48px,rgba(233,233,237,.16) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span>Layer</span><span>Section</span><span>Items</span><span>First run</span><span>Confirmed by</span><span>Notes</span></div>
+<sc-for list="{{ rep }}" as="r" hint-placeholder-count="8">
+<div style="display:grid;grid-template-columns:60px 120px 70px 90px 110px minmax(0,1fr);gap:14px;align-items:center;padding:9px 0;font-size:13px;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 48px,rgba(233,233,237,.08) calc(100% - 48px),transparent) no-repeat bottom/100% 1px">
+<span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;padding:1px 6px;border-radius:4px;background:#2b2741;color:#d2cefd">{{ r.id }}</span></span>
+<span>{{ r.name }}</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px">{{ r.n }}</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:#b2b6ca">{{ r.first }}</span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:#b2b6ca">{{ r.last }}</span>
+<span style="font-size:12.5px;color:#b2b6ca;text-wrap:pretty">{{ r.note }}</span>
+</div>
+</sc-for>
+</div>
+<div style="padding:16px 40px 28px;font-size:12px;color:#9397ab;box-shadow:inset 0 1px 0 #262938">report.md and report.json carry the same numbers. Built from .testroom/events.jsonl.</div>
+</div></div></div>
+
+<div class="dv-opt" id="1g"><div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>The room at 360 px.</div><div class="dv-card" style="width:360px;background:#161826;border-color:#161826"><div data-screen-label="1g Room, 360" style="width:360px;background:#161826;color:#e9e9ed;font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:1.5">
+<div style="display:flex;align-items:center;gap:10px;height:52px;padding:0 4px 0 16px">
+<div style="width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #9184d9;display:grid;place-items:center"><div style="width:6px;height:6px;border-radius:2px;background:#9184d9;box-shadow:0 0 8px #9184d9"></div></div><span style="font-size:15px;font-weight:500">testroom</span>
+<div style="display:flex;align-items:center;gap:7px;padding:3px 8px;border-radius:6px;background:#2b2741;box-shadow:inset 0 0 0 1px #423a6a;font-size:12px"><span style="width:6px;height:6px;border-radius:50%;background:#9184d9;box-shadow:0 0 8px #9184d9"></span><span style="color:#e7e5fe">Running</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;color:#b5abfc">r37</span></div>
+<div style="flex:1"></div>
+<button type="button" aria-label="Menu" style="display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:8px;background:transparent;color:#e9e9ed;cursor:pointer"><i class="ph ph-list" style="font-size:20px"></i></button>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.14) 48px,rgba(233,233,237,.14) calc(100% - 48px),transparent)"></div>
+<div style="display:flex;flex-direction:column;gap:12px;padding:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span><span style="font-size:24px;font-weight:500;letter-spacing:-0.02em">{{ T.conf }}</span><span style="color:#9397ab"> / {{ N }} confirmed</span></span><span style="font-size:12px;color:#9397ab">settles by r{{ bound }}</span></div>
+<div style="display:flex;gap:2px;height:6px;border-radius:3px;overflow:hidden"><sc-for list="{{ allSegs }}" as="g" hint-placeholder-count="6"><div style="flex:{{ g.f }} 1 0px;background:{{ g.bg }}"></div></sc-for></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px"><sc-for list="{{ stats }}" as="s" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#b2b6ca"><span style="width:8px;height:8px;border-radius:2px;background:{{ s.bg }};box-shadow:{{ s.sh }}"></span><span style="color:#e9e9ed;font-weight:500">{{ s.v }}</span>{{ s.l }}</div></sc-for></div>
+<button type="button" style="display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;border-radius:8px;background:#232532;color:#e9e9ed;font:13px Inter,system-ui,sans-serif;text-align:left;cursor:pointer"><span style="color:#9397ab">Gate</span><span style="display:flex;gap:3px"><sc-for list="{{ gateSegs }}" as="g" hint-placeholder-count="6"><span style="width:12px;height:5px;border-radius:2px;background:{{ g.bg }}"></span></sc-for></span><span style="flex:1">Not ready · {{ gateMet }} of 6</span><i class="ph ph-caret-right" style="font-size:14px;color:#9397ab"></i></button>
+</div>
+<div style="display:flex;flex-direction:column;padding:4px 16px 14px">
+<div style="display:flex;align-items:center;gap:8px;padding-bottom:4px"><span style="font-size:15px;font-weight:500">Needs someone</span><span style="font-size:12px;padding:0 7px;border-radius:6px;background:oklch(0.33 0.06 80);color:oklch(0.88 0.08 80)">{{ T.bl }}</span></div>
+<sc-for list="{{ needs }}" as="g" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:7px;padding:10px 0 4px"><i class="{{ g.icon }}" style="font-size:15px;color:oklch(0.88 0.08 80)"></i><span style="font-weight:500">{{ g.who }}</span><span style="color:#9397ab">{{ g.n }}</span></div>
+<sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
+<button type="button" aria-label="{{ r.act }}: {{ r.id }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;min-height:56px;padding:8px 0;border:0;background:linear-gradient(to right,transparent,rgba(233,233,237,.1) 24px,rgba(233,233,237,.1) calc(100% - 24px),transparent) no-repeat top/100% 1px;color:#e9e9ed;font:13px Inter,system-ui,sans-serif;text-align:left;cursor:pointer">
+<span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:#9397ab;font-size:11px">{{ r.sec }} </span>{{ r.id }}</span><span style="font-size:12px;color:#b2b6ca;text-wrap:pretty">{{ r.why }}</span></span>
+<span style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:#b5abfc">{{ r.act }}<i class="ph ph-caret-right" style="font-size:12px"></i></span>
+</button>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;padding:4px 16px 14px">
+<div style="font-size:15px;font-weight:500;padding-bottom:4px">Sections</div>
+<sc-for list="{{ secs }}" as="s" hint-placeholder-count="8">
+<button type="button" aria-label="{{ s.id }} {{ s.name }}: {{ s.conf }} of {{ s.n }} confirmed" style="display:flex;flex-direction:column;gap:7px;min-height:56px;padding:10px 0;border:0;background:linear-gradient(to right,transparent,rgba(233,233,237,.1) 24px,rgba(233,233,237,.1) calc(100% - 24px),transparent) no-repeat top/100% 1px;color:#e9e9ed;font:13px Inter,system-ui,sans-serif;text-align:left;cursor:pointer">
+<span style="display:flex;align-items:center;gap:8px;width:100%"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;padding:1px 6px;border-radius:4px;background:#2b2741;color:#d2cefd">{{ s.id }}</span><span style="font-weight:500">{{ s.name }}</span><span style="flex:1"></span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca">{{ s.conf }}/{{ s.n }}</span></span>
+<span style="display:flex;flex-wrap:wrap;gap:3px"><sc-for list="{{ s.cells }}" as="c" hint-placeholder-count="10"><span style="width:8px;height:8px;border-radius:{{ c.r }};background:{{ c.bg }};box-shadow:{{ c.sh }}"></span></sc-for></span>
+</button>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;padding:4px 16px 20px">
+<div style="display:flex;align-items:center;gap:8px;padding-bottom:6px"><span style="font-size:15px;font-weight:500">Events</span><span style="width:6px;height:6px;border-radius:50%;background:oklch(0.72 0.11 155)"></span><span style="font-size:12px;color:#9397ab">live</span></div>
+<sc-for list="{{ evShort }}" as="e" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:1px;padding:7px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 24px,rgba(233,233,237,.08) calc(100% - 24px),transparent) no-repeat top/100% 1px">
+<span style="display:flex;gap:8px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:#9397ab"><span>{{ e.t }}</span><span>{{ e.r }}</span><span>{{ e.sec }}</span></span>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">{{ e.id }}</span>
+<span style="font-size:12px;color:{{ e.tc }};text-wrap:pretty">{{ e.m }}</span>
+</div>
+</sc-for>
+</div>
+<div style="position:sticky;bottom:0;display:flex;gap:10px;padding:12px 16px;background:rgba(22,24,38,.94);box-shadow:inset 0 1px 0 #262938">
+<button type="button" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 14px Inter,system-ui,sans-serif;cursor:pointer">Report</button>
+<button type="button" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font:500 14px Inter,system-ui,sans-serif;cursor:pointer"><i class="ph ph-stop" style="font-size:15px"></i>Stop</button>
+</div>
+</div></div></div>
+
+</div>
+<p class="dv-next">Try next: “<a class="dv-oid" href="#1a">1a</a> with the whose-move bar from <a class="dv-oid" href="#1c">1c</a>” · “the item card as a full page” · “show <a class="dv-oid" href="#1a">1a</a> at 306 items” (Tweaks)</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;scale&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;106 items&quot;,&quot;306 items&quot;],&quot;default&quot;:&quot;106 items&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Map&quot;},&quot;cells&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Squares&quot;,&quot;Dots&quot;],&quot;default&quot;:&quot;Squares&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Map&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const big = (this.props.scale ?? '106 items') === '306 items';
+    const rad = (this.props.cells ?? 'Squares') === 'Dots' ? '50%' : '3px';
+    const G = 'oklch(0.72 0.11 155)', R = 'oklch(0.68 0.13 25)', A = 'oklch(0.8 0.11 80)', P = '#9184d9', Q = '#595d6c';
+    const GT = 'oklch(0.85 0.08 155)', RT = 'oklch(0.83 0.08 25)', AT = 'oklch(0.88 0.08 80)', PT = '#d2cefd', MT = '#9397ab';
+    const G45 = 'oklch(0.72 0.11 155 / 0.45)', QL = 'inset 0 0 0 1px ' + Q;
+    const glow = '0 0 0 2px rgba(145,132,217,.28), 0 0 12px rgba(145,132,217,.75)';
+    const ST = {
+      confirmed: [G, 'none', 'Confirmed'],
+      pass2: ['oklch(0.72 0.11 155 / 0.62)', 'none', 'Pass 2/3'],
+      pass1: ['oklch(0.72 0.11 155 / 0.3)', 'none', 'Pass 1/3'],
+      running: [P, glow, 'Running'],
+      queued: ['transparent', QL, 'Queued'],
+      waiting: ['transparent', 'inset 0 0 0 1.5px ' + R, 'Waiting (backoff)'],
+      fail: [R, 'none', 'Fail 0/3'],
+      flaky: ['repeating-linear-gradient(135deg,' + R + ' 0 2px,transparent 2px 4px)', 'inset 0 0 0 1px ' + R, 'Flaky 2/3'],
+      blocked: [A, 'none', 'Blocked']
+    };
+    const WHO = { 'deps:vision-bench': 'environment', 'deps:speechline': 'environment', 'live:openapi': 'environment', 'live:site': 'owner' };
+    const L0pool = ['bar:testroom'];
+    ['apps/engine', 'apps/tester', 'apps/agent', 'apps/web', 'apps/vision', 'testroom', 'registry'].forEach(a => ['static', 'deps', 'secrets'].forEach(k => L0pool.push(k + ':' + a)));
+    const pages = [];
+    ['index', 'rooms', 'graph', 'repo', 'search', 'about', 'report', 'status'].forEach(p => [360, 768, 1440].forEach(w => pages.push('page:' + p + '.html@' + w)));
+    const DEF = [
+      { id: 'L0', name: 'Static', what: 'imports, deps, secrets, bar', comp: { confirmed: 21, pass2: 1, blocked: 2 }, pool: L0pool,
+        named: { 'deps:vision-bench': 'blocked', 'deps:speechline': 'blocked', 'secrets:apps/tester': 'pass2' },
+        extra: big ? { pre: 'bar:repo-', comp: { confirmed: 78, pass2: 6, pass1: 4, queued: 12 } } : null },
+      { id: 'L1', name: 'Units', what: 'pytest, node --test', comp: { confirmed: 14, pass2: 2, pass1: 3, running: 1, fail: 2, waiting: 2, flaky: 1, blocked: 4, queued: 2 },
+        pool: ['py:apps/tester', 'node:apps/web', 'py:testroom', 'node:testroom/ui', 'repo:fieldnotes', 'repo:kiln', 'repo:marrow', 'repo:orbit-notes', 'repo:paper-trail', 'repo:canopy', 'repo:driftwood', 'repo:atlas-lite', 'repo:beacon', 'repo:cartograph', 'repo:ember', 'repo:fathom', 'repo:gauge', 'repo:harbor', 'repo:inkwell', 'repo:juniper', 'repo:keel'],
+        named: { 'py:apps/engine': 'running', 'py:apps/agent': 'fail', 'repo:lattice': 'fail', 'repo:signal-ops': 'waiting', 'py:apps/web': 'waiting', 'repo:hollow-graph': 'flaky', 'repo:quorum': 'blocked', 'repo:tidewater': 'blocked', 'py:apps/vision': 'blocked', 'repo:sparrow': 'blocked', 'py:testroom': 'pass2', 'node:testroom/ui': 'pass2', 'repo:fieldnotes': 'pass1', 'repo:kiln': 'pass1', 'repo:marrow': 'pass1', 'repo:ledger-kit': 'queued', 'repo:orbit-notes': 'queued' },
+        extra: big ? { pre: 'repo:r', comp: { confirmed: 31, pass2: 5, pass1: 6, fail: 3, flaky: 2, waiting: 1, queued: 52 } } : null },
+      { id: 'L2', name: 'Pages', what: '8 pages at 360, 768, 1440', comp: { confirmed: 9, pass2: 2, pass1: 2, running: 1, fail: 1, blocked: 1, queued: 8 }, pool: pages, natural: true,
+        named: { 'page:rooms.html@768': 'running', 'page:rooms.html@1440': 'fail', 'page:graph.html@360': 'blocked', 'page:index.html@360': 'pass2', 'page:index.html@768': 'pass2', 'page:repo.html@360': 'pass1', 'page:repo.html@768': 'pass1' } },
+      { id: 'L2e', name: 'Journeys', what: 'e2e/journeys.json', comp: { confirmed: 2, pass1: 1, running: 1, flaky: 1, blocked: 1, queued: 3 },
+        pool: ['journey:sign-in', 'journey:search', 'journey:open-repo-card', 'journey:browse-graph', 'journey:filter-wave', 'journey:read-report', 'journey:switch-source', 'journey:reply-to-item', 'journey:keyboard-tour'],
+        named: { 'journey:sign-in': 'running', 'journey:search': 'flaky', 'journey:open-repo-card': 'blocked', 'journey:browse-graph': 'pass1' } },
+      { id: 'L4', name: 'World', what: 'apps/engine/test_world.py', comp: { queued: 1 }, pool: ['suite:test_world.py'], named: {} },
+      { id: 'L9', name: 'Auth', what: 'test_engine.py::test_*auth*', comp: { queued: 5 }, pool: ['test_auth_expiry', 'test_auth_door_scope', 'test_auth_signature', 'test_auth_replay', 'test_auth_clock_skew'], named: {} },
+      { id: 'data', name: 'Data', what: 'data/, fixtures/', comp: { confirmed: 5, pass1: 1, queued: 2 }, pool: ['data/graph.json', 'fixtures/ledger', 'data/waves.csv', 'data/sites.csv', 'data/glossary.md', 'fixtures/replies', 'fixtures/stuck-56.json', 'fixtures/sample'], named: { 'data/graph.json': 'pass1' } },
+      { id: 'L10', name: 'Live', what: 'http, openapi, compose', comp: { confirmed: 1, blocked: 2, queued: 1 }, pool: ['compose:stack', 'http:graph', 'live:openapi', 'live:site'], named: { 'live:openapi': 'blocked', 'live:site': 'blocked' } }
+    ];
+    const order = ['confirmed', 'pass2', 'pass1', 'blocked', 'fail', 'flaky', 'waiting', 'running', 'queued'];
+    const rank = { confirmed: 0, pass2: 1, pass1: 1.5, blocked: 1.1, fail: 1.3, flaky: 1.4, waiting: 1.7, running: 2.3, queued: 3.3 };
+    const hash = s => { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 9973; return h / 9973; };
+    const byRank = (a, b) => (rank[a.st] + hash(a.id) * 1.8) - (rank[b.st] + hash(b.id) * 1.8);
+    const fill = (comp, ids, named) => {
+      const rem = Object.assign({}, comp);
+      Object.values(named).forEach(s => { rem[s] = (rem[s] || 0) - 1; });
+      const seq = [];
+      order.forEach(s => { for (let i = 0; i < (rem[s] || 0); i++) seq.push(s); });
+      return seq.map((s, i) => ({ id: ids[i] || ('item-' + i), st: s }));
+    };
+    const build = d => {
+      const free = d.pool.filter(x => !(x in d.named));
+      let items;
+      if (d.natural) {
+        const m = {};
+        fill(d.comp, free, d.named).forEach(g => { m[g.id] = g.st; });
+        items = d.pool.map(id => ({ id, st: d.named[id] || m[id] }));
+      } else {
+        items = fill(d.comp, free, d.named).concat(Object.keys(d.named).map(id => ({ id, st: d.named[id] })));
+        items.sort(byRank);
+      }
+      if (d.extra) {
+        const ex = [];
+        let k = 0;
+        order.forEach(s => { for (let i = 0; i < (d.extra.comp[s] || 0); i++) ex.push({ id: d.extra.pre + String(++k).padStart(3, '0'), st: s }); });
+        ex.sort(byRank);
+        items = items.concat(ex);
+      }
+      return items;
+    };
+    const built = DEF.map(d => ({ d, items: build(d) }));
+    const cell = (sec, x, pop) => {
+      const s = ST[x.st];
+      const who = x.st === 'blocked' ? ' on ' + (WHO[x.id] || 'author') : '';
+      return { bg: s[0], sh: s[1], r: rad, tip: sec + ' ' + x.id + ', ' + s[2].toLowerCase() + who, pop: !!pop, ol: pop ? '2px solid #e9e9ed' : 'none' };
+    };
+    const roll = list => {
+      const c = {};
+      list.forEach(x => { c[x.st] = (c[x.st] || 0) + 1; });
+      const g = k => c[k] || 0;
+      return { n: list.length, conf: g('confirmed'), cing: g('pass1') + g('pass2'), run: g('running'), q: g('queued'), failing: g('fail') + g('flaky') + g('waiting'), fl: g('fail'), bl: g('blocked') };
+    };
+    const segs = r => [[r.conf, G], [r.cing, G45], [r.run, P], [r.failing, R], [r.bl, A], [r.q, '#3f424d']].filter(s => s[0] > 0).map(s => ({ f: s[0], bg: s[1] }));
+    const flags = r => [[r.bl, 'blocked', AT], [r.failing, 'failing', RT], [r.run, 'running', PT]].filter(f => f[0] > 0).map(f => ({ t: f[0] + ' ' + f[1], c: f[2] }));
+    const sumTxt = r => [[r.conf, 'confirmed'], [r.cing, 'confirming'], [r.run, 'running'], [r.failing, 'failing'], [r.bl, 'blocked'], [r.q, 'queued']].filter(x => x[0] > 0).map(x => x[0] + ' ' + x[1]).join(' · ');
+    const secs = built.map(({ d, items }) => {
+      const r = roll(items);
+      return { id: d.id, name: d.name, what: d.what, n: r.n, conf: r.conf, r, cells: items.map(x => cell(d.id, x, d.id === 'L1' && x.id === 'repo:ledger-kit')), segs: segs(r), flags: flags(r), sum: sumTxt(r) };
+    });
+    const stallSecs = built.map(({ d, items }) => {
+      const it = items.map(x => ({ id: x.id, st: x.st === 'blocked' ? 'blocked' : 'confirmed' }));
+      const r = roll(it);
+      return { id: d.id, name: d.name, what: d.what, n: r.n, conf: r.conf, cells: it.map(x => cell(d.id, x)), flags: flags(r) };
+    });
+    const T = { n: 0, conf: 0, cing: 0, run: 0, q: 0, failing: 0, fl: 0, bl: 0 };
+    secs.forEach(s => Object.keys(T).forEach(k => { T[k] += s.r[k]; }));
+    const N = T.n;
+    const bound = Math.ceil(N / Math.ceil(3 / 2)) + 9;
+    const startsBy = 37 + Math.ceil(T.q / 2);
+    const doneRounds = Math.ceil(N / 2) + 5;
+    const stallRound = Math.ceil(N / 2) - 1;
+    const stats = [[T.conf, 'Confirmed', G, 'none'], [T.cing, 'Confirming', G45, 'none'], [T.run, 'Running', P, glow], [T.failing, 'Failing', R, 'none'], [T.bl, 'Blocked', A, 'none'], [T.q, 'Queued', 'transparent', QL]].map(s => ({ v: s[0], l: s[1], bg: s[2], sh: s[3] }));
+    const legend = [['Confirmed', 'confirmed'], ['Pass 1–2 of 3', 'pass2'], ['Running', 'running'], ['Queued', 'queued'], ['Waiting', 'waiting'], ['Fail', 'fail'], ['Flaky', 'flaky'], ['Blocked', 'blocked']].map(l => ({ t: l[0], bg: ST[l[1]][0], sh: ST[l[1]][1], r: rad === '50%' ? '50%' : '2px' }));
+    const DOT = { p: [G, 'none'], f: [R, 'none'], r: [P, glow], o: ['transparent', QL] };
+    const dots = str => str.split('').map(ch => ({ bg: DOT[ch][0], sh: DOT[ch][1] }));
+    const pips = n => [0, 1, 2].map(i => (i < n ? { bg: G, sh: 'none' } : { bg: 'transparent', sh: QL }));
+    const slots = [
+      { kind: 'Fresh', sec: 'L1', id: 'py:apps/engine', runs: dots('pro'), note: 'Run 2 of 3 · 42 tests', t: '0:41' },
+      { kind: 'Confirm', sec: 'L2', id: 'page:rooms.html@768', runs: dots('ppr'), note: 'Run 3 of 3 · round 2 of 3', t: '0:18' },
+      { kind: 'Fresh', sec: 'L2e', id: 'journey:sign-in', runs: dots('roo'), note: 'Run 1 of 3 · 6 steps', t: '0:05' }
+    ];
+    const needs = [
+      { who: 'Author', icon: 'ph ph-user', via: 'agent:8000/builder/say', act: 'Reply', rows: [
+        { sec: 'L1', id: 'repo:quorum', why: 'Fail 0/3. The fixer found no verified fix in 2 tries.', since: 'Asked r30.' },
+        { sec: 'L1', id: 'repo:tidewater', why: 'test_sync needs the network; tests must run offline.', since: 'Asked r33.' },
+        { sec: 'L1', id: 'py:apps/vision', why: 'Fixture data/vision/frames/ is missing.', since: 'Asked r34.' },
+        { sec: 'L1', id: 'repo:sparrow', why: 'No test ran: 0 collected.', since: 'Asked r35.' },
+        { sec: 'L2', id: 'page:graph.html@360', why: 'Nav overflows the viewport by 38 px.', since: 'Asked r35.' },
+        { sec: 'L2e', id: 'journey:open-repo-card', why: 'Step 4, see “Hypothesis”: not found.', since: 'Asked r36.' }
+      ] },
+      { who: 'Environment', icon: 'ph ph-plugs', via: 'testroom doctor', act: 'Unblock', rows: [
+        { sec: 'L0', id: 'deps:vision-bench', why: 'Needs torch. Offline is on, so nothing installs.', since: 'Since r12.' },
+        { sec: 'L0', id: 'deps:speechline', why: 'Needs ffmpeg on PATH.', since: 'Since r14.' },
+        { sec: 'L10', id: 'live:openapi', why: 'agent:8000 unreachable; docker is not running here.', since: 'Since r21.' }
+      ] },
+      { who: 'Owner', icon: 'ph ph-crown-simple', via: 'outbox', act: 'Reply', rows: [
+        { sec: 'L10', id: 'live:site', why: 'Public domain not set (links.site).', since: 'In the outbox since r22.' }
+      ] }
+    ].map(g => Object.assign({}, g, { n: g.rows.length, rows: g.rows.map(r => Object.assign({ act: g.act, open: r.id === 'repo:quorum' }, r)) }));
+    const gate = [
+      { ok: false, t: 'Every planned section ran', d: 'L4, L9 not started' },
+      { ok: false, t: 'Every item confirmed', d: T.conf + ' of ' + N },
+      { ok: false, t: 'No fail or flaky result', d: T.failing + ' failing' },
+      { ok: false, t: 'No vacuous suite', d: 'repo:sparrow ran 0' },
+      { ok: true, t: 'No secrets in source, events, reports', d: '1 masked' },
+      { ok: true, t: 'Packed repos clear the bar', d: '6 of 6 checks' }
+    ].map(g => Object.assign({}, g, { icon: g.ok ? 'ph ph-check-circle' : 'ph ph-circle-dashed', ic: g.ok ? GT : MT }));
+    const gateMet = gate.filter(g => g.ok).length;
+    const gateSegs = gate.map(g => ({ bg: g.ok ? G : '#3f424d' }));
+    const ev = [
+      { t: '20:14:09', r: 'r37', sec: 'L2e', id: 'journey:sign-in', m: 'started · fresh · run 1/3', c: P },
+      { t: '20:14:07', r: 'r37', sec: 'L2', id: 'page:rooms.html@768', m: 'run 2/3 pass', c: G },
+      { t: '20:14:02', r: 'r37', sec: 'L1', id: 'py:apps/engine', m: 'run 1/3 pass · 42 tests', c: G },
+      { t: '20:13:58', r: 'r37', sec: '', id: 'round', m: '3 slots: 2 fresh, 1 confirm · 22 queued', c: Q },
+      { t: '20:13:55', r: 'r36', sec: 'L1', id: 'repo:ledger-kit', m: 'author reply · 2 files to draft d2 · 1 path dropped', c: P },
+      { t: '20:13:41', r: 'r36', sec: 'L1', id: 'py:apps/agent', m: 'fail 0/3 → fixer, try 1 of 3', c: R },
+      { t: '20:13:30', r: 'r36', sec: 'L2e', id: 'journey:open-repo-card', m: 'blocked on author · door sent, 5 min', c: A },
+      { t: '20:13:12', r: 'r36', sec: 'L1', id: 'repo:hollow-graph', m: 'flaky 2/3 · retry r38', c: R },
+      { t: '20:12:58', r: 'r36', sec: 'data', id: 'fixtures/ledger', m: 'confirmed 3/3', c: G },
+      { t: '20:12:44', r: 'r35', sec: 'L0', id: 'secrets:apps/tester', m: 'masked TESTER_TOKEN=•••• in output', c: Q },
+      { t: '20:12:31', r: 'r35', sec: 'L10', id: 'live:site', m: 'blocked on owner · public domain not set', c: A }
+    ];
+    const BADGE = { confirmed: ['Confirmed', 'oklch(0.3 0.05 155)', GT], pass2: ['Pass 2/3', 'oklch(0.27 0.04 155)', GT], pass1: ['Pass 1/3', 'oklch(0.27 0.04 155)', GT], running: ['Running', '#423a6a', '#e7e5fe'], queued: ['Queued', '#3f424d', '#e4e7f5'], waiting: ['Waiting', 'oklch(0.28 0.05 25)', RT], fail: ['Fail 0/3', 'oklch(0.31 0.07 25)', RT], flaky: ['Flaky 2/3', 'oklch(0.31 0.07 25)', RT], blocked: ['Blocked', 'oklch(0.33 0.06 80)', AT] };
+    const LR = {
+      L1: [
+        ['blocked', 'repo:quorum', 'repo · python', 'fff', 0, '3e91c0', '', 'On reply', 'Author', 'No verified fix in 2 fixer tries'],
+        ['blocked', 'repo:tidewater', 'repo · python', 'fff', 0, 'a07d44', '', 'On reply', 'Author', 'test_sync needs the network'],
+        ['blocked', 'py:apps/vision', 'package · python', 'fff', 0, '51bb2e', '', 'On reply', 'Author', 'Fixture data/vision/frames/ missing'],
+        ['blocked', 'repo:sparrow', 'repo · python', 'fff', 0, 'c8f310', '', 'On reply', 'Author', 'No test ran: 0 collected'],
+        ['fail', 'py:apps/agent', 'package · python', 'fff', 0, '9c02aa', '', 'Fixer, try 1 of 3', 'Fixer', 'test_router_timeout: TimeoutError'],
+        ['fail', 'repo:lattice', 'repo · node', 'fff', 0, 'e4d1f7', 'changed r36', 'Fixer, try 2 of 3', 'Fixer', 'Draft d1 failed verification'],
+        ['flaky', 'repo:hollow-graph', 'repo · python', 'pfp', 0, '77ac31', '', 'r38', 'Scheduler', 'test_walk_order failed 1 run of 3'],
+        ['waiting', 'repo:signal-ops', 'repo · python', 'fff', 0, '2d6b90', '', 'r40, backoff 6', 'Scheduler', 'Retry 2 of 3'],
+        ['waiting', 'py:apps/web', 'package · python', 'fff', 0, 'f1a0c3', '', 'r39, backoff 3', 'Scheduler', 'Retry 1 of 3'],
+        ['running', 'py:apps/engine', 'package · python', 'pro', 0, '6a4e2b', 'changed r36', 'Now', 'Scheduler', 'Fresh, 42 tests'],
+        ['pass2', 'py:testroom', 'package · python', 'ppp', 2, 'b3c9d1', '', 'r38', 'Scheduler', 'Last confirmation next'],
+        ['pass2', 'node:testroom/ui', 'package · node', 'ppp', 2, '0e7a55', '', 'r38', 'Scheduler', 'Last confirmation next'],
+        ['pass1', 'repo:fieldnotes', 'repo · python', 'ppp', 1, '5fd2e8', '', 'r39', 'Scheduler', ''],
+        ['pass1', 'repo:kiln', 'repo · node', 'ppp', 1, 'a8b417', '', 'r39', 'Scheduler', ''],
+        ['pass1', 'repo:marrow', 'repo · python', 'ppp', 1, 'd40c6f', '', 'r39', 'Scheduler', ''],
+        ['queued', 'repo:ledger-kit', 'repo · python', 'ooo', 0, '0b5e12', 'changed r36', 'r38', 'Scheduler', 'Draft d2 from the author’s reply'],
+        ['queued', 'repo:orbit-notes', 'repo · python', 'ooo', 0, '8e21b7', '', 'r39', 'Scheduler', 'Never run']
+      ],
+      L2: [
+        ['blocked', 'page:graph.html@360', 'page · 360', 'fff', 0, '7c1d0a', '', 'On reply', 'Author', 'Nav overflows by 38 px'],
+        ['fail', 'page:rooms.html@1440', 'page · 1440', 'fff', 0, '44e9b2', '', 'Fixer, try 1 of 3', 'Fixer', '2 buttons without a name'],
+        ['running', 'page:rooms.html@768', 'page · 768', 'ppr', 1, '44e9b2', '', 'Now', 'Scheduler', 'Confirmation round 2']
+      ]
+    };
+    const ledger = built.map(({ d }, i) => {
+      const raw = LR[d.id] || [];
+      const rows = raw.map(a => ({ st: BADGE[a[0]][0], bbg: BADGE[a[0]][1], bfg: BADGE[a[0]][2], id: a[1], kind: a[2], runs: dots(a[3]), pips: pips(a[4]), fp: a[5], fpn: a[6], next: a[7], on: a[8], note: a[9] }));
+      const r = secs[i].r;
+      const cnt = k => raw.filter(a => a[0] === k).length;
+      const more = sumTxt({ conf: r.conf - cnt('confirmed'), cing: r.cing - cnt('pass1') - cnt('pass2'), run: r.run - cnt('running'), q: r.q - cnt('queued'), failing: r.failing - cnt('fail') - cnt('flaky') - cnt('waiting'), bl: r.bl - cnt('blocked') });
+      return { id: d.id, name: d.name, what: d.what, open: rows.length > 0, rows, more, hasMore: rows.length > 0 && more.length > 0, sum: secs[i].sum, segs: secs[i].segs, frac: r.conf + ' / ' + r.n, caret: rows.length ? 'ph ph-caret-down' : 'ph ph-caret-right' };
+    });
+    const filters = [['All', N, true], ['Needs someone', T.bl], ['Failing', T.failing], ['Running', T.run], ['Confirming', T.cing], ['Queued', T.q], ['Confirmed', T.conf]].map(f => ({ l: f[0], n: f[1], bg: f[2] ? '#2b2741' : 'transparent', sh: f[2] ? 'inset 0 0 0 1px #9184d9' : 'inset 0 0 0 1px rgba(233,233,237,.16)', fg: f[2] ? '#e7e5fe' : '#b2b6ca', pressed: f[2] ? 'true' : 'false' }));
+    const confirming = [['L0', 'secrets:apps/tester', 2], ['L1', 'py:testroom', 2], ['L1', 'node:testroom/ui', 2], ['L2', 'page:index.html@360', 2], ['L2', 'page:index.html@768', 2], ['L1', 'repo:fieldnotes', 1], ['L1', 'repo:kiln', 1], ['L1', 'repo:marrow', 1], ['L2', 'page:repo.html@360', 1], ['L2', 'page:repo.html@768', 1], ['L2e', 'journey:browse-graph', 1], ['data', 'data/graph.json', 1]].map(a => ({ sec: a[0], id: a[1], pips: pips(a[2]) }));
+    const retries = [
+      { sec: 'L1', id: 'repo:hollow-graph', st: 'Flaky 2/3', next: 'r38' },
+      { sec: 'L2e', id: 'journey:search', st: 'Flaky 2/3', next: 'r38' },
+      { sec: 'L1', id: 'py:apps/web', st: 'Backoff 3', next: 'r39' },
+      { sec: 'L1', id: 'repo:signal-ops', st: 'Backoff 6', next: 'r40' }
+    ];
+    const fixer = [
+      { sec: 'L1', id: 'py:apps/agent', why: 'test_router_timeout: TimeoutError after 30 s', tr: 'Try 1 of 3 · asked r36' },
+      { sec: 'L1', id: 'repo:lattice', why: 'Draft d1 failed verification', tr: 'Try 2 of 3 · asked r35' },
+      { sec: 'L2', id: 'page:rooms.html@1440', why: '2 buttons without a name', tr: 'Try 1 of 3 · asked r36' }
+    ];
+    const queuedBy = built.map(({ d, items }) => ({ sec: d.id, n: items.filter(x => x.st === 'queued').length, cells: items.filter(x => x.st === 'queued').map(x => cell(d.id, x)) })).filter(g => g.n > 0);
+    const doneBy = built.map(({ d, items }) => ({ sec: d.id, n: items.filter(x => x.st === 'confirmed').length, cells: items.filter(x => x.st === 'confirmed').map(x => cell(d.id, x)) })).filter(g => g.n > 0);
+    const sched = T.q + T.run + T.failing - T.fl;
+    const moves = [[sched, 'Scheduler', P], [T.cing, 'Confirming', G45], [T.fl, 'Fixer agent', R], [T.bl, 'Blocked', A], [T.conf, 'Confirmed', G]].map(m => ({ n: m[0], l: m[1], bg: m[2], f: m[0] }));
+    const REP = { L0: ['r1', 'r49', 'torch and ffmpeg provided; 2 deps pinned by the packer'], L1: ['r1', 'r57', '5 author replies, 3 verified fixes'], L2: ['r2', 'r55', 'graph.html nav fixed at 360'], L2e: ['r4', 'r56', 'search waits for results; no longer flaky'], L4: ['r41', 'r47', ''], L9: ['r42', 'r50', 'Doors close within 15 minutes'], data: ['r3', 'r52', ''], L10: ['r6', 'r58', 'Site live once the domain was set'] };
+    const rep = built.map(({ d, items }) => ({ id: d.id, name: d.name, n: items.length, first: REP[d.id][0], last: REP[d.id][1], note: REP[d.id][2] }));
+    ev.forEach(e => { e.tc = e.c === G ? GT : e.c === R ? RT : e.c === A ? AT : e.c === P ? PT : '#b2b6ca'; });
+    ledger.forEach(g => g.rows.forEach(r => { r.onc = r.on === 'Author' ? AT : r.on === 'Fixer' ? RT : '#b2b6ca'; }));
+    return { evAsc: ev.slice().reverse(), author: needs[0], env: needs[1], owner: needs[2], prog: Math.round(37 / bound * 100) + '%', N, T, bound, startsBy, doneRounds, stallRound, stallConf: N - T.bl, secs, stallSecs, stats, allSegs: segs(T), legend, slots, needs, gate, gateMet, gateSegs, ev, evShort: ev.slice(0, 5), ledger, filters, confirming, retries, fixer, queuedBy, doneBy, moves, sched, rep };
+  }
+}
+</script>
+</body>
+</html>

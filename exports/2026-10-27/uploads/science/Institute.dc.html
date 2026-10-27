@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="suite-theme.css">
+  <script src="suite-theme.js"></script>
+  <style>
+    body{margin:0;min-height:100vh;background:var(--color-bg)}
+    a{color:var(--color-accent)} a:hover{color:var(--color-accent-400)}
+    @keyframes slPulse{0%,100%{opacity:1}50%{opacity:.4}}
+    ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--color-neutral-800);border-radius:4px}
+  </style>
+</helmet>
+<div style="min-height:100vh;color:var(--color-text);background:radial-gradient(900px 480px at 4% -10%,color-mix(in srgb,var(--color-accent) 13%,transparent),transparent 72%),radial-gradient(760px 440px at 100% 0%,color-mix(in srgb,var(--color-section) 62%,transparent),transparent 70%),var(--color-bg)">
+  <nav class="nav" style="padding:var(--space-4) var(--space-8);gap:var(--space-4) var(--space-6);flex-wrap:wrap;position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--color-bg) 86%,transparent);backdrop-filter:blur(10px)">
+    <span class="nav-brand" style="display:flex;align-items:center;gap:10px;margin-right:var(--space-4)"><span style="width:18px;height:18px;border-radius:50%;border:1.5px solid var(--color-accent);box-shadow:0 0 16px color-mix(in srgb,var(--color-accent) 70%,transparent)"></span>{{ name }}</span>
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="9"><a href="#" onClick="{{ t.go }}" aria-current="{{ t.cur }}" style="padding:4px 0">{{ t.label }}</a></sc-for>
+    <span style="flex:1"></span>
+    <a class="btn btn-secondary" href="Features.dc.html">200 AI features</a>
+    <a class="btn btn-primary" href="Saltline.dc.html">Operations</a>
+  </nav>
+  <main style="max-width:1240px;margin:0 auto;padding:var(--space-8) var(--space-8) 72px">
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+
+  <sc-if value="{{ v.home }}" hint-placeholder-val="{{ true }}">
+  <section data-screen-label="01 Institute" style="display:flex;flex-direction:column;gap:56px">
+    <header style="padding:40px 0 8px">
+      <div class="card-kicker">Environmental science institute</div>
+      <h1 style="font-size:56px;line-height:1.04;margin:12px 0 18px;max-width:17ch">Science for salty land, water and coasts</h1>
+      <p class="text-muted" style="max-width:62ch;margin:0 0 22px;font-size:17px">We study halophytes, plants that thrive in salt, and build the drones and robots to grow and monitor them. Services pay for the research. People work in the field. Agents do the rest and wait for a person to approve anything that leaves the building.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-primary" onClick="{{ goResearch }}">See the research</button><a class="btn btn-secondary" href="Saltline.dc.html">Open operations</a></div>
+    </header>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--space-8)">
+      <sc-for list="{{ facts }}" as="f" hint-placeholder-count="4"><div><span style="display:block;width:24px;height:2px;background:var(--color-accent);margin-bottom:12px"></span><div style="font-size:40px;font-weight:500;letter-spacing:-.02em;line-height:1.1">{{ f.v }}</div><div class="text-muted" style="font-size:13px;margin-top:4px">{{ f.l }}</div></div></sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:var(--space-8);align-items:start">
+      <div>
+        <div class="card-kicker" style="margin-bottom:8px">Programmes</div>
+        <sc-for list="{{ progRows }}" as="p" hint-placeholder-count="7"><div onClick="{{ p.go }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 4px;cursor:pointer;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 9%,transparent) 48px,color-mix(in srgb,var(--color-text) 9%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span style="font-size:15px">{{ p.name }}</span><span class="tag tag-neutral">{{ p.tag }}</span></div></sc-for>
+      </div>
+      <div class="card" style="padding:var(--space-6);gap:14px">
+        <div style="display:flex;align-items:center;gap:10px"><span class="card-kicker">Operations right now</span><span style="width:7px;height:7px;border-radius:50%;background:var(--color-accent);box-shadow:0 0 10px var(--color-accent);animation:slPulse 1.6s ease-in-out infinite"></span></div>
+        <div style="display:flex;gap:28px;flex-wrap:wrap"><div><div style="font-size:34px;font-weight:500;line-height:1.1">{{ pulse.running }}</div><div class="text-muted" style="font-size:12px">tasks in parallel</div></div><div><div style="font-size:34px;font-weight:500;line-height:1.1">{{ pulse.share }}%</div><div class="text-muted" style="font-size:12px">of agent time on R&amp;D</div></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><sc-for list="{{ pulse.feed }}" as="f" hint-placeholder-count="4"><div style="font-size:13px">{{ f }}</div></sc-for></div>
+      </div>
+    </div>
+    <div>
+      <div class="card-kicker" style="margin-bottom:12px">How the institute pays for itself</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:var(--space-4)"><sc-for list="{{ flow }}" as="s" hint-placeholder-count="5"><div class="card" style="padding:var(--space-4) var(--space-6);gap:8px"><span class="card-kicker">Step {{ s.n }}</span><span style="font-size:14px">{{ s.t }}</span></div></sc-for></div>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ v.research }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="02 Research" style="display:flex;flex-direction:column;gap:32px">
+    <header><div class="card-kicker">Research</div><h1 style="font-size:44px;margin:8px 0 12px;max-width:20ch">Seven programmes, one question each</h1><p class="text-muted" style="max-width:66ch;margin:0">Field autonomy takes the largest share of effort. Project status is honest: most work is design or simulation today.</p></header>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--space-8);align-items:start">
+      <div style="display:flex;flex-direction:column;gap:6px"><sc-for list="{{ progRows }}" as="p" hint-placeholder-count="7"><button type="button" onClick="{{ p.pick }}" class="btn btn-secondary" style="justify-content:flex-start;text-align:left;border-color:{{ p.bd }};color:{{ p.fg }}">{{ p.name }}</button></sc-for></div>
+      <div class="card" style="padding:var(--space-6);gap:18px;grid-column:span 2;min-width:0">
+        <div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag tag-accent">{{ pd.tag }}</span><span class="text-muted" style="font-size:12px">{{ pd.lead }}</span></div><h2 style="font-size:30px;margin:10px 0 8px">{{ pd.name }}</h2><p style="margin:0;font-size:15px">{{ pd.mission }}</p></div>
+        <div><div class="card-kicker" style="margin-bottom:8px">Questions we are answering</div><div style="display:flex;flex-direction:column;gap:8px;font-size:14px"><sc-for list="{{ pd.qs }}" as="q" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:14px 1fr;gap:8px"><span style="color:var(--color-accent)">·</span><span>{{ q }}</span></div></sc-for></div></div>
+        <div><div class="card-kicker" style="margin-bottom:8px">Projects</div><sc-for list="{{ pd.projects }}" as="x" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:9px 0;font-size:14px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span>{{ x.n }}</span><span class="tag tag-outline">{{ x.s }}</span></div></sc-for></div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap"><div><div class="card-kicker" style="margin-bottom:8px">Methods</div><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ pd.methods }}" as="m" hint-placeholder-count="4"><span class="tag tag-neutral">{{ m }}</span></sc-for></div></div><div><div class="card-kicker" style="margin-bottom:8px">Planned outputs</div><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ pd.outputs }}" as="m" hint-placeholder-count="2"><span class="tag tag-accent">{{ m }}</span></sc-for></div></div></div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ v.halo }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="03 Halophytes" style="display:flex;flex-direction:column;gap:40px">
+    <header><div class="card-kicker">Flagship</div><h1 style="font-size:44px;margin:8px 0 12px;max-width:20ch">Halophytes: plants that grow where salt stops other crops</h1><p class="text-muted" style="max-width:66ch;margin:0">Eight ways a halophyte becomes income, from a vegetable on a chef's menu to a bed that takes up desalination brine. Each stream moves from trial to supply contract through the same five steps.</p></header>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:var(--space-4)"><sc-for list="{{ halo }}" as="h" hint-placeholder-count="8"><div class="card" style="padding:var(--space-4) var(--space-6);gap:8px"><div style="display:flex;align-items:center;gap:8px"><span class="card-title" style="font-size:16px">{{ h.name }}</span><span class="{{ h.tag }}" style="margin-left:auto">{{ h.stage }}</span></div><div style="font-size:12px;color:var(--color-accent-300)">{{ h.species }}</div><p class="card-body" style="flex:none">{{ h.note }}</p><div class="card-meta" style="margin-top:auto"><span>{{ h.buyers }}</span></div></div></sc-for></div>
+    <div><div class="card-kicker" style="margin-bottom:12px">From species to supply contract</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-4)"><sc-for list="{{ path }}" as="s" hint-placeholder-count="5"><div style="display:flex;flex-direction:column;gap:6px"><span style="height:2px;background:linear-gradient(to right,var(--color-accent),transparent)"></span><span class="card-kicker">{{ s.n }}</span><span style="font-size:14px">{{ s.t }}</span></div></sc-for></div></div>
+    <div><div class="card-kicker" style="margin-bottom:10px">Species library</div><div style="overflow-x:auto"><div style="min-width:720px"><div style="display:grid;grid-template-columns:1.1fr 1.3fr 1fr 1.3fr 1fr;gap:12px;padding:6px 4px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)"><span>Common name</span><span>Species</span><span>Form</span><span>Uses</span><span>Our role</span></div><sc-for list="{{ species }}" as="r" hint-placeholder-count="12"><div style="display:grid;grid-template-columns:1.1fr 1.3fr 1fr 1.3fr 1fr;gap:12px;padding:9px 4px;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span>{{ r.a }}</span><span style="font-style:italic;color:var(--color-neutral-300)">{{ r.b }}</span><span class="text-muted">{{ r.c }}</span><span>{{ r.d }}</span><span style="color:var(--color-accent-300)">{{ r.e }}</span></div></sc-for></div></div></div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ v.field }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="04 Field" style="display:flex;flex-direction:column;gap:40px">
+    <header><div class="card-kicker">Field and autonomy</div><h1 style="font-size:44px;margin:8px 0 12px;max-width:22ch">People in the field now, machines as each gate clears</h1><p class="text-muted" style="max-width:66ch;margin:0">Human crews do field work today. Drones and ground robots take repeat tasks only after a phase exit gate is met and a named person signs off.</p></header>
+    <div><div class="card-kicker" style="margin-bottom:12px">Facilities (planned)</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:var(--space-4)"><sc-for list="{{ facilities }}" as="f" hint-placeholder-count="7"><div class="card" style="padding:var(--space-4) var(--space-6);gap:6px"><div style="display:flex;gap:8px;align-items:center"><span class="card-title" style="font-size:15px">{{ f.a }}</span><span class="tag tag-outline" style="margin-left:auto">{{ f.c }}</span></div><p class="card-body" style="flex:none">{{ f.b }}</p></div></sc-for></div></div>
+    <div><div class="card-kicker" style="margin-bottom:12px">Autonomy phases</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:var(--space-4)"><sc-for list="{{ phases }}" as="p" hint-placeholder-count="5"><div class="card" style="padding:var(--space-4) var(--space-6);gap:10px"><div style="display:flex;align-items:center;gap:8px"><span class="card-kicker">{{ p.label }}</span><span class="{{ p.tag }}" style="margin-left:auto">{{ p.status }}</span></div><div class="card-title" style="font-size:16px">{{ p.name }}</div><p class="card-body" style="flex:none">{{ p.body }}</p><div><div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-500);margin-bottom:3px">Exit gate</div><div style="font-size:12px;color:var(--color-neutral-300)">{{ p.gate }}</div></div><div style="margin-top:auto"><div class="text-muted" style="display:flex;justify-content:space-between;font-size:11px"><span>Machine share of field hours (plan)</span><span>{{ p.share }}</span></div><div style="height:3px;border-radius:2px;background:var(--color-neutral-800);margin-top:5px;overflow:hidden"><div style="height:100%;width:{{ p.share }};background:var(--color-accent)"></div></div></div></div></sc-for></div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:var(--space-8);align-items:start">
+      <div><div class="card-kicker" style="margin-bottom:8px">Crew pool (planned)</div><sc-for list="{{ crew }}" as="r" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;padding:10px 0;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span>{{ r.region }}</span><span class="text-muted">{{ r.roles }}</span></div></sc-for></div>
+      <div><div class="card-kicker" style="margin-bottom:8px">Fleet in development</div><sc-for list="{{ fleet }}" as="f" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span style="font-size:14px">{{ f.name }}</span><span style="display:flex;gap:6px;justify-self:end"><span class="tag tag-neutral">{{ f.phase }}</span><span class="tag tag-outline">{{ f.status }}</span></span><span class="text-muted" style="font-size:12px;grid-column:1/-1">Next gate: {{ f.next }}</span></div></sc-for></div>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ v.intel }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="05 Intelligence" style="display:flex;flex-direction:column;gap:44px">
+    <header><div class="card-kicker">Environmental intelligence</div><h1 style="font-size:44px;margin:8px 0 12px;max-width:22ch">Live feeds and a regulatory radar</h1><p class="text-muted" style="max-width:68ch;margin:0">Weather, open satellite scenes and earthquakes are live from public APIs. Cameras are yours to add. The radar searches US federal records and asks Claude to look for incongruities across government levels. Sites use regional reference coordinates, not surveyed locations.</p><p class="text-muted" style="margin:8px 0 0;font-size:12px">{{ errs }}</p></header>
+
+    <div><div class="card-kicker" style="margin-bottom:6px">Weather and flight windows</div><p class="text-muted" style="margin:0 0 12px;font-size:12px">Open-Meteo. Advisory only: Good below 10 m/s gusts and dry, No-go above 14 m/s or any rain. The licensed pilot decides.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:var(--space-4)"><sc-for list="{{ wx }}" as="w" hint-placeholder-count="4"><div class="card" style="padding:var(--space-4) var(--space-6);gap:8px"><div style="display:flex;align-items:center;gap:8px"><span class="card-title" style="font-size:15px">{{ w.name }}</span><span class="{{ w.tag }}" style="margin-left:auto">{{ w.adv }}</span></div><div style="display:flex;gap:18px;font-size:13px;flex-wrap:wrap"><span><span style="font-size:26px;font-weight:500">{{ w.temp }}</span></span><span class="text-muted">wind {{ w.wind }}<br>gusts {{ w.gust }}<br>rain {{ w.rain }}</span></div><div class="text-muted" style="font-size:11px;display:flex;flex-direction:column;gap:2px"><sc-for list="{{ w.next }}" as="n" hint-placeholder-count="3"><span>{{ n }}</span></sc-for></div></div></sc-for></div></div>
+
+    <div><div class="card-kicker" style="margin-bottom:6px">Satellite scenes, last 30 days</div><p class="text-muted" style="margin:0 0 12px;font-size:12px">Sentinel-2 L2A from the open Earth Search STAC API, 0.4 degree box around each site.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:var(--space-4)"><sc-for list="{{ sc }}" as="s" hint-placeholder-count="4"><div class="card" style="padding:var(--space-4);gap:8px"><div style="height:120px;border-radius:6px;background:var(--color-neutral-900);overflow:hidden"><sc-if value="{{ s.hasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ s.thumb }}" alt="" style="width:100%;height:100%;object-fit:cover"></sc-if></div><div style="font-size:14px">{{ s.name }}</div><div class="card-meta"><span>{{ s.n }} scenes</span><span>latest {{ s.date }}</span><span>{{ s.cloud }}</span></div></div></sc-for></div></div>
+
+    <div><div class="card-kicker" style="margin-bottom:6px">Earthquakes, last 24 hours</div><p class="text-muted" style="margin:0 0 12px;font-size:12px">USGS feed, magnitude 2.5 and above. {{ eq.count }} events worldwide. Distance is to the nearest reference site.</p>
+      <sc-for list="{{ eq.top }}" as="q" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 4px;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span style="font-size:20px;font-weight:500">M{{ q.mag }}</span><span><a href="{{ q.url }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">{{ q.place }}</a><span class="text-muted" style="display:block;font-size:11px">{{ q.when }} · {{ q.near }}</span></span><span class="tag tag-neutral">{{ q.tsu }}</span></div></sc-for></div>
+
+    <div><div class="card-kicker" style="margin-bottom:6px">Camera network</div><p class="text-muted" style="margin:0 0 12px;font-size:12px;max-width:72ch">Add a snapshot image URL from a camera you own or have permission to use. It refreshes every 20 seconds. Environmental scenes only: vegetation, water level, shoreline, weather. No face or plate recognition, no covert placement, short retention, and local law applies. If an image will not load, the host blocks embedding.</p>
+      <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto;gap:8px;max-width:760px"><input class="input" placeholder="https://… snapshot image URL" value="{{ camUrl }}" onChange="{{ onCamUrl }}"><input class="input" placeholder="Label" value="{{ camLabel }}" onChange="{{ onCamLabel }}"><button type="button" class="btn btn-primary" onClick="{{ addCam }}">Add camera</button></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:var(--space-4);margin-top:14px"><sc-for list="{{ cams }}" as="c" hint-placeholder-count="1"><div class="card" style="padding:var(--space-3);gap:6px"><div style="height:150px;border-radius:6px;background:var(--color-neutral-900);overflow:hidden"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><img src="{{ c.src }}" alt="{{ c.label }}" style="width:100%;height:100%;object-fit:cover"></sc-if></div><div class="card-meta"><span>{{ c.label }}</span><button type="button" class="btn btn-ghost" style="margin-left:auto" onClick="{{ c.drop }}">Remove</button></div></div></sc-for></div></div>
+
+    <div style="display:flex;flex-direction:column;gap:16px"><div><div class="card-kicker" style="margin-bottom:6px">Regulatory radar</div><p class="text-muted" style="margin:0;font-size:12px;max-width:76ch">Pick an activity or describe a potential one. The Federal Register search is live and covers US federal agencies. The incongruity analysis is Claude's general knowledge on top of those results. It names no statutes and every item is unverified until counsel or the agency confirms it.</p></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ topics }}" as="t" hint-placeholder-count="6"><button type="button" class="tag" style="cursor:pointer;font-family:inherit;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }}" onClick="{{ t.go }}">{{ t.label }}</button></sc-for></div>
+      <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px;max-width:820px"><input class="input" placeholder="Activity or potential activity" value="{{ topic }}" onChange="{{ onTopic }}"><input class="input" placeholder="Jurisdiction, e.g. California, USA" value="{{ juris }}" onChange="{{ onJuris }}"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span class="text-muted" style="font-size:12px;margin-right:6px">Levels</span><sc-for list="{{ levels }}" as="l" hint-placeholder-count="5"><button type="button" class="tag" style="cursor:pointer;font-family:inherit;border:1px solid {{ l.bd }};background:{{ l.bg }};color:{{ l.fg }}" onClick="{{ l.go }}">{{ l.label }}</button></sc-for></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-secondary" disabled="{{ busyR }}" onClick="{{ searchRegs }}">{{ regsLabel }}</button><button type="button" class="btn btn-primary" disabled="{{ busyA }}" onClick="{{ analyse }}">{{ anaLabel }}</button></div>
+      <p class="text-muted" style="margin:0;font-size:12px">{{ errA }}</p>
+      <sc-if value="{{ hasRegs }}" hint-placeholder-val="{{ false }}"><div class="card" style="padding:var(--space-4) var(--space-6);gap:10px"><div class="card-kicker">Federal Register: {{ regs.total }} documents match, most relevant shown</div><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ regs.agencies }}" as="a" hint-placeholder-count="4"><span class="tag tag-neutral">{{ a }}</span></sc-for></div><sc-for list="{{ regs.docs }}" as="d" hint-placeholder-count="4"><div style="padding:6px 0;font-size:13px"><a href="{{ d.url }}" target="_blank" rel="noopener" style="color:var(--color-text);text-decoration:none">{{ d.title }}</a><span class="text-muted" style="display:block;font-size:11px">{{ d.agency }} · {{ d.type }} · {{ d.date }}</span></div></sc-for></div></sc-if>
+      <sc-if value="{{ hasAna }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:var(--space-6);align-items:start">
+        <div><div class="card-kicker" style="margin-bottom:8px">Agencies and levels involved</div><sc-for list="{{ ana.agencies }}" as="a" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:9px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span style="font-size:14px">{{ a.name }}</span><span class="tag tag-neutral">{{ a.level }}</span><span class="text-muted" style="font-size:12px;grid-column:1/-1">{{ a.role }} · {{ a.basis }}</span></div></sc-for></div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-4)"><div class="card-kicker">Possible incongruities</div><sc-for list="{{ ana.incongruities }}" as="i" hint-placeholder-count="4"><div class="card" style="padding:var(--space-4) var(--space-6);gap:6px"><div style="display:flex;gap:8px;align-items:center"><span class="tag tag-accent">{{ i.kind }}</span><span class="text-muted" style="font-size:12px">{{ i.between }}</span></div><div style="font-size:14px">{{ i.issue }}</div><div class="text-muted" style="font-size:12px">Impact: {{ i.impact }}</div><div style="font-size:12px;color:var(--color-accent-300)">Verify: {{ i.verify }}</div></div></sc-for><div class="card-kicker" style="margin-top:6px">Next steps</div><sc-for list="{{ ana.next }}" as="n" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:14px 1fr;gap:8px;font-size:13px"><span style="color:var(--color-accent)">·</span><span>{{ n }}</span></div></sc-for></div>
+      </div></sc-if>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ v.services }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="06 Services" style="display:flex;flex-direction:column;gap:28px">
+    <header><div class="card-kicker">Services</div><h1 style="font-size:44px;margin:8px 0 12px;max-width:20ch">Fifty services that fund the research</h1><p class="text-muted" style="max-width:66ch;margin:0">Most are delivered by agents with human review. Field services use crews. Tickets are our own first-engagement estimates.</p></header>
+    <div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ lcat }}" as="c" hint-placeholder-count="6"><button type="button" class="tag" style="cursor:pointer;font-family:inherit;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}" onClick="{{ c.go }}">{{ c.label }}</button></sc-for></div>
+    <div style="overflow-x:auto"><div style="min-width:640px"><sc-for list="{{ lrows }}" as="r" hint-placeholder-count="10"><div style="display:grid;grid-template-columns:minmax(0,1fr) 130px 70px 80px;gap:10px;align-items:center;padding:9px 4px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><div><div style="font-size:14px">{{ r.name }}</div><div class="text-muted" style="font-size:11px">{{ r.cat }}</div></div><span class="{{ r.tag }}" style="justify-self:start">{{ r.mode }}</span><span style="font-size:13px">{{ r.ticket }}</span><span style="font-size:13px">{{ r.days }}</span></div></sc-for></div></div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ v.academy }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="07 Academy" style="display:flex;flex-direction:column;gap:40px">
+    <header><div class="card-kicker">Academy and open science</div><h1 style="font-size:44px;margin:8px 0 12px;max-width:22ch">Teach it, publish it, share the data</h1><p class="text-muted" style="max-width:66ch;margin:0">Nothing below is published yet. Statuses show where each item stands.</p></header>
+    <div><div class="card-kicker" style="margin-bottom:12px">Courses</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:var(--space-4)"><sc-for list="{{ courses }}" as="c" hint-placeholder-count="6"><div class="card" style="padding:var(--space-4) var(--space-6);gap:6px"><div style="display:flex;gap:8px;align-items:center"><span class="card-title" style="font-size:15px">{{ c.a }}</span><span class="tag tag-outline" style="margin-left:auto">{{ c.d }}</span></div><div class="card-meta"><span>{{ c.b }}</span></div><div class="card-meta"><span>For {{ c.c }}</span></div></div></sc-for></div></div>
+    <div><div class="card-kicker" style="margin-bottom:8px">Open outputs pipeline</div><sc-for list="{{ outputs }}" as="o" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:90px minmax(0,1fr) 90px auto;gap:12px;align-items:center;padding:10px 4px;font-size:14px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span class="text-muted" style="font-size:12px">{{ o.a }}</span><span>{{ o.b }}</span><span class="text-muted" style="font-size:12px">{{ o.c }}</span><span class="tag tag-outline">{{ o.d }}</span></div></sc-for></div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ v.people }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="08 People" style="display:flex;flex-direction:column;gap:40px">
+    <header><div class="card-kicker">People and governance</div><h1 style="font-size:44px;margin:8px 0 12px;max-width:22ch">Who does the work, and the rules they work under</h1><p class="text-muted" style="max-width:66ch;margin:0">The institute is being formed. Every human role below is open. Agents already cover the first draft of most desk work.</p></header>
+    <div><div class="card-kicker" style="margin-bottom:12px">Structure</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:var(--space-4)"><sc-for list="{{ org }}" as="u" hint-placeholder-count="6"><div class="card" style="padding:var(--space-4) var(--space-6);gap:8px"><div style="display:flex;gap:8px;align-items:center"><span class="card-title" style="font-size:15px">{{ u.a }}</span><span class="tag tag-outline" style="margin-left:auto">Hiring</span></div><div class="text-muted" style="font-size:13px;display:flex;flex-direction:column;gap:3px"><sc-for list="{{ u.roles }}" as="r" hint-placeholder-count="3"><span>{{ r }}</span></sc-for></div></div></sc-for></div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:var(--space-8);align-items:start"><div><div class="card-kicker" style="margin-bottom:10px">Scientific advisory board</div><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ board }}" as="b" hint-placeholder-count="6"><span class="tag tag-neutral">{{ b }} · seat open</span></sc-for></div></div><div><div class="card-kicker" style="margin-bottom:10px">Agent staff</div><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ agents }}" as="a" hint-placeholder-count="8"><span class="{{ a.tag }}">{{ a.name }}</span></sc-for></div></div></div>
+    <div><div class="card-kicker" style="margin-bottom:8px">Policies</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:var(--space-8)"><sc-for list="{{ policies }}" as="p" hint-placeholder-count="6"><div><div class="card-title" style="font-size:16px;margin-bottom:6px">{{ p.a }}</div><p class="text-muted" style="margin:0;font-size:14px">{{ p.b }}</p></div></sc-for></div></div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ v.funding }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="09 Funding" style="display:flex;flex-direction:column;gap:40px">
+    <header><div class="card-kicker">Funding and partners</div><h1 style="font-size:44px;margin:8px 0 12px;max-width:22ch">Six income sources and an organisation list that is real</h1><p class="text-muted" style="max-width:66ch;margin:0">The twelve organisations below are real and each has a drafted approach in Operations. None is a partner yet.</p></header>
+    <div><div class="card-kicker" style="margin-bottom:8px">Income</div><sc-for list="{{ funding }}" as="f" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:170px minmax(0,1fr) auto;gap:14px;align-items:baseline;padding:11px 4px;font-size:14px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span>{{ f.a }}</span><span class="text-muted">{{ f.b }}</span><span class="tag tag-outline">{{ f.c }}</span></div></sc-for></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:var(--space-8);align-items:start">
+      <div><div class="card-kicker" style="margin-bottom:8px">Organisations we are approaching</div><sc-for list="{{ partners }}" as="p" hint-placeholder-count="12"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;font-size:14px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span>{{ p.name }}<span class="text-muted" style="display:block;font-size:11px">{{ p.sub }}</span></span><span class="tag tag-neutral">{{ p.stage }}</span></div></sc-for></div>
+      <div><div class="card-kicker" style="margin-bottom:8px">Five-year plan</div><sc-for list="{{ miles }}" as="m" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:64px 1fr;gap:12px;padding:10px 0;font-size:14px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span class="card-kicker" style="padding-top:2px">{{ m.a }}</span><span>{{ m.b }}</span></div></sc-for><div class="card-kicker" style="margin:20px 0 8px">Grant programmes on the watchlist</div><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ funders }}" as="g" hint-placeholder-count="7"><span class="tag tag-neutral">{{ g }}</span></sc-for></div></div>
+    </div>
+  </section>
+  </sc-if>
+
+  <p class="text-muted" style="max-width:78ch;margin:56px 0 0;font-size:12px">Prototype. Live feeds come from public APIs and may be blocked by your network. Staffing, facilities, courses and outputs are plans, not existing assets. Organisations are real; facts about them come from public knowledge and are listed for confirmation in Operations.</p>
+  </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;instituteName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Saltline Institute&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Institute&quot;},&quot;rndTarget&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:80,&quot;min&quot;:50,&quot;max&quot;:95,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Runtime&quot;}}">
+class Component extends DCLogic {
+  state = { tab: 'home', prog: 0, lcat: 'All', ready: false, wx: null, sc: null, eq: null, errs: '', topic: '', juris: '', lv: [false, true, true, false, true], regs: null, busyR: false, ana: null, busyA: false, errA: '', cams: [], camUrl: '', camLabel: '', cb: 0, tick: 0 };
+  cfg = () => ({ rnd: this.props.rndTarget ?? 80, max: 12, tempo: 1, company: this.props.instituteName ?? 'Saltline Institute', sender: '[Your name]' });
+
+  async componentDidMount() {
+    let saved = null, cams = [];
+    try { saved = JSON.parse(localStorage.getItem('saltline.os.v1') || 'null'); } catch (e) {}
+    try { cams = JSON.parse(localStorage.getItem('saltline.cams.v1') || '[]'); } catch (e) {}
+    const [S, E, I, X] = await Promise.all([import('./saltline-data.js'), import('./saltline-engine.js'), import('./institute-data.js'), import('./institute-intel.js')]);
+    Object.assign(this, { S, EM: E, I, X, saved });
+    this.engine = new E.Engine(S, this.cfg, { change: () => this.poke(), persist: () => {}, claude: () => Promise.reject(new Error('Read only')) }, saved);
+    this.engine.start();
+    this.setState({ ready: true, cams, topic: X.TOPICS[0] });
+    this.refresh(); this.iv = setInterval(() => this.refresh(), 300000); this.cv = setInterval(() => this.setState({ cb: Date.now() }), 20000);
+  }
+  componentWillUnmount() { if (this.engine) this.engine.stop(); clearInterval(this.iv); clearInterval(this.cv); clearTimeout(this._pk); }
+  poke() { if (this._pk) return; this._pk = setTimeout(() => { this._pk = 0; this.setState({ tick: Date.now() }); }, 200); }
+  refresh() {
+    const X = this.X, bad = k => e => this.setState(s => ({ errs: (s.errs + ' ' + k + ' feed unavailable (' + e.message + ').').trim() }));
+    X.weather().then(wx => this.setState({ wx }), bad('Weather'));
+    X.scenes().then(sc => this.setState({ sc }), bad('Satellite'));
+    X.quakes().then(eq => this.setState({ eq }), bad('Earthquake'));
+  }
+  saveCams(cams) { this.setState({ cams }); try { localStorage.setItem('saltline.cams.v1', JSON.stringify(cams)); } catch (e) {} }
+
+  renderVals() {
+    const s = this.state, E = this.engine, S = this.S, I = this.I, X = this.X, c = this.cfg();
+    const tabs = [['home', 'Institute'], ['research', 'Research'], ['halo', 'Halophytes'], ['field', 'Field'], ['intel', 'Intelligence'], ['services', 'Services'], ['academy', 'Academy'], ['people', 'People'], ['funding', 'Funding']].map(([id, label]) => ({ label, cur: s.tab === id ? 'page' : undefined, go: e => { if (e && e.preventDefault) e.preventDefault(); this.setState({ tab: id }); } }));
+    const out = { name: c.company, tabs, ready: !!E };
+    if (!E) return out;
+    const chip = (label, on, go) => ({ label, go, bd: on ? 'var(--color-accent)' : 'transparent', bg: on ? 'transparent' : 'var(--color-neutral-800)', fg: on ? 'var(--color-accent)' : 'var(--color-neutral-100)' });
+    const money = k => k >= 1000 ? '$' + (k / 1000).toFixed(2).replace(/\.?0+$/, '') + 'M' : '$' + Math.round(k * 10) / 10 + 'k';
+    const sh = E.shares(), vis = E.P.filter(p => p.disc);
+    const P = I.PROGRAMMES, pd0 = P[s.prog] || P[0];
+    const progRows = P.map((p, i) => ({ name: p.name, tag: p.tag, go: () => this.setState({ tab: 'research', prog: i }), pick: () => this.setState({ prog: i }), bd: i === s.prog ? 'var(--color-accent)' : 'var(--color-divider)', fg: i === s.prog ? 'var(--color-accent)' : 'var(--color-text)' }));
+    const pd = { ...pd0, projects: pd0.projects.map(x => ({ n: x[0], s: x[1] })) };
+    const tag = a => a === 'Good' ? 'tag tag-accent' : a === 'Marginal' ? 'tag tag-neutral' : 'tag tag-outline';
+    const wx = (s.wx || []).map(w => ({ ...w, tag: tag(w.adv) }));
+    const levels = X.LEVELS.map((l, i) => chip(l, s.lv[i], () => this.setState({ lv: s.lv.map((v, k) => k === i ? !v : v) })));
+    const topics = X.TOPICS.map(t => chip(t, s.topic === t, () => this.setState({ topic: t })));
+    const stageName = { found: 'Identified', drafted: 'Draft ready', approved: 'Approved', sent: 'Sent' };
+    const saved = (this.saved && this.saved.p) || {};
+    const cats = ['All', ...S.CATS];
+    const mTag = m => m === 'A' ? 'tag tag-accent' : m === 'AH' ? 'tag tag-neutral' : 'tag tag-outline';
+    const run = async (fn) => { try { await fn(); } catch (e) { this.setState({ errA: e.message || 'Request failed' }); } };
+    const doRegs = async () => { this.setState({ busyR: true, errA: '' }); try { const r = await X.regs(s.topic); this.setState({ regs: r, busyR: false }); return r; } catch (e) { this.setState({ busyR: false, errA: 'Federal Register search failed: ' + e.message }); return null; } };
+    const quakes = s.eq || { count: '–', top: [] };
+    return {
+      ...out, v: { home: s.tab === 'home', research: s.tab === 'research', halo: s.tab === 'halo', field: s.tab === 'field', intel: s.tab === 'intel', services: s.tab === 'services', academy: s.tab === 'academy', people: s.tab === 'people', funding: s.tab === 'funding' },
+      goResearch: () => this.setState({ tab: 'research' }),
+      facts: [{ v: String(P.length), l: 'research programmes' }, { v: String(S.HALO.length), l: 'halophyte value streams' }, { v: String(S.LINES.length), l: 'service lines' }, { v: c.rnd + '%', l: 'of agent time on R&D' }],
+      progRows, pd, pulse: { running: E.running.length, share: Math.round(sh.rnd * 100), feed: E.feed.slice(0, 4).map(f => f.msg) },
+      flow: I.FLOW.map((t, i) => ({ n: i + 1, t })),
+      halo: S.HALO.map(h => ({ ...h, tag: h.stage === 'Market-ready' ? 'tag tag-accent' : h.stage === 'Pilot' ? 'tag tag-neutral' : 'tag tag-outline' })),
+      path: ['Species screen', 'Plot trials', 'Agronomy package', 'Pilot customer', 'Supply contract'].map((t, i) => ({ n: 'Step ' + (i + 1), t })),
+      species: I.SPECIES.map(r => ({ a: r[0], b: r[1], c: r[2], d: r[3], e: r[4] })),
+      facilities: I.FACILITIES.map(f => ({ a: f[0], b: f[1], c: f[2] })),
+      phases: S.PHASES.map(p => ({ ...p, label: 'Phase ' + p.n, tag: p.status === 'Now' ? 'tag tag-accent' : 'tag tag-neutral', share: p.share + '%' })),
+      crew: S.CREW.map(r => ({ region: r.region, roles: r.roles.join(' · ') })), fleet: S.FLEET,
+      errs: s.errs, wx, sc: (s.sc || []).map(x => ({ ...x, hasThumb: !!x.thumb })), eq: { count: quakes.count, top: quakes.top.map(q => ({ ...q, tsu: q.tsunami ? 'Tsunami flag' : 'No tsunami flag' })) },
+      camUrl: s.camUrl, camLabel: s.camLabel, onCamUrl: e => this.setState({ camUrl: e.target.value }), onCamLabel: e => this.setState({ camLabel: e.target.value }),
+      addCam: () => { const u = s.camUrl.trim(); if (!/^https?:\/\//i.test(u)) return; this.saveCams([...s.cams, { url: u, label: s.camLabel.trim() || 'Camera ' + (s.cams.length + 1) }]); this.setState({ camUrl: '', camLabel: '' }); },
+      cams: s.cams.map((m, i) => ({ has: true, label: m.label, src: m.url + (m.url.includes('?') ? '&' : '?') + '_=' + s.cb, drop: () => this.saveCams(s.cams.filter((_, k) => k !== i)) })),
+      topics, levels, topic: s.topic, juris: s.juris, onTopic: e => this.setState({ topic: e.target.value }), onJuris: e => this.setState({ juris: e.target.value }),
+      busyR: s.busyR, busyA: s.busyA, regsLabel: s.busyR ? 'Searching' : 'Search Federal Register', anaLabel: s.busyA ? 'Analysing' : 'Find incongruities with Claude', errA: s.errA,
+      searchRegs: () => doRegs(), hasRegs: !!s.regs, regs: s.regs || { total: 0, docs: [], agencies: [] },
+      analyse: async () => {
+        if (!s.topic.trim()) return;
+        this.setState({ busyA: true, errA: '', ana: null });
+        try {
+          const res = s.regs && s.regs.topic === s.topic ? s.regs : await doRegs();
+          const txt = await window.claude.complete(X.analysisRequest(s.topic, X.LEVELS.filter((_, i) => s.lv[i]), s.juris, res));
+          this.setState({ ana: X.parseAnalysis(txt), busyA: false });
+        } catch (e) { this.setState({ busyA: false, errA: 'Analysis failed: ' + (e.message || 'try again in a minute') }); }
+      },
+      hasAna: !!s.ana, ana: s.ana || { agencies: [], incongruities: [], next: [] },
+      lcat: cats.map(k => chip(k, s.lcat === k, () => this.setState({ lcat: k }))),
+      lrows: S.LINES.filter(l => s.lcat === 'All' || l.cat === s.lcat).map(l => ({ name: l.name, cat: l.cat, mode: S.MODES[l.mode], tag: mTag(l.mode), ticket: money(l.k), days: l.days + ' days' })),
+      courses: I.COURSES.map(r => ({ a: r[0], b: r[1], c: r[2], d: r[3] })), outputs: I.OUTPUTS.map(r => ({ a: r[0], b: r[1], c: r[2], d: r[3] })),
+      org: I.ORG.map(r => ({ a: r[0], roles: r[1] })), board: I.BOARD, policies: I.POLICIES.map(r => ({ a: r[0], b: r[1] })),
+      agents: S.AGENTS.map(a => ({ name: a.name, tag: a.lane === 'rnd' ? 'tag tag-accent' : 'tag tag-neutral' })),
+      funding: I.FUNDING.map(r => ({ a: r[0], b: r[1], c: r[2] })), miles: I.MILESTONES.map(r => ({ a: r[0], b: r[1] })),
+      partners: S.PROSPECTS.map(p => ({ name: p.name, sub: p.kind + ' · ' + p.where, stage: stageName[(saved[p.id] || {}).stage] || 'Identified' })), funders: S.FUNDERS,
+    };
+  }
+}
+</script>
+</body>
+</html>

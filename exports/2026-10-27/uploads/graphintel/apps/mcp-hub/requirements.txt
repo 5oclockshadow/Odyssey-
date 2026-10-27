@@ -1,0 +1,7 @@
+mcp>=1.9
+docker>=7
+httpx
+uvicorn
+starlette
+uv
+pytest

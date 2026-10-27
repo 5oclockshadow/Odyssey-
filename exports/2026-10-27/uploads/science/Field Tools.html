@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saltline Field Tools · 200 working tools</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f4f6f5;--card:#ffffff;--ink:#17201d;--ink2:#48564f;--mut:#78867e;--line:#e3e8e5;--line2:#d2dad5;
+  --teal:#0f766e;--teal-s:#0f766e1a;--teal-2:#0d9488;--amber:#b45309;--amber-s:#b453091a;--violet:#6d28d9;--violet-s:#6d28d91a;
+  --sh:0 1px 2px rgba(20,40,34,.05),0 2px 8px rgba(20,40,34,.04);--sh2:0 8px 30px rgba(20,40,34,.14);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--teal)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+header.top{background:linear-gradient(180deg,#fbfdfc,var(--bg));border-bottom:1px solid var(--line)}
+.head{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:20px 0 16px}
+.logo{display:flex;align-items:center;gap:11px}
+.mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--teal-2));display:grid;place-items:center;box-shadow:var(--sh)}
+.mark svg{width:19px;height:19px;stroke:#fff}
+.h-t{font-weight:700;font-size:19px;letter-spacing:-.01em;line-height:1.1}
+.h-s{color:var(--mut);font-size:12.5px;font-weight:500}
+.search{flex:1;min-width:230px;position:relative;max-width:460px;margin-left:auto}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;stroke:var(--mut);pointer-events:none}
+.search input{width:100%;border:1px solid var(--line2);background:var(--card);border-radius:11px;padding:11px 14px 11px 38px;font:500 15px Figtree;color:var(--ink);box-shadow:var(--sh)}
+.search input::placeholder{color:var(--mut)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:16px}
+.pill{font-size:12px;font-weight:600;color:var(--ink2);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 11px;display:flex;align-items:center;gap:6px}
+.pill b{color:var(--ink)}
+.kind-dot{width:8px;height:8px;border-radius:50%}
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:26px;padding:22px 0 60px}
+@media(max-width:860px){.layout{grid-template-columns:1fr;gap:16px}}
+nav.side{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}
+@media(max-width:860px){nav.side{position:static;max-height:none;display:flex;gap:8px;overflow:auto;padding-bottom:4px}}
+.navh{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);padding:0 10px 8px}
+@media(max-width:860px){.navh{display:none}}
+.nitem{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:0;background:transparent;border-radius:9px;padding:8px 10px;color:var(--ink2);font:600 13.5px Figtree;white-space:nowrap}
+.nitem:hover{background:#eceeed}
+.nitem.on{background:var(--teal-s);color:var(--teal)}
+.nitem .n{margin-left:auto;font:600 11.5px 'JetBrains Mono';color:var(--mut)}
+.nitem.on .n{color:var(--teal)}
+@media(max-width:860px){.nitem{border:1px solid var(--line);background:var(--card)}.nitem.on{border-color:var(--teal)}}
+main{min-width:0}
+.dh{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin:2px 0 4px}
+.dh h2{font-size:22px;font-weight:700;letter-spacing:-.01em;margin:0}
+.dh span{color:var(--mut);font-size:13px;font-weight:600}
+.dsub{color:var(--ink2);font-size:13.5px;margin:6px 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:12px}
+.tool{text-align:left;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:14px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:9px;transition:transform .12s,box-shadow .12s,border-color .12s}
+.tool:hover{transform:translateY(-2px);box-shadow:var(--sh2);border-color:var(--line2)}
+.tool .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center}
+.tool .ic svg{width:18px;height:18px}
+.ic.calc{background:var(--teal-s)}.ic.calc svg{stroke:var(--teal)}
+.ic.live{background:var(--amber-s)}.ic.live svg{stroke:var(--amber)}
+.ic.ai{background:var(--violet-s)}.ic.ai svg{stroke:var(--violet)}
+.tool .nm{font-weight:600;font-size:15px;line-height:1.3;color:var(--ink)}
+.tool .meta{display:flex;align-items:center;gap:7px;margin-top:auto}
+.tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:6px}
+.tag.calc{background:var(--teal-s);color:var(--teal)}.tag.live{background:var(--amber-s);color:var(--amber)}.tag.ai{background:var(--violet-s);color:var(--violet)}
+.tool .open{margin-left:auto;color:var(--mut);font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:3px}
+.dgroup{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);margin:22px 0 10px}
+.empty{color:var(--mut);padding:40px 0;text-align:center}
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(18,28,24,.4);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .22s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(460px,100%);background:var(--card);box-shadow:var(--sh2);transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.1,1);z-index:50;display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.dr-h{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.dr-h .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none}
+.dr-h .ic svg{width:20px;height:20px}
+.dr-bc{font-size:11.5px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.dr-h h3{margin:3px 0 0;font-size:18px;font-weight:700;letter-spacing:-.01em}
+.dr-x{margin-left:auto;border:0;background:#eef1f0;border-radius:8px;width:32px;height:32px;display:grid;place-items:center;color:var(--ink2);flex:none}
+.dr-x:hover{background:#e2e6e4}
+.dr-b{padding:18px 20px;overflow:auto;flex:1}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink2);margin-bottom:5px}
+.field input,.field textarea{width:100%;border:1px solid var(--line2);border-radius:9px;padding:10px 12px;font:500 14.5px Figtree;color:var(--ink);background:#fbfcfc}
+.field input:focus,.field textarea:focus{border-color:var(--teal);background:#fff}
+.field textarea{resize:vertical;min-height:74px;line-height:1.45}
+.field .unit{font:500 12px 'JetBrains Mono';color:var(--mut)}
+.run{width:100%;border:0;border-radius:10px;padding:12px;font:700 14px Figtree;letter-spacing:.01em;color:#fff;background:var(--teal);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--sh)}
+.run:hover{background:#0b6057}
+.run:disabled{opacity:.6;cursor:default}
+.hint{font-size:12px;color:var(--mut);margin:10px 2px 0;display:flex;gap:6px;align-items:flex-start}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.res-h{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:9px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.rrow:last-child{border-bottom:0}
+.rrow .rl{font-size:13.5px;color:var(--ink2)}
+.rrow .rv{font:600 16px 'JetBrains Mono';color:var(--ink);text-align:right}
+.rrow .rn{display:block;font-size:11.5px;color:var(--mut);font-family:Figtree;font-weight:500;margin-top:2px;max-width:200px}
+.aiout{white-space:pre-wrap;font-size:14px;line-height:1.55;color:var(--ink);background:#fbfcfc;border:1px solid var(--line);border-radius:10px;padding:13px}
+.spin{width:16px;height:16px;border:2px solid #ffffff66;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.spin.t{border:2px solid var(--teal-s);border-top-color:var(--teal)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:9px;padding:10px 12px;font-size:13px}
+.loading{display:flex;align-items:center;gap:9px;color:var(--mut);font-size:13.5px;padding:8px 0}
+.cta{display:inline-flex;align-items:center;gap:8px;text-decoration:none;background:var(--teal);color:#fff;border-radius:11px;padding:11px 15px;font-weight:700;font-size:14px;box-shadow:var(--sh);white-space:nowrap}
+.cta:hover{background:#0b6057}.cta svg{width:17px;height:17px;stroke:#fff}
+.wsbanner{display:flex;gap:10px;align-items:center;text-decoration:none;background:var(--violet-s);border:1px solid #6d28d933;border-radius:10px;padding:10px 12px;margin-bottom:14px}
+.wsbanner b{color:var(--ink);font-weight:600;font-size:13.5px;display:block}.wsbanner span{color:var(--mut);font-size:12px}
+.wsbanner svg{stroke:var(--violet);flex:none}.wsbanner .go{margin-left:auto;font-weight:700;font-size:13px;color:var(--violet);white-space:nowrap}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<script src="suite-launcher.js"></script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="head">
+    <div class="logo"><div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></div>
+      <div><div class="h-t">Saltline Field Tools</div><div class="h-s">200 working tools for environmental science &amp; STEM</div></div></div>
+    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Search 200 tools…  (press /)" autocomplete="off"></div>
+    <a class="cta" href="Impact Assessment.html"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Report filing</a>
+  </div>
+  <div class="stats" id="stats"></div>
+</div></header>
+
+<div class="wrap layout">
+  <nav class="side"><div class="navh">Domains</div><div id="nav"></div></nav>
+  <main>
+    <div class="dh"><h2 id="dtitle">All tools</h2><span id="dcount"></span></div>
+    <p class="dsub" id="dsub">Pick any tool — calculators run instantly, live tools fetch real data, AI tools draft with Claude.</p>
+    <div id="content"></div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+<script type="module">
+import { DOMAINS, CALCS, LIVE, COMMON } from './features-data.js';
+
+const $=s=>document.querySelector(s), ce=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e;};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ICON={
+  calc:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h2m3 0h3M8 14h2m3 0h3M8 18h2m3 0h3"/></svg>',
+  live:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>',
+  ai:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.9L19 9.7l-4.2 2.9L16 18l-4-3-4 3 1.2-5.4L5 9.7l5.2-1.8z"/></svg>',
+};
+const KINDLABEL={calc:'Calculator',live:'Live data',ai:'AI tool'};
+
+// index all tools with their domain
+let TOOLS=[];
+DOMAINS.forEach(([dom,list],di)=>list.forEach((t,ti)=>TOOLS.push({...t,dom,di,ti,id:di+'-'+ti})));
+const counts={calc:0,live:0,ai:0};TOOLS.forEach(t=>counts[t.k]++);
+
+$('#stats').innerHTML=
+  `<span class="pill"><b>${TOOLS.length}</b> tools</span>`+
+  `<span class="pill"><i class="kind-dot" style="background:var(--teal)"></i><b>${counts.calc}</b> calculators</span>`+
+  `<span class="pill"><i class="kind-dot" style="background:var(--amber)"></i><b>${counts.live}</b> live data</span>`+
+  `<span class="pill"><i class="kind-dot" style="background:var(--violet)"></i><b>${counts.ai}</b> AI tools</span>`;
+
+let active=-1, query='';
+function renderNav(){
+  const nav=$('#nav');nav.innerHTML='';
+  const all=ce('button','nitem'+(active<0?' on':''));all.innerHTML=`All tools<span class="n">${TOOLS.length}</span>`;all.onclick=()=>{active=-1;query='';$('#q').value='';render();};nav.appendChild(all);
+  DOMAINS.forEach(([dom,list],di)=>{
+    const b=ce('button','nitem'+(active===di?' on':''));
+    b.innerHTML=`${esc(dom)}<span class="n">${list.length}</span>`;
+    b.onclick=()=>{active=di;query='';$('#q').value='';render();};
+    nav.appendChild(b);
+  });
+}
+function card(t){
+  const b=ce('button','tool');b.onclick=()=>openTool(t);
+  b.innerHTML=`<div class="ic ${t.k}">${ICON[t.k]}</div><div class="nm">${esc(t.n)}</div>`+
+    `<div class="meta"><span class="tag ${t.k}">${KINDLABEL[t.k]}</span><span class="open">Open ›</span></div>`;
+  return b;
+}
+function render(){
+  renderNav();
+  const content=$('#content');content.innerHTML='';
+  if(query){
+    const ql=query.toLowerCase();
+    const hits=TOOLS.filter(t=>t.n.toLowerCase().includes(ql)||t.dom.toLowerCase().includes(ql));
+    $('#dtitle').textContent='Search';$('#dcount').textContent=hits.length+' result'+(hits.length===1?'':'s')+' for “'+query+'”';
+    $('#dsub').textContent=hits.length?'Across all domains.':'';
+    if(!hits.length){content.innerHTML='<div class="empty">No tools match. Try another word — e.g. “salinity”, “drone”, “carbon”, “weather”.</div>';return;}
+    // group by domain
+    const byDom={};hits.forEach(t=>(byDom[t.dom]=byDom[t.dom]||[]).push(t));
+    Object.entries(byDom).forEach(([dom,ts])=>{
+      const h=ce('div','dgroup');h.textContent=dom;content.appendChild(h);
+      const g=ce('div','grid');ts.forEach(t=>g.appendChild(card(t)));content.appendChild(g);
+    });
+    return;
+  }
+  if(active<0){
+    $('#dtitle').textContent='All tools';$('#dcount').textContent=TOOLS.length+' tools in '+DOMAINS.length+' domains';
+    $('#dsub').textContent='Pick any tool — calculators run instantly, live tools fetch real data, AI tools draft with Claude.';
+    DOMAINS.forEach(([dom,list],di)=>{
+      const h=ce('div','dgroup');h.textContent=dom+' · '+list.length;content.appendChild(h);
+      const g=ce('div','grid');list.forEach((t,ti)=>g.appendChild(card(TOOLS.find(x=>x.di===di&&x.ti===ti))));content.appendChild(g);
+    });
+    return;
+  }
+  const [dom,list]=DOMAINS[active];
+  $('#dtitle').textContent=dom;$('#dcount').textContent=list.length+' tools';
+  $('#dsub').textContent='Calculators run instantly · live tools fetch real data · AI tools draft with Claude (verify before use).';
+  const g=ce('div','grid');list.forEach((t,ti)=>g.appendChild(card(TOOLS.find(x=>x.di===active&&x.ti===ti))));content.appendChild(g);
+}
+
+/* ---- drawer / running a tool ---- */
+const drawer=$('#drawer'), scrim=$('#scrim');
+function closeTool(){drawer.classList.remove('on');scrim.classList.remove('on');drawer.setAttribute('aria-hidden','true');}
+scrim.onclick=closeTool;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTool();if(e.key==='/'&&document.activeElement!==$('#q')){e.preventDefault();$('#q').focus();}});
+
+function openTool(t){
+  drawer.innerHTML='';drawer.setAttribute('aria-hidden','false');
+  const head=ce('div','dr-h');
+  head.innerHTML=`<div class="ic ${t.k}">${ICON[t.k]}</div><div><div class="dr-bc">${esc(t.dom)} · ${KINDLABEL[t.k]}</div><h3>${esc(t.n)}</h3></div>`;
+  const x=ce('button','dr-x');x.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';x.onclick=closeTool;head.appendChild(x);
+  drawer.appendChild(head);
+  const body=ce('div','dr-b');drawer.appendChild(body);
+  if(t.k==='calc')buildCalc(t,body);
+  else if(t.k==='live')buildLive(t,body);
+  else buildAI(t,body);
+  drawer.classList.add('on');scrim.classList.add('on');
+  const f=body.querySelector('input,textarea');if(f)setTimeout(()=>f.focus(),280);
+}
+
+function fieldInput(name,label,val){
+  const w=ce('div','field');
+  const isNum=typeof val==='number';
+  w.innerHTML=`<label>${esc(label)}</label><input data-k="${esc(name)}" type="${isNum?'number':'text'}" ${isNum?'step="any"':''} value="${esc(val)}">`;
+  return w;
+}
+function readVals(body,def){const v={...def};body.querySelectorAll('[data-k]').forEach(el=>{const raw=el.value;const n=parseFloat(raw);v[el.dataset.k]=(el.type==='number'&&!isNaN(n))?n:raw;});return v;}
+function showRows(box,rows){
+  box.innerHTML='<div class="res-h">Result</div>';
+  rows.filter(Boolean).forEach(r=>{
+    const row=ce('div','rrow');
+    row.innerHTML=`<span class="rl">${esc(r[0])}${r[2]?`<span class="rn">${esc(r[2])}</span>`:''}</span><span class="rv">${esc(r[1])}</span>`;
+    box.appendChild(row);
+  });
+}
+
+function buildCalc(t,body){
+  const C=CALCS[t.key];
+  C.f.forEach(([k,label])=>body.appendChild(fieldInput(k,label,C.ex[k])));
+  const btn=ce('button','run');btn.textContent='Compute';body.appendChild(btn);
+  const res=ce('div','res');body.appendChild(res);
+  const go=()=>{try{showRows(res,C.run(readVals(body,C.ex)));}catch(e){res.innerHTML=`<div class="err">Couldn’t compute: ${esc(e.message)}. Check the inputs.</div>`;}};
+  btn.onclick=go;
+  body.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();go();}});
+  go(); // prefilled example → instant result
+}
+
+function buildLive(t,body){
+  const L=LIVE[t.key];
+  L.f.forEach(([k,label])=>body.appendChild(fieldInput(k,label,L.ex[k])));
+  const btn=ce('button','run');btn.innerHTML='Fetch live data';body.appendChild(btn);
+  const hint=ce('div','hint');hint.innerHTML='<span>●</span> Pulls live from a public API (Open-Meteo, USGS, Earth Search, Federal Register).';hint.style.color='var(--amber)';body.appendChild(hint);
+  const res=ce('div','res');body.appendChild(res);
+  const go=async()=>{
+    btn.disabled=true;const old=btn.innerHTML;btn.innerHTML='<span class="spin"></span> Fetching…';
+    res.innerHTML='<div class="loading"><span class="spin t"></span> Contacting live source…</div>';
+    try{const rows=await L.run(readVals(body,L.ex));showRows(res,rows.length?rows:[['No results','—']]);}
+    catch(e){res.innerHTML=`<div class="err">Live source unavailable: ${esc(e.message)}. Try again shortly.</div>`;}
+    btn.disabled=false;btn.innerHTML=old;
+  };
+  btn.onclick=go;
+}
+
+function buildAI(t,body){
+  if(/report|assessment|eia|esia|\bplan\b|drafting|disclosure|proposal|statement|outline|brief|permit/i.test(t.n)){
+    const bn=ce('a','wsbanner');bn.href='Impact Assessment.html';
+    bn.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><div><b>Long filing? Open the full report workspace</b><span>Drafts a complete multi-section document, section by section.</span></div><span class="go">Open ›</span>';
+    body.appendChild(bn);
+  }
+  const a=ce('div','field');a.innerHTML=`<label>${esc(t.a)}</label><textarea data-k="a" placeholder="Describe ${esc(t.a.toLowerCase())}…"></textarea>`;body.appendChild(a);
+  if(t.b){const b=ce('div','field');b.innerHTML=`<label>${esc(t.b)}</label><textarea data-k="b" placeholder="${esc(t.b)}…"></textarea>`;body.appendChild(b);}
+  const btn=ce('button','run');btn.innerHTML='Draft with Claude';body.appendChild(btn);
+  const hint=ce('div','hint');hint.innerHTML='<span>✦</span> What it does: '+esc(t.i);body.appendChild(hint);
+  const res=ce('div','res');body.appendChild(res);
+  const go=async()=>{
+    const va=(body.querySelector('[data-k="a"]').value||'').trim();
+    const vb=t.b?(body.querySelector('[data-k="b"]').value||'').trim():'';
+    if(!va){res.innerHTML='<div class="err">Add some detail in the first field to get a useful draft.</div>';return;}
+    if(!(window.claude&&window.claude.complete)){res.innerHTML='<div class="err">AI tools need the assistant runtime, which isn’t available here. Calculators and live tools work offline.</div>';return;}
+    btn.disabled=true;const old=btn.innerHTML;btn.innerHTML='<span class="spin"></span> Drafting…';
+    res.innerHTML='<div class="loading"><span class="spin t"></span> Claude is drafting…</div>';
+    const content=`${t.a}:\n${va}`+(t.b?`\n\n${t.b}:\n${vb}`:'');
+    try{
+      const out=await window.claude.complete({system:COMMON+' '+t.i,messages:[{role:'user',content}],max_tokens:900});
+      res.innerHTML='<div class="res-h">Draft</div>';const d=ce('div','aiout');d.textContent=out;res.appendChild(d);
+      const f=ce('div','hint');f.innerHTML='<span>⚠</span> AI-generated — verify facts, figures and any compliance points before use.';res.appendChild(f);
+    }catch(e){res.innerHTML=`<div class="err">Claude unavailable: ${esc(e.message)}</div>`;}
+    btn.disabled=false;btn.innerHTML=old;
+  };
+  btn.onclick=go;
+}
+
+$('#q').addEventListener('input',e=>{query=e.target.value.trim();if(query)active=-2;render();});
+render();
+function openFromHash(){const m=/[#&]t=(\d+-\d+)/.exec(location.hash);if(m){const t=TOOLS.find(x=>x.id===m[1]);if(t)openTool(t);}}
+window.addEventListener('hashchange',openFromHash);openFromHash();
+</script>
+</body>
+</html>

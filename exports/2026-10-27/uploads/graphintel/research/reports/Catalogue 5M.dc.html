@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>body{margin:0;background:#121412}a{color:#d4ff3a}a:hover{color:#e9ff8a}</style>
+</helmet>
+<div style="background:#121412;color:#ecefe6;font-family:'Space Grotesk',sans-serif;min-height:100vh;padding:48px clamp(16px,4vw,48px) 80px;">
+<div style="max-width:1100px;margin:0 auto;display:grid;gap:40px;">
+  <header style="display:grid;gap:14px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:#d4ff3a;"><span>unphz</span><span style="color:#4a4f44;">/</span><span>Catalogue</span><span style="color:#4a4f44;">/</span><span>13 October 2026</span></div>
+    <h1 style="margin:0;font-weight:700;font-size:clamp(34px,5vw,60px);letter-spacing:-0.04em;line-height:1;text-wrap:balance;">Fifty things on the market today that the Institute can templatize and sell as a service</h1>
+    <p style="margin:0;max-width:760px;font-size:17px;line-height:1.55;color:#b7bfae;">Each row names what already sells, at what price, and the templatized version the Institute would offer: the same graph, the same daily round, a different seeded core. The unit counts show what it takes for the portfolio to pass $5M in annual recurring revenue; the Institute would run a handful of these, not all fifty. They are targets, not forecasts: the Institute has no revenue, no customers and no legal entity yet.</p>
+    <div style="display:flex;gap:28px;flex-wrap:wrap;font:400 12px 'JetBrains Mono',monospace;color:#9aa391;"><span><b style="color:#ecefe6;font-weight:500;">{{ total }}</b> target ARR, all fifty</span><span><b style="color:#ecefe6;font-weight:500;">{{ sourced }}</b> rows anchored to market prices</span><span><b style="color:#ecefe6;font-weight:500;">{{ unsourced }}</b> {{ rowWord }} without a market source yet</span></div>
+  </header>
+
+  <div style="display:grid;gap:14px;">
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+      <article style="border:1px solid #262a25;border-radius:10px;background:#171a17;display:grid;grid-template-columns:minmax(0,1fr);gap:0;overflow:hidden;">
+        <div style="display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;padding:18px 22px 0;"><span style="font:500 12px 'JetBrains Mono',monospace;color:#d4ff3a;">{{ r.n }}</span><h2 style="margin:0;flex:1 1 auto;min-width:200px;font-size:22px;font-weight:600;letter-spacing:-0.02em;">{{ r.t }}</h2><span style="{{ r.tagS }}">{{ r.tag }}</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px;padding:14px 22px 18px;">
+          <div style="display:grid;gap:6px;align-content:start;"><span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:#9aa391;">On the market</span><p style="margin:0;color:#b7bfae;line-height:1.5;font-size:15px;">{{ r.market }}</p></div>
+          <div style="display:grid;gap:6px;align-content:start;"><span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:#9aa391;">Templatized by the Institute</span><p style="margin:0;color:#ecefe6;line-height:1.5;font-size:15px;">{{ r.ours }}</p></div>
+          <div style="display:grid;gap:6px;align-content:start;"><span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:#9aa391;">Price and units to target</span><p style="margin:0;color:#ecefe6;line-height:1.5;font-size:15px;"><b style="color:#d4ff3a;">{{ r.price }}</b> · {{ r.units }} → <b>{{ r.arr }}</b></p><span style="font:400 11px 'JetBrains Mono',monospace;color:#9aa391;">{{ r.src }}</span></div>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+
+  <section style="display:grid;gap:12px;border-top:1px solid #262a25;padding-top:28px;">
+    <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.02em;">Read before pricing anything</h2>
+    <ul style="margin:0;padding-left:18px;color:#b7bfae;line-height:1.6;display:grid;gap:6px;font-size:15px;">
+      <li>Pricing is moving off seats: a Pilot study has seat-based pricing falling from 21% to 15% of SaaS companies in a year while hybrid models rose from 27% to 41% [12]; ICONIQ puts hybrid at 48% as the primary model [16]. Vertical agents price at $199 to $999 a month base plus usage, or $2 to $15 per resolved outcome [14]. The Institute's agents should be priced the same way, with a base and a per-round or per-report meter.</li>
+      <li>Outcome pricing only holds when accuracy is high enough to run unsupervised; below that bar contracts revert to seats with caps [15]. Every offer above keeps the owner's approval step, so it starts as hybrid, not outcome.</li>
+      <li>Trading education is a red-flag market: guaranteed returns, lifestyle marketing and hidden losses mark programmes built to profit from students [9]. Row 02 sells a traced knowledge graph of a method and its sources, never signals or advice, and shows losses in the record.</li>
+      <li>Rows marked "verify" carry price ranges from general knowledge, not from this pass's searches; rows marked "built" already exist in the engine or Studio. Only rows with bracketed sources are anchored to the landscape searches.</li>
+    </ul>
+  </section>
+
+  <section style="display:grid;gap:10px;border-top:1px solid #262a25;padding-top:28px;">
+    <h2 style="margin:0;font-size:18px;font-weight:600;">Sources</h2>
+    <ol style="margin:0;padding-left:18px;color:#9aa391;line-height:1.6;font-size:13px;display:grid;gap:2px;">
+      <sc-for list="{{ sources }}" as="s" hint-placeholder-count="16"><li><a href="{{ s.u }}" style="color:#b7bfae;">{{ s.t }}</a></li></sc-for>
+    </ol>
+  </section>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const R = [
+      ["Site Spin Studio","build","AI site builders: Wix $17–159/mo, Framer $10–100, Durable $22–41, B12 $399/mo with humans [1][3][5][6].","Prompt in, N structurally different sites out, an agent that edits only what you name, one-file export. Included with Signals.","$29/mo Pro","1,700 seats","$0.59M","[1][3][5][6]",1],
+      ["Trading knowledge graph","finance","Day-trading education $99–297/mo (Bear Bull, Humbled Trader, Investors Underground); $997–5,000 courses (Warrior, SMB) [7][8][9][10].","A trader's method as a seeded core: rules, instruments, sources; filings and news read daily; losses kept. Knowledge, never signals.","$79/mo","1,000 subs","$0.95M","[7][8][9][10]",1],
+      ["Research terminal, traced","finance","Bloomberg about $24–32K/seat/yr; Koyfin $39–79/mo; AlphaSense from about $10K/yr [11].","Public graph plus a private one per team; filings, transcripts, papers read daily, each finding linked to its source.","$199/mo/team","400 teams","$0.96M","[11]",1],
+      ["Vertical agent, seeded per industry","agents","Vertical agents: $199–999/mo base plus usage, or $2–15 per outcome; hybrid pricing primary for 41–48% of SaaS [12][14][16].","Same engine, different seeded core per industry; base plus a per-round meter; owner approval as the quality gate.","$499/mo+usage","150 deployments","$0.90M","[12][14][16]",1],
+      ["Monthly landscape report","research","Market-research subscriptions run thousands to tens of thousands a year (CB Insights, Gartner); the Institute's first report took a day.","One sector report a month from the daily round, judgement marked apart from sourced fact.","$149/mo","300 subs","$0.54M","verify",0],
+      ["Compliance evidence graph","compliance","SOC 2 readiness tools about $10–25K/yr per company (Vanta, Drata).","The soc2/ package as a product: controls, evidence, policies as nodes kept current by the round. Readiness only.","$6,000/yr","100 cos","$0.60M","verify",0],
+      ["Academy certificate track","learn","Cohort courses on AI tooling $500–3,000 a seat.","The graph intelligence method as lessons; the engine's test suite is the exam.","$490","600/yr","$0.29M","verify",0],
+      ["Enterprise tester seats","lab","Design-partner programmes trade early access for $10–50K/yr.","Ten Tester seats for companies: own seeded core, full lab access, first claim on upgrades.","$24,000/yr","10","$0.24M","tiers",0],
+      ["Landing-page spinner","build","Unbounce $74–187/mo; Instapage from $79/mo.","Studio restricted to one-page campaigns with the brief's facts only and A/B variants by structure.","$19/mo","800","$0.18M","verify",0],
+      ["Deck spinner","build","Beautiful.ai $12–40/mo; Pitch free–$22/seat.","Same kit, slide structures instead of pages; sourced facts from the graph on every slide.","$15/mo","900","$0.16M","verify",0],
+      ["Docs and changelog agent","build","GitBook $6.70–12.50/user/mo; Mintlify $150–550/mo.","Reads a repo daily, drafts docs and release notes as proposals the owner approves.","$99/mo","200 repos","$0.24M","verify",0],
+      ["Filings reader","finance","Filing alert tools $20–60/mo; analysts read 10-Ks by hand.","SEC and SEDAR filings read into a graph nightly; changes between filings surfaced with the exact passage.","$49/mo","500","$0.29M","verify",0],
+      ["Earnings-call graph","finance","Transcript services $30–100/mo; summaries by generic LLMs unsourced.","Every claim on a call linked to the sentence and the prior quarter; contradictions flagged.","$59/mo","300","$0.21M","verify",0],
+      ["Crypto research, traced","finance","Messari Pro $29–99/mo; Glassnode $29–799/mo.","Protocol docs, governance votes and on-chain reports read daily; no price calls.","$39/mo","400","$0.19M","verify",0],
+      ["Personal finance knowledge graph","finance","Budget apps $8–15/mo; advice is regulated.","A household's own rules and documents as a private graph, questions answered from its sources only. Education, not advice.","$9/mo","1,500","$0.16M","verify; regulated",0],
+      ["Clinic agent","agents","Healthcare front-office AI $300–1,500/mo per site.","Seeded core: intake rules, insurers, schedules; owner (practice manager) approves every outbound message.","$499/mo","60","$0.36M","verify; PHI rules",0],
+      ["Law-practice research agent","agents","Legal research tools $100–500/user/mo (Westlaw, Lexis, Harvey).","Matters as a graph: statutes, precedents, filings; every answer cited; the lawyer approves.","$299/mo","80","$0.29M","verify",0],
+      ["Construction bid agent","agents","Takeoff and bid tools $100–400/mo.","Tenders, specs and supplier quotes read into one graph per project; bid drafts as proposals.","$399/mo","50","$0.24M","verify",0],
+      ["Real-estate zoning tracker","agents","Zoning data services $50–300/mo.","Municipal agendas and bylaw changes read nightly; parcels linked to the clauses that affect them.","$149/mo","150","$0.27M","verify",0],
+      ["Logistics tariff tracker","agents","Trade-compliance tools $200–2,000/mo.","Tariff notices and rulings read daily; a shipper's SKUs linked to the exact schedule lines.","$299/mo","70","$0.25M","verify; economy context",0],
+      ["Restaurant supplier agent","agents","Inventory tools $70–250/mo.","Price lists and invoices read weekly; cost drift per dish surfaced with the invoice line.","$99/mo","150","$0.18M","verify",0],
+      ["Accounting-firm knowledge graph","agents","Practice tools $50–200/user/mo.","Tax-rule changes and client documents in one graph per firm; answers cited to the rule.","$249/mo","80","$0.24M","verify",0],
+      ["Grant finder","research","Grant databases $30–300/mo.","Calls for funding read daily; a nonprofit's mission as the seeded core; fit scored and sourced.","$79/mo","250","$0.24M","verify",0],
+      ["Patent watch","research","Patent alert services $100–1,000/mo.","New filings read weekly against a company's claims graph; overlaps surfaced by clause.","$199/mo","60","$0.14M","verify",0],
+      ["Policy tracker","research","Legislative tracking $500–5,000/yr.","Bills, hearings and consultations read daily; a client's interests as the core; changes cited.","$99/mo","150","$0.18M","verify",0],
+      ["Competitor tracker","research","Crayon, Klue: enterprise contracts five figures a year.","Competitor sites, filings and job posts read daily into one graph; changes with the diff.","$89/mo","250","$0.27M","verify",0],
+      ["GDPR and AI Act readiness","compliance","Privacy tooling $100–1,000/mo; AI Act obligations phase in through 2026–27.","Obligations as nodes, evidence linked, gaps listed; the owner signs off. Readiness, not legal advice.","$299/mo","70","$0.25M","verify",0],
+      ["Procurement document pack","compliance","Proposal software $50–200/user/mo (Loopio, Responsive).","Past answers, certificates and policies as a graph; RFP responses drafted from sourced nodes only.","$199/mo","60","$0.14M","verify",0],
+      ["Vendor-risk inventory","compliance","Third-party risk tools $5–30K/yr.","Vendors, data access and attestations as nodes; expiries and changes surfaced.","$149/mo","80","$0.14M","verify",0],
+      ["Cohort on self-ranking graphs","learn","Live cohorts $1,000–3,000 a seat.","Four weeks building a graph agent with the engine; the final test suite passes or it does not.","$1,200","120/yr","$0.14M","verify",0],
+      ["Syllabus graph for teachers","learn","Lesson-planning tools $5–20/mo.","Curriculum standards and a teacher's materials in one graph; lessons drafted with sources.","$12/mo","600","$0.09M","verify",0],
+      ["Newsletter from the round","media","Paid newsletters $5–15/mo (Substack).","A weekly letter written from approved nodes only, every line traceable.","$8/mo","1,200","$0.12M","verify",0],
+      ["Podcast notes agent","media","Show-notes services $50–300 per episode.","Episodes transcribed and read into the show's graph; notes and claims with timestamps.","$49/mo","150","$0.09M","verify",0],
+      ["Mindful posting gate","media","Social schedulers $15–100/mo.","The Institute's gate as a service: drafts, disclosure, owner approval, no replies or follows.","$19/mo","500","$0.11M","built",0],
+      ["Incident graph","ops","Incident tools $20–80/user/mo (PagerDuty, incident.io).","Errors to incidents to located code to tested patch to PR, as the engine does for itself.","$149/mo","100","$0.18M","built",0],
+      ["Runbook agent","ops","Internal wikis $5–12/user/mo.","Runbooks and on-call notes as a graph; answers cite the page and the last change.","$99/mo","120","$0.14M","verify",0],
+      ["Dependency audit","ops","SCA tools $20–100/dev/mo.","Lockfiles read weekly; advisories linked to the exact version; upgrade PRs proposed.","$79/mo","150","$0.14M","verify",0],
+      ["Web change monitor","data","Visualping, Distill $10–100/mo.","Pages read on a schedule into a graph; changes summarised with the diff and the source.","$29/mo","400","$0.14M","verify",0],
+      ["Price index, local","data","Price trackers $10–50/mo.","Grocery and rent listings read weekly for one city; a cost-of-living graph with sources.","$9/mo","800","$0.09M","verify; economy context",0],
+      ["Lead research, cited","data","Sales intelligence $50–150/user/mo (Apollo, ZoomInfo).","Target accounts researched from public sources only; every fact cited; no scraping of people data.","$99/mo","150","$0.18M","verify; privacy",0],
+      ["RFP responder for small firms","gov","Bid consultants $2–10K per response.","Public tenders read daily; a firm's capabilities as the core; fit and first drafts proposed.","$199/mo","80","$0.19M","verify",0],
+      ["Grant writing graph","gov","Grant writers $75–150/hr.","Past applications and funder guidance as a graph; drafts cite the guidance clause.","$149/mo","100","$0.18M","verify",0],
+      ["Clinical literature watch","health","UpToDate about $500/yr; alerts generic.","Journals read daily against a clinic's questions; abstracts linked, judgement marked.","$79/mo","150","$0.14M","verify; not medical advice",0],
+      ["Care-provider research","health","Senior-care directories charge referral fees.","Providers, inspections and pricing read into one regional graph for families; sourced, no referral fees.","$19/mo","400","$0.09M","verify; ageing context",0],
+      ["Data-centre power tracker","energy","Energy intelligence $1–10K/yr.","Interconnection queues, utility filings and IEA data read weekly; the \"power not chips\" claim tested in the open.","$199/mo","50","$0.12M","[19][20]",1],
+      ["Job-market signals","hr","Labour analytics $500–5,000/yr (Lightcast).","Postings read daily for a region or role; demand shifts with the source postings.","$49/mo","300","$0.18M","verify",0],
+      ["Contract clause graph","legal","CLM tools $50–300/user/mo.","A company's contracts as clauses in a graph; obligations and renewals surfaced with the text.","$199/mo","70","$0.17M","verify",0],
+      ["Fact-trace for newsrooms","journalism","Fact-check tooling mostly grants and in-house.","Claims in a draft linked to sources in the graph; unsupported claims flagged before publishing.","$99/mo","80","$0.10M","verify",0],
+      ["Supplier finder for reshoring","supply","Sourcing platforms $100–1,000/mo (Thomasnet).","Domestic suppliers, certifications and capacity read into a graph per part; sourced, no commissions.","$149/mo","100","$0.18M","verify; economy context",0],
+      ["Brand style studio","marketing","Brand kits $20–80/mo (Canva Pro, Looka).","Studio with a client's brand as the seeded core: every site, deck and post in one voice, agent edits only what you name.","$49/mo","400","$0.24M","built",0]
+    ].map((r, i) => ({ n: String(i + 1).padStart(2, '0'), t: r[0], tag: r[1], market: r[2], ours: r[3], price: r[4], units: r[5], arr: r[6], src: r[7], ok: r[8], tagS: `font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:${r[8] ? '#d4ff3a' : '#ff9f43'};` }));
+    const total = R.reduce((a, r) => a + parseFloat(r.arr.slice(1)), 0);
+    const S = ['Wix pricing page, 2026', 'Framer pricing, 2026', 'Framer vs Wix comparison, 2026', 'Durable AI builder pricing', 'Durable pricing review, 2026', 'B12 AI website service pricing', 'Bear Bull Traders membership', 'Humbled Trader Academy pricing', 'Day-trading course pricing and red flags, 2026', 'Warrior Trading and SMB Capital course fees', 'Bloomberg Terminal alternatives and prices (Koyfin, AlphaSense), 2026', 'Pilot: State of SaaS pricing, seat vs hybrid, 2026', 'Vertical AI SaaS market size, 2026', 'Vertical AI agent pricing survey, 2026', 'Outcome-based pricing and accuracy thresholds, 2026', 'ICONIQ: State of AI pricing, 2026'];
+    return { rows: R, total: '$' + total.toFixed(2) + 'M', sourced: R.filter(r => r.ok).length, unsourced: R.filter(r => !r.ok).length, rowWord: R.filter(r => !r.ok).length === 1 ? 'row' : 'rows', sources: S.map(t => ({ t: t + ' (link not captured in this pass; search again to attach)', u: '' })) };
+  }
+}
+</script>
+</body>
+</html>

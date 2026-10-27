@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <script src="testkit.js"></script>
+  <script src="../ops/src/connectome.js"></script>
+  <style>
+    html, body { margin: 0; background: #161826; }
+    a { color: #9184d9; }
+    a:hover { color: #d2cefd; }
+  </style>
+</helmet>
+<div data-screen-label="Test Dashboard" style="display:flex;flex-direction:column;min-height:100vh;{{ shellH }}background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:13px;">
+  <header style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px 12px;box-shadow:0 1px 0 var(--color-neutral-800);">
+    <span style="font:600 12px ui-monospace,Menlo,monospace;letter-spacing:0.14em;white-space:nowrap;">BRIDAGO TEST DASHBOARD</span>
+    <span class="tag tag-outline" style="white-space:nowrap;">Testing: Anima (this project)</span>
+    <span class="tag tag-neutral" style="white-space:nowrap;">{{ modeLabel }}</span>
+    <div style="display:flex;gap:4px;">
+      <sc-for list="{{ passChips }}" as="p" hint-placeholder-count="3"><span style="{{ p.st }}">{{ p.label }}</span></sc-for>
+    </div>
+    <form onSubmit="{{ submitCmd }}" style="flex:1 1 320px;display:flex;gap:6px;min-width:0;">
+      <input class="input" aria-label="Tell the tester" value="{{ cmd }}" onChange="{{ onCmd }}" placeholder="Tell the tester… e.g. run all · find 12 problems · explain the architecture · open explorer · check finance" style="min-height:32px;font-size:12.5px;">
+      <button type="submit" class="btn btn-primary" style="min-height:32px;padding:0 12px;">Go</button>
+    </form>
+    <div style="display:flex;align-items:baseline;gap:6px;font-family:ui-monospace,Menlo,monospace;white-space:nowrap;">
+      <span style="font-size:18px;color:var(--color-accent-300);font-variant-numeric:tabular-nums;">{{ nPassed }}</span><span style="font-size:11px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">passed</span>
+      <span style="font-size:18px;font-variant-numeric:tabular-nums;">{{ nFailed }}</span><span style="font-size:11px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">failed</span>
+      <span style="font-size:18px;font-variant-numeric:tabular-nums;">{{ clock }}</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;">
+      <button type="button" class="btn btn-secondary" style="min-height:32px;padding:0 10px;font-size:12.5px;" onClick="{{ doIngest }}" disabled="{{ running }}">Ingest</button>
+      <sc-if value="{{ idle }}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-primary" style="min-height:32px;padding:0 12px;font-size:12.5px;" onClick="{{ runAll }}">Run all</button></sc-if>
+      <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-primary" style="min-height:32px;padding:0 12px;font-size:12.5px;" onClick="{{ stop }}">Stop</button></sc-if>
+      <button type="button" class="btn btn-secondary" style="min-height:32px;padding:0 10px;font-size:12.5px;" onClick="{{ threePasses }}" disabled="{{ running }}">3 clean passes</button>
+      <button type="button" class="btn btn-secondary" style="min-height:32px;padding:0 10px;font-size:12.5px;" onClick="{{ toLive }}">Live view</button>
+      <button type="button" class="btn btn-secondary" style="min-height:32px;padding:0 10px;font-size:12.5px;" onClick="{{ toEvidence }}">Evidence</button>
+      <button type="button" class="btn btn-secondary" style="min-height:32px;padding:0 10px;font-size:12.5px;" onClick="{{ toChallenge }}">Challenge: shrink and speed up</button>
+    </div>
+  </header>
+
+  <div style="flex:1 1 auto;display:flex;flex-wrap:wrap;min-height:0;">
+    <aside aria-label="Pipeline and suites" style="flex:1 1 210px;max-width:{{ sideMax }};min-width:0;display:grid;align-content:start;gap:12px;padding:10px 8px;box-shadow:1px 0 0 var(--color-neutral-800);{{ sideScroll }}">
+      <span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:color-mix(in srgb,var(--color-text) 55%,transparent);padding:0 4px;">PIPELINE</span>
+      <div style="display:grid;gap:4px;">
+        <sc-for list="{{ steps }}" as="p" hint-placeholder-count="7">
+          <button type="button" onClick="{{ p.go }}" style="{{ p.st }}"><span style="{{ p.numSt }}">{{ p.n }}</span><span style="font-weight:500;">{{ p.name }}</span><span style="margin-left:auto;font-size:11.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);white-space:nowrap;">{{ p.note }}</span></button>
+        </sc-for>
+      </div>
+      <span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:color-mix(in srgb,var(--color-text) 55%,transparent);padding:6px 4px 0;">SUITES</span>
+      <div style="display:grid;gap:6px;">
+        <sc-for list="{{ suiteCards }}" as="c" hint-placeholder-count="6">
+          <button type="button" onClick="{{ c.go }}" style="{{ c.st }}">
+            <span style="display:flex;align-items:baseline;gap:6px;"><span style="font-weight:500;min-width:0;overflow-wrap:anywhere;">{{ c.name }}</span><span style="margin-left:auto;font:11.5px ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ c.time }}</span></span>
+            <span style="display:flex;align-items:baseline;gap:6px;"><span style="font:12px ui-monospace,Menlo,monospace;color:{{ c.countColor }};">{{ c.count }}</span><span style="margin-left:auto;font-size:11.5px;color:color-mix(in srgb,var(--color-text) 58%,transparent);">{{ c.state }}</span></span>
+            <span style="height:2px;border-radius:2px;background:var(--color-neutral-800);overflow:hidden;"><span style="display:block;height:100%;background:{{ c.barColor }};width:{{ c.pct }};"></span></span>
+            <span style="font-size:10.5px;color:color-mix(in srgb,var(--color-text) 48%,transparent);">{{ c.meta }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </aside>
+
+    <section aria-label="Stage" style="flex:999 1 560px;min-width:0;position:relative;{{ stageH }}overflow:hidden;background:radial-gradient(120% 90% at 60% 40%, #1d2033 0%, var(--color-bg) 62%);">
+      <div ref="{{ graphRef }}" style="position:absolute;inset:0;"></div>
+      <div style="position:absolute;left:12px;right:12px;top:10px;z-index:4;display:grid;gap:12px;pointer-events:none;">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+        <input class="input" aria-label="Find a file" value="{{ gq }}" onChange="{{ onGq }}" onKeyDown="{{ onGqKey }}" placeholder="Find a file…" style="pointer-events:auto;width:170px;min-height:28px;font-size:12px;background:color-mix(in srgb,var(--color-bg) 85%,transparent);">
+        <sc-for list="{{ laneChips }}" as="c" hint-placeholder-count="8"><button type="button" aria-pressed="{{ c.on }}" onClick="{{ c.flip }}" style="{{ c.st }}"><span style="{{ c.dot }}"></span>{{ c.label }}</button></sc-for>
+        <button type="button" aria-pressed="{{ motionOn }}" onClick="{{ flipMotion }}" style="{{ motionSt }}">Motion</button>
+        <button type="button" aria-pressed="{{ labelsOn }}" onClick="{{ flipLabels }}" style="{{ labelsSt }}">Labels</button>
+      </div>
+      <div style="max-width:min(440px,100%);display:grid;gap:4px;">
+        <span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:var(--color-accent-300);">{{ kicker }}</span>
+        <span style="font-size:28px;font-weight:500;line-height:1.1;">{{ viewTitle }}</span>
+        <span style="font-size:12.5px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 72%,transparent);text-wrap:pretty;">{{ viewSub }}</span>
+      </div>
+      </div>
+      <sc-if value="{{ hitsOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:12px;top:44px;z-index:6;width:min(360px,calc(100% - 24px));display:grid;gap:2px;padding:6px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-md);">
+          <sc-for list="{{ hits }}" as="h" hint-placeholder-count="0"><button type="button" class="btn btn-ghost" style="justify-content:flex-start;text-align:left;font-size:12.5px;overflow-wrap:anywhere;" onClick="{{ h.go }}">{{ h.label }}</button></sc-for>
+        </div>
+      </sc-if>
+
+      <div style="position:absolute;inset:0;z-index:3;overflow:auto;padding:{{ layerTop }} 14px 60px;background:var(--color-bg);{{ suitesVis }}">
+        <div style="display:grid;gap:12px;max-width:1100px;">
+          <sc-for list="{{ suiteDetail }}" as="d" hint-placeholder-count="4">
+            <div class="card elev-sm" style="gap:6px;padding:12px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:15px;font-weight:500;margin-right:auto;">{{ d.name }}</span><span class="{{ d.cls }}">{{ d.state }}</span><button type="button" class="btn btn-ghost" onClick="{{ d.run }}" disabled="{{ running }}">Run</button></div>
+              <span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ d.line }}</span>
+              <sc-for list="{{ d.rows }}" as="r" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;font-size:12.5px;padding:3px 0;border-top:1px solid color-mix(in srgb,var(--color-text) 6%,transparent);"><span style="overflow-wrap:anywhere;">{{ r.a }}</span><span style="font-family:ui-monospace,Menlo,monospace;color:{{ r.color }};">{{ r.b }}</span></div></sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:absolute;inset:0;z-index:3;display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px;padding:{{ layerTop }} 14px 56px;background:var(--color-bg);{{ liveVis }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+          <select class="input" aria-label="Page" onChange="{{ onPage }}" style="width:auto;max-width:100%;min-height:30px;font-size:12.5px;">
+            <sc-for list="{{ pageOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o.value }}" selected="{{ o.on }}">{{ o.label }}</option></sc-for>
+          </select>
+          <div class="seg" role="radiogroup" aria-label="Live width" style="flex-wrap:wrap;max-width:100%;">
+            <sc-for list="{{ widthOpts }}" as="w" hint-placeholder-count="6"><label class="seg-opt" title="{{ w.title }}" style="padding:5px 8px;font-size:12px;"><input type="radio" name="tk3-w" checked="{{ w.on }}" onChange="{{ w.pick }}">{{ w.label }}</label></sc-for>
+          </div>
+          <button type="button" class="btn btn-secondary" style="min-height:30px;font-size:12.5px;" onClick="{{ checkPage }}" disabled="{{ running }}">Check this page</button>
+          <span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 62%,transparent);overflow-wrap:anywhere;">{{ liveNote }}</span>
+        </div>
+        <div ref="{{ liveBox }}" style="position:relative;min-height:240px;overflow:hidden;border-radius:var(--radius-md);background:#0f1018;box-shadow:var(--shadow-sm);">
+          <iframe ref="{{ liveRef }}" title="Live app view" style="position:absolute;left:0;top:0;border:0;background:#161826;transform-origin:0 0;{{ liveSt }}"></iframe>
+        </div>
+      </div>
+
+      <div style="position:absolute;left:12px;bottom:12px;z-index:5;" class="seg" role="radiogroup" aria-label="View">
+        <sc-for list="{{ views }}" as="v" hint-placeholder-count="4"><label class="seg-opt" style="padding:6px 12px;font-size:12.5px;background:color-mix(in srgb,var(--color-bg) 85%,transparent);"><input type="radio" name="tk3-view" checked="{{ v.on }}" onChange="{{ v.pick }}">{{ v.label }}</label></sc-for>
+      </div>
+      <span style="position:absolute;right:12px;bottom:14px;z-index:5;max-width:50%;text-align:right;font:10.5px ui-monospace,Menlo,monospace;letter-spacing:0.06em;color:color-mix(in srgb,var(--color-text) 55%,transparent);pointer-events:none;">{{ statusMono }}</span>
+    </section>
+
+    <aside aria-label="Inspector" style="flex:1 1 290px;max-width:{{ rightMax }};min-width:0;display:flex;flex-direction:column;box-shadow:-1px 0 0 var(--color-neutral-800);{{ rightH }}">
+      <nav role="tablist" aria-label="Panels" style="display:flex;gap:0;padding:0 6px;overflow-x:auto;scrollbar-width:none;box-shadow:0 1px 0 var(--color-neutral-800);">
+        <sc-for list="{{ rtabs }}" as="t" hint-placeholder-count="7"><button type="button" role="tab" aria-selected="{{ t.on }}" onClick="{{ t.pick }}" style="{{ t.st }}">{{ t.label }}<sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><span style="margin-left:4px;font-size:10.5px;color:var(--color-accent-300);">{{ t.badge }}</span></sc-if></button></sc-for>
+      </nav>
+      <div style="flex:1 1 auto;min-height:0;overflow:auto;padding:12px;display:grid;align-content:start;gap:10px;">
+        <sc-if value="{{ rInspector }}" hint-placeholder-val="{{ true }}">
+          <span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ selKind }}</span>
+          <span style="font-size:16px;font-weight:500;overflow-wrap:anywhere;">{{ selTitle }}</span>
+          <sc-for list="{{ selGroups }}" as="g" hint-placeholder-count="0">
+            <div style="display:grid;gap:2px;"><span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 52%,transparent);">{{ g.head }}</span>
+              <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="0"><button type="button" onClick="{{ i.go }}" style="display:flex;align-items:baseline;gap:7px;padding:3px 4px;border:0;border-radius:var(--radius-sm);background:transparent;color:inherit;font:inherit;font-size:12.5px;text-align:left;cursor:pointer;overflow-wrap:anywhere;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><span style="{{ i.dot }}"></span>{{ i.label }}</button></sc-for>
+            </div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ rFile }}" hint-placeholder-val="{{ false }}">
+          <span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:color-mix(in srgb,var(--color-text) 55%,transparent);overflow-wrap:anywhere;">{{ filePath }}</span>
+          <pre style="margin:0;white-space:pre;overflow:auto;font:11.5px/1.55 ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 84%,transparent);">{{ fileText }}</pre>
+        </sc-if>
+        <sc-if value="{{ rFindings }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ kindChips }}" as="c" hint-placeholder-count="4"><button type="button" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}" style="{{ c.st }}">{{ c.label }} {{ c.n }}</button></sc-for></div>
+          <sc-for list="{{ findRows }}" as="f" hint-placeholder-count="0">
+            <button type="button" onClick="{{ f.open }}" style="display:grid;gap:2px;width:100%;padding:7px 6px;border:0;border-radius:var(--radius-md);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);">
+              <span style="display:flex;gap:6px;align-items:baseline;"><span class="tag tag-outline">{{ f.word }}</span><span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 58%,transparent);overflow-wrap:anywhere;">{{ f.where }}</span><span style="margin-left:auto;font:11px ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ f.seen }}</span></span>
+              <span style="font-size:12.5px;line-height:1.45;overflow-wrap:anywhere;">{{ f.what }}</span>
+            </button>
+          </sc-for>
+          <sc-if value="{{ noFinds }}" hint-placeholder-val="{{ true }}"><span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:color-mix(in srgb,var(--color-text) 55%,transparent);">NO FINDINGS YET</span><span style="font-size:12.5px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 62%,transparent);">Say "find 12 problems" in the bar above, or press Run all.</span></sc-if>
+        </sc-if>
+        <sc-if value="{{ rBrain }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ brainPresets }}" as="p" hint-placeholder-count="3"><button type="button" class="btn btn-secondary" style="font-size:12px;min-height:28px;padding:0 9px;" onClick="{{ p.ask }}" disabled="{{ brainBusy }}">{{ p.label }}</button></sc-for></div>
+          <sc-for list="{{ brainMsgs }}" as="m" hint-placeholder-count="0"><div style="{{ m.st }}"><span style="font-size:10.5px;color:color-mix(in srgb,var(--color-text) 52%,transparent);">{{ m.who }}</span><span style="font-size:12.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;">{{ m.text }}</span></div></sc-for>
+          <sc-if value="{{ brainBusy }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">TESTER is reading its graph…</span></sc-if>
+          <span style="font-size:11.5px;line-height:1.45;color:color-mix(in srgb,var(--color-text) 52%,transparent);">{{ brainNote }}</span>
+        </sc-if>
+        <sc-if value="{{ rFeed }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ feed }}" as="l" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;font-size:12px;line-height:1.45;"><span style="font-family:ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 48%,transparent);">{{ l.t }}</span><span style="overflow-wrap:anywhere;">{{ l.m }}</span></div></sc-for>
+        </sc-if>
+        <sc-if value="{{ rChallenge }}" hint-placeholder-val="{{ false }}">
+          <span class="{{ chLockCls }}" style="justify-self:start;">{{ chLock }}</span>
+          <p style="margin:0;font-size:12.5px;line-height:1.55;color:color-mix(in srgb,var(--color-text) 75%,transparent);">Fewer lines and a faster app, nothing lost. Work on a copy. A file goes only when nothing loads or mentions it, or it is an exact copy, with the evidence written next to it. Three clean passes after every removal; any failure puts the file back. The owner approves before the original changes.</p>
+          <button type="button" class="btn btn-secondary" style="justify-self:start;" onClick="{{ collect }}" disabled="{{ running }}">{{ collectLabel }}</button>
+          <sc-if value="{{ hasEvidence }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12.5px;">{{ evLine }}</span>
+            <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 52%,transparent);">Nothing mentions these</span>
+            <sc-for list="{{ evUnref }}" as="u" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;font-size:12px;"><span style="overflow-wrap:anywhere;">{{ u.path }}</span><span style="font-family:ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ u.lines }}</span></div></sc-for>
+            <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 52%,transparent);">Identical copies</span>
+            <sc-for list="{{ evDups }}" as="u" hint-placeholder-count="0"><span style="font-size:12px;overflow-wrap:anywhere;">{{ u }}</span></sc-for>
+            <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 52%,transparent);">Biggest files</span>
+            <sc-for list="{{ evBig }}" as="u" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;font-size:12px;"><span style="overflow-wrap:anywhere;">{{ u.path }}</span><span style="font-family:ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ u.lines }}</span></div></sc-for>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ rIdeas }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ ideas }}" as="d" hint-placeholder-count="3">
+            <div style="display:grid;gap:4px;">
+              <span style="font-size:13px;font-weight:500;">{{ d.title }}</span>
+              <span style="font-size:12px;line-height:1.45;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ d.sub }}</span>
+              <sc-for list="{{ d.items }}" as="i" hint-placeholder-count="0"><button type="button" onClick="{{ i.go }}" style="display:flex;gap:8px;align-items:baseline;padding:3px 4px;border:0;border-radius:var(--radius-sm);background:transparent;color:inherit;font:inherit;font-size:12px;text-align:left;cursor:pointer;overflow-wrap:anywhere;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><span style="min-width:0;">{{ i.label }}</span><span style="margin-left:auto;font-family:ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ i.n }}</span></button></sc-for>
+            </div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ rEvidence }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:6px;"><button type="button" class="btn btn-secondary" onClick="{{ copyReport }}">Copy report</button><button type="button" class="btn btn-secondary" onClick="{{ downloadReport }}">Download</button></div>
+          <pre style="margin:0;white-space:pre-wrap;font:11.5px/1.6 ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 86%,transparent);">{{ report }}</pre>
+        </sc-if>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = 'tk_dash_v3';
+const PAL = { agent: '#e9e9ed', tool: '#e3c27a', module: '#94a6c9', work: '#9184d9', question: '#e0a07e', claim: '#8fcfb0', thought: '#f0e2c0', source: '#c9a6e8' };
+const LANES = [['agent', 'agent'], ['tool', 'tool'], ['module', 'code'], ['work', 'test'], ['question', 'finding'], ['claim', 'fix'], ['thought', 'lesson'], ['source', 'data']];
+const THEME = { bg: '#161826', fog: 0.018, shell: '#5d5294', shellOpacity: 0.04, halo: 0.13, haloSize: 2.6, flow: '#d2cefd', spark: '#f5f4ff', labelBg: 'rgba(22,24,38,.88)', labelInk: '#cfd3e5', labelSel: '#f3f5fe', labelLine: '#3f424d', lanes: PAL };
+const SIZES = [[320, 'XS', 'Phone small'], [390, 'Phone', 'Phone'], [768, 'Tablet', 'Tablet portrait'], [1024, 'Tab L', 'Tablet landscape'], [1440, 'Laptop', 'Laptop'], [1920, 'TV', 'TV']];
+const QUICK = [390, 1440];
+const CODE = [['tests', 'Own tests'], ['audit', 'Code audit'], ['js', 'JavaScript']];
+const GROUPS = ['Owner console and ops', 'Site', 'Mobile', 'Web and hub', 'Research', 'Marketing', 'Walkthroughs'];
+const RTABS = [['inspector', 'Inspector'], ['file', 'File'], ['findings', 'Findings'], ['brain', 'Brain'], ['feed', 'Feed'], ['challenge', 'Challenge'], ['ideas', 'Ideas'], ['evidence', 'Evidence']];
+const WORD = { scroll: 'scroll', offscreen: 'offscreen', rendering: 'console', console: 'console', request: 'request', a11y: 'a11y', blank: 'console', harness: 'cmd' };
+const FIXED = [
+  'apps/ops/fixtures/owner-snapshot.json was cut off mid-string; completed.',
+  'Console, Tmpltz, Unphz and Anima crashed on load and on every click (componentDidUpdate read a state the runtime never passes).',
+  'Anima App: a hole in the skins list and a stale saved index crashed five design actions; swatches had no name; the phone zooms to fit.',
+  'Institute: nine matrix cells and Anima: one citation link had no name; Institute header links wrap.',
+  'Walkthrough v1, Field Notebook, Owner Console panel, Landscape 2026: content wider than the screen.',
+  'Console and Agent space scroll inside the page instead of widening it; space.html rebuilt.',
+  'apps/engine/test_engine.py: a test never checked its second publish.',
+  'TESTER: false alarms removed; pyflakes lint; rules for the two runtime traps found here.'
+];
+const short = p => p.replace(/^apps\//, '').replace(/\.dc\.html$/, '').replace(/\.html$/, '');
+const groupOf = p => /^apps\/ops\//.test(p) ? GROUPS[0] : /^apps\/site\//.test(p) ? GROUPS[1] : /^apps\/mobile\//.test(p) ? GROUPS[2] : /^apps\//.test(p) ? GROUPS[3] : /^research\//.test(p) ? GROUPS[4] : /^marketing\//.test(p) ? GROUPS[5] : GROUPS[6];
+const dot = (c, d, ring) => 'width:' + (d || 8) + 'px;height:' + (d || 8) + 'px;border-radius:50%;flex:none;display:inline-block;' + (ring ? 'box-shadow:inset 0 0 0 1.5px ' + c + ';' : 'background:' + c + ';');
+const mmss = x => { x = Math.max(0, Math.round(x || 0)); return Math.floor(x / 60) + ':' + String(x % 60).padStart(2, '0'); };
+const ago = t => { if (!t) return 'never'; const x = Math.max(0, (Date.now() - t) / 1000); return x < 60 ? 'just now' : x < 5400 ? Math.round(x / 60) + ' min ago' : (x / 3600).toFixed(1) + ' h ago'; };
+const chip = (on, extra) => 'pointer-events:auto;display:inline-flex;align-items:center;gap:5px;min-height:26px;padding:0 9px;border-radius:999px;cursor:pointer;font:inherit;font-size:11.5px;border:1px solid ' + (on ? 'var(--color-accent-600)' : 'var(--color-neutral-800)') + ';background:' + (on ? 'color-mix(in srgb,var(--color-accent) 12%,var(--color-bg))' : 'color-mix(in srgb,var(--color-bg) 85%,transparent)') + ';color:' + (on ? 'var(--color-text)' : 'color-mix(in srgb,var(--color-text) 55%,transparent)') + ';' + (extra || '');
+
+class Component extends DCLogic {
+  liveRef = React.createRef();
+  liveBox = React.createRef();
+  graphRef = React.createRef();
+  state = { w: 1440, h: 900, view: 'graph', rtab: 'findings', files: [], pages: [], py: 'idle', mode: 'Browser mode', status: 'Reading the file list', suites: {}, fails: [], warns: 0, graph: null, sel: '', running: false, passes: 0, history: [], log: [], livePage: 'apps/ops/src/Explorer.dc.html', liveW: 1440, liveStep: '', boxW: 900, boxH: 500, ui: {}, uiWidths: QUICK, gsecs: {}, best: {}, cur: '', phase: '', t0: 0, now: Date.now(), off: {}, motion: true, labels: true, gq: '', cmd: '', fkind: '', brain: [], brainBusy: false, ev: null, file: null, testLines: [], audit: {} };
+
+  componentDidMount() {
+    try { document.title = 'Test Dashboard · Bridago'; document.documentElement.lang = 'en'; } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) this.setState({ suites: s.suites || {}, fails: s.fails || [], warns: s.warns || 0, passes: s.passes || 0, history: s.history || [], ui: s.ui || {}, uiWidths: s.uiWidths || QUICK, gsecs: s.gsecs || {}, best: s.best || {}, testLines: s.testLines || [], audit: s.audit || {} }); } catch (e) {}
+    if (!window.THREE && !window.__threeLoading) { window.__threeLoading = true; const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js'; sc.onload = () => this.forceUpdate(); document.head.appendChild(sc); }
+    this.onR = () => this.setState({ w: window.innerWidth, h: window.innerHeight }); this.onR(); window.addEventListener('resize', this.onR);
+    this.ro = new ResizeObserver(() => { const b = this.liveBox.current; if (b && (b.clientWidth !== this.state.boxW || b.clientHeight !== this.state.boxH)) this.setState({ boxW: b.clientWidth, boxH: b.clientHeight }); });
+    if (this.liveBox.current) this.ro.observe(this.liveBox.current);
+    this.tick = setInterval(() => { if (this.state.running) this.setState({ now: Date.now() }); }, 1000);
+    fetch('/health', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.graph && 'fixing' in j) this.setState({ mode: 'Container mode' }); }).catch(() => {});
+    this.boot();
+  }
+  componentWillUnmount() { this.stopFlag = true; clearInterval(this.tick); window.removeEventListener('resize', this.onR); if (this.ro) this.ro.disconnect(); if (this.ctl) this.ctl.dispose(); clearTimeout(this._w); clearTimeout(this._gw); }
+  componentDidUpdate() {
+    const f = this.liveRef.current;
+    if (f && !this.state.running && this._shown !== this.state.livePage) { this._shown = this.state.livePage; f.src = TestKit.root + this.state.livePage.split('/').map(encodeURIComponent).join('/'); }
+    this.mountGraph();
+    const sel = this.state.sel;
+    if (this.state.rtab === 'file' && this._fileFor !== sel) { this._fileFor = sel; this.loadFile(sel); }
+  }
+  log(t) { this.setState(s => ({ log: s.log.concat({ t: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }), m: t }).slice(-400) })); }
+  save() { const s = this.state; try { localStorage.setItem(KEY, JSON.stringify({ suites: s.suites, fails: s.fails.slice(0, 500), warns: s.warns, passes: s.passes, history: s.history, ui: s.ui, uiWidths: s.uiWidths, gsecs: s.gsecs, best: s.best, testLines: s.testLines.slice(0, 200), audit: s.audit })); } catch (e) {} }
+  async boot() {
+    if (!window.TestKit) { this._w = setTimeout(() => this.boot(), 200); return; }
+    try {
+      const files = await TestKit.manifest('');
+      const pages = files.filter(f => /\.html$/.test(f) && !/^apps\/web\/dist\//.test(f));
+      this.setState({ files, pages, status: 'Starting Python' }); this.log(files.length + ' files, ' + pages.length + ' pages');
+      this.py = TestKit.python(files, m => this.log(m)).then(() => { this.setState({ py: 'ready', status: 'Ready' }); return this.audit(true); }, e => this.setState({ py: 'failed', status: 'Python did not start: ' + e.message }));
+    } catch (e) { this.setState({ status: 'Could not read the file list: ' + e.message }); }
+  }
+  view() {
+    const s = this.state, g = s.graph; if (!g) return null;
+    if (s.view === 'focus' && this.adj && this.adj[s.sel]) {
+      const keep = new Set([s.sel]); (this.adj[s.sel] || []).forEach(x => { keep.add(x.k); (this.adj[x.k] || []).slice(0, 12).forEach(y => keep.add(y.k)); });
+      return { nodes: g.nodes.filter(n => keep.has(n.key)), edges: g.edges.filter(e => keep.has(e.a) && keep.has(e.b)) };
+    }
+    const off = s.off, nodes = g.nodes.filter(n => !off[n.lane]), ok = new Set(nodes.map(n => n.key));
+    return { nodes, edges: g.edges.filter(e => ok.has(e.a) && ok.has(e.b)) };
+  }
+  mountGraph() {
+    const el = this.graphRef.current, s = this.state;
+    if (!el || !s.graph) return;
+    if (!this.ctl) {
+      if (!window.Connectome || !window.THREE) { if (!this._gw) this._gw = setTimeout(() => { this._gw = null; this.forceUpdate(); }, 250); return; }
+      this.ctl = window.Connectome.mount(el, { onPick: k => k && this.setState({ sel: k, rtab: this.state.rtab === 'findings' || this.state.rtab === 'feed' ? 'inspector' : this.state.rtab }), theme: THEME, behaviour: { labels: 'agents', idleResume: 10, rotateSpeed: 0.8, shell: false, edges: 0.7 }, font: '500 11px Inter, system-ui, sans-serif' });
+      if (!this.ctl) return;
+    }
+    const key = s.view + '|' + JSON.stringify(s.off) + '|' + (s.view === 'focus' ? s.sel : '') + '|' + (s.graph ? s.graph.nodes.length : 0);
+    if (this._key !== key) { this._key = key; const v = this.view(); if (v) this.ctl.setData(v); this._sel = null; }
+    const b = JSON.stringify([s.motion, s.labels]); if (this._b !== b) { this._b = b; this.ctl.setBehaviour({ autoRotate: s.motion, labels: s.labels ? 'agents' : 'selected' }); }
+    if (this._sel !== s.sel) { this._sel = s.sel; this.ctl.select(s.sel, new Set([s.sel].concat(((this.adj || {})[s.sel] || []).map(x => x.k)))); }
+  }
+  setGraph(g0) {
+    // one cluster per app on a sphere, the agents and their tools at the centre: the repository as a galaxy rather than eight dense lobes
+    const where = k => { const m = k.match(/^(?:file|code|test|route):((?:apps\/[^/]+)|[^/:]+)/); return k.startsWith('app:') ? k.slice(4).split('/').slice(0, 2).join('/') : m ? (m[1].includes('.') ? 'root' : m[1]) : k.startsWith('service:') ? 'services' : k.startsWith('data:') ? 'data' : k.startsWith('finding:') ? 'findings' : 'core'; };
+    const keys = [...new Set(g0.nodes.map(n => where(n.key)))].filter(k => k !== 'core').sort(), R = 9.5, centre = { core: [0, 0, 0] };
+    keys.forEach((k, i) => { const y = 1 - (i + 0.5) / keys.length * 2, r = Math.sqrt(1 - y * y), t = i * 2.399963; centre[k] = [Math.cos(t) * r * R, y * R * 0.8, Math.sin(t) * r * R]; });
+    const sz = n => n.lane === 'agent' ? 1.5 : n.key.startsWith('app:') ? 1.4 : /\.html$/.test(n.key) && n.key.startsWith('file:') ? 1.1 : n.key.startsWith('file:') ? 0.8 : n.key.startsWith('finding:') ? 1 : 0.45;
+    const g = { nodes: g0.nodes.map(n => { const w = where(n.key); return { ...n, size: sz(n), home: centre[w], hr: w === 'core' ? 2.2 : 1.4 + Math.min(2.2, Math.sqrt(g0.nodes.length) / 30) }; }), edges: g0.edges };
+    const adj = {}, nodes = {};
+    g.nodes.forEach(n => { nodes[n.key] = n; adj[n.key] = []; });
+    g.edges.forEach(e => { if (adj[e.a] && adj[e.b]) { adj[e.a].push({ k: e.b, rel: e.rel, out: true }); adj[e.b].push({ k: e.a, rel: e.rel, out: false }); } });
+    this.adj = adj; this.nodes = nodes; this.setState({ graph: g });
+  }
+  async loadFile(sel) {
+    const path = !sel ? '' : sel.startsWith('file:') ? sel.slice(5) : /^(code|test|route):/.test(sel) ? sel.split(':').slice(1).join(':').split('::')[0] : '';
+    if (!path || /^tester\//.test(path)) return this.setState({ file: { path: path || 'Pick a file, function, test or route in the graph', text: '' } });
+    try { const t = await (await fetch(TestKit.root + path.split('/').map(encodeURIComponent).join('/'))).text(); const lines = t.split('\n').slice(0, 600); this.setState({ file: { path, text: lines.map((l, i) => String(i + 1).padStart(4) + '  ' + l).join('\n') + (t.split('\n').length > 600 ? '\n…' : '') } }); }
+    catch (e) { this.setState({ file: { path, text: 'Could not read it: ' + e.message } }); }
+  }
+  suite(id, patch) { this.setState(s => ({ suites: { ...s.suites, [id]: { ...(s.suites[id] || {}), ...patch } } })); }
+  addFails(list) { this.setState(s => ({ fails: s.fails.concat(list) })); }
+  async ready() { if (this.state.py !== 'ready') { this.log('waiting for Python'); await this.py; } if (this.state.py !== 'ready') throw new Error('Python is not available in this tab'); }
+  async tests() {
+    this.setState({ phase: 'test', cur: 'tests' }); this.suite('tests', { st: 'running' });
+    const t0 = performance.now();
+    try {
+      await this.ready(); await TestKit.sync(this.state.files, m => this.log(m));
+      const r = await TestKit.runPython('tests'), n = k => +((r.tail.match(new RegExp('(\\d+) ' + k)) || [])[1] || 0);
+      const p = n('passed'), f = n('failed') + n('error'), sk = n('skipped');
+      this.setState({ testLines: r.lines });
+      this.suite('tests', { st: f || r.code ? 'failed' : 'passed', p, f, sk, secs: r.seconds, line: p + ' passed · ' + f + ' failed · ' + sk + ' skipped' });
+      this.addFails(r.lines.filter(l => /^(FAILED|ERROR)/.test(l)).map(l => ({ word: 'cmd', where: 'apps/tester', text: l.replace(/^(FAILED|ERROR) /, ''), src: 'tests' })));
+      this.log('own tests: ' + p + ' passed, ' + f + ' failed');
+    } catch (e) { this.suite('tests', { st: 'failed', line: e.message, secs: (performance.now() - t0) / 1000 }); this.addFails([{ word: 'cmd', where: 'apps/tester', text: 'the tests could not run: ' + e.message, src: 'tests' }]); }
+  }
+  async audit(quiet) {
+    if (!quiet) { this.setState({ phase: 'find', cur: 'audit' }); this.suite('audit', { st: 'running' }); }
+    try {
+      await this.ready(); if (!quiet) await TestKit.sync(this.state.files);
+      const r = await TestKit.runPython('audit');
+      this.setGraph(r.graph);
+      const err = r.findings.filter(f => f.severity === 'error'), warn = r.findings.length - err.length;
+      if (!quiet) {
+        this.setState(s => ({ audit: r.status, warns: s.warns + warn }));
+        this.suite('audit', { st: err.length ? 'failed' : 'passed', p: Object.keys(r.status).length - Object.values(r.status).filter(x => x.findings).length, f: err.length, secs: r.seconds, line: r.stats.nodes + ' nodes · ' + r.stats.edges + ' links · ' + err.length + ' errors · ' + warn + ' warnings' });
+        this.addFails(err.map(f => ({ word: f.check === 'secrets' ? 'secret' : f.check === 'routes' ? 'api' : 'cmd', where: f.file || f.check, text: f.title, key: 'finding:' + f.key, src: 'audit' })));
+      }
+      this.log('graph: ' + r.stats.nodes + ' nodes, ' + r.stats.edges + ' links' + (quiet ? '' : ', ' + err.length + ' errors'));
+    } catch (e) { this.log('the graph could not be built: ' + String(e.message || e).split('\n').slice(-3).join(' ')); console.log('[tk3] audit error', e && e.message); if (!quiet) { this.suite('audit', { st: 'failed', line: e.message }); this.addFails([{ word: 'cmd', where: 'audit', text: 'the audit could not run: ' + e.message, src: 'audit' }]); } }
+  }
+  async js() {
+    this.setState({ phase: 'find', cur: 'js' }); this.suite('js', { st: 'running' });
+    const t0 = performance.now(), bad = await TestKit.jsSuite(this.state.files), secs = (performance.now() - t0) / 1000, n = this.state.files.filter(f => /\.(m?js|html)$/.test(f) && !/^apps\/web\/dist\//.test(f)).length;
+    this.suite('js', { st: bad.length ? 'failed' : 'passed', p: n - bad.length, f: bad.length, secs, line: n + ' files · ' + bad.length + ' syntax problems' });
+    this.addFails(bad.map(b => ({ word: 'console', where: b.file + ':' + b.line, text: b.msg, key: 'file:' + b.file, src: 'js' })));
+  }
+  async ui(pages, widths, keep) {
+    pages = pages || this.state.pages; widths = widths || QUICK;
+    if (!keep) this.setState({ ui: {}, uiWidths: widths, gsecs: {} });
+    this.setState({ phase: 'test' });
+    let last = null, lt = performance.now();
+    const close = () => { if (last) { const g = groupOf(last), d = (performance.now() - lt) / 1000; this.setState(s => ({ gsecs: { ...s.gsecs, [g]: (s.gsecs[g] || 0) + d } })); } };
+    await TestKit.uiSuite({ frame: this.liveRef.current, pages, widths, stop: () => this.stopFlag,
+      onOpen: (p, w) => { if (p !== last) { close(); last = p; lt = performance.now(); } this.setState({ livePage: p, liveW: w, liveStep: '', cur: 'g:' + groupOf(p) }); },
+      onStep: r => this.setState(s => {
+        const ui = { ...s.ui }, cell = { ...((ui[r.page] || {})[r.width] || { n: 0 }) };
+        if (!r.step) cell.ran = true; cell.n += r.fails.length; ui[r.page] = { ...(ui[r.page] || {}), [r.width]: cell };
+        return { ui, liveStep: r.step, fails: s.fails.concat(r.fails.map(([k, m]) => ({ word: WORD[k] || k, where: short(r.page) + ' @' + r.width + (r.step ? ' after "' + r.step + '"' : ''), text: m, key: 'file:' + r.page, page: r.page, width: r.width, src: 'ui' }))) };
+      }) });
+    close(); this._shown = null; this.setState({ liveStep: '' });
+  }
+  async run(ids) {
+    if (this.state.running) return false;
+    this.stopFlag = false;
+    const all = ids.length > 1;
+    this.setState(s => ({ running: true, t0: Date.now(), now: Date.now(), fails: all ? [] : s.fails.filter(f => !ids.includes(f.src)), warns: all || ids.includes('audit') ? 0 : s.warns }));
+    this.log('run: ' + ids.join(', '));
+    for (const id of ids) { if (this.stopFlag) break; await this[id](); }
+    const full = all && !this.stopFlag;
+    return new Promise(res => this.setState(s => {
+      const clean = !s.fails.length, passes = full ? (clean ? s.passes + 1 : 0) : s.passes, secs = (Date.now() - s.t0) / 1000;
+      const best = { ...s.best }; Object.keys(s.gsecs).forEach(g => { if (!best[g] || s.gsecs[g] < best[g]) best[g] = s.gsecs[g]; }); CODE.forEach(([k]) => { const x = s.suites[k]; if (x && x.secs && (!best[k] || x.secs < best[k])) best[k] = x.secs; });
+      const history = full ? s.history.concat({ ts: Date.now(), fails: s.fails.length, secs: Math.round(secs) }).slice(-12) : s.history;
+      if (full) this.log('full run: ' + s.fails.length + ' failures in ' + mmss(secs) + (clean ? ' · clean pass ' + passes + '/3' : ''));
+      return { running: false, passes, history, best, phase: '', cur: '', last: secs };
+    }, () => { this.save(); res(full && !this.state.fails.length); }));
+  }
+  runAll() { return this.run(['tests', 'audit', 'js', 'ui']); }
+  async threePasses() { for (let i = 0; i < 3 && this.state.passes < 3; i++) { const ok = await this.runAll(); if (!ok) { this.log('a pass failed; the count starts again after the fix'); break; } } }
+  async checkPage() {
+    if (this.state.running) return;
+    const p = this.state.livePage, w = this.state.liveW;
+    this.stopFlag = false;
+    this.setState(s => ({ running: true, t0: Date.now(), fails: s.fails.filter(f => !(f.page === p && f.width === w)) }));
+    await this.ui([p], [w], true);
+    this.setState({ running: false, phase: '', cur: '' }, () => this.save());
+  }
+  async collect() {
+    try { this.setState({ ev: { loading: true } }); await this.ready(); const r = await TestKit.runPython('challenge'); this.setState({ ev: r }); this.log('challenge evidence: ' + r.unreferenced.length + ' files nothing mentions, ' + r.duplicates.length + ' groups of identical copies'); }
+    catch (e) { this.setState({ ev: null }); this.log('evidence failed: ' + e.message); }
+  }
+  digest() {
+    const s = this.state, g = s.graph, by = {};
+    if (g) g.nodes.forEach(n => { by[n.lane] = (by[n.lane] || 0) + 1; });
+    const hubs = g ? Object.keys(this.adj).sort((a, b) => this.adj[b].length - this.adj[a].length).slice(0, 18).map(k => this.nodes[k].label + ' (' + this.adj[k].length + ' links)') : [];
+    const apps = g ? g.nodes.filter(n => n.key.startsWith('app:')).map(n => n.label) : [];
+    return JSON.stringify({ project: 'Anima institute repository (Bridago brain, SEXTANT engine, ops, site, mobile, tester)', counts: by, apps, hubs, suites: Object.fromEntries(Object.entries(s.suites).map(([k, v]) => [k, v.line || v.st])), failures: s.fails.slice(0, 25).map(f => f.word + ' ' + f.where + ': ' + f.text), clean_passes: s.passes });
+  }
+  async ask(q) {
+    q = String(q || '').trim(); if (!q || this.state.brainBusy) return;
+    this.setState(s => ({ rtab: 'brain', brainBusy: true, brain: s.brain.concat({ who: 'You', text: q }).slice(-20) }));
+    let a = '';
+    try {
+      if (!(window.claude && window.claude.complete)) throw new Error('there is no model in this page');
+      a = String(await window.claude.complete({ system: 'You are TESTER, an agent that is one graph of this repository: its files, functions, routes, pages, services, tests, checks and findings. Answer the owner in under 160 words from the DIGEST only, plainly, naming files and pages. Say what the digest does not show. No markdown headings.', messages: [{ role: 'user', content: 'DIGEST\n' + this.digest() + '\n\nQUESTION\n' + q }], max_tokens: 600 }));
+    } catch (e) { a = 'No answer: ' + e.message; }
+    this.setState(s => ({ brainBusy: false, brain: s.brain.concat({ who: 'TESTER', text: a.replace(/\*\*(.+?)\*\*/g, '$1') }).slice(-20) }));
+  }
+  command(raw) {
+    const c = String(raw || '').trim(), t = c.toLowerCase(); if (!c) return;
+    this.setState({ cmd: '' }); this.log('> ' + c);
+    let m;
+    if (/^run( all| everything)?$/.test(t)) return this.runAll();
+    if (/clean pass/.test(t)) return this.threePasses();
+    if ((m = t.match(/^find\s+(\d+)/))) { this._findN = +m[1]; this.setState({ rtab: 'findings' }); return this.run(['audit', 'js']); }
+    if (/^ingest\b/.test(t)) return /github\.com|\/repos\//.test(t) ? this.log('Ingesting another repository needs the tester container (TESTER_REPO). This tab reads this project.') : this.doIngest();
+    if ((m = t.match(/^(open|check)\s+(.+)/))) { const p = this.state.pages.find(x => short(x).toLowerCase().includes(m[2].trim())); if (!p) return this.log('No page matches "' + m[2] + '"'); this._shown = null; this.setState({ view: 'live', livePage: p }, () => m[1] === 'check' && setTimeout(() => this.checkPage(), 400)); return; }
+    if (/^fix\b/.test(t)) { this.setState({ rtab: 'feed' }); return this.log(this.state.mode === 'Container mode' ? 'Fixing runs in the container loop; verified fixes wait under /fixes for your approval.' : 'Fixing writes to the repository, which only the tester container does. Open this dashboard from localhost:8090/repo/apps/tester/.'); }
+    return this.ask(c);
+  }
+  async doIngest() { this.setState({ phase: 'index' }); try { await this.ready(); await TestKit.sync(this.state.files, m => this.log(m)); await this.audit(true); } catch (e) { this.log('ingest failed: ' + e.message); } this.setState({ phase: '' }); }
+  report() {
+    const s = this.state, t = s.suites.tests || {}, done = ['tests', 'audit', 'js'].every(k => s.suites[k] && ['passed', 'failed'].includes(s.suites[k].st)) && Object.keys(s.ui).length;
+    return ['PROJECT: Python services (FastAPI) and Design Component pages, tests: pytest -q per app plus TESTER\'s checks; start: docker compose up -d',
+      'OWN TESTS: ' + (t.st ? 'apps/tester ' + (t.p || 0) + ' passed, ' + (t.f || 0) + ' failed, ' + (t.sk || 0) + ' skipped here; engine, mcp-hub and ops suites run in the tester container' : 'not run yet'),
+      'CHECKER: ' + (done ? (s.fails.length ? 'FAILED' : 'PASSED') : 'not run yet') + ', ' + s.fails.length + ' failures, ' + s.warns + ' warnings',
+      'FIXED:', ...FIXED.map(x => '  - ' + x),
+      'NOT FIXED:', ...(s.fails.length ? s.fails.slice(0, 80).map(f => '  FAIL ' + f.word + ' ' + f.where + ': ' + f.text) : ['  none']),
+      'MANUAL CHECKS: not done; they need a person (Step 7, 1–12)',
+      'CLEAN PASSES: ' + s.passes + '/3' + (s.history.length ? ' · last runs: ' + s.history.slice(-3).map(h => h.fails + ' failures in ' + mmss(h.secs)).join('; ') : ''),
+      'NEW CODE NEEDS APPROVAL: yes'].join('\n');
+  }
+  renderVals() {
+    const s = this.state, wide = s.w >= 1100, sc = Math.min(1, (s.boxW || 900) / s.liveW), g = s.graph;
+    const uiCells = Object.values(s.ui).reduce((a, c) => a.concat(Object.values(c)), []), uiPass = uiCells.filter(c => c.ran && !c.n).length;
+    const nPassed = ((s.suites.tests || {}).p || 0) + ((s.suites.audit || {}).p || 0) + ((s.suites.js || {}).p || 0) + uiPass;
+    const elapsed = s.running ? (s.now - s.t0) / 1000 : (s.history.length ? s.history[s.history.length - 1].secs : 0);
+    const kinds = {}, groups = {}; s.fails.forEach(f => { kinds[f.word] = (kinds[f.word] || 0) + 1; });
+    s.fails.forEach(f => { if (s.fkind && f.word !== s.fkind) return; const k = f.word + '|' + (f.page || f.where).replace(/ after .*/, '') + '|' + (f.width || '') + '|' + f.text.replace(/\d+/g, '#'); (groups[k] = groups[k] || { f, n: 0 }).n++; });
+    const findList = Object.values(groups).slice(0, this._findN || 300);
+    const node = this.nodes && this.nodes[s.sel], rel = {};
+    ((this.adj || {})[s.sel] || []).forEach(x => { const n = this.nodes[x.k]; if (!n) return; const h = (x.out ? '' : 'by ') + (x.rel || 'linked').replace(/_/g, ' '); (rel[h] = rel[h] || []).push({ label: n.label, dot: dot(PAL[n.lane] || '#9397ab', 7), go: () => this.setState({ sel: x.k }) }); });
+    const gq = s.gq.trim().toLowerCase(), hits = gq && this.nodes ? Object.values(this.nodes).filter(n => (n.label + ' ' + n.key).toLowerCase().includes(gq)).slice(0, 8) : [];
+    const stepNow = s.phase || (s.running ? 'test' : '');
+    const fixedN = FIXED.length, nextLine = s.fails.length ? 'fix the first' : s.passes < 3 ? 'pass ' + (s.passes + 1) + '/3' : 'challenge';
+    const steps = [['ingest', 'Ingest', s.files.length ? s.files.length + ' files' : '…', () => this.doIngest()], ['index', 'Index', g ? g.nodes.length + ' nodes' : s.py === 'ready' ? 'building' : 'waiting', () => this.setState({ view: 'graph' })], ['find', 'Find', s.fails.length + ' found', () => this.setState({ rtab: 'findings' })], ['fix', 'Fix', fixedN + ' fixed', () => this.setState({ rtab: 'evidence' })], ['test', 'Test', s.passes + ' of 3 clean', () => this.setState({ view: 'suites' })], ['pr', 'PR', s.mode === 'Container mode' ? 'container' : 'container only', () => this.command('fix')], ['next', 'Next', nextLine, () => this.setState(s.fails.length ? { rtab: 'findings' } : s.passes < 3 ? { view: 'suites' } : { rtab: 'challenge' })]];
+    const pagesBy = {}; s.pages.forEach(p => { (pagesBy[groupOf(p)] = pagesBy[groupOf(p)] || []).push(p); });
+    const card = (id, name, st, count, ok, pct, meta, time) => ({ name, time, count, countColor: ok ? 'var(--color-accent-300)' : 'var(--color-text)', state: st, pct, barColor: ok ? 'var(--color-accent)' : 'var(--color-accent-400)', meta,
+      st: 'display:grid;gap:4px;width:100%;padding:8px 9px;border-radius:var(--radius-md);border:1px solid ' + (s.cur === id ? 'var(--color-accent-600)' : 'var(--color-neutral-800)') + ';background:' + (s.cur === id ? 'color-mix(in srgb,var(--color-accent) 8%,var(--color-surface))' : 'var(--color-surface)') + ';color:inherit;font:inherit;font-size:12.5px;text-align:left;cursor:pointer;',
+      go: () => this.setState({ view: 'suites', sfocus: id }) });
+    const suiteCards = CODE.map(([id, name]) => { const x = s.suites[id] || {}; return card(id, name, x.st === 'running' ? 'running' : s.running && !x.st ? 'waiting' : x.st || 'not run', (x.p || 0) + ' passed' + (x.f ? ' · ' + x.f + ' failed' : ''), !x.f, x.st === 'running' ? '50%' : x.st ? '100%' : '0%', (x.ts ? 'last ' + ago(x.ts) + ' · ' : '') + (s.best[id] ? 'best ' + mmss(s.best[id]) : 'no best yet'), x.secs ? mmss(x.secs) : '0:00'); })
+      .concat(GROUPS.filter(gn => pagesBy[gn]).map(gn => { const ps = pagesBy[gn], cells = ps.reduce((a, p) => a.concat(Object.values(s.ui[p] || {})), []), ran = cells.filter(c => c.ran).length, bad = cells.filter(c => c.n).length, total = ps.length * (s.uiWidths.length || 2), id = 'g:' + gn;
+        return card(id, gn, s.cur === id ? 'running' : s.running && !ran ? 'waiting' : ran ? (bad ? bad + ' failing' : 'passed') : 'not run', (ran - bad) + ' passed' + (bad ? ' · ' + bad + ' failed' : ''), !bad, Math.round(ran / Math.max(1, total) * 100) + '%', ps.length + ' pages × ' + (s.uiWidths.length || 2) + ' sizes' + (s.best[gn] ? ' · best ' + mmss(s.best[gn]) : ''), s.gsecs[gn] ? mmss(s.gsecs[gn]) : '0:00'); }));
+    const suiteDetail = CODE.map(([id, name]) => { const x = s.suites[id] || {}; const rows = id === 'tests' ? s.testLines.map(l => { const m = l.match(/^(PASSED|FAILED|SKIPPED|ERROR)\s+(.*)$/) || [0, '', l]; return { a: (m[2] || '').replace(/^test_tester_graph\.py::/, ''), b: (m[1] || '').toLowerCase(), color: m[1] === 'PASSED' ? 'var(--color-accent-300)' : 'var(--color-text)' }; }) : id === 'audit' ? Object.keys(s.audit).map(k => ({ a: k, b: s.audit[k].findings + ' · ' + s.audit[k].seconds + 's', color: s.audit[k].findings ? 'var(--color-text)' : 'var(--color-accent-300)' })) : []; return { name, state: x.st || 'not run', cls: x.st === 'passed' ? 'tag tag-accent' : x.st === 'failed' ? 'tag tag-outline' : 'tag tag-neutral', line: x.line || '', rows, run: () => this.run([id]) }; })
+      .concat(GROUPS.filter(gn => pagesBy[gn]).map(gn => ({ name: gn, state: '', cls: 'tag tag-neutral', line: pagesBy[gn].length + ' pages · sizes ' + s.uiWidths.join(', '), run: () => this.run(['ui']), rows: pagesBy[gn].map(p => { const c = s.ui[p] || {}, cs = s.uiWidths.map(w => c[w]); return { a: short(p), b: cs.map(x => !x ? '·' : x.n ? '✕' : '✓').join(' '), color: cs.some(x => x && x.n) ? 'var(--color-accent-400)' : 'var(--color-accent-300)' }; }) })));
+    const vendored = k => /(^|\/)support\.js(::|$)|^(?:code|file|route):apps\/web\/dist\/|^(?:code|file|route):marketing\/export\//.test(k.replace(/^(code|file|route):/, m => m));   // the Design Component runtime and built copies are not institute code
+    const codes = g ? g.nodes.filter(n => n.key.startsWith('code:') && !vendored(n.key)) : [], untested = {};
+    codes.forEach(n => { if (!(this.adj[n.key] || []).some(x => x.rel === 'tests' && !x.out)) { const f = n.key.slice(5).split('::')[0]; untested[f] = (untested[f] || 0) + 1; } });
+    const routes = g ? g.nodes.filter(n => n.key.startsWith('route:') && !vendored(n.key) && !(this.adj[n.key] || []).some(x => x.rel === 'calls' && !x.out)) : [];
+    const unchecked = s.pages.filter(p => !s.ui[p]);
+    const tabsBadge = { findings: s.fails.length ? String(s.fails.length) : '', challenge: s.passes >= 3 ? 'open' : '' };
+    return {
+      liveRef: this.liveRef, liveBox: this.liveBox, graphRef: this.graphRef,
+      shellH: wide ? 'height:100vh;' : '', stageH: wide ? '' : 'height:72vh;', sideMax: wide ? '240px' : '100%', rightMax: wide ? '330px' : '100%', sideScroll: wide ? 'overflow:auto;' : '', rightH: wide ? '' : 'max-height:none;',
+      modeLabel: s.mode, passChips: [0, 1, 2].map(i => ({ label: 'Pass ' + (i + 1) + (i < s.passes ? ' ✓' : ''), st: 'display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;font-size:11.5px;white-space:nowrap;border:1px solid ' + (i < s.passes ? 'var(--color-accent-600)' : 'var(--color-neutral-800)') + ';color:' + (i < s.passes ? 'var(--color-accent-200)' : 'color-mix(in srgb,var(--color-text) 55%,transparent)') + ';' })),
+      cmd: s.cmd, onCmd: e => this.setState({ cmd: e.target.value }), submitCmd: e => { e.preventDefault(); this.command(this.state.cmd); },
+      nPassed: String(nPassed), nFailed: String(s.fails.length), clock: mmss(elapsed), running: s.running, idle: !s.running,
+      doIngest: () => this.doIngest(), runAll: () => this.runAll(), stop: () => { this.stopFlag = true; this.log('stopping after the current check'); }, threePasses: () => this.threePasses(),
+      toLive: () => this.setState({ view: 'live' }), toEvidence: () => this.setState({ rtab: 'evidence' }), toChallenge: () => this.setState({ rtab: 'challenge' }),
+      steps: steps.map(([id, name, note, go], i) => { const on = stepNow === id; return { n: String(i + 1), name, note, go, st: 'display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;border-radius:var(--radius-md);border:1px solid ' + (on ? 'var(--color-accent-600)' : 'var(--color-neutral-800)') + ';background:' + (on ? 'color-mix(in srgb,var(--color-accent) 10%,var(--color-surface))' : 'var(--color-surface)') + ';color:inherit;font:inherit;font-size:12.5px;text-align:left;cursor:pointer;', numSt: 'width:18px;height:18px;border-radius:50%;flex:none;display:inline-grid;place-items:center;font:600 10.5px ui-monospace,Menlo,monospace;' + (on ? 'background:var(--color-accent);color:var(--color-bg);' : 'background:var(--color-neutral-800);color:var(--color-neutral-300);') }; }),
+      suiteCards,
+      gq: s.gq, onGq: e => this.setState({ gq: e.target.value }), onGqKey: e => { if (e.key === 'Enter' && hits[0]) this.setState({ sel: hits[0].key, gq: '', view: s.view === 'graph' || s.view === 'focus' ? s.view : 'graph', rtab: 'inspector' }); if (e.key === 'Escape') this.setState({ gq: '' }); },
+      hitsOpen: hits.length > 0, hits: hits.map(n => ({ label: n.label, go: () => this.setState({ sel: n.key, gq: '', rtab: 'inspector' }) })),
+      laneChips: LANES.map(([lane, label]) => { const on = !s.off[lane]; return { label, on, dot: dot(PAL[lane], 7), st: chip(on), flip: () => this.setState(x => ({ off: { ...x.off, [lane]: on } })) }; }),
+      motionOn: s.motion, flipMotion: () => this.setState({ motion: !s.motion }), motionSt: chip(s.motion), labelsOn: s.labels, flipLabels: () => this.setState({ labels: !s.labels }), labelsSt: chip(s.labels),
+      kicker: 'TESTING · ANIMA (THIS PROJECT)' + (g ? ' · ' + g.nodes.length.toLocaleString() + ' NODES · ' + g.edges.length.toLocaleString() + ' LINKS' : '') + ' · 4D',
+      viewTitle: { graph: 'Connectome', focus: 'Focus', suites: 'Suites', live: 'Live app' }[s.view],
+      viewSub: { graph: 'Every file, function, route, page, service, test and finding is a node; every import, load, call and test is a link. Hover holds it still; click to inspect.', focus: 'Only what is two links from ' + (node ? node.label : 'the selection') + '. Pick another node to move the focus.', suites: 'Code suites, then every page against every size. ✓ passed · ✕ failed · · not run.', live: 'The app as you would see it. A run opens every page here, at each size, and clicks through its tabs.' }[s.view],
+      layerTop: s.w < 760 ? '230px' : '170px', suitesVis: s.view === 'suites' ? '' : 'visibility:hidden;pointer-events:none;', liveVis: s.view === 'live' ? '' : 'visibility:hidden;pointer-events:none;',
+      suiteDetail,
+      pageOpts: (s.pages.length ? s.pages : [s.livePage]).map(p => ({ value: p, label: short(p), on: p === s.livePage })), onPage: e => { this._shown = null; this.setState({ livePage: e.target.value, liveStep: '' }); },
+      widthOpts: SIZES.map(([w, label, title]) => ({ label, title: title + ' · ' + w + 'px', on: s.liveW === w, pick: () => this.setState({ liveW: w }) })),
+      liveSt: 'width:' + s.liveW + 'px;height:' + Math.round((s.boxH || 500) / sc) + 'px;transform:scale(' + sc + ');', checkPage: () => this.checkPage(),
+      liveNote: short(s.livePage) + ' · ' + s.liveW + 'px' + (sc < 1 ? ' at ' + Math.round(sc * 100) + '%' : '') + (s.liveStep ? ' · clicked "' + s.liveStep + '"' : ''),
+      views: [['graph', 'Graph'], ['suites', 'Suites'], ['live', 'Live app'], ['focus', 'Focus']].map(([id, label]) => ({ label, on: s.view === id, pick: () => this.setState({ view: id }) })),
+      statusMono: (s.running ? 'RUNNING · ' + mmss(elapsed) : s.status.toUpperCase()) + (g ? ' · DRAG TO TURN · HOVER TO HOLD' : ''),
+      rtabs: RTABS.map(([id, label]) => { const on = s.rtab === id; return { label, on, badge: tabsBadge[id] || '', pick: () => this.setState({ rtab: id }), st: 'display:inline-flex;align-items:center;padding:9px 8px 8px;border:0;border-bottom:2px solid ' + (on ? 'var(--color-accent)' : 'transparent') + ';background:transparent;color:' + (on ? 'var(--color-text)' : 'color-mix(in srgb,var(--color-text) 58%,transparent)') + ';font:inherit;font-size:12px;cursor:pointer;white-space:nowrap;' }; }),
+      rInspector: s.rtab === 'inspector', rFile: s.rtab === 'file', rFindings: s.rtab === 'findings', rBrain: s.rtab === 'brain', rFeed: s.rtab === 'feed', rChallenge: s.rtab === 'challenge', rIdeas: s.rtab === 'ideas', rEvidence: s.rtab === 'evidence',
+      selKind: node ? (node.tip || node.lane).toUpperCase() : 'NOTHING SELECTED', selTitle: node ? node.label : 'Click a node in the graph.',
+      selGroups: Object.keys(rel).sort().map(h => ({ head: h + ' · ' + rel[h].length, items: rel[h].slice(0, 40) })),
+      filePath: s.file ? s.file.path : 'Pick a file, function, test or route in the graph', fileText: s.file ? s.file.text : '',
+      kindChips: [{ k: '', label: 'All', n: s.fails.length }].concat(Object.keys(kinds).map(k => ({ k, label: k, n: kinds[k] }))).map(c => ({ label: c.label, n: String(c.n), on: s.fkind === c.k, pick: () => this.setState({ fkind: c.k }), st: chip(s.fkind === c.k) })),
+      findRows: findList.map(({ f, n }) => ({ word: f.word, where: f.where.replace(/ after "[^"]*"/, ''), what: f.text, seen: n > 1 ? n + '×' : '', open: () => { if (f.page) { this._shown = null; this.setState({ view: 'live', livePage: f.page, liveW: f.width || 1440 }); } else if (f.key && this.nodes && this.nodes[f.key]) this.setState({ sel: f.key, rtab: 'inspector', view: 'graph' }); } })),
+      noFinds: !findList.length,
+      brainPresets: [['Explain the architecture', 'Explain the architecture of this repository from the graph: the apps, how they connect, and where the risk is.'], ['What to fix first?', 'Which failures should be fixed first, and why?'], ['Where are the gaps?', 'Which parts of the code have the least test coverage?']].map(([label, q]) => ({ label, ask: () => this.ask(q) })),
+      brainBusy: s.brainBusy, brainMsgs: s.brain.map(m => ({ who: m.who, text: m.text, st: 'display:grid;gap:2px;padding:8px 10px;border-radius:var(--radius-md);' + (m.who === 'You' ? 'border:1px solid var(--color-accent-700);' : 'background:var(--color-surface);') })),
+      brainNote: window.claude && window.claude.complete ? 'Answers come from a digest of the graph, the suites and the failures, through the model in this page.' : 'There is no model in this page, so TESTER cannot answer here.',
+      feed: s.log.slice().reverse().slice(0, 200),
+      chLock: s.passes >= 3 ? 'Open: three clean passes in a row' : 'Locked: ' + s.passes + ' of 3 clean passes', chLockCls: s.passes >= 3 ? 'tag tag-accent' : 'tag tag-neutral',
+      collect: () => this.collect(), collectLabel: s.ev && s.ev.loading ? 'Collecting…' : s.ev ? 'Collect again' : 'Collect evidence',
+      hasEvidence: !!(s.ev && !s.ev.loading), evLine: s.ev && !s.ev.loading ? s.ev.files + ' files · ' + s.ev.lines.toLocaleString() + ' lines · ' + s.ev.unreferenced.length + ' that nothing mentions · ' + s.ev.duplicates.length + ' groups of identical copies' : '',
+      evUnref: s.ev && s.ev.unreferenced ? s.ev.unreferenced.map(u => ({ path: u.path, lines: u.lines + ' lines' })) : [],
+      evDups: s.ev && s.ev.duplicates ? s.ev.duplicates.slice(0, 12).map(d => d.length + ' copies: ' + d.join(' · ')) : [],
+      evBig: s.ev && s.ev.biggest ? s.ev.biggest.map(u => ({ path: u.path, lines: u.lines.toLocaleString() })) : [],
+      ideas: [
+        { title: 'Functions no test reaches', sub: g ? codes.length.toLocaleString() + ' functions and classes; these files have the most with no test linked to them.' : 'Waiting for the graph.', items: Object.keys(untested).sort((a, b) => untested[b] - untested[a]).slice(0, 8).map(f => ({ label: f, n: String(untested[f]), go: () => this.setState({ sel: 'file:' + f, rtab: 'inspector' }) })) },
+        { title: 'Routes no page calls', sub: routes.length + ' routes answer but no page or script in the repository calls them. Each needs a test or a caller.', items: routes.slice(0, 10).map(n => ({ label: n.label, n: '', go: () => this.setState({ sel: n.key, rtab: 'inspector' }) })) },
+        { title: 'Pages not checked yet', sub: unchecked.length ? unchecked.length + ' pages have not been opened by a run.' : 'Every page has been opened at least once.', items: unchecked.slice(0, 10).map(p => ({ label: short(p), n: '', go: () => { this._shown = null; this.setState({ view: 'live', livePage: p }); } })) }],
+      report: this.report(), copyReport: () => { try { navigator.clipboard.writeText(this.report()); this.log('report copied'); } catch (e) {} },
+      downloadReport: () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([this.report()], { type: 'text/plain' })); a.download = 'test-report.txt'; document.body.appendChild(a); a.click(); a.remove(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

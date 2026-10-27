@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maturity Agent</title>
+<style>
+  :root{--bg:#070b11;--bg2:#0a0f17;--panel:#0c131d;--panel2:#0e1725;--line:#1a2740;
+    --text:#dbe8ff;--dim:#7488a3;--dim2:#45566e;--acc:#39ff9f;--acc2:#79ffc6;--cyan:#45d6ff;--amb:#ffb347;--bad:#ff6b7d;--vio:#b58cff;
+    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,sans-serif;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--font);overflow:hidden;}
+  :root:not([data-theme="light"]){color-scheme:dark;}
+  #app{position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;}
+  .bar{position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;gap:12px;padding:0 16px;
+    border-bottom:1px solid var(--line);background:#0a0f17;z-index:10;}
+  .bar b{color:var(--acc);} .bar .t{font-weight:600;} .bar .s{font-size:12px;color:var(--dim);}
+  .live{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--dim);}
+  .live i{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 7px var(--acc);animation:bl 1.4s infinite;}
+  @keyframes bl{50%{opacity:.3;}}
+  #stage{position:relative;overflow:hidden;}
+  canvas{position:absolute;inset:46px 0 0 0;width:100%;height:calc(100% - 46px);display:block;}
+  .side{border-left:1px solid var(--line);background:#0b111a;overflow:auto;padding:58px 14px 16px;display:flex;flex-direction:column;gap:14px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;}
+  .ck{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2);margin-bottom:9px;display:flex;justify-content:space-between;align-items:center;}
+  .big{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+  .big small{font-size:13px;color:var(--dim);font-weight:400;}
+  .bar2{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:8px;position:relative;}
+  .bar2 i{display:block;height:100%;background:linear-gradient(90deg,#8f5e1a,var(--amb));}
+  .bar2 .tk{position:absolute;top:-2px;height:11px;width:2px;background:var(--acc2);}
+  .mini{font-size:10.5px;color:var(--dim2);}
+  .q{display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:11.5px;}
+  .q:first-of-type{border-top:0;} .q .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .tag{font-size:9.5px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--dim);white-space:nowrap;}
+  .tag.ok{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 40%,transparent);}
+  .tag.amb{color:var(--amb);border-color:color-mix(in srgb,var(--amb) 40%,transparent);}
+  .tag.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent);}
+  .term{background:#05080d;border:1px solid var(--line);border-radius:10px;font-family:var(--mono);font-size:10.5px;color:#9fb4cf;overflow:hidden;}
+  .term .b{padding:9px 10px;line-height:1.5;max-height:200px;overflow:auto;white-space:pre-wrap;}
+  .term .b .g{color:var(--acc);} .term .b .c{color:var(--cyan);} .term .b .y{color:var(--amb);} .term .b .r{color:var(--bad);} .term .b .d{color:var(--dim2);}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;color:var(--dim);}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;}
+  @media(max-width:820px){#app{grid-template-columns:1fr;}.side{display:none;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <div class="bar"><b>◆</b><span class="t">Maturity Graph Agent</span><span class="s">the portfolio grades itself — agent = traversal</span>
+      <span class="live"><i></i><span id="liveTxt">probing…</span></span></div>
+    <canvas id="c"></canvas>
+  </div>
+  <aside class="side">
+    <div class="card"><div class="ck">honest portfolio</div>
+      <div class="big"><span id="pct">—</span><small>%</small></div>
+      <div class="bar2"><i id="pbar" style="width:0"></i><div class="tk" style="left:40%"></div></div>
+      <div class="mini" style="margin-top:6px">mean of <b id="cov">0</b>/<span id="tot">0</span> measured cells · coverage <span id="covpct">0</span>% · ceiling tick = 40%</div>
+    </div>
+    <div class="card"><div class="ck">move queue <span class="mini">ranked by leverage</span></div><div id="queue"></div></div>
+    <div class="card" style="padding:0"><div class="ck" style="padding:12px 12px 0">evidence log <span class="mini">dated · reproducible</span></div>
+      <div class="term" style="border:0"><div class="b" id="log"></div></div></div>
+    <div class="card"><div class="ck">legend</div>
+      <div class="legend">
+        <span><i style="background:#39ff9f"></i>strong ≥65</span><span><i style="background:#1a7f55"></i>ok 50–64</span>
+        <span><i style="background:#1a6a8f"></i>mid 35–49</span><span><i style="background:#8f5e1a"></i>weak 20–34</span>
+        <span><i style="background:#5a1f28"></i>poor &lt;20</span><span><i style="background:#45566e"></i>UNMEASURED</span>
+      </div>
+      <div class="mini" style="margin-top:8px">The agent walks to the weakest high-leverage cell, probes it live, writes evidence, updates the score, and queues the next gated move.</div>
+    </div>
+  </aside>
+</div>
+<script>
+"use strict";
+/* ---- data: apps × dimensions, honest starting scores ---- */
+const DIMS=["real-model","autonomy","output","tests","saas","ux"];
+const APPS=[
+  {k:"codegen",  ceil:80, s:[65,42,45,55,50,40]},
+  {k:"router",   ceil:80, s:[70,40,55,45,50,45]},
+  {k:"tester",   ceil:60, s:[60,35,55,60,30,38]},
+  {k:"rex",      ceil:55, s:[60,45,50,40,35,44]},
+  {k:"jarvis",   ceil:52, s:[55,40,48,35,30,50]},
+  {k:"vestal",   ceil:46, s:[50,25,45,40,35,40]},
+  {k:"appbuilder",ceil:44,s:[45,20,35,30,40,42]},
+  {k:"murmur",   ceil:42, s:[48,22,40,30,25,45]},
+  {k:"tender",   ceil:45, s:[45,30,35,28,40,30]},
+  {k:"broadcaster",ceil:40,s:[40,24,3,30,45,35]},
+  {k:"graphapi", ceil:38, s:[30,15,20,10,25,20]},
+  {k:"money",    ceil:36, s:[25,12,15,8,20,30]},
+];
+const WEIGHT={ "real-model":1.0,"autonomy":1.1,"output":1.2,"tests":0.8,"saas":0.7,"ux":0.6 };
+const NA=APPS.length;
+/* cell state: score, measured(bool), stale(0..1 higher=staler) */
+const cells=[];
+APPS.forEach((a,ai)=>a.s.forEach((v,di)=>cells.push({ai,di,score:v,measured:false,stale:1})));
+function cellOf(ai,di){return cells[ai*DIMS.length+di];}
+
+/* ---- layout ---- */
+const cv=document.getElementById("c"),ctx=cv.getContext("2d");
+let DPR=1,W=0,H=0,rot=0;
+function resize(){const st=document.getElementById("stage");DPR=Math.min(2,window.devicePixelRatio||1);
+  W=st.clientWidth;H=st.clientHeight-46;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+window.addEventListener("resize",resize);
+function band(v){return v<20?[90,31,40]:v<35?[143,94,26]:v<50?[26,106,143]:v<65?[26,127,85]:[57,255,159];}
+function col(cell){ if(!cell.measured)return [69,86,110]; const b=band(cell.score); return b; }
+
+function appPos(ai){const R=Math.min(W,H)*0.33;const ang=rot+ai/NA*Math.PI*2;
+  return {x:W/2+Math.cos(ang)*R, y:H/2+Math.sin(ang)*R, ang};}
+function dimPos(ai,di){const ap=appPos(ai);const r=Math.min(W,H)*0.085;const a=ap.ang+(di-2.5)/DIMS.length*2.0;
+  return {x:ap.x+Math.cos(a)*r, y:ap.y+Math.sin(a)*r};}
+
+/* ---- agent state ---- */
+let target=null, pulse=0, nextAt=0, lit={}, fires=0;
+const Q=[], LOG=[];
+function leverage(c){const a=APPS[c.ai];return (a.ceil-c.score)*WEIGHT[DIMS[c.di]]*(0.4+0.6*c.stale);}
+function pick(){ let best=null,bl=-1; for(const c of cells){const l=leverage(c); if(l>bl){bl=l;best=c;}} return best; }
+const MOVES={"real-model":"DSPy-optimize + ground","autonomy":"prove 1 zero-touch loop","output":"fix gen quality at model",
+  "tests":"add CI + error injection","saas":"wire tenancy + quotas","ux":"kill a friction point"};
+function probe(c){
+  // live "measurement": mostly small gain, sometimes flat, rarely regression
+  const roll=Math.random(); let delta;
+  if(roll<0.12) delta=-(1+Math.random()*4);        // regression -> FLAG
+  else if(roll<0.32) delta=0;                        // flat
+  else delta=1+Math.random()*6;                      // real gain
+  const old=c.score; c.score=Math.max(0,Math.min(APPS[c.ai].ceil, c.score+delta));
+  const first=!c.measured; c.measured=true; c.stale=0;
+  const ai=c.ai,di=c.di,nm=APPS[ai].k+"·"+DIMS[di];
+  const ts=new Date().toTimeString().slice(0,8);
+  let cls="g",note="pass@golden"; if(delta===0){cls="c";note="flat";}
+  if(delta<0){cls="r";note="⚠ REGRESSION";}
+  LOG.unshift('<span class="d">'+ts+'</span> <span class="'+cls+'">probe</span> '+nm+' = '+c.score.toFixed(0)+(first?' <span class="d">[first]</span>':'')+' <span class="d">'+note+'</span>');
+  if(LOG.length>12)LOG.pop();
+  // queue a gated move for the cell (dedup by name)
+  const mv=APPS[ai].k+" · "+MOVES[DIMS[di]];
+  if(!Q.some(q=>q.mv===mv)){ Q.unshift({mv,exp:(APPS[ai].ceil-c.score).toFixed(0),gate:Math.random()<0.5?"dry-run":"queued"}); if(Q.length>7)Q.pop(); }
+  fires++;
+  render();
+}
+function render(){
+  // portfolio
+  const m=cells.filter(c=>c.measured); const tot=cells.length;
+  const pct=m.length?Math.round(m.reduce((a,c)=>a+c.score,0)/m.length):0;
+  document.getElementById("pct").textContent=pct;
+  document.getElementById("pbar").style.width=pct+"%";
+  document.getElementById("cov").textContent=m.length; document.getElementById("tot").textContent=tot;
+  document.getElementById("covpct").textContent=Math.round(m.length/tot*100);
+  document.getElementById("queue").innerHTML=Q.map(q=>'<div class="q"><span class="grow">'+q.mv+'</span><span class="mini">+'+q.exp+'</span><span class="tag '+(q.gate==="dry-run"?"amb":"")+'">'+q.gate+'</span></div>').join("")||'<div class="mini">building…</div>';
+  document.getElementById("log").innerHTML=LOG.join("\n");
+}
+
+/* ---- draw ---- */
+let last=performance.now();
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt=Math.min(.05,(now-last)/1000);last=now; rot+=dt*0.04;
+  for(const c of cells)c.stale=Math.min(1,c.stale+dt*0.012); // things go stale
+  const nowS=now/1000;
+  if(nowS>=nextAt){ target=pick(); pulse=0; nextAt=nowS+1.9; }
+  if(target){ pulse+=dt/1.4; if(pulse>=1){ probe(target); const t=target; lit[t.ai+"_"+t.di]=1; target=null; } }
+  for(const k in lit){ lit[k]*=Math.pow(0.2,dt); if(lit[k]<0.02)delete lit[k]; }
+
+  ctx.clearRect(0,0,W,H);
+  const mission={x:W/2,y:H/2};
+  // edges mission->app and app->dim
+  for(let ai=0;ai<NA;ai++){ const ap=appPos(ai);
+    ctx.strokeStyle="rgba(120,150,190,.10)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(mission.x,mission.y);ctx.lineTo(ap.x,ap.y);ctx.stroke();
+    for(let di=0;di<DIMS.length;di++){ const dp=dimPos(ai,di);
+      ctx.strokeStyle="rgba(120,150,190,.08)";ctx.beginPath();ctx.moveTo(ap.x,ap.y);ctx.lineTo(dp.x,dp.y);ctx.stroke(); }
+  }
+  // active pulse path mission->app->dim
+  if(target){ const ap=appPos(target.ai),dp=dimPos(target.ai,target.di);
+    let px,py; if(pulse<0.5){const t=pulse/0.5;px=mission.x+(ap.x-mission.x)*t;py=mission.y+(ap.y-mission.y)*t;}
+    else{const t=(pulse-0.5)/0.5;px=ap.x+(dp.x-ap.x)*t;py=ap.y+(dp.y-ap.y)*t;}
+    ctx.strokeStyle="rgba(57,255,159,.5)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(mission.x,mission.y);ctx.lineTo(ap.x,ap.y);ctx.lineTo(dp.x,dp.y);ctx.stroke();
+    ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fillStyle="#39ff9f";ctx.shadowColor="#39ff9f";ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0;
+  }
+  // dim nodes
+  for(let ai=0;ai<NA;ai++)for(let di=0;di<DIMS.length;di++){ const dp=dimPos(ai,di),c=cellOf(ai,di),cc=col(c);
+    const l=lit[ai+"_"+di]||0, r=3+c.score/22+l*4;
+    if(l>0.05){ctx.beginPath();ctx.arc(dp.x,dp.y,r+l*8,0,7);ctx.fillStyle="rgba(57,255,159,"+(0.12+l*0.2)+")";ctx.fill();}
+    ctx.beginPath();ctx.arc(dp.x,dp.y,r,0,7);
+    ctx.fillStyle="rgba("+cc[0]+","+cc[1]+","+cc[2]+","+(c.measured?0.95:0.5)+")";ctx.fill();
+  }
+  // app nodes
+  ctx.textAlign="center";ctx.font="600 11px "+getComputedStyle(document.body).fontFamily;
+  for(let ai=0;ai<NA;ai++){ const ap=appPos(ai),a=APPS[ai];
+    const avg=a.s.length?a.s.reduce((x,y)=>x+y,0)/a.s.length:0; // static label color by current avg of cells
+    const cavg=[0,1,2,3,4,5].reduce((x,di)=>x+cellOf(ai,di).score,0)/6, cc=band(cavg);
+    ctx.beginPath();ctx.arc(ap.x,ap.y,7+cavg/14,0,7);
+    ctx.fillStyle="rgba("+cc[0]+","+cc[1]+","+cc[2]+",0.9)";ctx.shadowColor="rgba("+cc[0]+","+cc[1]+","+cc[2]+",0.6)";ctx.shadowBlur=8;ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle="#cfe0f5";ctx.fillText(a.k, ap.x, ap.y+22);
+  }
+  // mission
+  ctx.beginPath();ctx.arc(mission.x,mission.y,16+Math.sin(now/400)*1.5,0,7);
+  ctx.fillStyle="#0c131d";ctx.strokeStyle="#39ff9f";ctx.lineWidth=2;ctx.fill();ctx.stroke();
+  ctx.fillStyle="#39ff9f";ctx.font="700 10px "+getComputedStyle(document.body).fontFamily;ctx.fillText("MISSION",mission.x,mission.y+4);
+  document.getElementById("liveTxt").textContent="probing · "+fires+" measured";
+}
+resize(); render(); requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+<script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<script src="atlas-corpus.js"></script>
+<script src="gi-domains.js"></script>
+<script src="lab-engine.js"></script>
+<script src="gi-strategies.js"></script>
+<script src="gi-github.js"></script>
+<script src="gi-stack.js"></script>
+<script src="gi-arena.js"></script>
+<script src="gi-history.js"></script>
+<script src="gi-core.js"></script>
+<style>
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--color-bg); }
+a { color: var(--color-accent-300); } a:hover { color: var(--color-accent-200); }
+@keyframes mc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes mc-in { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-thumb { background: var(--color-neutral-800); border-radius: 4px; } ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</helmet>
+<div style="height: 100vh; display: flex; flex-direction: column; overflow: hidden; color: var(--color-text); font-family: var(--font-body); font-size: 13px; line-height: 1.45; background: radial-gradient(90% 60% at 18% -12%, color-mix(in srgb, var(--color-accent-900) 85%, transparent), transparent 72%), var(--color-bg);">
+
+  <sc-if value="{{ hasToast }}">
+    <div style="position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); max-width: min(720px, 92vw); background: var(--color-surface); border-radius: var(--radius-md); box-shadow: 0 0 0 1px var(--color-accent-600), 0 12px 36px rgba(0, 0, 0, 0.55), 0 0 40px color-mix(in srgb, var(--color-accent) 22%, transparent); animation: mc-in 0.28s ease;">
+      <i class="ph-fill ph-sparkle" style="font-size: 18px; color: var(--color-accent);"></i>
+      <div style="display: flex; flex-direction: column; gap: 1px; min-width: 0;">
+        <span style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent-300);">New ability</span>
+        <span style="font-size: 14px; font-weight: 500;">{{ toast.label }}</span>
+        <span style="font-size: 12px; color: var(--color-neutral-400); text-wrap: pretty;">{{ toast.note }}</span>
+      </div>
+      <button class="btn btn-primary" onClick="{{ toast.go }}" style="font-size: 12px; padding: 5px 10px; flex: none;">Use it</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ paletteOpen }}">
+    <div onClick="{{ closePalette }}" style="position: fixed; inset: 0; z-index: 60; display: flex; justify-content: center; align-items: flex-start; padding: 11vh var(--space-4) 0; background: color-mix(in srgb, var(--color-neutral-900) 62%, transparent);">
+      <div onClick="{{ stop }}" style="width: min(720px, 100%); max-height: 72vh; display: flex; flex-direction: column; background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: 0 0 0 1px var(--color-accent-700), 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 56px color-mix(in srgb, var(--color-accent) 16%, transparent); overflow: hidden;">
+        <div style="flex: none; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+          <i class="ph ph-magnifying-glass" style="font-size: 16px; color: var(--color-accent);"></i>
+          <input ref="{{ palRef }}" value="{{ pq }}" onChange="{{ onPq }}" onKeyDown="{{ onPalKey }}" placeholder="Search commands — modes, abilities, strategies, sources" spellcheck="false" style="flex: 1; min-width: 0; height: 32px; background: transparent; border: 0; outline: none; color: var(--color-text); font: 400 15px var(--font-body); caret-color: var(--color-accent);">
+          <span style="font-size: 11px; color: var(--color-neutral-500); font-variant-numeric: tabular-nums; white-space: nowrap;">{{ paletteCount }}</span>
+        </div>
+        <div style="flex: none; display: flex; flex-wrap: wrap; gap: 4px; padding: var(--space-2) var(--space-4);">
+          <sc-for list="{{ palCats }}" as="cc" hint-placeholder-count="6"><button onClick="{{ cc.go }}" style="font: 500 11px var(--font-body); padding: 3px 9px; border-radius: var(--radius-sm); border: 1px solid {{ cc.bd }}; background: {{ cc.bg }}; color: {{ cc.fg }}; cursor: pointer;">{{ cc.label }}</button></sc-for>
+        </div>
+        <div ref="{{ listRef }}" style="position: relative; flex: 1; min-height: 0; overflow: auto; padding: 0 var(--space-2) var(--space-2);">
+          <sc-for list="{{ paletteList }}" as="cmd" hint-placeholder-count="8">
+            <button data-pi="{{ cmd.pi }}" onClick="{{ cmd.go }}" onMouseEnter="{{ cmd.hover }}" style="display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); width: 100%; text-align: left; padding: 7px var(--space-3); border: 0; border-radius: var(--radius-md); background: {{ cmd.bg }}; color: var(--color-text); font: inherit; cursor: pointer;">
+              <span style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: {{ cmd.catFg }};">{{ cmd.cat }}</span>
+              <span style="display: flex; flex-direction: column; gap: 1px; min-width: 0;">
+                <span style="font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ cmd.label }}</span>
+                <span style="font-size: 11px; color: var(--color-neutral-500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ cmd.desc }}</span>
+              </span>
+              <sc-if value="{{ cmd.hasTag }}"><span class="{{ cmd.tagCls }}" style="font-size: 10px; padding: 1px 7px;">{{ cmd.tag }}</span></sc-if>
+            </button>
+          </sc-for>
+          <sc-if value="{{ paletteEmpty }}"><div style="padding: var(--space-6); text-align: center; font-size: 12px; color: var(--color-neutral-500);">No commands match.</div></sc-if>
+        </div>
+        <div style="flex: none; white-space: nowrap; display: flex; gap: var(--space-4); padding: var(--space-2) var(--space-4); font-size: 11px; color: var(--color-neutral-500); background: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat top / 100% 1px;">
+          <span>↑ ↓ navigate</span><span>↵ run</span><span>esc close</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <header style="height: 48px; flex: none; display: flex; align-items: center; gap: var(--space-6); padding: 0 var(--space-4); min-width: 0;">
+    <div style="display: flex; align-items: center; gap: var(--space-2); flex: none;">
+      <i class="ph-fill ph-graph" style="font-size: 18px; color: var(--color-accent);"></i>
+      <span style="font-weight: 500; font-size: 14px; white-space: nowrap;">Graph Lab</span>
+    </div>
+    <div class="seg" style="flex: none;">
+      <sc-for list="{{ modes }}" as="m" hint-placeholder-count="3">
+        <label class="seg-opt" title="{{ m.hint }}" style="font-size: 12px; padding: 5px 11px;"><input type="radio" name="mc-mode" checked="{{ m.on }}" onChange="{{ m.go }}"><i class="{{ m.icon }}" style="font-size: 14px;"></i>{{ m.label }}</label>
+      </sc-for>
+    </div>
+    <div style="flex: 1; min-width: 0; height: 22px; overflow: hidden; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-end; column-gap: var(--space-6); row-gap: 40px;">
+      <sc-for list="{{ metrics }}" as="k" hint-placeholder-count="4">
+        <div title="{{ k.tip }}" style="display: flex; align-items: baseline; gap: 6px; white-space: nowrap; flex: none;">
+          <span style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">{{ k.k }}</span>
+          <span style="font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; color: {{ k.c }};">{{ k.v }}</span>
+          <span style="font-size: 11px; font-variant-numeric: tabular-nums; color: {{ k.dc }};">{{ k.d }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display: flex; align-items: center; gap: var(--space-2); flex: none;">
+      <button class="btn btn-secondary" onClick="{{ toggleAuto }}" title="Autopilot runs the research loop with no human in the loop" style="font-size: 12px; padding: 5px 10px;">{{ autoDot }}{{ autoLabel }}</button>
+      <button class="btn btn-primary" onClick="{{ think }}" title="One ReAct step: read insights, pick a tool, act" style="font-size: 12px; padding: 5px 10px;"><i class="ph ph-brain" style="font-size: 14px;"></i>Think</button>
+      <button class="btn btn-secondary" onClick="{{ openPalette }}" title="Command palette (⌘K or /)" style="font-size: 12px; padding: 5px 10px;"><i class="ph ph-command" style="font-size: 14px;"></i>K</button>
+      <button class="btn btn-ghost btn-icon" onClick="{{ toggleLeft }}" title="Mission rail ( [ )" style="width: 30px; height: 30px; color: {{ leftFg }};"><i class="ph ph-sidebar-simple" style="font-size: 16px;"></i></button>
+      <button class="btn btn-ghost btn-icon" onClick="{{ toggleRight }}" title="Inspector ( ] )" style="width: 30px; height: 30px; color: {{ rightFg }};"><i class="ph ph-sidebar-simple" style="font-size: 16px; transform: scaleX(-1);"></i></button>
+    </div>
+  </header>
+
+  <div style="flex: 1; min-height: 0; display: flex; gap: var(--space-3); padding: 0 var(--space-3);">
+
+    <sc-if value="{{ leftOpen }}" hint-placeholder-val="{{ true }}">
+      <aside style="width: 268px; flex: none; min-height: 0; display: flex; flex-direction: column; background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <div style="height: 38px; flex: none; display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-4); background: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+          <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Mission</span>
+          <span style="margin-left: auto; font-size: 11px; color: var(--color-neutral-500); font-variant-numeric: tabular-nums;">round {{ round }}</span>
+        </div>
+        <div style="flex: 1; min-height: 0; overflow: auto; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-8);">
+          <section style="display: flex; flex-direction: column; gap: var(--space-2);">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">{{ stateDot }}<span style="font-size: 16px; font-weight: 500;">{{ autoWord }}</span></div>
+            <span style="font-size: 12px; color: var(--color-neutral-300); text-wrap: pretty;">{{ hypothesis }}</span>
+            <sc-if value="{{ hasObservation }}"><span style="font-size: 12px; color: var(--color-accent-300); text-wrap: pretty;">{{ observation }}</span></sc-if>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: var(--space-2);">
+            <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Research loop</span>
+            <div style="display: flex; flex-direction: column; gap: 1px;">
+              <sc-for list="{{ loop }}" as="s" hint-placeholder-count="7">
+                <div style="display: flex; align-items: center; gap: var(--space-3); height: 26px; padding: 0 var(--space-3); border-radius: var(--radius-sm); background: {{ s.bg }};">
+                  <span style="width: 16px; font-size: 10px; font-variant-numeric: tabular-nums; color: {{ s.numFg }};">{{ s.num }}</span>
+                  <span style="font-size: 12px; color: {{ s.fg }};">{{ s.label }}</span>
+                  <sc-if value="{{ s.on }}"><span style="margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 8px var(--color-accent);"></span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: var(--space-2);">
+            <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Agents</span>
+            <sc-for list="{{ agents }}" as="a" hint-placeholder-count="2">
+              <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 12px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ a.dot }}; box-shadow: {{ a.glow }};"></span><span>{{ a.name }}</span><span style="margin-left: auto; font-size: 11px; color: {{ a.fg }};">{{ a.state }}</span></div>
+            </sc-for>
+            <span style="font-size: 12px; color: var(--color-neutral-400); text-wrap: pretty;">{{ thought }}</span>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: var(--space-2);">
+            <button onClick="{{ openHistory }}" title="Open the testbench history (H)" style="display: flex; align-items: center; gap: var(--space-2); padding: 0; background: transparent; border: 0; cursor: pointer; font: inherit; color: var(--color-neutral-500);">
+              <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;">IQ</span><span style="width: 12px; height: 2px; background: var(--color-accent);"></span>
+              <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;">Dev</span><span style="width: 12px; height: 0; border-top: 1px dashed var(--color-neutral-500);"></span>
+              <span style="margin-left: auto; font-size: 11px; color: var(--color-accent-300);">History</span><i class="ph ph-arrow-right" style="font-size: 12px; color: var(--color-accent-300);"></i>
+            </button>
+            <svg viewBox="0 0 232 56" preserveAspectRatio="none" style="width: 100%; height: 56px; display: block;"><polyline points="{{ devPts }}" fill="none" stroke-width="1" stroke-dasharray="3 3" style="stroke: var(--color-neutral-500);"></polyline><polyline points="{{ iqPts }}" fill="none" stroke-width="1.5" style="stroke: var(--color-accent);"></polyline></svg>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500); margin-bottom: 4px;">Insights · {{ insightCount }}</span>
+            <sc-for list="{{ insights }}" as="x" hint-placeholder-count="5">
+              <button onClick="{{ x.go }}" style="display: flex; flex-direction: column; gap: 2px; text-align: left; padding: var(--space-2) var(--space-3); margin: 0 calc(var(--space-3) * -1); background: {{ x.bg }}; border: 0; border-radius: var(--radius-sm); color: var(--color-text); cursor: pointer; font: inherit;" style-hover="background: color-mix(in srgb, var(--color-text) 5%, transparent);">
+                <span style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent-400);">{{ x.kind }}</span>
+                <span style="font-size: 12px; line-height: 1.35; text-wrap: pretty;">{{ x.title }}</span>
+              </button>
+            </sc-for>
+          </section>
+        </div>
+      </aside>
+    </sc-if>
+
+    <main style="flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: var(--space-3);">
+      <section style="flex: 1; min-height: 0; position: relative; display: {{ stageDisplay }}; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden; background: radial-gradient(62% 58% at 50% 50%, color-mix(in srgb, var(--color-accent-900) 75%, transparent), transparent 80%), var(--color-bg);">
+        <div ref="{{ stageRef }}" style="position: absolute; inset: 0;"></div>
+        <div style="position: absolute; top: var(--space-4); left: var(--space-4); right: var(--space-4); display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: var(--space-4); row-gap: var(--space-2); pointer-events: none;">
+          <div style="flex: 1 1 240px; min-width: 0; max-width: 520px; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Connectome · {{ nodeCount }} concepts</span>
+            <span style="font-size: 16px; font-weight: 500; letter-spacing: -0.01em;">{{ viewTitle }}</span>
+            <span style="font-size: 12px; color: var(--color-neutral-400); text-wrap: pretty;">{{ viewLegend }}</span>
+          </div>
+          <div class="seg" style="margin-left: auto; flex: none; pointer-events: auto; background: color-mix(in srgb, var(--color-bg) 72%, transparent);">
+            <sc-for list="{{ colorModes }}" as="m" hint-placeholder-count="4"><label class="seg-opt" style="font-size: 12px; padding: 4px 10px;"><input type="radio" name="mc-color" checked="{{ m.on }}" onChange="{{ m.go }}">{{ m.label }}</label></sc-for>
+          </div>
+        </div>
+        <div style="position: absolute; left: var(--space-4); right: var(--space-4); bottom: var(--space-4); display: flex; flex-direction: column; align-items: flex-start; gap: 6px; pointer-events: none;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px; pointer-events: auto;">
+            <span style="width: 52px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Layout</span>
+            <sc-for list="{{ layouts }}" as="x" hint-placeholder-count="4"><button onClick="{{ x.go }}" title="{{ x.tip }}" style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: var(--radius-sm); border: 1px solid {{ x.bd }}; background: {{ x.bg }}; color: {{ x.fg }}; font: 500 12px var(--font-body); cursor: pointer;"><sc-if value="{{ x.locked }}"><i class="ph ph-lock-simple" style="font-size: 11px;"></i></sc-if>{{ x.label }}</button></sc-for>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px; pointer-events: auto;">
+            <span style="width: 52px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Lens</span>
+            <sc-for list="{{ lenses }}" as="x" hint-placeholder-count="3"><button onClick="{{ x.go }}" title="{{ x.tip }}" style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: var(--radius-sm); border: 1px solid {{ x.bd }}; background: {{ x.bg }}; color: {{ x.fg }}; font: 500 12px var(--font-body); cursor: pointer;"><sc-if value="{{ x.locked }}"><i class="ph ph-lock-simple" style="font-size: 11px;"></i></sc-if>{{ x.label }}</button></sc-for>
+          </div>
+        </div>
+      </section>
+
+      <sc-if value="{{ isBench }}">
+        <section style="flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); border-radius: var(--radius-md); overflow: hidden;">
+          <dc-import name="GI Testbench" core="{{ core }}" mode="agent" start-tab="{{ tbTab }}" tab-req="{{ tbReq }}" hint-size="100%,100%" style="min-width: 0; min-height: 0; height: 100%;"></dc-import>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ isAtlas }}">
+        <section style="flex: 1; min-height: 0; position: relative; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden; background: var(--color-bg);">
+          <iframe src="Graph Atlas.dc.html" title="Graph Atlas" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"></iframe>
+        </section>
+      </sc-if>
+
+      <section style="flex: none; display: flex; flex-direction: column; background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <div style="height: 38px; flex: none; display: flex; align-items: center; gap: var(--space-6); padding: 0 var(--space-2) 0 var(--space-4); background: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+          <sc-for list="{{ dockTabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 2px; background: transparent; border: 0; font: 500 12px var(--font-body); color: {{ t.fg }}; box-shadow: {{ t.line }}; cursor: pointer;" style-hover="color: var(--color-text);">{{ t.label }}<span style="font-size: 11px; font-weight: 400; color: var(--color-neutral-600); font-variant-numeric: tabular-nums;">{{ t.n }}</span></button></sc-for>
+          <span style="margin-left: auto; font-size: 11px; color: var(--color-neutral-500); white-space: nowrap;">{{ chatHint }}</span>
+          <button class="btn btn-ghost btn-icon" onClick="{{ toggleDock }}" title="{{ dockTip }}" style="width: 28px; height: 28px; color: var(--color-neutral-400);"><i class="{{ dockIcon }}" style="font-size: 14px;"></i></button>
+        </div>
+        <sc-if value="{{ dockOpen }}" hint-placeholder-val="{{ true }}">
+          <div style="height: min(212px, 30vh); display: flex; flex-direction: column; min-height: 0;">
+            <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
+              <div ref="{{ chatRef }}" style="flex: 1; min-height: 0; overflow: auto; padding: var(--space-3) var(--space-4); display: flex; flex-direction: column; gap: var(--space-3);">
+                <sc-for list="{{ messages }}" as="m" hint-placeholder-count="1">
+                  <div style="display: flex; flex-direction: column; gap: 3px; align-items: {{ m.align }};">
+                    <span style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: {{ m.fg }};">{{ m.who }}</span>
+                    <span style="max-width: 82%; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: {{ m.bg }}; box-shadow: {{ m.ring }}; font-size: 13px; line-height: 1.5; white-space: pre-wrap; text-wrap: pretty;">{{ m.text }}</span>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ chatEmpty }}"><span style="font-size: 12px; color: var(--color-neutral-500); max-width: 640px; text-wrap: pretty;">Ask the graph anything — “what modules make up an agent?”, “what signature and pydantic models?”, “bm25 or hnsw?”, “ship a feature”. The agent answers from the subgraph and acts through its tools.</span></sc-if>
+              </div>
+              <form onSubmit="{{ send }}" style="flex: none; display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3) var(--space-3);">
+                <input class="input" value="{{ chatInput }}" onChange="{{ onInput }}" placeholder="Message the agents — or /think /shake /compile" spellcheck="false" style="flex: 1; min-width: 0; min-height: 32px; font-size: 13px;">
+                <button type="submit" class="btn btn-primary" style="font-size: 12px; padding: 6px 12px;"><i class="ph ph-paper-plane-right" style="font-size: 14px;"></i>Send</button>
+              </form>
+            </sc-if>
+            <sc-if value="{{ isTrace }}">
+              <div style="flex: 1; min-height: 0; overflow: auto; padding: var(--space-2) var(--space-4);">
+                <sc-for list="{{ thoughts }}" as="t" hint-placeholder-count="3">
+                  <div style="display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: var(--space-4); padding: var(--space-2) 0; background: linear-gradient(to right, transparent, color-mix(in srgb, var(--color-text) 8%, transparent) 48px, color-mix(in srgb, var(--color-text) 8%, transparent) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+                    <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+                      <span style="font-size: 12px; font-weight: 500; color: var(--color-accent-300);">{{ t.tool }}</span>
+                      <span style="font-size: 11px; color: var(--color-neutral-500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.args }}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+                      <span style="font-size: 12px; line-height: 1.45; text-wrap: pretty;">{{ t.thought }}</span>
+                      <span style="font-size: 12px; color: var(--color-neutral-400); text-wrap: pretty;">{{ t.obs }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ noThoughts }}"><span style="font-size: 12px; color: var(--color-neutral-500);">Press Think, or turn on autopilot, to let the agent act on an insight.</span></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ isIngest }}">
+              <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-8); padding: var(--space-3) var(--space-4);">
+                <div style="min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 5px;">
+                  <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Repositories · {{ ingestMeta }}</span>
+                  <sc-for list="{{ repoProgress }}" as="r" hint-placeholder-count="5">
+                    <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: var(--space-2); align-items: center; font-size: 12px;">
+                      <span style="width: 6px; height: 6px; border-radius: 50%; background: {{ r.dot }};"></span>
+                      <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ r.slug }} <span style="color: var(--color-neutral-500);">{{ r.topic }}</span></span>
+                      <span style="font-size: 11px; color: var(--color-neutral-400); font-variant-numeric: tabular-nums;">{{ r.stat }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 4px;">
+                  <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Live feed</span>
+                  <sc-for list="{{ ingestFeed }}" as="e" hint-placeholder-count="6">
+                    <div style="display: grid; grid-template-columns: 58px 84px minmax(0, 1fr); gap: var(--space-2); font-size: 12px; align-items: baseline;">
+                      <span style="font-size: 11px; color: var(--color-neutral-600); font-variant-numeric: tabular-nums;">{{ e.t }}</span>
+                      <span style="font-size: 11px; color: {{ e.kc }};">{{ e.kind }}</span>
+                      <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-neutral-300);">{{ e.text }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </section>
+    </main>
+
+    <sc-if value="{{ rightOpen }}" hint-placeholder-val="{{ true }}">
+      <aside style="width: 348px; flex: none; min-height: 0; display: flex; flex-direction: column; background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <div style="height: 38px; flex: none; display: flex; align-items: center; gap: var(--space-4); padding: 0 var(--space-4); background: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+          <sc-for list="{{ itabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.go }}" style="height: 38px; display: inline-flex; align-items: center; gap: 5px; padding: 0 2px; background: transparent; border: 0; font: 500 12px var(--font-body); color: {{ t.fg }}; box-shadow: {{ t.line }}; cursor: pointer;" style-hover="color: var(--color-text);">{{ t.label }}<span style="font-size: 11px; font-weight: 400; color: var(--color-neutral-600); font-variant-numeric: tabular-nums;">{{ t.n }}</span></button></sc-for>
+        </div>
+        <div style="flex: 1; min-height: 0; overflow: auto; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-8);">
+
+          <sc-if value="{{ isNode }}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{ hasSel }}">
+              <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent-400);">{{ sel.comm }}</span>
+                <span style="font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: -0.01em;">{{ sel.name }}</span>
+                <span style="font-size: 13px; color: var(--color-neutral-300); text-wrap: pretty;">{{ sel.def }}</span>
+              </div>
+              <div style="display: flex; flex-direction: column;">
+                <sc-for list="{{ sel.rows }}" as="r" hint-placeholder-count="4">
+                  <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding: 6px 0; font-size: 12px; background: linear-gradient(to right, transparent, color-mix(in srgb, var(--color-text) 8%, transparent) 48px, color-mix(in srgb, var(--color-text) 8%, transparent) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;"><span style="color: var(--color-neutral-500);">{{ r.k }}</span><span style="font-variant-numeric: tabular-nums;">{{ r.v }}</span></div>
+                </sc-for>
+              </div>
+              <div style="display: flex; gap: var(--space-2);">
+                <button class="btn btn-primary" onClick="{{ askSel }}" style="font-size: 12px; padding: 5px 10px;">Ask the agents</button>
+                <button class="btn btn-secondary" onClick="{{ clearSel }}" style="font-size: 12px; padding: 5px 10px;">Clear</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ noSel }}"><span style="font-size: 12px; color: var(--color-neutral-500);">Select a concept in the connectome to inspect it.</span></sc-if>
+            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Activation · last probe</span>
+              <sc-for list="{{ spectrum }}" as="n" hint-placeholder-count="6">
+                <div style="display: grid; grid-template-columns: minmax(0, 1fr) 36px; gap: var(--space-2); align-items: center;">
+                  <div style="position: relative; height: 20px; border-radius: var(--radius-sm); background: var(--color-neutral-900); overflow: hidden;">
+                    <div style="position: absolute; inset: 0 auto 0 0; width: {{ n.w }}; background: linear-gradient(90deg, var(--color-accent-800), var(--color-accent-600));"></div>
+                    <span style="position: absolute; left: 8px; top: 2px; font-size: 11px; white-space: nowrap;">{{ n.name }}</span>
+                  </div>
+                  <span style="font-size: 11px; text-align: right; color: var(--color-accent-300); font-variant-numeric: tabular-nums;">{{ n.v }}</span>
+                </div>
+              </sc-for>
+              <sc-if value="{{ spectrumEmpty }}"><span style="font-size: 12px; color: var(--color-neutral-500);">No probe yet. Press Think.</span></sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isAgentTab }}">
+            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <sc-for list="{{ agents }}" as="a" hint-placeholder-count="2">
+                <div style="display: flex; flex-direction: column; gap: 4px; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-neutral-900);">
+                  <div style="display: flex; align-items: center; gap: var(--space-2);"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ a.dot }}; box-shadow: {{ a.glow }};"></span><span style="font-size: 13px; font-weight: 500;">{{ a.name }}</span><span style="margin-left: auto; font-size: 11px; color: {{ a.fg }};">{{ a.state }}</span></div>
+                  <span style="font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--color-neutral-400); word-break: break-word;">{{ a.sig }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500); margin-bottom: 4px;">Requirements · tester gates</span>
+              <sc-for list="{{ requirements }}" as="r" hint-placeholder-count="4">
+                <div style="display: flex; align-items: baseline; gap: var(--space-2); padding: 4px 0; font-size: 12px;"><span class="{{ r.cls }}" style="font-size: 10px; padding: 1px 7px; flex: none;">{{ r.mark }}</span><span style="color: var(--color-neutral-300); text-wrap: pretty;">{{ r.label }}</span></div>
+              </sc-for>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500); margin-bottom: 4px;">Recent patches</span>
+              <sc-for list="{{ proposals }}" as="p" hint-placeholder-count="4">
+                <div style="display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: var(--space-2); font-size: 12px; padding: 3px 0;"><span style="color: {{ p.color }};">{{ p.status }}</span><span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-neutral-300);">{{ p.text }}</span></div>
+              </sc-for>
+              <sc-if value="{{ noProposals }}"><span style="font-size: 12px; color: var(--color-neutral-500);">No patches proposed yet.</span></sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isAbilities }}">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1.1;">{{ abLive }} <span style="font-size: 13px; font-weight: 400; color: var(--color-neutral-500);">{{ abOf }}</span></span>
+              <span style="font-size: 12px; color: var(--color-neutral-400); text-wrap: pretty;">Live means usable now: a layout or lens on the canvas, or a retriever competing in the arena.</span>
+            </div>
+            <sc-for list="{{ abGroups }}" as="g" hint-placeholder-count="3">
+              <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500); margin-bottom: 2px;">{{ g.title }}</span>
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                  <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3); align-items: center; padding: 7px 0; background: linear-gradient(to right, transparent, color-mix(in srgb, var(--color-text) 8%, transparent) 48px, color-mix(in srgb, var(--color-text) 8%, transparent) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+                    <div style="display: flex; flex-direction: column; gap: 1px; min-width: 0;">
+                      <div style="display: flex; align-items: center; gap: var(--space-2); min-width: 0;"><span style="font-size: 12px; color: {{ r.fg }}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ r.label }}</span><span class="{{ r.tagCls }}" style="font-size: 10px; padding: 1px 7px; flex: none;">{{ r.tag }}</span></div>
+                      <span style="font-size: 11px; color: var(--color-neutral-500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ r.note }}</span>
+                    </div>
+                    <sc-if value="{{ r.hasAct }}"><button class="btn btn-ghost" onClick="{{ r.go }}" style="font-size: 12px; padding: 3px 8px; white-space: nowrap;">{{ r.act }}</button></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ isStack }}">
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500); margin-bottom: 4px;">MCP servers · {{ mcpCount }}</span>
+              <sc-for list="{{ mcp }}" as="s" hint-placeholder-count="6">
+                <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: var(--space-2); align-items: center; padding: 4px 0; font-size: 12px;">
+                  <span style="width: 6px; height: 6px; border-radius: 50%; background: {{ s.dot }};"></span>
+                  <div style="display: flex; flex-direction: column; min-width: 0;"><span>{{ s.name }}</span><span style="font-size: 11px; color: var(--color-neutral-500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ s.tools }}</span></div>
+                  <sc-if value="{{ s.latent }}"><button class="btn btn-ghost" onClick="{{ s.connect }}" style="font-size: 12px; padding: 3px 8px;">Connect</button></sc-if>
+                  <sc-if value="{{ s.connected }}"><span style="font-size: 11px; color: var(--color-neutral-400);">connected</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500); margin-bottom: 4px;">Skills · {{ skillCount }}</span>
+              <sc-for list="{{ skills }}" as="s" hint-placeholder-count="6">
+                <div style="display: flex; flex-direction: column; gap: 2px; padding: 5px 0;">
+                  <div style="display: flex; align-items: center; gap: var(--space-2);"><span style="font-size: 12px; font-weight: 500;">{{ s.name }}</span><span class="{{ s.tagCls }}" style="font-size: 10px; padding: 1px 7px;">{{ s.tag }}</span></div>
+                  <span style="font-size: 12px; color: var(--color-neutral-400); text-wrap: pretty;">{{ s.desc }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Architect</span>
+              <span style="font-size: 12px; color: var(--color-neutral-300); text-wrap: pretty;">{{ archSummary }}</span>
+              <div style="display: flex; flex-wrap: wrap; gap: 4px;"><sc-for list="{{ archFiles }}" as="f" hint-placeholder-count="4"><button class="btn btn-secondary" onClick="{{ f.open }}" style="font-size: 11px; padding: 3px 8px;">{{ f.name }}</button></sc-for></div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFiles }}">
+            <div style="display: flex; flex-direction: column; max-height: 200px; overflow: auto; margin: 0 calc(var(--space-2) * -1);">
+              <sc-for list="{{ files }}" as="f" hint-placeholder-count="8">
+                <sc-if value="{{ f.head }}"><span style="padding: 6px 8px 2px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-600);">{{ f.dir }}</span></sc-if>
+                <button onClick="{{ f.open }}" style="display: flex; align-items: center; gap: 6px; width: 100%; text-align: left; padding: 4px 8px 4px 16px; border: 0; border-radius: var(--radius-sm); background: {{ f.bg }}; color: {{ f.fg }}; font: 400 12px var(--font-body); cursor: pointer;"><span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ f.name }}</span><sc-if value="{{ f.live }}"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--color-accent);"></span></sc-if></button>
+              </sc-for>
+            </div>
+            <pre style="margin: 0; min-height: 260px; overflow: auto; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg); font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--color-neutral-300); white-space: pre; tab-size: 2;">{{ fileText }}</pre>
+          </sc-if>
+
+        </div>
+      </aside>
+    </sc-if>
+  </div>
+
+  <footer style="height: 28px; flex: none; display: flex; flex-wrap: wrap; align-items: center; align-content: flex-start; column-gap: var(--space-6); row-gap: 40px; padding: 0 var(--space-4); line-height: 28px; font-size: 11px; color: var(--color-neutral-500); white-space: nowrap; overflow: hidden; font-variant-numeric: tabular-nums;">
+    <span style="display: inline-flex; align-items: center; gap: 6px; color: {{ healthFg }};">{{ healthDot }}{{ healthLabel }}</span>
+    <span>retrieval <span style="color: var(--color-neutral-300);">{{ stratName }}</span></span>
+    <span>LM <span style="color: {{ lmFg }};">{{ lmState }}</span></span>
+    <sc-for list="{{ ghStats }}" as="g" hint-placeholder-count="4"><span>{{ g.k }} <span style="color: var(--color-neutral-300);">{{ g.v }}</span></span></sc-for>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: var(--space-6);">
+      <sc-for list="{{ telemetry }}" as="t" hint-placeholder-count="4"><span title="{{ t.tip }}">{{ t.k }} <span style="color: {{ t.c }};">{{ t.v }}</span></span></sc-for>
+    </div>
+    <span style="color: var(--color-neutral-600);">⌘K commands · 1–3 modes · [ ] panels</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;autopilot&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}, &quot;cycleMs&quot;: {&quot;editor&quot;: &quot;range&quot;, &quot;min&quot;: 800, &quot;max&quot;: 4000, &quot;step&quot;: 100, &quot;unit&quot;: &quot;ms&quot;, &quot;default&quot;: 2000, &quot;tsType&quot;: &quot;number&quot;}, &quot;labels&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = Object.assign({ ready: false, tick: 0, mode: 'intel', left: true, right: true, dockBy: { intel: true, bench: false, atlas: false }, itab: 'node', dtab: 'chat', tbTab: 'arena', tbReq: 0, color: 'heat', layout: 'force', lens: {}, sel: -1, file: 'skills.md', msgs: [], input: '', focusIdx: -1, toastDismiss: 0, palette: false, pq: '', pcat: 'all', pi: 0 }, this.loadUI());
+  stageRef = React.createRef();
+  chatRef = React.createRef();
+  palRef = React.createRef();
+  listRef = React.createRef();
+
+  loadUI() { try { const u = JSON.parse(localStorage.getItem('mc.ui') || '{}'), o = {}; ['mode', 'left', 'right', 'dockBy', 'itab', 'dtab', 'color'].forEach(k => { if (u[k] != null) o[k] = u[k]; }); if (o.color === 'insight') o.color = 'heat'; return o; } catch (e) { return {}; } }
+  saveUI() { try { const S = this.state; localStorage.setItem('mc.ui', JSON.stringify({ mode: S.mode, left: S.left, right: S.right, dockBy: S.dockBy, itab: S.itab, dtab: S.dtab, color: S.color })); } catch (e) {} }
+  nocTheme() {
+    const cs = getComputedStyle(document.documentElement), hex = n => { let h = cs.getPropertyValue(n).trim().replace('#', ''); if (h.length === 3) h = h.replace(/./g, x => x + x); const v = parseInt(h, 16); return h.length === 6 && !isNaN(v) ? [v >> 16 & 255, v >> 8 & 255, v & 255] : null; };
+    const bg = hex('--color-bg') || [22, 24, 38], coral = [235, 130, 123];
+    return { ice: hex('--color-neutral-300'), molt: hex('--color-accent'), gold: hex('--color-accent-300'), blue: hex('--color-neutral-600'), hot: hex('--color-accent-400'), llm: hex('--color-accent-100'), hit: hex('--color-accent-200'), sub: hex('--color-neutral-500'), miss: coral, frag: coral, labelBg: 'rgba(' + bg.join(',') + ',0.8)', font: 'Inter, system-ui, sans-serif' };
+  }
+
+  componentDidMount() {
+    this._key = e => this.onKey(e); window.addEventListener('keydown', this._key);
+    this._rs = () => this.fit(); window.addEventListener('resize', this._rs); this.fit();
+    let tries = 0;
+    const boot = () => {
+      if (!window.GI || !window.LabEngine || !window.AtlasCorpus || !this.stageRef.current) return setTimeout(boot, 60);
+      if (!getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() && tries++ < 40) return setTimeout(boot, 60);
+      if (GI.theme) GI.theme(this.nocTheme());
+      this.core = GI.create(AtlasCorpus);
+      this.view = GI.View(this.stageRef.current, this.core, { onSelect: i => this.setState(s => ({ sel: i, itab: i >= 0 ? 'node' : s.itab, right: i >= 0 ? true : s.right })) });
+      this.view.setLabels(this.props.labels ?? true);
+      if (this.state.color !== 'heat') this.view.setMode(this.state.color);
+      let pend = false;
+      this.unsub = this.core.on(() => { if (pend) return; pend = true; setTimeout(() => { pend = false; this.setState(s => ({ tick: s.tick + 1 })); }, 180); });
+      if (this.props.autopilot ?? true) this.core.setAutopilot(true, this.props.cycleMs ?? 2000);
+      this.anim = setInterval(() => { if (this.core.viz && performance.now() - this.core.viz.t0 < 2600) this.setState(s => ({ tick: s.tick + 1 })); }, 180);
+      this.setState({ ready: true });
+    };
+    boot();
+  }
+  componentDidUpdate() {
+    const S = this.state, ps = this._prev || {}; this._prev = { ...S };
+    if (S.left && S.right && this.room(true, true) < 480) { this.setState(ps.left === false ? { right: false } : { left: false }); return; }
+    if (ps.msgs !== S.msgs || ps.dtab !== S.dtab || ps.dockBy !== S.dockBy || ps.mode !== S.mode) { const el = this.chatRef.current; if (el) el.scrollTop = el.scrollHeight; }
+    const g = this.core && this.core.gh, ev = g && g.lastEvt;
+    if (ev && this.view && ev.src && ev.src.nodes && ev.src.nodes.length && (ev.kind === 'ingest' || ev.kind === 'learn')) { const key = ev.t + ev.path + ev.kind; if (key !== this._ghLit) { this._ghLit = key; const ns = ev.src.nodes; this.view.showRetrieval({ seeds: ns.slice(0, 2), sub: ns, hit: ns.slice(0, Math.min(4, ns.length)), miss: [] }); } }
+    if (S.palette && !ps.palette) setTimeout(() => { const pe = this.palRef.current; if (pe) pe.focus(); }, 0);
+    if (S.palette && ps.pq !== S.pq) { const L = this.listRef.current; if (L) L.scrollTop = 0; }
+    if (S.palette && ps.pi !== S.pi && !this._hov) { const L = this.listRef.current, el = L && L.querySelector('[data-pi="' + S.pi + '"]'); if (el) { const t = el.offsetTop, b = t + el.offsetHeight; if (t < L.scrollTop) L.scrollTop = t; else if (b > L.scrollTop + L.clientHeight) L.scrollTop = b - L.clientHeight; } }
+    this._hov = false;
+    if (['mode', 'left', 'right', 'dockBy', 'itab', 'dtab', 'color'].some(k => ps[k] !== S[k])) this.saveUI();
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this._key); window.removeEventListener('resize', this._rs); const c = this.core; if (c) { c.setAutopilot(false); c.gh && c.gh.stop && c.gh.stop(); } this.unsub && this.unsub(); this.view && this.view.destroy(); clearInterval(this.anim); }
+
+  room(l, r) { return window.innerWidth - 24 - (l ? 277 : 0) - (r ? 357 : 0); }
+  fit() { const S = this.state, MIN = 480; if (S.left && S.right && this.room(true, true) < MIN) this.setState({ left: false }); else if (S.right && !S.left && this.room(false, true) < MIN) this.setState({ right: false }); else if (S.left && !S.right && this.room(true, false) < MIN) this.setState({ left: false }); }
+  onKey(e) {
+    const typing = /^(input|textarea|select)$/i.test((e.target && e.target.tagName) || '');
+    if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); this.togglePalette(); return; }
+    if (e.key === 'Escape') { if (this.state.palette) this.setState({ palette: false }); return; }
+    if (typing || e.metaKey || e.ctrlKey || e.altKey || this.state.palette) return;
+    if (e.key === '/') { e.preventDefault(); this.togglePalette(); }
+    else if (e.key === '1') this.setMode('intel'); else if (e.key === '2') this.setMode('bench'); else if (e.key === '3') this.setMode('atlas');
+    else if (e.key === '[') this.setState(s => ({ left: !s.left })); else if (e.key === ']') this.setState(s => ({ right: !s.right }));
+    else if (e.key === 'h' || e.key === 'H') this.openBench('history');
+  }
+  togglePalette() { this.setState(s => ({ palette: !s.palette, pq: '', pi: 0 })); }
+  setMode(m) { this.setState({ mode: m, palette: false }); }
+  openBench(tab) { this.setState(s => ({ mode: 'bench', tbTab: tab || s.tbTab, tbReq: s.tbReq + 1, palette: false })); }
+  openDock(tab) { this.setState(s => ({ dtab: tab, dockBy: { ...(s.dockBy || {}), [s.mode]: true }, palette: false })); }
+  setColor(m) { this.view && this.view.setMode(m); this.setState({ color: m }); }
+  toggleLens(id) { const on = !this.state.lens[id]; this.view && this.view.setLens(id, on); this.setState(s => ({ lens: { ...s.lens, [id]: on } })); }
+  useAbility(id) {
+    const c = this.core; if (!c) return;
+    if (!c.useAbility) { this.view && this.view.setLayout(id); this.setState({ layout: id }); return; }
+    c.useAbility(id);
+    const cap = c.capability && c.capability(id);
+    if (id === 'force') { this.view && this.view.setLayout('force'); this.setState({ layout: 'force' }); }
+    else if (cap && cap.kind === 'archetype') { this.view && this.view.setLayout(cap.layout); this.setState({ layout: cap.layout }); }
+    else if (cap && cap.kind === 'lens') { this.view && this.view.setLens(id, true); this.setState(s => ({ lens: { ...s.lens, [id]: true } })); }
+    else this.setState(s => ({ tick: s.tick + 1 }));
+  }
+  tryCapability(cc) {
+    this.setState({ toastDismiss: performance.now() });
+    if (cc.kind === 'archetype' || cc.kind === 'lens') { this.useAbility(cc.id); this.setMode('intel'); }
+    else if (cc.kind === 'strategy') { this.useAbility(cc.id); this.setState({ itab: 'abilities', right: true }); }
+    else this.setState({ itab: 'stack', right: true });
+  }
+  pushMsg(who, text) { this.setState(s => ({ msgs: [...s.msgs, { who, text }] })); }
+  patchLast(text) { this.setState(s => { const m = s.msgs.slice(); for (let i = m.length - 1; i >= 0; i--) if (m[i].who === 'graph') { m[i] = { who: 'graph', text }; break; } return { msgs: m }; }); }
+  async send(text) {
+    const core = this.core; if (!core) return;
+    text = (text ?? this.state.input).trim(); if (!text) return;
+    this.setState({ input: '' });
+    const low = text.toLowerCase();
+    this.pushMsg('user', text);
+    if (low === '/think') { core.think(); return; }
+    if (low === '/shake') { core.shake(); this.pushMsg('tester', core.lastShake ? ('Robustness ' + (core.lastShake.rob * 100).toFixed(0) + '% · load-bearing: ' + (core.lastShake.worst || '—')) : 'done'); return; }
+    if (low === '/compile') { core.compile(); this.pushMsg('tester', 'Compiled · params ' + JSON.stringify(core.params)); return; }
+    if (/signature|pydantic|raptor|bm25|hnsw|ingest|retriev|\bconfig\b|\bprd\b|architect/.test(low)) { core.architect(); this.pushMsg('research', core.architecture.summary + '\n\nSee architect/ (graph_qa.py, config.yaml, retrieval.md, ingestion.md, PRD.md) in the inspector’s Files tab.'); this.setState({ itab: 'files', file: 'graph_qa.py', right: true }); return; }
+    if (/\bship\b|new feature|capab/.test(low)) { this.pushMsg('research', 'Looking for a feature to ship…'); core.think(); return; }
+    const r = core.ask(text), names = r.sub.slice(0, 8).map(i => core.N[i].name);
+    if (window.claude && window.claude.complete) {
+      this.pushMsg('graph', '…');
+      const ctx = r.sub.slice(0, 10).map((i, k) => `[${k + 1}] ${core.N[i].name}: ${core.N[i].def}`).join('\n');
+      try { const out = await window.claude.complete(`Answer using ONLY these graph nodes. 2-3 sentences, each ending with citations like [2]. No preamble.\n\n${ctx}\n\nQuestion: ${text}`); this.patchLast(out.trim() + '\n\n— lifted: ' + names.slice(0, 5).join(', ')); }
+      catch (e) { this.patchLast('From the subgraph: ' + names.slice(0, 4).join(', ')); }
+    } else this.pushMsg('graph', r.sub.slice(0, 3).map(i => core.N[i].name + ' — ' + core.N[i].def).join('\n'));
+  }
+
+  renderVals() {
+    const S = this.state, c = this.core;
+    const TX = 'var(--color-text)', N3 = 'var(--color-neutral-300)', MU = 'var(--color-neutral-400)', DI = 'var(--color-neutral-500)', FA = 'var(--color-neutral-600)', AC = 'var(--color-accent)', A2 = 'var(--color-accent-200)', A3 = 'var(--color-accent-300)', A4 = 'var(--color-accent-400)', A9 = 'var(--color-accent-900)', DV = 'var(--color-divider)';
+    const OK = 'oklch(0.80 0.08 175)', BAD = 'oklch(0.72 0.13 25)', WARN = 'oklch(0.82 0.10 80)', GLASS = 'color-mix(in srgb, var(--color-bg) 72%, transparent)';
+    const noop = () => {};
+    const dot = (col, live, size) => React.createElement('span', { style: { display: 'inline-block', flex: 'none', width: size || 7, height: size || 7, borderRadius: '50%', background: col, boxShadow: live ? '0 0 8px ' + col : 'none', animation: live ? 'mc-pulse 1.4s ease-in-out infinite' : 'none' } });
+    const tabSt = on => ({ fg: on ? TX : DI, line: on ? 'inset 0 -2px 0 ' + AC : 'none' });
+    const mode = S.mode, dockOpen = !!(S.dockBy || {})[mode];
+    const MODES = [['intel', 'Intelligence', 'ph ph-graph', '1', 'Connectome workbench'], ['bench', 'Testbench', 'ph ph-flask', '2', 'Arena, matrix, diffs, math and history'], ['atlas', 'Atlas', 'ph ph-planet', '3', 'The graph as a film']];
+    const ab = c && c.abilities ? c.abilities() : null;
+    const cnt = { msgs: S.msgs.length || '', th: c && c.thoughts && c.thoughts.length ? c.thoughts.length : '', pulled: c && c.gh && c.gh.stats && c.gh.stats.pulled ? c.gh.stats.pulled : '', ab: ab ? ab.counts.shipped : '' };
+    const shell = {
+      modes: MODES.map(([k, l, ic, key, hint]) => ({ label: l, icon: ic, hint: hint + ' (' + key + ')', on: mode === k, go: () => this.setMode(k) })),
+      leftOpen: !!S.left, rightOpen: !!S.right, toggleLeft: () => this.setState(s => ({ left: !s.left })), toggleRight: () => this.setState(s => ({ right: !s.right })), leftFg: S.left ? TX : DI, rightFg: S.right ? TX : DI,
+      stageDisplay: mode === 'intel' ? 'block' : 'none', isBench: mode === 'bench', isAtlas: mode === 'atlas', tbTab: S.tbTab, tbReq: S.tbReq, core: c,
+      dockOpen, toggleDock: () => this.setState(s => ({ dockBy: { ...(s.dockBy || {}), [s.mode]: !(s.dockBy || {})[s.mode] } })), dockIcon: dockOpen ? 'ph ph-caret-down' : 'ph ph-caret-up', dockTip: dockOpen ? 'Collapse console' : 'Expand console',
+      dockTabs: [['chat', 'Chat', cnt.msgs], ['trace', 'Trace', cnt.th], ['ingest', 'Ingest', cnt.pulled]].map(([k, l, n]) => ({ label: l, n, go: () => this.openDock(k), ...tabSt(dockOpen && S.dtab === k) })),
+      isChat: S.dtab === 'chat', isTrace: S.dtab === 'trace', isIngest: S.dtab === 'ingest',
+      itabs: [['node', 'Node', ''], ['agent', 'Agent', ''], ['abilities', 'Abilities', cnt.ab], ['stack', 'Stack', ''], ['files', 'Files', '']].map(([k, l, n]) => ({ label: l, n, go: () => this.setState({ itab: k }), ...tabSt(S.itab === k) })),
+      isNode: S.itab === 'node', isAgentTab: S.itab === 'agent', isAbilities: S.itab === 'abilities', isStack: S.itab === 'stack', isFiles: S.itab === 'files',
+      stageRef: this.stageRef, chatRef: this.chatRef, palRef: this.palRef, listRef: this.listRef,
+      chatInput: S.input, onInput: e => this.setState({ input: e.target.value }), send: e => { e.preventDefault(); this.send(); },
+      paletteOpen: !!S.palette, openPalette: () => this.setState({ palette: true, pq: '', pi: 0 }), closePalette: () => this.setState({ palette: false }), stop: e => e.stopPropagation(), pq: S.pq, onPq: e => this.setState({ pq: e.target.value, pi: 0 }),
+      openHistory: () => this.openBench('history')
+    };
+    if (!c) return Object.assign(shell, {
+      hasToast: false, toast: {}, metrics: [], autoDot: dot(DI, false), autoLabel: 'Autopilot', toggleAuto: noop, think: noop, stateDot: dot(DI, false), autoWord: 'Booting', round: 0, hypothesis: 'Loading the corpus, strategies, arena and memory…', hasObservation: false, observation: '', loop: [], agents: [], thought: '', devPts: '', iqPts: '', insights: [], insightCount: '—',
+      nodeCount: '—', viewTitle: 'Connectome', viewLegend: '', colorModes: [], layouts: [], lenses: [], chatHint: '', messages: [], chatEmpty: true, thoughts: [], noThoughts: true, repoProgress: [], ingestFeed: [], ingestMeta: '—',
+      hasSel: false, noSel: true, sel: { rows: [] }, askSel: noop, clearSel: noop, spectrum: [], spectrumEmpty: true, requirements: [], proposals: [], noProposals: true, abLive: '—', abOf: '', abGroups: [], mcp: [], mcpCount: '', skills: [], skillCount: '', archSummary: '', archFiles: [], files: [], fileText: '',
+      healthDot: dot(DI, false), healthLabel: 'Booting', healthFg: DI, stratName: '—', lmState: '—', lmFg: DI, ghStats: [], telemetry: [], paletteCount: '', palCats: [], paletteList: [], paletteEmpty: true, onPalKey: noop
+    });
+
+    const N = c.N, fx = (n, d = 3) => (n == null || !isFinite(n) ? '—' : n.toFixed(d));
+    const iqH = c.iqHist, iq = iqH[iqH.length - 1], d0 = iq - iqH[0], devNow = c.devHist[c.devHist.length - 1];
+    const ARCH = { force: 'force', radial: 'orbits', chord: 'chords', helix: 'helix', layers: 'strata', grid: 'grid', sphere: 'globe' };
+
+    let toast = null;
+    if (c.lastShip && performance.now() - c.lastShip.t < 7000 && c.lastShip.t > S.toastDismiss) { const cc = c.lastShip.cap; toast = { label: cc.label, note: cc.note, go: () => this.tryCapability(cc) }; }
+
+    const lmBusy = c.thinking || c.llmBusy;
+    const metrics = [
+      { k: 'IQ', v: fx(iq), d: (d0 >= 0 ? '+' : '') + fx(d0), dc: d0 >= 0 ? A3 : BAD, c: TX, tip: 'Train recall across training probes' },
+      { k: 'Dev', v: fx(devNow), d: '', dc: DI, c: TX, tip: 'Held-out dev recall, the gate every change must hold' },
+      { k: 'Abilities', v: ab.counts.shipped + '/' + ab.counts.caps, d: '', dc: DI, c: A3, tip: 'Live capabilities: usable now or competing in the arena' },
+      { k: 'Cycle', v: String(c.cycle), d: '', dc: DI, c: TX, tip: 'Autopilot cycles this session' }
+    ];
+
+    const SC = c.science || { stage: 'observe', hypothesis: '', observation: '', round: 0 };
+    const STAGES = [['observe', 'Observe'], ['gather', 'Gather'], ['hypothesize', 'Hypothesize'], ['experiment', 'Test'], ['score', 'Score'], ['audit', 'Audit'], ['plan', 'Plan']];
+    const si = Math.max(0, STAGES.findIndex(x => x[0] === SC.stage));
+    const loop = STAGES.map(([k, l], i) => ({ num: '0' + (i + 1), label: l, on: i === si, bg: i === si ? A9 : 'transparent', fg: i === si ? TX : i < si ? MU : DI, numFg: i === si ? A3 : FA }));
+    const GH = c.gh || { stats: {}, repos: [], feed: [] }, ghS = GH.stats || {}, ghActive = !!(GH.busy || (GH.repos && GH.repos.length && !GH.done));
+    const agents = ['research', 'tester'].map(k => { const a = c.agents[k], idle = a.state === 'idle'; return { name: a.name, state: a.state, sig: a.sig, dot: idle ? FA : AC, glow: idle ? 'none' : '0 0 8px ' + AC, fg: idle ? DI : A3 }; });
+    const spk = (arr, lo, hi) => arr.map((v, i) => (i / Math.max(1, arr.length - 1) * 232).toFixed(1) + ',' + (52 - (v - lo) / Math.max(1e-6, hi - lo) * 48).toFixed(1)).join(' ');
+    const allv = iqH.concat(c.devHist), slo = Math.min.apply(null, allv) - 0.02, shi = Math.max.apply(null, allv) + 0.02;
+    const insights = (c.insights || []).slice(0, 12).map((x, i) => ({ kind: x.kind, title: x.title, bg: S.focusIdx === i && S.color === 'insight' ? A9 : 'transparent', go: () => { c.focus = x; this.setColor('insight'); this.setState({ focusIdx: i, mode: 'intel' }); } }));
+
+    const COLORS = { heat: ['Heat', 'Activation from the last probe spreading through data and modules.'], plastic: ['Plasticity', 'Edge width is learned weight: accent edges strengthened, grey edges weakened. Dashed edges were evolved or proposed by the LM.'], community: ['Communities', 'Pale edges stay inside a community; accent edges cross between them.'], insight: ['Insight', 'The nodes and edges of the focused insight.'] };
+    const colorModes = Object.keys(COLORS).map(k => ({ label: COLORS[k][0], on: S.color === k, go: () => this.setColor(k) }));
+    const chip = (on, lk) => lk ? { bd: 'transparent', bg: GLASS, fg: FA } : on ? { bd: AC, bg: A9, fg: A2 } : { bd: DV, bg: GLASS, fg: N3 };
+    const toAb = () => this.setState({ itab: 'abilities', right: true });
+    const short = s => (s || '').replace(/ (map|inspector|explorer|lens)$/i, '').toLowerCase();
+    const layouts = ab.layouts.map(x => { const lk = x.status !== 'shipped'; return { label: ARCH[x.layout] || x.layout || short(x.label), locked: lk, tip: lk ? x.label + ' is latent. Ship it from Abilities.' : (x.label || x.layout) + (x.note ? ' — ' + x.note : ''), go: lk ? toAb : () => this.useAbility(x.id), ...chip(S.layout === x.layout, lk) }; });
+    const lenses = ab.lenses.map(x => { const lk = x.status !== 'shipped'; return { label: short(x.label || x.id), locked: lk, tip: lk ? x.label + ' is latent. Ship it from Abilities.' : x.label + (x.note ? ' — ' + x.note : ''), go: lk ? toAb : () => this.toggleLens(x.id), ...chip(!!S.lens[x.id], lk) }; });
+
+    let sel = { rows: [] };
+    if (S.sel >= 0 && N[S.sel]) { const d = N[S.sel], adj = c.adj()[S.sel], mk = c.mods.indexOf(S.sel); sel = { comm: AtlasCorpus.communities[d.comm][0], name: d.name, def: d.def, rows: [{ k: 'Degree', v: adj.length }, { k: 'PageRank', v: ((c.pr ? c.pr[S.sel] : 0) * 100).toFixed(1) + '%' }, { k: 'Betweenness', v: (c.bc ? c.bc[S.sel] : 0).toFixed(3) }, { k: 'Program module', v: mk >= 0 ? AtlasCorpus.program[mk].id : '—' }] }; }
+    const actArr = c.lastRun ? c.lastRun.act : null; let spectrum = [];
+    if (actArr) { const ord = []; for (let i = 0; i < c.nc; i++) ord.push(i); ord.sort((a, b) => actArr[b] - actArr[a]); spectrum = ord.slice(0, 8).filter(i => actArr[i] > 0.05).map(i => ({ name: N[i].name, v: actArr[i].toFixed(2), w: Math.round(Math.min(1, actArr[i]) * 100) + '%' })); }
+
+    const thoughts = (c.thoughts || []).slice(0, 12).map(t => ({ thought: t.thought, tool: t.tool, args: t.args && t.args !== '{}' ? t.args : '', obs: t.obs ? '⤷ ' + t.obs : '' }));
+    const requirements = c.requirements.concat(c.customReq || []).map(r => ({ label: r.label, mark: r.gate ? 'gate' : 'soft', cls: r.gate ? 'tag tag-accent' : 'tag tag-neutral' }));
+    const proposals = (c.proposals || []).slice(0, 8).map(p => ({ status: p.status, color: p.status === 'accepted' || p.status === 'shipped' ? OK : p.status === 'rejected' ? BAD : A3, text: p.kind === 'capability' ? p.cap.label : (p.op === 'add-edge' ? '+ ' + N[p.a].name + ' — ' + N[p.b].name : p.op === 'prune-edge' ? '− ' + N[p.a].name + ' — ' + N[p.b].name : p.op) }));
+
+    const T_ON = 'tag tag-accent', T_LIVE = 'tag tag-outline', T_LAT = 'tag tag-neutral';
+    const abGroups = [
+      { title: 'Layouts', rows: ab.layouts.map(x => { const live = x.status === 'shipped', on = S.layout === x.layout; return { label: x.label || x.layout, note: x.note || (x.base ? 'n-body spring layout' : ''), tag: on ? 'in view' : live ? 'live' : 'latent', tagCls: on ? T_ON : live ? T_LIVE : T_LAT, fg: live ? TX : MU, hasAct: !on, act: live ? 'Use' : 'Ship + use', go: () => { this.useAbility(x.id); this.setMode('intel'); } }; }) },
+      { title: 'Lenses', rows: ab.lenses.map(x => { const live = x.status === 'shipped', on = !!S.lens[x.id]; return { label: x.label, note: x.note || '', tag: on ? 'on' : live ? 'live' : 'latent', tagCls: on ? T_ON : live ? T_LIVE : T_LAT, fg: live ? TX : MU, hasAct: true, act: !live ? 'Ship + use' : on ? 'Turn off' : 'Turn on', go: () => { live ? this.toggleLens(x.id) : this.useAbility(x.id); this.setMode('intel'); } }; }) },
+      { title: 'Retrievers', rows: ab.strategies.map(s => ({ label: s.name, note: (c.getStrategy(s.id) || {}).tagline || (s.by ? 'by ' + s.by : ''), tag: s.active ? 'active' : 'in pool', tagCls: s.active ? T_ON : T_LIVE, fg: TX, hasAct: !s.active, act: 'Use', go: () => c.useStrategy(s.id) })).concat(ab.strategyCaps.filter(x => !x.inPool).map(x => ({ label: x.label, note: x.note || '', tag: 'latent', tagCls: T_LAT, fg: MU, hasAct: true, act: 'Ship + use', go: () => this.useAbility(x.id) }))) }
+    ];
+
+    const mcp = c.mcp.map(s => { const on = s.status === 'connected'; return { name: s.name, tools: s.tools.join(', '), dot: on ? AC : FA, connected: on, latent: !on, connect: () => c.connectMCP && c.connectMCP(s.id, 'inspector') }; });
+    const skills = c.skills.map(s => ({ name: s.name, desc: s.desc, tag: s.native ? 'native' : s.wish ? 'wished' : 'learned', tagCls: s.native ? T_LAT : s.wish ? T_LIVE : T_ON }));
+    const archFiles = c.architecture.files.map(f => ({ name: f.name, open: () => this.setState({ itab: 'files', file: f.name }) }));
+    const allFiles = c.files(); let prevDir = null;
+    const files = allFiles.map(f => { const head = f.dir !== prevDir; prevDir = f.dir; const on = S.file === f.name; return { head, dir: f.dir, name: f.name, live: !!f.live, open: () => this.setState({ file: f.name }), bg: on ? A9 : 'transparent', fg: on ? A2 : N3 }; });
+    const curFile = allFiles.find(f => f.name === S.file) || allFiles[0];
+
+    const WHO = { user: ['You', A3, A9, 'none', 'flex-end'], research: ['Research agent', A4, 'color-mix(in srgb, var(--color-accent) 9%, transparent)', 'none', 'flex-start'], tester: ['Tester agent', N3, 'var(--color-neutral-900)', 'none', 'flex-start'], graph: ['Graph', MU, 'transparent', '0 0 0 1px ' + DV, 'flex-start'] };
+    const messages = S.msgs.map(m => { const w = WHO[m.who] || WHO.graph; return { who: w[0], fg: w[1], bg: w[2], ring: w[3], align: w[4], text: m.text }; });
+
+    const KGH = { scour: N3, pull: A3, ingest: AC, comprehend: A4, learn: A2, gate: OK, rate: WARN, err: BAD };
+    const repoProgress = (GH.repos || []).map(r => ({ slug: r.slug, topic: r.topic, dot: !r.scoured ? FA : (r.paths && r.pull >= r.paths.length ? OK : AC), stat: r.scoured ? (r.pull + '/' + (r.paths ? r.paths.length : '?')) : 'queued' }));
+    const ingestFeed = (GH.feed || []).slice(0, 30).map(e => ({ t: e.t, kind: e.kind, kc: KGH[e.kind] || N3, text: (e.slug ? e.slug + (e.path ? '/' + e.path.split('/').pop() : '') + ' · ' : '') + e.msg }));
+
+    const gap = (iq || 0) - (devNow || 0), robv = c.lastShake ? c.lastShake.rob : null;
+    const accNum = (c.stats.predAdded || 0) + (c.stats.llmLinks || 0), accDen = accNum + (c.stats.rejected || 0), accPct = accDen ? accNum / accDen : 0, edgePct = c.EDGE_CAP ? c.E.length / c.EDGE_CAP : 0;
+    const telemetry = [
+      { k: 'gap', v: gap.toFixed(3), c: gap > 0.2 ? WARN : N3, tip: 'Train minus dev recall, an overfitting signal' },
+      { k: 'robust', v: robv != null ? (robv * 100).toFixed(0) + '%' : '—', c: robv != null && robv < 0.8 ? BAD : N3, tip: 'Recall retained after dropping 15% of edges' },
+      { k: 'accept', v: (accPct * 100).toFixed(0) + '%', c: N3, tip: 'Share of proposed links that passed the gate' },
+      { k: 'edges', v: c.E.length + '/' + (c.EDGE_CAP || '—'), c: edgePct >= 0.95 ? BAD : N3, tip: 'Edge budget' }
+    ];
+    let hlev = 'Nominal'; if ((devNow || 0) < 0.3 || (robv != null && robv < 0.8) || edgePct >= 1) hlev = 'Critical'; else if (gap > 0.22 || (GH.rate != null && GH.rate < 5)) hlev = 'Degraded';
+    const hc = hlev === 'Nominal' ? OK : hlev === 'Degraded' ? WARN : BAD;
+
+    const cmds = [], add = (cat, src, label, desc, go, key) => cmds.push({ cat, src, label, desc: desc || '', go, key: key || '' });
+    const openFile = f => this.setState({ itab: 'files', file: f, right: true });
+    MODES.forEach(([k, l, , key, hint]) => add('Navigate', 'shell', 'Go to ' + l, hint, () => this.setMode(k), key));
+    [['arena', 'Arena'], ['matrix', 'Matrix'], ['diffs', 'Code diffs'], ['math', 'Math'], ['stack', 'DSPy stack'], ['policy', 'Q-policy'], ['history', 'History'], ['log', 'Log']].forEach(([k, l]) => add('Navigate', 'shell', 'Testbench · ' + l, 'Open the testbench on ' + l.toLowerCase(), () => this.openBench(k), k === 'history' ? 'H' : ''));
+    [['node', 'Node'], ['agent', 'Agent'], ['abilities', 'Abilities'], ['stack', 'Stack'], ['files', 'Files']].forEach(([k, l]) => add('Navigate', 'shell', 'Inspector · ' + l, 'Show ' + l.toLowerCase() + ' in the right inspector', () => this.setState({ itab: k, right: true })));
+    [['chat', 'Chat'], ['trace', 'ReAct trace'], ['ingest', 'Ingest feed']].forEach(([k, l]) => add('Navigate', 'shell', 'Console · ' + l, 'Open the console on ' + l.toLowerCase(), () => this.openDock(k)));
+    add('Navigate', 'shell', 'Toggle mission rail', 'Show or hide the left rail', () => this.setState(s => ({ left: !s.left })), '[');
+    add('Navigate', 'shell', 'Toggle inspector', 'Show or hide the right inspector', () => this.setState(s => ({ right: !s.right })), ']');
+    add('DSPy', 'research', 'Regenerate signature & Pydantic', 'Rebuild the typed GraphQA signature + nested models from the graph', () => { c.architect && c.architect(); openFile('graph_qa.py'); });
+    add('DSPy', 'tester', 'Compile program (param search)', 'MIPRO-style search over spreading params vs the benchmark', () => c.compile());
+    add('DSPy', 'tester', 'Bootstrap / benchmark strategies', 'Score every retrieval strategy on held-out dev recall', () => c.benchStrategies && c.benchStrategies());
+    add('DSPy', 'tester', 'Optimize & ship retrieval code', 'Tester rewrites the active strategy, ships if dev holds', () => c.proposeCode && c.proposeCode());
+    add('DSPy', 'tester', 'Run arena · every strategy × every probe', 'Recall matrix, Elo, bootstrap CI and a sign test of champion vs challenger', () => { c.testbench && c.testbench.run(); this.openBench('arena'); });
+    add('DSPy', 'tester', 'Program of Thought', 'Write & run code that proposes graph links; keep if dev holds', () => c.pot && c.pot());
+    add('DSPy', 'research', 'Advance research loop', 'Step observe → gather → hypothesize → test → score → audit → plan', () => c.scienceStep && c.scienceStep());
+    add('DSPy', 'research', 'View GraphQA signature', 'architect/graph_qa.py', () => openFile('graph_qa.py'));
+    add('DSPy', 'research', 'View config.yaml', 'retrieval + ingestion config', () => openFile('config.yaml'));
+    add('DSPy', 'tester', 'Export DSPy program', 'graph_agent.py', () => openFile('graph_agent.py'));
+    add('Graph', 'research', 'Run a probe (step)', 'Spread activation from a self-generated question', () => c.step());
+    add('Graph', 'research', 'Evolve the graph', 'Propose a structural patch, gate on held-out dev recall', () => c.propose && c.propose(true));
+    add('Graph', 'tester', 'Shake (robustness)', 'Drop 15% of edges ×5 and measure recall retention', () => c.shake());
+    add('Graph', 'tester', 'Compact graph', 'Prune the weakest edges to keep it lean (edge budget)', () => c.compact && c.compact(6));
+    add('Graph', 'research', 'Invent a new layout (LLM)', 'The agent authors a brand-new 3D layout and ships it live', () => c.inventLayout && c.inventLayout());
+    ab.layouts.forEach(x => add('Graph', 'research', (x.status === 'shipped' ? 'Layout · ' : 'Ship + use layout · ') + (x.label || x.layout), x.note || 'view archetype', () => { this.useAbility(x.id); this.setMode('intel'); }));
+    ab.lenses.forEach(x => add('Graph', 'research', (x.status === 'shipped' ? 'Lens · ' : 'Ship + use lens · ') + x.label, x.note || 'analysis lens', () => { this.useAbility(x.id); this.setMode('intel'); }));
+    ab.strategies.forEach(s => add('Graph', 'tester', 'Use retriever · ' + s.name, (c.getStrategy(s.id) || {}).tagline, () => c.useStrategy(s.id)));
+    ab.strategyCaps.filter(x => !x.inPool).forEach(x => add('Graph', 'research', 'Ship retriever · ' + x.label, (x.note ? x.note + ' — ' : '') + 'joins the arena pool and competes on dev recall', () => this.useAbility(x.id)));
+    add('Insight', 'research', 'Mine insights', 'Re-mine bridges, fragility, missing links, analogies', () => c._int && c._int.remine && c._int.remine());
+    (c.insights || []).forEach((x, i) => add('Insight', 'research', x.title, x.body, () => { c.focus = x; this.setColor('insight'); this.setState({ focusIdx: i, mode: 'intel' }); }));
+    ['all', 'graph', 'ai', 'safety'].forEach(d => add('Insight', 'research', 'Curriculum · ' + ({ all: 'all domains', graph: 'graph intelligence', ai: 'AI foundations', safety: 'AI safety & alignment' })[d], 'Focus extra training probes and the research prompts on this domain', () => c.history && c.history.setFocus(d)));
+    add('Insight', 'research', 'Run RAPTOR taxonomy (LLM)', 'Cluster + LM-name one community; builds the runtime taxonomy', () => c.raptorStep && c.raptorStep());
+    (c.taxonomy || []).forEach(t => add('Insight', 'research', 'Cluster · ' + t.name, t.summary || (t.members + ' concepts'), () => this.setColor('community')));
+    add('Sources', 'internet', 'Scour / ingest next file', 'Pull the next relevant file from GitHub', () => c.research && c.research());
+    add('Sources', 'internet', 'Comprehend code (LM)', 'Read a pulled file and extract code-grounded links', () => c.gh && c.gh.comprehendNext && c.gh.comprehendNext());
+    add('Sources', 'internet', 'Ingest starred repos', 'Discover & queue relevant repos from GitHub stars', () => c.gh && c.gh.discoverStarred && c.gh.discoverStarred('yetmens').then(n => { if (!n) c.gh.discoverStarred('karpathy'); }));
+    (GH.repos || []).forEach(r => add('Sources', 'internet', 'Repo · ' + r.slug, r.topic + ' — ' + (r.scoured ? (r.pull + '/' + (r.paths ? r.paths.length : '?') + ' files') : 'queued'), () => this.openDock('ingest')));
+    (c.mcp || []).filter(m => m.status !== 'connected').forEach(m => add('Sources', 'internet', 'Connect · ' + m.name, m.purpose, () => c.connectMCP && c.connectMCP(m.id, 'command palette')));
+
+    const pcat = S.pcat || 'all', pq = (S.pq || '').toLowerCase().trim();
+    const filtered = cmds.filter(m => (pcat === 'all' || m.cat === pcat) && (!pq || (m.label + ' ' + m.desc + ' ' + m.cat + ' ' + m.src).toLowerCase().includes(pq))).slice(0, 80);
+    const pi = Math.min(S.pi, Math.max(0, filtered.length - 1));
+    const run = m => { this.setState({ palette: false }); try { m.go(); } catch (e) {} };
+    const CATFG = { Navigate: MU, DSPy: A3, Graph: A4, Insight: N3, Sources: MU };
+    const SRC = { research: ['Research', T_ON], tester: ['Tester', T_LAT], internet: ['Web', T_LIVE], shell: ['', T_LAT] };
+    const paletteList = filtered.map((m, i) => ({ pi: i, cat: m.cat, catFg: CATFG[m.cat] || MU, label: m.label, desc: m.desc, tag: m.key || SRC[m.src][0], tagCls: SRC[m.src][1], hasTag: !!(m.key || SRC[m.src][0]), bg: i === pi ? A9 : 'transparent', go: () => run(m), hover: () => { if (this.state.pi !== i) { this._hov = true; this.setState({ pi: i }); } } }));
+    const onPalKey = e => { const n = filtered.length; if (e.key === 'ArrowDown') { e.preventDefault(); this.setState(s => ({ pi: Math.min(n - 1, s.pi + 1) })); } else if (e.key === 'ArrowUp') { e.preventDefault(); this.setState(s => ({ pi: Math.max(0, s.pi - 1) })); } else if (e.key === 'Enter') { e.preventDefault(); const m = filtered[pi]; if (m) run(m); } };
+    const palCats = [['all', 'All'], ['Navigate', 'Navigate'], ['DSPy', 'DSPy'], ['Graph', 'Graph'], ['Insight', 'Insight'], ['Sources', 'Sources']].map(([k, l]) => ({ label: l, go: () => this.setState({ pcat: k, pi: 0 }), bd: pcat === k ? AC : DV, bg: pcat === k ? A9 : 'transparent', fg: pcat === k ? A2 : MU }));
+
+    return Object.assign(shell, {
+      hasToast: !!toast, toast: toast || {}, metrics,
+      autoDot: dot(c.autopilot ? AC : FA, !!c.autopilot), autoLabel: c.autopilot ? 'Autopilot on' : 'Autopilot off', toggleAuto: () => c.setAutopilot(!c.autopilot, this.props.cycleMs ?? 2000), think: () => c.think(),
+      stateDot: dot(ghActive || c.autopilot ? AC : FA, ghActive), autoWord: ghActive ? 'Researching' : c.autopilot ? 'Self-driving' : 'Idle', round: SC.round || 0, hypothesis: SC.hypothesis || 'Forming a hypothesis…', hasObservation: !!SC.observation, observation: SC.observation || '',
+      loop, agents, thought: (c.thoughts && c.thoughts[0]) ? c.thoughts[0].thought : 'Idle. The agent acts on an insight each cycle.', iqPts: spk(iqH, slo, shi), devPts: spk(c.devHist, slo, shi), insights, insightCount: (c.insights || []).length,
+      nodeCount: c.nc, viewTitle: COLORS[S.color][0] + ' · ' + (ARCH[S.layout] || S.layout) + (S.color === 'insight' && c.focus ? ' · ' + c.focus.title : ''), viewLegend: COLORS[S.color][1], colorModes, layouts, lenses,
+      chatHint: c.llmAvailable ? 'Claude online' : 'extractive answers', messages, chatEmpty: !messages.length, thoughts, noThoughts: !thoughts.length,
+      repoProgress, ingestFeed, ingestMeta: (ghS.pulled || 0) + '/' + (ghS.total || '?') + ' files · ' + (((ghS.bytes || 0) / 1024) | 0) + ' kb',
+      hasSel: S.sel >= 0, noSel: S.sel < 0, sel, spectrum, spectrumEmpty: !spectrum.length,
+      clearSel: () => { this.view && this.view.select(-1); this.setState({ sel: -1 }); },
+      askSel: () => { const d = N[S.sel]; if (!d) return; this.openDock('chat'); this.send('What is ' + d.name + ' connected to, and what is it missing?'); },
+      requirements, proposals, noProposals: !proposals.length,
+      abLive: ab.counts.shipped, abOf: 'of ' + ab.counts.caps + ' capabilities live · ' + ab.counts.strategies + ' retrievers competing', abGroups,
+      mcp, mcpCount: c.stats.mcp + '/' + c.mcp.length, skills, skillCount: c.skills.length, archSummary: c.architecture.summary, archFiles,
+      files, fileText: curFile ? curFile.get() : '',
+      healthDot: dot(hc, hlev !== 'Nominal'), healthLabel: 'System ' + hlev.toLowerCase(), healthFg: hc,
+      stratName: (c.getStrategy && c.getStrategy(c.activeStrategy) || {}).name || c.activeStrategy || 'graphify',
+      lmState: c.llmAvailable ? (lmBusy ? 'thinking' : 'online') : 'offline', lmFg: c.llmAvailable ? (lmBusy ? A3 : OK) : DI,
+      ghStats: [{ k: 'repos', v: (ghS.scoured || 0) + '/' + (GH.repos ? GH.repos.length : 0) }, { k: 'pulled', v: ghS.pulled || 0 }, { k: 'linked', v: ghS.linked || 0 }, { k: 'api', v: GH.rate != null ? GH.rate + '/60' : '—' }],
+      telemetry, paletteCount: filtered.length + ' of ' + cmds.length, palCats, paletteList, paletteEmpty: !filtered.length, onPalKey
+    });
+  }
+}
+</script>
+</body>
+</html>

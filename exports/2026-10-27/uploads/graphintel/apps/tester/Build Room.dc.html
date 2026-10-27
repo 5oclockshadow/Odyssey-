@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <script src="./testkit.js"></script>
+  <script src="./repo-factory.js"></script>
+  <script src="./e2e.js"></script>
+  <style>
+    :root { --color-bg:#0a0b0f; --color-surface:#13151c; --color-raise:#171a22; --color-text:#e8eaf1; --color-accent:#4f9dff; --color-accent-200:#bcd6ff; --color-accent-300:#8fbaff; --color-accent-600:#2f6fd6; --color-neutral-600:#3b3f4d; --color-neutral-700:#2b2f3b; --color-neutral-800:#1f222c; --color-neutral-900:#16181f; --radius-sm:7px; --radius-md:11px; --font-body:'Hanken Grotesk',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,Menlo,monospace; }
+    html, body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); }
+    a { color: var(--color-accent-300); } a:hover { color: var(--color-accent-200); }
+    :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    *::-webkit-scrollbar { width: 9px; height: 9px; } *::-webkit-scrollbar-thumb { background: var(--color-neutral-700); border-radius: 6px; } *::-webkit-scrollbar-track { background: transparent; }
+    @keyframes brpulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  </style>
+</helmet>
+<div data-screen-label="Build Room" style="min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(90% 60% at 0% 0%, #121826 0%, var(--color-bg) 60%);color:var(--color-text);font-size:13px;">
+
+  <header style="position:sticky;top:0;z-index:10;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 20px;background:color-mix(in srgb,var(--color-bg) 88%,transparent);backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--color-neutral-800);">
+    <span style="display:flex;align-items:center;gap:10px;"><span style="width:28px;height:28px;border-radius:8px;background:var(--color-accent);display:grid;place-items:center;color:var(--color-bg);"><i class="ph ph-hammer" style="font-size:16px;"></i></span><span style="display:grid;gap:1px;"><span style="font:600 13px var(--font-mono);letter-spacing:0.1em;">BUILD ROOM</span><span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">TESTER × SEXTANT · 100 repos and the institute site</span></span></span>
+    <span style="{{ modePill }}">{{ modeLabel }}</span>
+    <span style="display:flex;align-items:baseline;gap:6px;font-family:var(--font-mono);"><span style="font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;">{{ roundLabel }}</span><span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 50%,transparent);">/ {{ target }} rounds</span></span>
+    <span style="{{ phasePill }}"><span style="{{ phaseDot }}"></span>{{ phaseLabel }}</span>
+    <span style="margin-left:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;">
+      <sc-if value="{{ idle }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ start }}" disabled="{{ notReady }}" style="flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 13px;border-radius:var(--radius-sm);border:1px solid var(--color-accent);background:color-mix(in srgb,var(--color-accent) 16%,transparent);color:var(--color-accent-200);font:600 12.5px var(--font-body);cursor:pointer;" style-hover="background:color-mix(in srgb,var(--color-accent) 26%,transparent);"><i class="ph ph-play"></i>{{ startLabel }}</button></sc-if>
+      <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ pause }}" style="flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 13px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-600);background:var(--color-surface);color:var(--color-text);font:600 12.5px var(--font-body);cursor:pointer;"><i class="ph ph-pause"></i>Pause after this step</button></sc-if>
+      <button type="button" onClick="{{ toggleSettings }}" aria-label="Connections" title="SEXTANT and owner connection" style="display:inline-flex;align-items:center;justify-content:center;width:32px;min-height:32px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:transparent;color:var(--color-text);cursor:pointer;"><i class="ph ph-plugs-connected"></i></button>
+      <button type="button" onClick="{{ reset }}" disabled="{{ running }}" style="flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 11px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;color:color-mix(in srgb,var(--color-text) 65%,transparent);font:500 12.5px var(--font-body);cursor:pointer;" style-hover="color:var(--color-text);"><i class="ph ph-arrow-counter-clockwise"></i>Reset</button>
+      <a href="Test%20Dashboard%20v7.dc.html" style="font-size:12.5px;white-space:nowrap;flex:none;">Test Dashboard</a>
+      <a href="../web/src/Platform.dc.html" target="_blank" rel="noopener" style="font-size:12.5px;white-space:nowrap;flex:none;">Open the site</a>
+    </span>
+    <sc-if value="{{ settings }}" hint-placeholder-val="{{ false }}">
+      <div style="flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-top:4px;font-size:12px;">
+        <span style="color:color-mix(in srgb,var(--color-text) 60%,transparent);">TESTER token</span>
+        <input type="password" value="{{ tok }}" onInput="{{ onTok }}" aria-label="TESTER token" style="width:220px;padding:6px 9px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:var(--color-surface);color:var(--color-text);font:12px var(--font-mono);">
+        <sc-if value="{{ browserLoop }}" hint-placeholder-val="{{ true }}">
+          <span style="display:contents;">
+            <span style="color:color-mix(in srgb,var(--color-text) 60%,transparent);">SEXTANT at</span>
+            <input value="{{ sextant }}" onInput="{{ onSextant }}" placeholder="http://localhost/api" aria-label="SEXTANT base URL" style="width:220px;padding:6px 9px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:var(--color-surface);color:var(--color-text);font:12px var(--font-mono);">
+            <span style="color:color-mix(in srgb,var(--color-text) 60%,transparent);">owner session</span>
+            <input type="password" value="{{ owner }}" onInput="{{ onOwner }}" aria-label="Owner session" style="width:220px;padding:6px 9px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:var(--color-surface);color:var(--color-text);font:12px var(--font-mono);">
+          </span>
+        </sc-if>
+        <span style="color:color-mix(in srgb,var(--color-text) 48%,transparent);">{{ settingsNote }}</span>
+      </div>
+    </sc-if>
+  </header>
+
+  <div style="flex:1;display:grid;grid-template-columns:{{ cols }};min-height:0;">
+    <main style="min-width:0;padding:18px 20px 48px;display:grid;gap:24px;align-content:start;">
+      <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 12px;border-radius:var(--radius-sm);border:1px solid #ff6b6b;color:#ffb3b3;">{{ err }}</div></sc-if>
+
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px;">
+        <div style="display:grid;gap:8px;align-content:start;padding:14px;border-radius:var(--radius-md);background:var(--color-surface);border:1px solid var(--color-neutral-800);">
+          <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-pen-nib" style="color:#bcd6ff;font-size:16px;"></i><b style="font-size:13px;font-weight:600;">Claude</b><span style="margin-left:auto;font:11px var(--font-mono);color:color-mix(in srgb,var(--color-text) 50%,transparent);">what TESTER can't do</span></div>
+          <span style="font-size:12.5px;line-height:1.55;color:color-mix(in srgb,var(--color-text) 72%,transparent);">Wrote the three research cores (seed-gen, anima-harness, lstm-substrate), the repo factory and its bar, the e2e journeys, this room, and picked the site design in the Studio.</span>
+          <span style="font:12px var(--font-mono);color:#bcd6ff;">{{ who.claude }}</span>
+        </div>
+        <div style="display:grid;gap:8px;align-content:start;padding:14px;border-radius:var(--radius-md);background:var(--color-surface);border:1px solid var(--color-neutral-800);">
+          <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-flask" style="color:#3fcf8e;font-size:16px;"></i><b style="font-size:13px;font-weight:600;">TESTER</b><span style="margin-left:auto;font:11px var(--font-mono);color:color-mix(in srgb,var(--color-text) 50%,transparent);">most of the work</span></div>
+          <span style="font-size:12.5px;line-height:1.55;color:color-mix(in srgb,var(--color-text) 72%,transparent);">Packages the 50 repos with source here, runs the bar and pytest on every repo, walks the site end to end at three widths, and re-tests until it passes.</span>
+          <span style="font:12px var(--font-mono);color:#3fcf8e;">{{ who.tester }}</span>
+        </div>
+        <div style="display:grid;gap:8px;align-content:start;padding:14px;border-radius:var(--radius-md);background:var(--color-surface);border:1px solid var(--color-neutral-800);">
+          <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-compass" style="color:#f5b547;font-size:16px;"></i><b style="font-size:13px;font-weight:600;">SEXTANT</b><span style="margin-left:auto;font:11px var(--font-mono);color:color-mix(in srgb,var(--color-text) 50%,transparent);">writes from research</span></div>
+          <span style="font-size:12.5px;line-height:1.55;color:color-mix(in srgb,var(--color-text) 72%,transparent);">Writes the 47 repos that exist only as research, and every README's finding and hypothesis. TESTER gates each one against the bar.</span>
+          <span style="font:12px var(--font-mono);color:#f5b547;">{{ who.sextant }}</span>
+        </div>
+      </section>
+
+      <section style="display:grid;gap:12px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;"><span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">The hundred</span><span style="font:12px var(--font-mono);color:color-mix(in srgb,var(--color-text) 55%,transparent);">rows are categories · first column is the launch-day flagship</span><span style="height:1px;flex:1;min-width:20px;background:linear-gradient(90deg,var(--color-neutral-800),transparent);"></span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px 14px;">
+          <sc-for list="{{ legend }}" as="l" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:color-mix(in srgb,var(--color-text) 75%,transparent);"><span style="{{ l.sw }}"></span>{{ l.label }}<b style="font:600 12px var(--font-mono);color:var(--color-text);">{{ l.n }}</b></span></sc-for>
+        </div>
+        <div style="display:grid;gap:5px;overflow-x:auto;">
+          <sc-for list="{{ matrix }}" as="row" hint-placeholder-count="10">
+            <div style="display:grid;grid-template-columns:132px repeat(10,minmax(54px,1fr));gap:5px;align-items:stretch;min-width:720px;">
+              <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);align-self:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ row.cat }}</span>
+              <sc-for list="{{ row.tiles }}" as="t" hint-placeholder-count="10"><button type="button" title="{{ t.tip }}" onClick="{{ t.pick }}" style="{{ t.st }}"><span style="font:10.5px var(--font-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">{{ t.name }}</span></button></sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+        <section style="display:grid;gap:12px;padding:16px;border-radius:var(--radius-md);background:var(--color-surface);border:1px solid var(--color-neutral-800);">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;">
+            <span style="font:600 15px var(--font-mono);color:var(--color-accent-200);">{{ d.name }}</span>
+            <span style="{{ d.pill }}">{{ d.statusLabel }}</span>
+            <span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ d.meta }}</span>
+            <button type="button" onClick="{{ closeSel }}" aria-label="Close" style="margin-left:auto;width:28px;height:28px;border-radius:var(--radius-sm);border:0;background:transparent;color:var(--color-text);cursor:pointer;"><i class="ph ph-x"></i></button>
+          </div>
+          <span style="font-size:13.5px;line-height:1.55;color:color-mix(in srgb,var(--color-text) 80%,transparent);">{{ d.what }}</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:6px 18px;">
+            <sc-for list="{{ d.bar }}" as="c" hint-placeholder-count="6"><div style="display:flex;gap:8px;align-items:baseline;font-size:12.5px;"><i class="{{ c.icon }}" style="{{ c.iconSt }}"></i><span style="display:grid;gap:1px;"><span>{{ c.label }}</span><span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 52%,transparent);">{{ c.why }}</span></span></div></sc-for>
+          </div>
+          <span style="font:12px var(--font-mono);color:color-mix(in srgb,var(--color-text) 70%,transparent);">{{ d.testsLine }}</span>
+          <sc-if value="{{ d.hasTail }}" hint-placeholder-val="{{ false }}"><pre style="margin:0;max-height:220px;overflow:auto;padding:10px 12px;border-radius:var(--radius-sm);background:var(--color-bg);border:1px solid var(--color-neutral-800);font:11.5px/1.5 var(--font-mono);white-space:pre-wrap;color:color-mix(in srgb,var(--color-text) 78%,transparent);">{{ d.tail }}</pre></sc-if>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button type="button" onClick="{{ d.buildNow }}" disabled="{{ d.buildOff }}" style="display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 11px;border-radius:var(--radius-sm);border:1px solid var(--color-accent);background:color-mix(in srgb,var(--color-accent) 14%,transparent);color:var(--color-accent-200);font:600 12px var(--font-body);cursor:pointer;"><i class="ph ph-hammer"></i>Build and test now</button>
+            <button type="button" onClick="{{ d.download }}" style="display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 11px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-600);background:transparent;color:var(--color-text);font:600 12px var(--font-body);cursor:pointer;"><i class="ph ph-download-simple"></i>Download .zip</button>
+            <sc-if value="{{ d.canWrite }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ d.write }}" style="display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 11px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-600);background:transparent;color:var(--color-text);font:600 12px var(--font-body);cursor:pointer;"><i class="ph ph-floppy-disk"></i>Write to repos/</button></sc-if>
+            <span style="font:11.5px var(--font-mono);color:color-mix(in srgb,var(--color-text) 48%,transparent);align-self:center;">{{ d.filesLine }}</span>
+          </div>
+          <div style="display:grid;gap:6px;">
+            <span style="font-size:11.5px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 62%,transparent);">Paste a reply from SEXTANT or Claude. Every <code style="font-family:var(--font-mono);">--- file: path</code> … <code style="font-family:var(--font-mono);">--- end</code> block lands in TESTER's copy of this repo and is verified next round.</span>
+            <textarea value="{{ d.replyText }}" onInput="{{ d.onReply }}" rows="4" aria-label="Reply with file blocks" placeholder="--- file: tests/test_core.py" style="width:100%;box-sizing:border-box;resize:vertical;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:var(--color-bg);color:var(--color-text);font:12px/1.5 var(--font-mono);"></textarea>
+            <button type="button" onClick="{{ d.applyReply }}" disabled="{{ d.replyOff }}" style="justify-self:start;display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 11px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-600);background:transparent;color:var(--color-text);font:600 12px var(--font-body);cursor:pointer;" style-hover="border-color:var(--color-accent);"><i class="ph ph-arrow-bend-down-left"></i>Apply the reply</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <section style="display:grid;gap:12px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;"><span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">The site, end to end</span><span style="font:12px var(--font-mono);color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ e2eLine }}</span><span style="height:1px;flex:1;min-width:20px;background:linear-gradient(90deg,var(--color-neutral-800),transparent);"></span>
+          <button type="button" onClick="{{ runE2ENow }}" disabled="{{ running }}" style="display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 10px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-600);background:transparent;color:var(--color-text);font:600 12px var(--font-body);cursor:pointer;"><i class="ph ph-path"></i>Run journeys now</button>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ e2eCols }};gap:14px;align-items:start;">
+          <div style="display:grid;gap:6px;">
+            <sc-for list="{{ journeys }}" as="j" hint-placeholder-count="8">
+              <div style="display:grid;gap:3px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--color-surface);border:1px solid var(--color-neutral-800);">
+                <div style="display:flex;align-items:center;gap:8px;"><span style="font:600 12px var(--font-mono);">{{ j.id }}</span><span style="font-size:11px;color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ j.who }}</span><span style="margin-left:auto;display:flex;gap:4px;"><sc-for list="{{ j.dots }}" as="o" hint-placeholder-count="3"><span title="{{ o.tip }}" style="{{ o.st }}">{{ o.w }}</span></sc-for></span></div>
+                <span style="font-size:11.5px;line-height:1.45;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ j.goal }}</span>
+                <sc-if value="{{ j.bad }}" hint-placeholder-val="{{ false }}"><span style="font:11px/1.45 var(--font-mono);color:#ff9b9b;overflow-wrap:anywhere;">{{ j.why }}</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;font:11.5px var(--font-mono);color:color-mix(in srgb,var(--color-text) 62%,transparent);"><i class="ph ph-monitor"></i><span>{{ stageLabel }}</span></div>
+            <div ref="{{ stageRef }}" style="position:relative;overflow:hidden;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-800);background:#07080b;height:{{ stageH }};">
+              <iframe ref="{{ frameRef }}" title="E2E stage" style="{{ frameSt }}"></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside style="min-width:0;border-left:1px solid var(--color-neutral-800);background:color-mix(in srgb,var(--color-surface) 55%,var(--color-bg));padding:18px 16px 40px;display:grid;gap:18px;align-content:start;">
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">This round</span>
+        <sc-for list="{{ plan }}" as="p" hint-placeholder-count="3"><div style="display:flex;gap:8px;font-size:12.5px;line-height:1.45;"><i class="ph ph-caret-right" style="color:var(--color-accent-300);margin-top:2px;"></i><span>{{ p.text }}</span></div></sc-for>
+        <sc-if value="{{ noPlan }}" hint-placeholder-val="{{ true }}"><span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">Start to run {{ target }} rounds: plan, build, test till pass, walk the site, audit to improve, repeat.</span></sc-if>
+      </section>
+
+      <section style="display:grid;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Rounds</span><span style="margin-left:auto;font:11px var(--font-mono);color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ chartLine }}</span></div>
+        <div style="display:flex;align-items:flex-end;gap:2px;height:44px;padding:4px 0;border-bottom:1px solid var(--color-neutral-800);">
+          <sc-for list="{{ bars }}" as="b" hint-placeholder-count="0"><span title="{{ b.tip }}" style="{{ b.pass }}"></span></sc-for>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:2px;height:28px;">
+          <sc-for list="{{ bars }}" as="b" hint-placeholder-count="0"><span title="{{ b.tip }}" style="{{ b.fail }}"></span></sc-for>
+        </div>
+        <span style="font-size:11px;color:color-mix(in srgb,var(--color-text) 48%,transparent);">Green: repos passing the bar. Red: failures that round (repos and journeys).</span>
+      </section>
+
+      <sc-if value="{{ hasPick }}" hint-placeholder-val="{{ false }}">
+        <section style="display:grid;gap:6px;padding:12px;border-radius:var(--radius-md);background:var(--color-surface);border:1px solid var(--color-neutral-800);">
+          <span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Site design · Studio pick</span>
+          <span style="font-size:13px;">{{ pick.winner }}</span>
+          <span style="font-size:11.5px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 58%,transparent);">{{ pick.why }}</span>
+          <span style="font:11px var(--font-mono);color:color-mix(in srgb,var(--color-text) 48%,transparent);">{{ pick.runners }}</span>
+        </section>
+      </sc-if>
+
+      <section style="display:grid;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Audit to improve</span><span style="margin-left:auto;font:11px var(--font-mono);color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ propLine }}</span></div>
+        <sc-for list="{{ proposals }}" as="p" hint-placeholder-count="0"><div style="display:flex;gap:8px;font-size:12px;line-height:1.45;"><span style="{{ p.tag }}">{{ p.who }}</span><span style="color:color-mix(in srgb,var(--color-text) 78%,transparent);">{{ p.text }}</span></div></sc-for>
+        <sc-if value="{{ hasOutbox }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ copyOutbox }}" style="justify-self:start;display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 10px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-600);background:transparent;color:var(--color-text);font:600 12px var(--font-body);cursor:pointer;"><i class="ph ph-copy"></i>{{ outboxLabel }}</button></sc-if>
+      </section>
+
+      <section style="display:grid;gap:8px;min-height:0;">
+        <span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Between them</span>
+        <div style="display:grid;gap:6px;max-height:560px;overflow:auto;padding-right:4px;">
+          <sc-for list="{{ feed }}" as="f" hint-placeholder-count="0">
+            <div style="display:grid;gap:2px;padding:7px 9px;border-radius:var(--radius-sm);background:var(--color-bg);border:1px solid var(--color-neutral-800);">
+              <div style="display:flex;align-items:center;gap:6px;font:10.5px var(--font-mono);"><span style="{{ f.whoSt }}">{{ f.who }}</span><span style="color:color-mix(in srgb,var(--color-text) 45%,transparent);">{{ f.to }}</span><span style="margin-left:auto;color:color-mix(in srgb,var(--color-text) 40%,transparent);">{{ f.at }}</span></div>
+              <span style="{{ f.textSt }}">{{ f.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;target&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 500, &quot;min&quot;: 1, &quot;max&quot;: 2000, &quot;step&quot;: 10, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Loop&quot;}, &quot;perRound&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 3, &quot;min&quot;: 1, &quot;max&quot;: 12, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Loop&quot;}, &quot;e2eEvery&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 10, &quot;min&quot;: 1, &quot;max&quot;: 50, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Loop&quot;}, &quot;pauseMs&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 1500, &quot;min&quot;: 0, &quot;max&quot;: 20000, &quot;step&quot;: 500, &quot;unit&quot;: &quot;ms&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Loop&quot;}}">
+const WIDTHS = [360, 768, 1440];
+const KEY = 'buildroom.v1';
+const COLOR = { queued: '#3b3f4d', packed: '#f5b547', briefed: '#f5b547', built: '#8fbaff', testing: '#4f9dff', failing: '#ff6b6b', passing: '#3fcf8e', shipped: '#bcd6ff' };
+const LABEL = { queued: 'queued', packed: 'packed by TESTER', briefed: 'briefed to SEXTANT', built: 'written, not verified', testing: 'testing', failing: 'failing', passing: 'passes the bar', shipped: 'shipped' };
+const WHO = { TESTER: '#3fcf8e', SEXTANT: '#f5b547', CLAUDE: '#bcd6ff', OWNER: '#8fbaff', PLAN: '#8fbaff', SYS: '#8a8fa6' };
+const BRIEF_ONLY = ['LICENSE', 'docker-compose.yml', 'Dockerfile', '.github/workflows/ci.yml', 'README.md', 'BRIEF.md'];
+const mergeE2E = (a, b) => { const out = { ...(a || {}) }; Object.entries(b || {}).forEach(([j, byW]) => { out[j] = { ...(out[j] || {}) }; Object.entries(byW || {}).forEach(([w, r]) => { const cur = out[j][w]; if (!cur || (r.at || 0) >= (cur.at || 0)) out[j][w] = r; }); }); return out; };
+const BAR_LABEL = { tests: 'Tests in CI, no network, no model', compose: 'docker compose up in one line', readme: 'README names the finding and hypothesis', hygiene: 'Licence, secrets scan, dependency audit', example: 'A runnable example under 60 seconds', links: 'Links back to the site and the graph' };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const enc = p => p.split('/').map(encodeURIComponent).join('/');
+const hhmm = t => new Date(t).toTimeString().slice(0, 8);
+const PYRUN = [
+  'import sys, io, os, contextlib, time, shutil',
+  'import pytest',
+  'for _k in [k for k, v in list(sys.modules.items()) if (getattr(v, "__file__", None) or "").startswith("/work/")]:',
+  '    del sys.modules[_k]',
+  'sys.path[:] = [p for p in sys.path if not p.startswith("/work/")]',
+  'sys.path.insert(0, REPO_DIR)',
+  'sys.path.extend("/work/" + d for d in os.listdir("/work") if "/work/" + d != REPO_DIR)',
+  '_buf, _cwd, _t0 = io.StringIO(), os.getcwd(), time.time()',
+  'os.chdir(REPO_DIR)',
+  'with contextlib.redirect_stdout(_buf), contextlib.redirect_stderr(_buf):',
+  '    _code = pytest.main(["-q", "-p", "no:cacheprovider", "tests"])',
+  'os.chdir(_cwd)',
+  '(int(_code), _buf.getvalue()[-5000:], round(time.time() - _t0, 2))',
+].join('\n');
+
+class Component extends DCLogic {
+  state = { w: 1440, mode: 'Browser', edit: false, reg: null, err: '', files: [], journeys: null, pick: null, st: {}, round: 0, running: false, phase: 'idle',
+    plan: [], feed: [], history: [], proposals: [], outbox: [], sel: '', e2e: {}, e2eNow: '', e2eW: 1440, boxW: 760, settings: false, sextant: '', owner: '', tok: '', copied: false, server: false, replyText: '' };
+  mem = {};
+  stageRef = React.createRef();
+  frameRef = React.createRef();
+  root = '../../';
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('resize', this.onResize);
+    this.onResize();
+    this.ro = new ResizeObserver(() => { const b = this.stageRef.current; if (b && Math.abs(b.clientWidth - this.state.boxW) > 1) this.setState({ boxW: b.clientWidth }); });
+    if (this.stageRef.current) this.ro.observe(this.stageRef.current);
+    this.restore();
+    this.boot();
+  }
+  componentWillUnmount() { this.stopFlag = true; window.removeEventListener('resize', this.onResize); if (this.ro) this.ro.disconnect(); clearInterval(this._poll); }
+
+  restore() {
+    try {
+      const d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (d) this.setState({ st: d.st || {}, round: d.round || 0, history: d.history || [], feed: d.feed || [], proposals: d.proposals || [], outbox: d.outbox || [], e2e: d.e2e || {}, sextant: d.sextant || this.state.sextant });
+      this.setState({ tok: localStorage.getItem('buildroom.token') || localStorage.getItem('buildroom.owner') || '', owner: localStorage.getItem('buildroom.session') || '' });
+    } catch (e) {}
+  }
+  save() {
+    try { const s = this.state; localStorage.setItem(KEY, JSON.stringify({ st: s.st, round: s.round, history: s.history.slice(-500), feed: s.feed.slice(-150), proposals: s.proposals.slice(-60), outbox: s.outbox.slice(-60), e2e: s.e2e, sextant: s.sextant })); } catch (e) {}
+  }
+  say(who, to, text, kind = 'info') { this.setState(s => ({ feed: s.feed.concat({ t: Date.now(), who, to, text: String(text).slice(0, 700), kind }).slice(-150) })); }
+  setRepo(id, patch) { return new Promise(r => this.setState(s => ({ st: { ...s.st, [id]: { ...(s.st[id] || {}), ...patch } } }), r)); }
+  entry(id) { return this.state.reg ? this.state.reg.repos.find(r => r.id === id) : null; }
+
+  async boot() {
+    for (let i = 0; i < 120 && !(window.TestKit && window.RepoFactory && window.E2E); i++) await sleep(60);
+    if (!window.RepoFactory || !window.E2E || !window.TestKit) { this.setState({ err: 'testkit.js, repo-factory.js or e2e.js did not load.' }); return; }
+    let mode = 'Browser', edit = false;
+    try { const r = await fetch('/health', { cache: 'no-store' }); const j = r.ok ? await r.json() : null; if (j && 'fixing' in j) { mode = 'Container'; this.root = '/repo/'; try { edit = !!(await (await fetch('/edit')).json()).edit; } catch (e) {} } } catch (e) {}
+    let files = [];
+    try { files = await TestKit.manifest(''); } catch (e) {}
+    const [reg, journeys, pick] = await Promise.all([this.json('repos/registry.json'), this.json('apps/tester/e2e/journeys.json'), this.json('apps/tester/studio-picks/institute-site.json')]);
+    if (!reg) { this.setState({ err: 'repos/registry.json did not load.' }); return; }
+    RepoFactory.configure(reg);
+    this.setState(s => { const st = { ...s.st }; reg.repos.forEach(r => { if (!st[r.id] || st[r.id].status === 'testing') st[r.id] = { ...(st[r.id] || {}), status: (st[r.id] && st[r.id].status !== 'testing') ? st[r.id].status : r.status || 'queued' }; }); return { mode, edit, files, reg, journeys, pick, st }; });
+    if (mode === 'Container') { const b = await this.json0('/build'); if (b) this.adopt(b); this._poll = setInterval(async () => { const x = await this.json0('/build'); if (x) this.adopt(x); }, 3000); }
+    if (!this.state.feed.length) this.say('SYS', '', mode + ' mode · ' + files.length + ' files · ' + reg.repos.length + ' repos · ' + (journeys ? journeys.journeys.length : 0) + ' journeys · ' + (mode === 'Container' ? (edit ? 'TESTER writes to repos/' : 'writing off: start with TESTER_EDIT=on') : 'browser: TESTER packs and tests here; fixes and briefs go to the outbox'), 'info');
+  }
+  async json0(path) { try { const r = await fetch(path + (path.includes('?') ? '&' : '?') + Date.now(), { cache: 'no-store' }); return r.ok ? await r.json() : null; } catch (e) { return null; } }
+  adopt(b) {
+    // The server loop is the truth in the container: mirror its round, statuses, walks and feed.
+    if (b.config) Object.assign(RepoFactory.config, b.config);
+    this.setState(s => ({ server: true, round: b.round || 0, phase: b.phase || 'idle', running: !!b.running, edit: !!b.edit, plan: (b.plan || []).map(text => ({ text })), st: { ...s.st, ...(b.st || {}) }, e2e: mergeE2E(s.e2e, b.e2e), history: b.history || s.history, feed: (b.feed || []).map(f => ({ ...f, t: f.t || Date.now() })), proposals: b.proposals || s.proposals, outbox: b.outbox || s.outbox }));
+  }
+  token() { let t = this.state.tok; try { t = t || localStorage.getItem('studioshub.token') || ''; } catch (e) {} return t; }
+  async post(path, body) {
+    const tok = this.token();
+    try { const r = await fetch(path, { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, tok ? { authorization: 'Bearer ' + tok } : {}), body: JSON.stringify(body) }); if (!r.ok) { const j = await r.json().catch(() => ({})); this.say('SYS', '', path + ' answered ' + r.status + (j && typeof j.detail === 'string' ? ': ' + j.detail : '') + (r.status === 401 || r.status === 403 ? ' — set the TESTER token (plug icon)' : ''), 'bad'); } return r.ok; }
+    catch (e) { this.say('SYS', '', path + ' failed: ' + e.message, 'bad'); return false; }
+  }
+  pauseLoop() { this.say('OWNER', '→ TESTER', 'pause after this step', 'you'); if (this.state.server) { this.post('/build/stop', {}); return; } this.stopFlag = true; }
+  async json(rel) { try { const r = await fetch(this.root + enc(rel) + '?' + Date.now(), { cache: 'no-store' }); return r.ok ? await r.json() : null; } catch (e) { return null; } }
+  async text(rel) { try { const r = await fetch(this.root + enc(rel) + '?' + Date.now(), { cache: 'no-store' }); return r.ok ? await r.text() : null; } catch (e) { return null; } }
+
+  async filesFor(e) {
+    // The committed copy on disk with TESTER's draft (this.mem) laid over it: the same model of a repo as build.py's in the container.
+    const pre = e.dir + '/', disk = this.state.files.filter(f => f.startsWith(pre)), out = {};
+    if (disk.length) await Promise.all(disk.map(async f => { const t = await this.text(f); if (t != null) out[f.slice(pre.length)] = t; }));
+    const onDisk = Object.keys(out).length, files = { ...out, ...(this.mem[e.id] || {}) };
+    return Object.keys(files).length ? { files, from: onDisk ? (this.mem[e.id] ? 'disk + draft' : 'disk') : 'memory' } : null;
+  }
+  async build(e) {
+    const have = await this.filesFor(e);
+    if (have) return have.files;
+    const src = {};
+    for (const p of e.sources || []) { const t = await this.text(p); if (t != null) src[p] = t; }
+    const files = RepoFactory.pack(e, src);
+    this.mem[e.id] = files;
+    if (!files['BRIEF.md']) {
+      await this.setRepo(e.id, { status: 'packed', nfiles: Object.keys(files).length });
+      this.say('TESTER', '', 'packed ' + e.name + ' from ' + e.sources.join(', ') + ' · ' + Object.keys(files).length + ' files', 'ok');
+      if (this.state.mode === 'Container' && this.state.edit) await this.write(e, files);
+    }
+    return files;
+  }
+  async brief(e, files) {
+    await this.setRepo(e.id, { status: 'briefed', nfiles: Object.keys(files).length });
+    this.say('TESTER', '→ SEXTANT', e.name + ' exists only as research (' + e.from + '). Brief: ' + e.what, 'info');
+    await this.toSextant(e.id + ':brief', 'Build ' + e.name + ' in ' + e.dir + '/.\n\n' + files['BRIEF.md'], e);
+  }
+  async step(e, i) {
+    // One repo: build it, then test and route it, or wait for SEXTANT while it is still only a brief.
+    this.setState({ phase: 'build', sel: e.id });
+    const files = await this.build(e);
+    await this.setRepo(e.id, { lastRound: i });
+    const st = (this.state.st[e.id] || {}).status || 'queued';
+    if (files['BRIEF.md'] && Object.keys(files).every(k => BRIEF_ONLY.includes(k)) && (st === 'queued' || st === 'briefed')) { if (st !== 'briefed') await this.brief(e, files); return null; }
+    if (this.stopFlag) return null;
+    this.setState({ phase: 'test' });
+    const r = await this.test(e, files);
+    if (r.status === 'failing') await this.route(e, r);
+    return r;
+  }
+  take(e, text, who) {
+    // `--- file:` blocks in a reply land in TESTER's draft; the repo is built again and verified next round.
+    const files = RepoFactory.take(text), names = Object.keys(files);
+    if (!names.length) return 0;
+    this.mem[e.id] = { ...(this.mem[e.id] || {}), ...files };
+    this.setRepo(e.id, { status: 'built' });
+    this.say(who, '→ TESTER', 'wrote ' + names.length + ' file(s) for ' + e.name + ': ' + names.slice(0, 6).join(', ') + (names.length > 6 ? ' …' : '') + '; TESTER verifies them next round', 'ok');
+    return names.length;
+  }
+  async write(e, files) {
+    let n = 0;
+    for (const [p, text] of Object.entries(files)) { try { const r = await fetch('/files/write', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ path: e.dir + '/' + p, text }) }); if (r.ok) n++; } catch (x) {} }
+    this.say('TESTER', '', 'wrote ' + n + ' files to ' + e.dir + '/', n ? 'ok' : 'bad');
+  }
+
+  async py() {
+    if (!this._py) this._py = (async () => {
+      this.say('TESTER', '', 'starting Python (Pyodide, pytest, numpy) to run repo tests in this tab', 'info');
+      if (!window.loadPyodide) await new Promise((ok, bad) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js'; s.onload = ok; s.onerror = () => bad(new Error('Pyodide did not load')); document.head.appendChild(s); });
+      const p = await window.loadPyodide();
+      await p.loadPackage(['pytest', 'numpy']);
+      return p;
+    })();
+    try { return await this._py; } catch (x) { this._py = null; throw x; }
+  }
+  async pytest(e, files) {
+    const p = await this.py(), dir = '/work/' + e.id;
+    const put = (d, fs) => { p.globals.set('_D', d); p.runPython('import shutil; shutil.rmtree(_D, ignore_errors=True)'); Object.entries(fs).forEach(([rel, t]) => { const full = d + '/' + rel; p.FS.mkdirTree(full.slice(0, full.lastIndexOf('/'))); p.FS.writeFile(full, t); }); };
+    const deps = ((files['requirements.txt'] || '').match(/anima-([a-z0-9-]+)\s*@/g) || []).map(m => m.replace(/^anima-|\s*@$/g, ''));
+    for (const id of deps) { const de = this.entry(id); const df = de && await this.filesFor(de); if (df) put('/work/' + id, df.files); }
+    put(dir, files);
+    p.globals.set('REPO_DIR', dir);
+    await sleep(30);
+    const res = await p.runPythonAsync(PYRUN), [code, out, secs] = res.toJs();
+    if (res.destroy) res.destroy();
+    const n = re => { const m = out.match(re); return m ? +m[1] : 0; };
+    return { code, secs, passed: n(/(\d+) passed/), failed: n(/(\d+) failed/), errors: n(/(\d+) errors?/), tail: out.trim().split('\n').slice(-28).join('\n') };
+  }
+  async test(e, files) {
+    await this.setRepo(e.id, { status: 'testing' });
+    const c = RepoFactory.config, rd0 = files['README.md'] || '';
+    if (rd0 && (rd0.indexOf(c.site) < 0 || rd0.indexOf(c.graph) < 0)) {   // the one fix TESTER makes by itself, in its draft (as build.py does)
+      const nw = rd0.replace(/- The institute: \S+/g, () => '- The institute: ' + c.site).replace(/- The public graph: \S+/g, () => '- The public graph: ' + c.graph);
+      if (nw !== rd0) { files['README.md'] = nw; this.mem[e.id] = { ...(this.mem[e.id] || {}), 'README.md': nw }; this.say('TESTER', '', e.name + ': pointed the README links at ' + c.site, 'ok'); }
+    }
+    const bar = RepoFactory.bar(files, e), readme = files['README.md'] || '';
+    const pyTests = e.lang !== 'js' && Object.keys(files).some(p => /^tests\/test_[^/]+\.py$/.test(p));
+    let tests = null;
+    if (pyTests) { try { tests = await this.pytest(e, files); } catch (x) { tests = { passed: 0, failed: 0, errors: 1, secs: 0, tail: 'Python did not run: ' + x.message }; } }
+    const barOk = bar.every(c => c.ok), testOk = !pyTests || (tests.passed > 0 && !tests.failed && !tests.errors);
+    const why = !barOk ? bar.filter(c => !c.ok).map(c => c.id + ': ' + c.why).join(' · ') : !testOk ? (tests.failed ? tests.failed + ' failing test(s)' : tests.errors ? 'tests errored' : 'no test passed') : '';
+    const status = barOk && testOk ? 'passing' : 'failing', prev = this.state.st[e.id] || {};
+    await this.setRepo(e.id, { status, bar, tests, why, at: Date.now(), attempts: status === 'failing' ? (prev.attempts || 0) + 1 : 0, nfiles: Object.keys(files).length,
+      finding: RepoFactory.section(readme, 'Finding').length, hasUse: /^## Use/m.test(readme), jsNote: e.lang === 'js' ? 'node --test runs in the container' : '' });
+    this.say('TESTER', '', e.name + (status === 'passing' ? ' passes the bar' + (tests ? ' · ' + tests.passed + ' tests in ' + tests.secs + ' s' : ' · static checks (node tests run in the container)') : ' fails · ' + why), status === 'passing' ? 'ok' : 'bad');
+    return { status, why, bar, tests };
+  }
+  async route(e, r) {
+    const fails = (r.bar || []).filter(c => !c.ok).map(c => c.id), sextantJob = fails.includes('readme') || fails.includes('example') || e.builder === 'sextant';
+    const key = e.id + ':' + (sextantJob ? 'sextant' : 'tester') + ':' + r.why;
+    if ((this.state.st[e.id] || {}).routed === key) return;
+    await this.setRepo(e.id, { routed: key });
+    const have = Object.keys(((await this.filesFor(e)) || { files: {} }).files).sort().slice(0, 30).join(', ');
+    if (sextantJob) await this.toSextant(key, e.name + ' (' + e.dir + '/) fails the bar: ' + r.why + '. Write what is missing from ' + ((e.research || []).concat(e.sources || []).join(', ') || e.from) + '. Its files now: ' + have + '.', e);
+    else await this.toTester(key, e.name + ' (' + e.dir + '/) fails: ' + r.why + (r.tests ? '\n' + r.tests.tail.slice(-700) : '') + '\nIts files now: ' + have + '.\nMake it standalone with the smallest change; never weaken a test.', e);
+  }
+  async toSextant(id, text, e) {
+    // The tab's own loop reaches SEXTANT with your owner session (or the terminal's cookie). In the container, build.py does this itself.
+    const msg = e ? text + '\n\n' + RepoFactory.REPLY : text, base = (this.state.sextant || '').replace(/\/$/, '');
+    if (base) {
+      try {
+        const r = await fetch(base + '/owner/say', { method: 'POST', credentials: 'include', headers: Object.assign({ 'content-type': 'application/json' }, this.state.owner ? { authorization: 'Bearer ' + this.state.owner } : {}), body: JSON.stringify({ text: msg.slice(0, 4000), to: 'sextant' }) });
+        if (r.ok) { const j = await r.json().catch(() => ({})), ans = (j && (j.answer || j.reply)) || ''; this.say('TESTER', '→ SEXTANT', msg, 'info'); if (ans) { this.say('SEXTANT', '→ TESTER', ans, 'info'); if (e) this.take(e, ans, 'SEXTANT'); } return; }
+      } catch (x) {}
+    }
+    this.setState(s => ({ outbox: s.outbox.filter(o => o.id !== id).concat({ id, to: 'SEXTANT', text: msg, t: Date.now() }).slice(-60) }));
+  }
+  async toTester(id, text, e) {
+    const msg = e ? text + '\n\n' + RepoFactory.REPLY : text;
+    if (this.state.mode === 'Container') {
+      try {
+        const tok = this.token();
+        const r = await fetch('/ask', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, tok ? { authorization: 'Bearer ' + tok } : {}), body: JSON.stringify({ text: msg.slice(0, 2000) }) });
+        if (r.ok) { const j = await r.json(), ans = j.answer || ''; this.say('TESTER', 'thinks', ans, 'info'); if (e && ans) this.take(e, ans, 'TESTER'); return; }
+      } catch (x) {}
+    }
+    this.setState(s => ({ outbox: s.outbox.filter(o => o.id !== id).concat({ id, to: 'TESTER', text: msg, t: Date.now() }).slice(-60) }));
+  }
+
+  async runE2E(widths) {
+    const J = this.state.journeys, frame = this.frameRef.current;
+    if (!J || !frame) return { ok: 0, bad: 0 };
+    const url = this.root + enc(J.site);
+    let ok = 0, bad = 0;
+    for (const w of widths) {
+      this.setState({ e2eW: w });
+      await sleep(60);
+      for (const j of J.journeys) {
+        if (this.stopFlag) return { ok, bad };
+        if (!E2E.applies(j, w)) continue;
+        this.setState({ e2eNow: j.id + ' @ ' + w + ' · loading' });
+        const r = await E2E.run(frame, url, j, { width: w, env: {}, stop: () => this.stopFlag, onStep: (jj, s) => this.setState({ e2eNow: jj.id + ' @ ' + w + ' · ' + s.label }) });
+        if (r.stopped) return { ok, bad };
+        this.setState(x => ({ e2e: { ...x.e2e, [j.id]: { ...(x.e2e[j.id] || {}), [w]: { ok: r.ok, skipped: r.skipped || '', why: r.why || '', ms: r.ms || 0, at: Date.now() } } } }));
+        if (r.skipped) continue;
+        if (r.ok) ok++; else { bad++; this.say('TESTER', '', 'journey ' + j.id + ' @ ' + w + ' px failed · ' + r.why, 'bad'); await this.toTester('e2e:' + j.id + ':' + w + ':' + r.why, 'The site (' + J.site + ') fails journey ' + j.id + ' at ' + w + ' px: ' + r.why); }
+      }
+    }
+    this.setState({ e2eNow: '' });
+    this.say('TESTER', '', 'journeys at ' + widths.join(', ') + ' px: ' + ok + ' passed, ' + bad + ' failed', bad ? 'bad' : 'ok');
+    return { ok, bad };
+  }
+  audit() {
+    const s = this.state, out = [];
+    s.reg.repos.forEach(e => {
+      const v = s.st[e.id] || {};
+      if (v.status !== 'passing') return;
+      if (v.tests && !v.tests.skipped && v.tests.passed < 6) out.push({ id: e.id + ':tests', who: 'SEXTANT', repo: e.id, text: e.name + ' has ' + v.tests.passed + ' tests; add cases for its edge conditions.' });
+      if (v.finding && v.finding < 240) out.push({ id: e.id + ':finding', who: 'SEXTANT', repo: e.id, text: e.name + ': the Finding is ' + v.finding + ' characters; name the source and the number it rests on.' });
+      if (!v.hasUse) out.push({ id: e.id + ':use', who: 'SEXTANT', repo: e.id, text: e.name + ' has no Use section; show the three calls a reader needs.' });
+    });
+    Object.entries(s.e2e).forEach(([jid, byW]) => Object.entries(byW).forEach(([w, r]) => { if (r.ok && r.ms > 25000) out.push({ id: 'e2e:' + jid + ':' + w + ':slow', who: 'TESTER', text: 'Journey ' + jid + ' takes ' + Math.round(r.ms / 1000) + ' s at ' + w + ' px; find the slow step.' }); }));
+    return out;
+  }
+  async roundOnce(i) {
+    const reg = this.state.reg.repos, K = this.props.perRound ?? 3, st = id => (this.state.st[id] || {});
+    const order = reg.slice().sort((a, b) => a.wave - b.wave || reg.indexOf(a) - reg.indexOf(b));
+    const verify = order.filter(e => st(e.id).status === 'built');
+    const retry = order.filter(e => st(e.id).status === 'failing' && i - (st(e.id).lastRound || 0) >= 3);
+    const fresh = order.filter(e => (st(e.id).status || 'queued') === 'queued');
+    const work = [...verify, ...retry, ...fresh].filter((e, k, a) => a.indexOf(e) === k).slice(0, K);
+    const every = this.props.e2eEvery ?? 10, widths = i === 1 || i % every === 0 ? WIDTHS : [WIDTHS[i % 3]];
+    const plan = work.map(e => ({ text: ({ queued: e.builder === 'sextant' ? 'brief SEXTANT on ' : 'pack ', failing: 're-test ', built: 'verify ' }[st(e.id).status || 'queued'] || 'test ') + e.name })).concat({ text: 'walk the site at ' + widths.join(', ') + ' px' }, { text: 'audit what passes, for what to improve' });
+    this.setState({ phase: 'plan', plan });
+    this.say('PLAN', 'round ' + i, plan.map(p => p.text).join(' · '), 'info');
+    for (const e of work) {
+      if (this.stopFlag) return false;
+      await this.step(e, i);
+    }
+    if (this.stopFlag) return false;
+    this.setState({ phase: 'e2e' });
+    const ee = await this.runE2E(widths);
+    if (this.stopFlag) return false;
+    this.setState({ phase: 'audit' });
+    // A proposal stays open while its condition holds and closes when it clears, as in build.py.
+    const current = this.audit(), open = new Set(current.map(p => p.id)), known = new Set(this.state.proposals.map(p => p.id)), fresh2 = current.filter(p => !known.has(p.id));
+    for (const p of fresh2) { const pe = p.repo ? this.entry(p.repo) : null; if (p.who === 'SEXTANT') await this.toSextant(p.id, p.text, pe); else await this.toTester(p.id, p.text, pe); }
+    if (fresh2.length) this.say('TESTER', '', 'audit to improve: ' + fresh2.length + ' new proposal(s)', 'info');
+    const vals = reg.map(e => this.state.st[e.id] || {}), n = k => vals.filter(v => v.status === k).length;
+    const h = { i, t: Date.now(), passing: n('passing'), failing: n('failing'), built: n('built'), packed: n('packed') + n('briefed'), e2eOk: ee.ok, e2eBad: ee.bad };
+    this.setState(x => ({ round: i, history: x.history.concat(h).slice(-500), proposals: x.proposals.filter(p => open.has(p.id)).concat(fresh2).slice(-60) }), () => this.save());
+    if (this.state.mode === 'Container' && this.state.edit && i % 5 === 0) await this.writeRegistry();
+    return true;
+  }
+  async writeRegistry() {
+    const reg = { ...this.state.reg, generated: new Date().toISOString(), repos: this.state.reg.repos.map(r => ({ ...r, status: (this.state.st[r.id] || {}).status === 'testing' ? r.status : (this.state.st[r.id] || {}).status || r.status })) };
+    try { await fetch('/files/write', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ path: 'repos/registry.json', text: JSON.stringify(reg, null, 1) }) }); this.say('TESTER', '', 'wrote repo statuses to repos/registry.json', 'ok'); } catch (x) {}
+  }
+  async loop() {
+    if (this.state.running || !this.state.reg) return;
+    if (this.state.server) { if (await this.post('/build/start', { target: this.props.target ?? 500 })) this.say('OWNER', '→ TESTER', 'run to round ' + (this.props.target ?? 500) + ' in the container', 'you'); return; }
+    this.stopFlag = false;
+    this.setState({ running: true });
+    const target = this.props.target ?? 500;
+    this.say('OWNER', '→ TESTER', 'run to round ' + target + ': plan, build, test till pass, walk the site, audit to improve, repeat', 'you');
+    for (let i = this.state.round + 1; i <= target && !this.stopFlag; i++) {
+      try { await this.roundOnce(i); } catch (x) { this.say('SYS', '', 'round ' + i + ' stopped on an error: ' + x.message, 'bad'); }
+      if (!this.stopFlag) await sleep(this.props.pauseMs ?? 1500);
+    }
+    this.setState({ running: false, phase: this.stopFlag ? 'paused' : 'done' });
+    this.save();
+  }
+  async one(id) {
+    const e = this.entry(id); if (!e) return;
+    if (this.state.server) { await this.post('/build/repo/' + encodeURIComponent(id), {}); return; }   // the container's loop owns the repo's files
+    if (this.state.running) return;
+    this.stopFlag = false;
+    this.setState({ running: true });
+    try { await this.step(e, this.state.round); }
+    catch (x) { this.say('SYS', '', x.message, 'bad'); }
+    this.setState({ running: false, phase: 'idle' }); this.save();
+  }
+  async applyReply() {
+    const s = this.state, e = s.sel ? this.entry(s.sel) : null, text = s.replyText;
+    if (!e || !text.trim()) return;
+    if (s.server) { if (await this.post('/build/reply/' + encodeURIComponent(e.id), { text, who: 'OWNER' })) this.setState({ replyText: '' }); return; }
+    if (this.take(e, text, 'OWNER')) { this.setState({ replyText: '' }); this.save(); } else this.say('SYS', '', 'no --- file: blocks in that reply', 'bad');
+  }
+  async reset() {
+    let ok = false; try { ok = window.confirm('Clear every round, status and message in the Build Room?'); } catch (e) {} if (!ok) return;
+    if (this.state.server && !(await this.post('/build/reset', {}))) return;   // the container keeps the record; it clears first (and keeps its drafts)
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    this.mem = {};
+    this.setState(x => ({ round: 0, history: [], feed: [], proposals: [], outbox: [], e2e: {}, sel: '', plan: [], phase: 'idle', st: Object.fromEntries((x.reg ? x.reg.repos : []).map(r => [r.id, { status: r.status || 'queued' }])) }));
+  }
+  async download(id) {
+    const e = this.entry(id); if (!e) return;
+    let files = null;
+    if (this.state.server) { const j = await this.json0('/build/files/' + encodeURIComponent(id)); files = j && j.files && Object.keys(j.files).length ? j.files : null; }
+    if (!files) { const f = await this.filesFor(e); files = f ? f.files : RepoFactory.pack(e, {}); }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(RepoFactory.zip(files, e.id)); a.download = e.id + '.zip'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+
+  renderVals() {
+    const s = this.state, reg = s.reg ? s.reg.repos : [], narrow = s.w < 1180, st = id => s.st[id] || {};
+    const count = k => reg.filter(r => (st(r.id).status || r.status) === k).length;
+    const by = (b, ks) => reg.filter(r => r.builder === b && ks.includes(st(r.id).status)).length;
+    const pill = (c, txt) => 'display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font:600 11px var(--font-mono);letter-spacing:.04em;background:color-mix(in srgb,' + c + ' 16%,transparent);color:' + c + ';' + (txt || '');
+    const phaseC = { plan: '#8fbaff', build: '#f5b547', test: '#4f9dff', e2e: '#bcd6ff', audit: '#3fcf8e', paused: '#8a8fa6', done: '#3fcf8e', idle: '#8a8fa6' }[s.phase] || '#8a8fa6';
+    const cats = []; reg.forEach(r => { if (!cats.includes(r.cat)) cats.push(r.cat); });
+    const tile = r => {
+      const v = st(r.id), k = v.status || r.status || 'queued', c = COLOR[k] || COLOR.queued, on = s.sel === r.id;
+      return { name: r.id, tip: r.name + ' · ' + (LABEL[k] || k) + (v.why ? ' · ' + v.why : '') + ' · ' + r.what, pick: () => this.setState({ sel: r.id }),
+        st: 'display:flex;align-items:center;justify-content:center;min-width:0;height:34px;padding:0 5px;border-radius:6px;cursor:pointer;color:' + (k === 'queued' ? 'color-mix(in srgb,var(--color-text) 55%,transparent)' : 'var(--color-text)') + ';background:color-mix(in srgb,' + c + ' ' + (k === 'queued' ? 10 : 22) + '%,var(--color-bg));border:1px solid ' + (on ? 'var(--color-accent-200)' : 'color-mix(in srgb,' + c + ' 55%,transparent)') + ';' + (r.wave === 0 ? 'box-shadow:inset 0 2px 0 ' + c + ';' : '') + (k === 'testing' ? 'animation:brpulse 1s ease-in-out infinite;' : '') };
+    };
+    const sel = s.sel ? reg.find(r => r.id === s.sel) : null, sv = sel ? st(sel.id) : {}, sk = sel ? (sv.status || sel.status) : 'queued';
+    const J = s.journeys ? s.journeys.journeys : [];
+    const jr = J.map(j => {
+      const byW = s.e2e[j.id] || {}, last = WIDTHS.map(w => byW[w]).filter(Boolean).filter(r => !r.ok && !r.skipped)[0];
+      return { id: j.id, who: j.who, goal: j.goal, bad: !!last, why: last ? last.why : '',
+        dots: WIDTHS.map(w => { const r = byW[w], ap = window.E2E ? E2E.applies(j, w) : true, c = !ap ? '#2b2f3b' : !r ? '#3b3f4d' : r.skipped ? '#8a8fa6' : r.ok ? '#3fcf8e' : '#ff6b6b'; return { w: String(w), tip: !ap ? 'not run at this width' : !r ? 'not run yet' : r.skipped ? r.skipped : r.ok ? 'passed in ' + (r.ms / 1000).toFixed(1) + ' s' : r.why, st: 'font:600 9.5px var(--font-mono);padding:1px 5px;border-radius:4px;color:' + c + ';background:color-mix(in srgb,' + c + ' 16%,transparent);' }; }) };
+    });
+    const e2eAll = J.reduce((a, j) => { WIDTHS.forEach(w => { const r = (s.e2e[j.id] || {})[w]; if (r && !r.skipped) { a.n++; if (r.ok) a.ok++; } }); return a; }, { n: 0, ok: 0 });
+    const sc = Math.min(1, (s.boxW || 760) / s.e2eW), H = 760;
+    const hist = s.history.slice(-120), maxF = Math.max(1, ...hist.map(h => h.failing + h.e2eBad));
+    const outN = s.outbox.length, pk = s.pick && s.pick.site ? s.pick.site : null;
+    const props = s.proposals.slice(-8).reverse();
+    return {
+      cols: narrow ? 'minmax(0,1fr)' : 'minmax(0,1fr) 380px', e2eCols: s.w < 1500 ? 'minmax(0,1fr)' : 'minmax(260px,340px) minmax(0,1fr)',
+      modeLabel: s.mode === 'Container' ? (s.edit ? 'CONTAINER · WRITING' : 'CONTAINER · READ-ONLY') + (s.server ? ' · SERVER LOOP' : '') : 'BROWSER', modePill: pill(s.mode === 'Container' ? '#3fcf8e' : '#8fbaff'),
+      roundLabel: String(s.round), target: String(this.props.target ?? 500),
+      phaseLabel: (s.running ? s.phase : s.phase === 'done' ? 'done' : s.round ? 'paused' : 'idle').toUpperCase(), phasePill: pill(phaseC),
+      phaseDot: 'width:7px;height:7px;border-radius:50%;background:' + phaseC + ';' + (s.running ? 'animation:brpulse 1s ease-in-out infinite;' : ''),
+      idle: !s.running, running: s.running, notReady: !s.reg, start: () => this.loop(), pause: () => this.pauseLoop(),
+      startLabel: s.round ? 'Resume from round ' + (s.round + 1) : 'Start ' + (this.props.target ?? 500) + ' rounds',
+      reset: () => this.reset(),
+      settings: s.settings, toggleSettings: () => this.setState(x => ({ settings: !x.settings })), sextant: s.sextant, owner: s.owner, tok: s.tok, browserLoop: !s.server,
+      settingsNote: s.server ? 'The TESTER token signs /build/* and /ask. The container reaches SEXTANT itself: it signs a five-minute build token with SESSION_SECRET for /builder/say, or uses SEXTANT_TOKEN. Kept in this browser.'
+        : 'The TESTER token signs /build/* and /ask when this room runs on the container. Here the loop reaches SEXTANT at that address with your owner session or the terminal\'s cookie; without one, briefs wait in the outbox. Kept in this browser.',
+      onSextant: ev => this.setState({ sextant: ev.target.value }, () => this.save()), onOwner: ev => { const v = ev.target.value; try { localStorage.setItem('buildroom.session', v); } catch (e) {} this.setState({ owner: v }); },
+      onTok: ev => { const v = ev.target.value; try { localStorage.setItem('buildroom.token', v); } catch (e) {} this.setState({ tok: v }); },
+      err: s.err,
+      who: {
+        claude: reg.filter(r => r.builder === 'claude').map(r => r.id + ' ' + ((st(r.id).status || r.status) === 'passing' ? '✓' : '·')).join('  '),
+        tester: by('tester', ['packed', 'built', 'failing', 'passing', 'shipped']) + ' / ' + reg.filter(r => r.builder === 'tester').length + ' packed · ' + by('tester', ['passing', 'shipped']) + ' pass · journeys ' + e2eAll.ok + '/' + e2eAll.n,
+        sextant: by('sextant', ['briefed', 'built', 'failing', 'passing', 'shipped']) + ' / ' + reg.filter(r => r.builder === 'sextant').length + ' briefed · ' + by('sextant', ['built', 'failing', 'passing', 'shipped']) + ' written · ' + by('sextant', ['passing', 'shipped']) + ' pass · ' + s.outbox.filter(o => o.to === 'SEXTANT').length + ' waiting',
+      },
+      legend: ['queued', 'packed', 'built', 'failing', 'passing', 'shipped'].map(k => ({ label: k === 'packed' ? 'packed or briefed' : LABEL[k], n: String(k === 'packed' ? count('packed') + count('briefed') : count(k)), sw: 'width:10px;height:10px;border-radius:3px;background:' + COLOR[k] + ';' })),
+      matrix: cats.map(c => ({ cat: c, tiles: reg.filter(r => r.cat === c).map(tile) })),
+      hasSel: !!sel, closeSel: () => this.setState({ sel: '' }),
+      d: sel ? {
+        name: sel.name, what: sel.what, statusLabel: LABEL[sk] || sk, pill: pill(COLOR[sk] || COLOR.queued),
+        meta: sel.cat + ' · W' + sel.wave + ' · ' + sel.line + ' · ' + ({ claude: 'written by Claude', tester: 'TESTER packages it', sextant: 'SEXTANT writes it' }[sel.builder]) + ' · from ' + sel.from,
+        bar: (sv.bar || Object.keys(BAR_LABEL).map(id => ({ id, ok: null, why: 'not checked yet' }))).map(c => ({ label: BAR_LABEL[c.id] || c.id, why: c.ok ? '' : c.why, icon: c.ok ? 'ph ph-check-circle' : c.ok === false ? 'ph ph-x-circle' : 'ph ph-circle', iconSt: 'color:' + (c.ok ? '#3fcf8e' : c.ok === false ? '#ff6b6b' : '#5b6070') + ';' })),
+        testsLine: sv.tests ? (sel.lang === 'js' ? 'node --test · ' : 'pytest · ') + sv.tests.passed + ' passed · ' + sv.tests.failed + ' failed · ' + sv.tests.errors + ' errors · ' + sv.tests.secs + ' s' : sv.jsNote || (sk === 'queued' ? 'Not built yet.' : sk === 'briefed' ? 'Waiting for SEXTANT to write it.' : 'Not tested yet.'),
+        hasTail: !!(sv.tests && sv.tests.tail), tail: sv.tests ? sv.tests.tail : '',
+        filesLine: sv.nfiles ? sv.nfiles + ' files' + (s.server ? ' in the container' : s.files.some(f => f.startsWith(sel.dir + '/')) ? ' on disk' : ' in memory') : '',
+        buildNow: () => this.one(sel.id), buildOff: !s.server && s.running, download: () => this.download(sel.id), canWrite: !s.server && s.mode === 'Container' && s.edit, write: async () => { const f = await this.filesFor(sel); if (f) this.write(sel, f.files); },
+        replyText: s.replyText, onReply: ev => this.setState({ replyText: ev.target.value }), applyReply: () => this.applyReply(), replyOff: !s.replyText.trim(),
+      } : { name: '', what: '', statusLabel: '', pill: '', meta: '', bar: [], testsLine: '', hasTail: false, tail: '', filesLine: '', canWrite: false, buildOff: true, replyText: '', replyOff: true },
+      e2eLine: J.length ? J.length + ' journeys · ' + e2eAll.ok + ' of ' + e2eAll.n + ' runs passing' : 'journeys.json not loaded',
+      runE2ENow: async () => { if (this.state.running) return; this.stopFlag = false; this.setState({ running: true, phase: 'e2e' }); await this.runE2E(WIDTHS); this.setState({ running: false, phase: 'idle' }); this.save(); },
+      journeys: jr, stageLabel: s.e2eNow || 'stage · ' + s.e2eW + ' px' + (sc < 1 ? ' at ' + Math.round(sc * 100) + '%' : ''),
+      stageRef: this.stageRef, frameRef: this.frameRef, stageH: Math.round(H * sc) + 'px',
+      frameSt: 'position:absolute;left:0;top:0;width:' + s.e2eW + 'px;height:' + H + 'px;border:0;background:#0b0c12;transform:scale(' + sc + ');transform-origin:top left;',
+      plan: s.plan, noPlan: !s.plan.length,
+      chartLine: hist.length ? 'last ' + hist.length + ' · ' + (hist[hist.length - 1].passing) + ' passing now' : 'no rounds yet',
+      bars: hist.map(h => ({ tip: 'round ' + h.i + ': ' + h.passing + ' passing, ' + h.failing + ' failing, journeys ' + h.e2eOk + ' ok / ' + h.e2eBad + ' failed',
+        pass: 'flex:1;min-width:2px;max-width:8px;border-radius:2px 2px 0 0;background:#3fcf8e;height:' + Math.max(2, Math.round(h.passing / Math.max(1, reg.length) * 36)) + 'px;',
+        fail: 'flex:1;min-width:2px;max-width:8px;border-radius:0 0 2px 2px;background:#ff6b6b;height:' + Math.round((h.failing + h.e2eBad) / maxF * 24) + 'px;' })),
+      hasPick: !!pk, pick: pk ? { winner: pk.winner.arch + ' · ' + pk.winner.look + ' on Nocturne · score ' + pk.winner.score, why: pk.winner.why.join(' · '), runners: 'next: ' + pk.runnersUp.slice(0, 3).map(r => r.arch + '/' + r.look + ' ' + r.score).join(' · ') } : { winner: '', why: '', runners: '' },
+      propLine: s.proposals.length + ' raised · ' + outN + ' in the outbox',
+      proposals: props.map(p => ({ who: p.who, text: p.text, tag: 'flex:none;font:600 10px var(--font-mono);padding:1px 6px;border-radius:4px;height:fit-content;color:' + (WHO[p.who] || '#8a8fa6') + ';background:color-mix(in srgb,' + (WHO[p.who] || '#8a8fa6') + ' 15%,transparent);' })),
+      hasOutbox: outN > 0, outboxLabel: s.copied ? 'Copied ' + outN + ' messages' : 'Copy the outbox (' + outN + ')',
+      copyOutbox: async () => { const t = s.outbox.map(o => '→ ' + o.to + '\n' + o.text).join('\n\n---\n\n'); try { await navigator.clipboard.writeText(t); this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 1600); } catch (e) {} },
+      feed: s.feed.slice().reverse().slice(0, 80).map(f => ({ who: f.who, to: f.to || '', at: hhmm(f.t), text: f.text,
+        whoSt: 'font-weight:600;color:' + (WHO[f.who] || '#8a8fa6') + ';',
+        textSt: 'font-size:12px;line-height:1.45;overflow-wrap:anywhere;color:' + (f.kind === 'bad' ? '#ffb3b3' : f.kind === 'ok' ? 'color-mix(in srgb,#3fcf8e 70%,var(--color-text))' : 'color-mix(in srgb,var(--color-text) 80%,transparent)') + ';' })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; } a { color: var(--color-accent-300); text-underline-offset: 3px; } a:hover { color: var(--color-accent-200); } code { font-family: ui-monospace, Menlo, monospace; font-size: .92em; color: var(--color-accent-200); }</style>
+</helmet>
+<div data-screen-label="Walkthrough v2" style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);">
+  <nav class="nav" style="position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;padding:12px clamp(16px,4vw,48px);background:var(--color-bg);border-bottom:1px solid var(--color-neutral-800);">
+    <span class="nav-brand" style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;">Anima · Walkthrough v2</span>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;">
+      <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8"><button class="btn {{ c.cls }}" style="font-size:12px;white-space:nowrap;" onClick="{{ c.go }}">{{ c.n }} · {{ c.short }}</button></sc-for>
+    </div>
+  </nav>
+
+  <div style="max-width:1240px;padding:36px clamp(16px,4vw,48px) 80px;display:grid;gap:28px;">
+    <header style="display:grid;gap:12px;max-width:900px;">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Chapter {{ ch.n }} of {{ count }}</span>
+      <h1 style="margin:0;font-size:clamp(32px,4.4vw,48px);line-height:1.06;letter-spacing:-0.02em;font-weight:500;">{{ ch.title }}</h1>
+      <p style="margin:0;font-size:18px;line-height:1.5;color:var(--color-neutral-300);">{{ ch.lede }}</p>
+    </header>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:24px;align-items:start;">
+      <div style="display:grid;gap:14px;align-content:start;">
+        <sc-for list="{{ ch.steps }}" as="s" hint-placeholder-count="4">
+          <div class="card" style="display:grid;gap:6px;">
+            <span class="card-kicker">{{ s.k }}</span>
+            <span class="card-body" style="font-size:14px;line-height:1.6;">{{ s.v }}</span>
+          </div>
+        </sc-for>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <sc-for list="{{ ch.links }}" as="l" hint-placeholder-count="2"><a class="btn btn-secondary" href="{{ l.to }}" target="_blank" style="text-decoration:none;font-size:13px;">Open {{ l.name }}</a></sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:10px;">
+        <sc-if value="{{ hasTabs }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ views }}" as="v" hint-placeholder-count="2"><button class="btn {{ v.cls }}" style="font-size:12px;white-space:nowrap;" onClick="{{ v.go }}">{{ v.name }}</button></sc-for></div>
+        </sc-if>
+        <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
+          <div style="justify-self:center;width:318px;height:672px;border-radius:44px;padding:10px;background:var(--color-neutral-900);border:1px solid var(--color-neutral-700);box-shadow:var(--shadow-lg);">
+            <div style="width:298px;height:652px;border-radius:34px;overflow:hidden;position:relative;">
+              <iframe src="{{ view.to }}" title="{{ view.name }}" style="position:absolute;top:0;left:0;width:390px;height:853px;border:0;transform-origin:0 0;transform:scale(0.764);"></iframe>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isDesk }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--color-neutral-700);box-shadow:var(--shadow-md);background:var(--color-neutral-900);">
+            <div style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--color-neutral-800);"><span style="width:9px;height:9px;border-radius:50%;background:var(--color-neutral-700);"></span><span style="width:9px;height:9px;border-radius:50%;background:var(--color-neutral-700);"></span><span style="width:9px;height:9px;border-radius:50%;background:var(--color-neutral-700);"></span><code style="margin-left:10px;font-size:11px;color:var(--color-neutral-400);">{{ view.to }}</code></div>
+            <div style="position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;">
+              <iframe src="{{ view.to }}" title="{{ view.name }}" style="position:absolute;top:0;left:0;width:200%;height:200%;border:0;transform:scale(0.5);transform-origin:0 0;"></iframe>
+            </div>
+          </div>
+        </sc-if>
+        <span style="font-size:12px;color:var(--color-neutral-400);">Live page, scaled. Scroll and click inside it.</span>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <button class="btn btn-ghost" onClick="{{ prev }}">← {{ prevName }}</button>
+      <button class="btn btn-primary" onClick="{{ next }}">{{ nextName }} →</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const R = 'research/reports/';
+const CH = [
+  { short: 'Thesis', title: 'Anima: the cognition lives in the seed', lede: 'One claim drives everything else. Seed Bridago once, and answer quality holds from a 30B model down to an LSTM on CPU. The model is the substrate; the graph and the DSPy layer carry the intelligence.',
+    steps: [['Naming', 'Anima is the thesis. Bridago is the implementation, the shared seeded brain. Rex (memory and structure) and Jarvis (reasoning) are its two branches.'], ['The core paper', 'Seeded Substrate Plan v4 sets out H0–H7, the substrate ladder (30B, 8B, 1–3B, tiny transformer, LSTM) and the shuffled-seed control that separates structure from extra context.'], ['Status', 'Every hypothesis is open until the grid runs. The paper says which result would refute each.']],
+    views: [['Plan v4', R + 'Seeded Substrate Plan v4.dc.html']] },
+  { short: 'Research', title: 'One paper, four companions', lede: 'Everything the institute publishes hangs off the substrate paper: the evidence for it, the economic setting, the organisation that runs it, and who it affects.',
+    steps: [['A · Evidence', 'Grades the public record: small models on scoped tasks and recursion in place of size are established; the full seeded ladder is untested.'], ['B · The AI-era bubble', 'Six links from GPU orders to entry-level job losses, the case against, and seven early-warning indicators.'], ['C · Blueprint v3', 'Ten agents, four pipelines, three funnels, the moat.'], ['D · Exposure and templates', '50 companies scored for exposure if H0 holds; about 1,000 grouped into 42 archetypes, each with one prompt and PRD.']],
+    views: [['A · Evidence', R + 'Cheap Brain Evidence.dc.html'], ['B · Bubble', R + 'AI Era Bubble.dc.html'], ['C · Blueprint', R + 'Institute Blueprint v3.dc.html'], ['D · Exposure', R + 'Exposure and Templates.dc.html']] },
+  { short: 'Site', title: 'The public site', lede: 'The thesis, the live graph and the experiment, for visitors. A self-animating 3D hero walks through the claim; published nodes are labelled and unpublished ones stay grey.',
+    steps: [['Hero', 'Three.js slides that animate on their own: seed, traverse, ladder, result.'], ['Graph', 'Public graph with 1–3 hop neighbourhoods. Private nodes show as opaque grey points.'], ['Tiers', 'Visitor, Member, Pro, Owner. Pro adds shadow scores, controls and raw tables.'], ['Popups', 'Suggestions, clarifying questions and follow-ups appear in context as visitors read and ask.']],
+    views: [['Anima site', 'apps/site/src/Anima.dc.html'], ['Institute page', 'apps/site/src/Institute.dc.html']] },
+  { short: 'Institute', title: 'An institute staffed by the agents it studies', lede: 'Each worker is a Bridago instance on a rung of the ladder, so every working round is also a data point for H0. Two overseers have no model, so the things that judge the agents are not themselves under study.',
+    steps: [['Work', 'Scout ingests, Theorist writes questions with falsifiers, Experimenter runs harness cells, Builder ships repos, SEXTANT talks to visitors.'], ['Check', 'Critic re-runs with controls, Publisher drafts through the mindful gate, Maintainer repairs and upgrades.'], ['Oversee', 'Overseer watches cadence and failure rates; Registrar proposes promotions and demotions down the ladder.'], ['Pipelines', 'Research, build, publish, client. Each stage has an exit test and a clock.']],
+    views: [['Blueprint v3', R + 'Institute Blueprint v3.dc.html']] },
+  { short: 'Console', title: 'Your console: oversee the overseers', lede: 'A thousand small fires reduce to one ranked list. Seven show as "look now"; the rest wait with a reason. Same-kind items batch so one click clears many.',
+    steps: [['Overseer', 'Ranks fires by kind and age: spend, incidents, noisy or silent agents, unhealthy apps, shadows beating holders, posts.'], ['Console', 'The full owner console: day page, approvals, incidents, apps, upgrades.'], ['Engine', 'GET /owner/fires from oversight.py; actions post to /owner/act.']],
+    views: [['Overseer', 'apps/ops/src/Overseer.dc.html'], ['Console', 'apps/ops/src/Console.dc.html'], ['Space', 'apps/ops/src/Space.dc.html']] },
+  { short: 'Phone', title: 'The phone app', lede: 'One working app for four tiers (Owner, Researcher, API, Subscriber), 23 screens and ten looks. Every row opens a detail sheet and every button acts.',
+    steps: [['Overview', 'Thesis, the substrate ladder with the agents on each rung, sourced figures, phases P0–P5, publications.'], ['Thesis', 'H0–H7 with falsifiers, names, the seed and cognition layer, the LSTM argument, risks.'], ['Research and Institute', 'Report summaries, scorecard, indicators; ten agents, four pipelines, oversight rules.'], ['Engage', 'Three paths, data policy, and a form SEXTANT qualifies. Suggestions pop up per tab; Ask asks clarifying questions.']],
+    views: [['Working app', 'apps/mobile/Anima App.dc.html'], ['Ten layouts', 'apps/mobile/Anima App Patterns.dc.html']] },
+  { short: 'Studio', title: 'Studio, templates and the stack', lede: 'Studio assembles sites and pages from small deterministic calls. Tmpltz turns findings into reusable offers. The hub manages MCP servers.',
+    steps: [['Style Studio', '12 structures × 8 looks; brief in, site out.'], ['Tmpltz', 'Every promoted finding becomes a template, and the 42 archetypes from Companion D become its catalogue.'], ['Stack', 'MCP hub with install audit and market search.']],
+    views: [['Style Studio', 'marketing/Style Studio.dc.html'], ['Tmpltz', 'marketing/Tmpltz.dc.html'], ['Stack', 'apps/hub/src/Stack.dc.html']] },
+  { short: 'Launch', title: 'Code, tests and the coming-out party', lede: 'Everything runs from one repo. Tests run in Docker with no model and no network, on every push. The launch is 100 repos, released in five waves, each clearing the same quality bar.',
+    steps: [['Tests', 'docker compose -f docker-compose.test.yml run --rm engine (also hub, ops). CI runs all three plus a compose check.'], ['Engine', 'apps/engine: round, signature, graph, heal, upgrades, mindful, day, oversight.'], ['100 repos', '10 categories × 10, marked open, open-core or paid API, each tied to the code or finding it packages.']],
+    views: [['100 repos', 'marketing/Coming Out 100 Repos.dc.html']] },
+];
+
+class Component extends DCLogic {
+  state = { i: Number(localStorage.getItem('wt2.i') || 0), v: 0 };
+  go(i) { const n = (i + CH.length) % CH.length; localStorage.setItem('wt2.i', n); this.setState({ i: n, v: 0 }); window.scrollTo({ top: 0 }); }
+  renderVals() {
+    const s = this.state, c = CH[s.i] || CH[0], view = c.views[s.v] || c.views[0];
+    return {
+      count: CH.length,
+      chips: CH.map((x, i) => ({ n: i + 1, short: x.short, cls: i === s.i ? 'btn-primary' : 'btn-ghost', go: () => this.go(i) })),
+      ch: { n: s.i + 1, title: c.title, lede: c.lede, steps: c.steps.map(([k, v]) => ({ k, v })), links: c.views.map(([name, to]) => ({ name, to })) },
+      hasTabs: c.views.length > 1, views: c.views.map(([name], i) => ({ name, cls: i === s.v ? 'btn-primary' : 'btn-ghost', go: () => this.setState({ v: i }) })),
+      view: { name: view[0], to: view[1] }, isPhone: !!c.phone, isDesk: !c.phone,
+      prev: () => this.go(s.i - 1), next: () => this.go(s.i + 1),
+      prevName: CH[(s.i - 1 + CH.length) % CH.length].short, nextName: CH[(s.i + 1) % CH.length].short,
+    };
+  }
+}
+</script>
+</body>
+</html>

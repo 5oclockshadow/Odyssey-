@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; } a { color: var(--color-accent-300); text-underline-offset: 3px; } a:hover { color: var(--color-accent-200); } ::-webkit-scrollbar { display: none; }</style>
+</helmet>
+<div data-screen-label="Mobile v2" style="width:100%;max-width:430px;height:100vh;max-height:932px;margin:0 auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:radial-gradient(ellipse 90% 35% at 0% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);position:relative;overflow:hidden;">
+
+  <header style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:44px 16px 8px;">
+    <div style="display:grid;gap:1px;"><span style="font-size:13px;font-weight:500;letter-spacing:0.02em;">Anima Institute</span><span style="font-size:11px;color:var(--color-neutral-400);">Research on graph intelligence · {{ tierName }}</span></div>
+    <button class="btn btn-ghost" style="font-size:12px;min-height:44px;white-space:nowrap;" onClick="{{ toggleTier }}">View as {{ otherTier }}</button>
+  </header>
+
+  <main style="overflow-y:auto;padding:4px 16px 96px;display:grid;gap:22px;align-content:start;">
+
+    <sc-if value="{{ isToday }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:10px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Today</span>
+        <h1 style="margin:0;font-size:26px;line-height:1.15;font-weight:500;">{{ fireHead }}</h1>
+        <span style="font-size:13px;color:var(--color-neutral-400);">Ranked by the Overseer. Sample data until the engine is connected.</span>
+        <sc-for list="{{ fires }}" as="f" hint-placeholder-count="4">
+          <div class="card" style="display:grid;gap:8px;padding:12px;">
+            <div style="display:flex;gap:10px;align-items:center;"><span style="font-size:18px;font-weight:500;color:var(--color-accent-200);width:30px;">{{ f.score }}</span><div style="display:grid;gap:2px;min-width:0;"><span style="font-size:14px;font-weight:500;">{{ f.title }}</span><span style="font-size:12px;color:var(--color-neutral-400);">{{ f.source }} · {{ f.detail }}</span></div></div>
+            <div style="display:flex;gap:8px;"><sc-for list="{{ f.acts }}" as="a" hint-placeholder-count="2"><button class="btn btn-secondary" style="flex:1;min-height:44px;font-size:13px;" onClick="{{ a.fn }}">{{ a.label }}</button></sc-for></div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ calm }}" hint-placeholder-val="{{ false }}"><div class="card" style="padding:16px;font-size:14px;">All clear. The Overseer will page you if anything changes.</div></sc-if>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <section style="display:grid;gap:10px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">The thesis</span>
+        <h1 style="margin:0;font-size:28px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;">The graph carries the cognition. The model is the substrate.</h1>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:var(--color-neutral-300);">Seed the graph once and quality should hold as the model shrinks from 30B parameters to an LSTM on a CPU. Anima is that claim. Bridago, the shared seeded brain, is how we test it. Every result is published with the control that could refute it.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-primary" style="min-height:44px;font-size:13px;" onClick="{{ openH0 }}">What would refute it</button><button class="btn btn-ghost" style="min-height:44px;font-size:13px;" onClick="{{ goPartner }}">Work with us</button></div>
+      </section>
+
+      <section class="card" style="display:grid;gap:10px;padding:14px;">
+        <span class="card-kicker">Headline experiment · the substrate ladder</span>
+        <span style="font-size:13px;line-height:1.5;color:var(--color-neutral-300);">Unseeded, small models fail deep schemas (dspy-router-test). Seeded once, H0 predicts every rung stays within 5 points of 30B. The institute's own agents already work on these rungs.</span>
+        <div style="display:grid;gap:0;">
+          <sc-for list="{{ ladder }}" as="r" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid var(--color-neutral-800);">
+              <div style="display:grid;gap:1px;"><span style="font-size:14px;font-weight:500;">{{ r.name }}</span><span style="font-size:11px;color:var(--color-neutral-400);">{{ r.hw }}</span></div>
+              <div style="display:grid;gap:4px;"><div style="height:6px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ r.cost }};background:var(--color-accent-700);"></div></div><span style="font-size:12px;color:var(--color-neutral-300);">{{ r.staff }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+        <span style="font-size:11px;color:var(--color-neutral-500);">Bar: relative serving cost (illustrative scale). Result pending: the chart fills in when phase P3 runs.</span>
+      </section>
+
+      <section style="display:grid;gap:10px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">From the public record</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <sc-for list="{{ figs }}" as="g" hint-placeholder-count="4">
+            <button class="card" style="display:grid;gap:4px;padding:12px;text-align:left;cursor:pointer;font:inherit;color:inherit;min-height:44px;" onClick="{{ g.open }}"><span style="font-size:22px;font-weight:500;color:var(--color-accent-200);">{{ g.big }}</span><span style="font-size:12px;line-height:1.4;color:var(--color-neutral-300);">{{ g.text }}</span><span style="font-size:10px;color:var(--color-neutral-500);">{{ g.src }}</span></button>
+          </sc-for>
+        </div>
+      </section>
+
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Order of work</span>
+        <sc-for list="{{ phases }}" as="p" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start;"><span class="tag tag-neutral" style="font-size:11px;justify-content:center;">{{ p.id }}</span><div style="display:grid;gap:1px;"><span style="font-size:14px;font-weight:500;">{{ p.name }}</span><span style="font-size:12px;line-height:1.45;color:var(--color-neutral-400);">{{ p.text }}</span></div></div>
+        </sc-for>
+      </section>
+
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Publications</span>
+        <sc-for list="{{ reports }}" as="r" hint-placeholder-count="5">
+          <button style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:48px;padding:6px 0;background:none;border:0;border-top:1px solid var(--color-neutral-800);font:inherit;color:inherit;text-align:left;cursor:pointer;" onClick="{{ r.open }}"><div style="display:grid;gap:1px;"><span style="font-size:11px;color:var(--color-accent-300);">{{ r.tag }}</span><span style="font-size:14px;">{{ r.title }}</span></div><span style="color:var(--color-neutral-500);">›</span></button>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isThesis }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:10px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Stated so it can fail</span>
+        <h1 style="margin:0;font-size:26px;line-height:1.15;font-weight:500;">Eight hypotheses, each with its falsifier</h1>
+        <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">L is the 30B model, T the tiny transformer, R the LSTM. ∅ is unseeded, Q the curated seed, X a degree-preserving shuffle of it. Tap a hypothesis for its falsifier.</p>
+        <div style="display:grid;gap:6px;">
+          <sc-for list="{{ hyps }}" as="h" hint-placeholder-count="8">
+            <button class="card" style="display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 12px;text-align:left;cursor:pointer;font:inherit;color:inherit;" onClick="{{ h.open }}"><span style="font-size:15px;font-weight:500;color:var(--color-accent-200);">{{ h.id }}</span><span style="font-size:13px;line-height:1.4;">{{ h.short }}</span><span class="tag tag-outline" style="font-size:10px;padding:1px 6px;">{{ h.phase }}</span></button>
+          </sc-for>
+        </div>
+      </section>
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Names</span>
+        <sc-for list="{{ names }}" as="n" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--color-neutral-800);"><span style="font-size:14px;font-weight:500;">{{ n.k }}</span><span style="font-size:13px;line-height:1.45;color:var(--color-neutral-300);">{{ n.v }}</span></div>
+        </sc-for>
+      </section>
+      <section class="card" style="display:grid;gap:8px;padding:14px;">
+        <span class="card-kicker">The seed · one file, five blocks</span>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ seedBlocks }}" as="b" hint-placeholder-count="5"><span class="tag tag-neutral">{{ b }}</span></sc-for></div>
+        <span class="card-kicker" style="margin-top:6px;">The cognition layer · one DSPy signature</span>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px;"><sc-for list="{{ stages }}" as="s" hint-placeholder-count="6"><span style="display:flex;gap:4px;align-items:center;"><span class="tag tag-accent" style="font-size:11px;">{{ s.n }}</span><span style="color:var(--color-neutral-600);">{{ s.arrow }}</span></span></sc-for></div>
+        <span style="font-size:12px;line-height:1.5;color:var(--color-neutral-400);">Fixed across every substrate, so only the model changes between rungs.</span>
+      </section>
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Why an LSTM on a CPU</span>
+        <p style="margin:0;font-size:14px;line-height:1.55;">If the graph carries the cognition, the substrate only has to read the seed, follow the cognition layer's fields and emit. A recurrent network with no attention is the weakest reader that can still do that. If it passes seeded and fails unseeded (H4), the seed is doing the work.</p>
+      </section>
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Ways the result could mislead</span>
+        <sc-for list="{{ risks }}" as="r" hint-placeholder-count="3">
+          <div class="card" style="display:grid;gap:4px;padding:12px;"><span style="font-size:14px;font-weight:500;">{{ r.k }}</span><span style="font-size:13px;line-height:1.5;color:var(--color-neutral-300);">{{ r.v }}</span></div>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isResearch }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:10px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Research</span>
+        <h1 style="margin:0;font-size:26px;line-height:1.15;font-weight:500;">One paper, four companions</h1>
+        <sc-for list="{{ reports }}" as="r" hint-placeholder-count="5">
+          <div class="card" style="display:grid;gap:8px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;"><span class="card-kicker">{{ r.tag }}</span><span style="font-size:11px;color:var(--color-neutral-500);">{{ r.date }}</span></div>
+            <span style="font-size:16px;font-weight:500;line-height:1.3;">{{ r.title }}</span>
+            <span style="font-size:13px;line-height:1.5;color:var(--color-neutral-300);">{{ r.sum }}</span>
+            <ul style="margin:0;padding-left:16px;display:grid;gap:4px;font-size:12.5px;line-height:1.45;color:var(--color-neutral-200);"><sc-for list="{{ r.pts }}" as="p" hint-placeholder-count="3"><li>{{ p }}</li></sc-for></ul>
+            <a class="btn btn-secondary" href="{{ r.to }}" target="_blank" style="justify-self:start;min-height:44px;font-size:13px;text-decoration:none;">Read the full report</a>
+          </div>
+        </sc-for>
+      </section>
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Evidence scorecard · Companion A</span>
+        <sc-for list="{{ score }}" as="s" hint-placeholder-count="5">
+          <div style="display:grid;gap:4px;padding:9px 0;border-top:1px solid var(--color-neutral-800);"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font-size:13.5px;font-weight:500;">{{ s.k }}</span><span class="{{ s.tag }}" style="font-size:10px;padding:1px 7px;white-space:nowrap;">{{ s.verdict }}</span></div><span style="font-size:12px;line-height:1.45;color:var(--color-neutral-400);">{{ s.v }}</span></div>
+        </sc-for>
+      </section>
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Indicators we track · Companion B</span>
+        <sc-for list="{{ indicators }}" as="i" hint-placeholder-count="7">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:8px 0;border-top:1px solid var(--color-neutral-800);"><span style="font-size:13px;">{{ i.k }}</span><span style="font-size:13px;font-weight:500;color:var(--color-accent-200);text-align:right;">{{ i.v }}</span><span style="grid-column:1 / -1;font-size:11.5px;color:var(--color-neutral-400);">Warning sign: {{ i.w }}</span></div>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isInstitute }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:10px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">How the institute runs</span>
+        <h1 style="margin:0;font-size:26px;line-height:1.15;font-weight:500;">Staffed by the agents it studies</h1>
+        <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Every worker is a Bridago agent on one rung of the ladder, so each working round is also a data point for H0. The two overseers run on rules with no model: nothing that judges the agents is itself under study.</p>
+      </section>
+      <sc-for list="{{ layers }}" as="l" hint-placeholder-count="3">
+        <section style="display:grid;gap:6px;">
+          <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-400);">{{ l.name }}</span>
+          <sc-for list="{{ l.agents }}" as="a" hint-placeholder-count="4">
+            <button class="card" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:11px 12px;text-align:left;cursor:pointer;font:inherit;color:inherit;" onClick="{{ a.open }}"><span style="font-size:14px;font-weight:500;">{{ a.name }}</span><span class="tag tag-neutral" style="font-size:10px;padding:1px 7px;white-space:nowrap;">{{ a.rung }}</span><span style="font-size:12px;line-height:1.4;color:var(--color-neutral-400);">{{ a.does }}</span><sc-if value="{{ a.showState }}" hint-placeholder-val="{{ false }}"><span class="{{ a.stateTag }}" style="font-size:10px;padding:1px 7px;">{{ a.state }}</span></sc-if></button>
+          </sc-for>
+        </section>
+      </sc-for>
+      <section style="display:grid;gap:8px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Four pipelines, each with a gate and a clock</span>
+        <sc-for list="{{ pipes }}" as="p" hint-placeholder-count="4">
+          <div class="card" style="display:grid;gap:8px;padding:12px;">
+            <button style="display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer;" onClick="{{ p.toggle }}"><span style="font-size:14px;font-weight:500;">{{ p.name }}</span><span style="font-size:12px;color:var(--color-accent-300);">{{ p.hint }}</span></button>
+            <sc-if value="{{ p.open }}" hint-placeholder-val="{{ false }}">
+              <sc-for list="{{ p.stages }}" as="s" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;padding:6px 0;border-top:1px solid var(--color-neutral-800);"><span style="font-size:12px;color:var(--color-accent-300);">{{ s.n }}</span><div style="display:grid;gap:2px;"><span style="font-size:13px;font-weight:500;">{{ s.k }}</span><span style="font-size:12px;line-height:1.45;color:var(--color-neutral-400);">{{ s.v }}</span></div></div>
+              </sc-for>
+            </sc-if>
+          </div>
+        </sc-for>
+      </section>
+      <section class="card" style="display:grid;gap:8px;padding:14px;">
+        <span class="card-kicker">Oversight rules</span>
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+          <div style="display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;"><span class="tag tag-outline" style="font-size:10px;padding:1px 6px;justify-content:center;">{{ r.k }}</span><span style="font-size:12.5px;line-height:1.45;color:var(--color-neutral-300);">{{ r.v }}</span></div>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isPartner }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:10px;">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Work with the institute</span>
+        <h1 style="margin:0;font-size:26px;line-height:1.15;font-weight:500;">Bring a question. Leave with a seeded graph.</h1>
+        <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Engagements run on the same pipelines as the institute's own research, on a private graph seeded for you.</p>
+      </section>
+      <sc-for list="{{ offers }}" as="o" hint-placeholder-count="3">
+        <section class="card" style="display:grid;gap:8px;padding:14px;">
+          <div style="display:flex;justify-content:space-between;gap:8px;"><span class="card-kicker">{{ o.who }}</span><span class="tag tag-neutral" style="font-size:10px;padding:1px 7px;">{{ o.form }}</span></div>
+          <span style="font-size:16px;font-weight:500;">{{ o.name }}</span>
+          <span style="font-size:13px;line-height:1.5;color:var(--color-neutral-300);">{{ o.text }}</span>
+          <ol style="margin:0;padding-left:18px;display:grid;gap:3px;font-size:12.5px;line-height:1.45;color:var(--color-neutral-200);"><sc-for list="{{ o.steps }}" as="s" hint-placeholder-count="4"><li>{{ s }}</li></sc-for></ol>
+        </section>
+      </sc-for>
+      <section class="card" style="display:grid;gap:6px;padding:14px;">
+        <span class="card-kicker">Your data</span>
+        <span style="font-size:13px;line-height:1.5;">Client content stays in a private graph that only you and the owner can read. Agents that talk to the public (SEXTANT, Publisher) read the published graph only. Anonymised structure, never content, feeds the institute's seed research.</span>
+      </section>
+      <section class="card elev-md" style="display:grid;gap:10px;padding:14px;">
+        <span class="card-kicker">Start a conversation</span>
+        <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+          <div class="field" style="display:grid;gap:4px;"><label style="font-size:12px;">Organisation</label><input class="input" style="min-height:44px;" value="{{ org }}" onChange="{{ onOrg }}" placeholder="Company or lab"></input></div>
+          <div class="field" style="display:grid;gap:4px;"><label style="font-size:12px;">The question you want answered</label><textarea class="input" style="min-height:88px;font:inherit;" value="{{ qtext }}" onChange="{{ onQtext }}" placeholder="One or two sentences"></textarea></div>
+          <div style="display:grid;gap:4px;"><span style="font-size:12px;">Path</span><div class="seg" style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ paths }}" as="p" hint-placeholder-count="3"><button class="btn {{ p.cls }}" style="min-height:44px;font-size:12px;" onClick="{{ p.pick }}">{{ p.label }}</button></sc-for></div></div>
+          <button class="btn btn-primary" style="min-height:44px;" onClick="{{ submit }}">Send to SEXTANT</button>
+        </sc-if>
+        <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+          <span style="font-size:14px;line-height:1.5;">{{ sentText }}</span>
+          <button class="btn btn-ghost" style="justify-self:start;min-height:44px;font-size:12px;" onClick="{{ resetForm }}">Send another</button>
+        </sc-if>
+      </section>
+    </sc-if>
+  </main>
+
+  <button class="btn btn-primary elev-md" style="position:absolute;right:16px;bottom:92px;min-height:48px;padding:0 16px;font-size:13px;background:var(--color-bg);" onClick="{{ openAsk }}">Ask SEXTANT</button>
+
+  <sc-if value="{{ showSugg }}" hint-placeholder-val="{{ false }}">
+    <div class="card elev-lg" style="position:absolute;left:16px;right:16px;bottom:150px;display:grid;gap:8px;padding:12px 14px;border-color:var(--color-accent-700);">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span class="card-kicker">Suggestion</span><button class="btn btn-ghost" style="min-height:36px;font-size:12px;" onClick="{{ dismissSugg }}">Dismiss</button></div>
+      <span style="font-size:13.5px;line-height:1.45;">{{ sugg.text }}</span>
+      <button class="btn btn-secondary" style="justify-self:start;min-height:44px;font-size:12px;" onClick="{{ sugg.go }}">{{ sugg.cta }}</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div class="card elev-lg" style="position:absolute;left:16px;right:16px;bottom:92px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;"><span style="font-size:13px;">{{ toastText }}</span><button class="btn btn-ghost" style="font-size:12px;min-height:44px;" onClick="{{ undo }}">Undo</button></div>
+  </sc-if>
+
+  <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:20;display:grid;align-items:end;background:color-mix(in oklab, var(--color-bg) 70%, transparent);" onClick="{{ closeSheet }}">
+      <div class="elev-lg" style="max-height:80%;overflow-y:auto;display:grid;gap:12px;padding:16px 18px 32px;border-radius:18px 18px 0 0;background:var(--color-surface);border-top:1px solid var(--color-neutral-700);" onClick="{{ stop }}">
+        <div style="justify-self:center;width:40px;height:4px;border-radius:2px;background:var(--color-neutral-700);"></div>
+        <span class="card-kicker">{{ sheet.kicker }}</span>
+        <span style="font-size:18px;font-weight:500;line-height:1.3;">{{ sheet.title }}</span>
+        <sc-for list="{{ sheet.rows }}" as="r" hint-placeholder-count="3">
+          <div style="display:grid;gap:2px;padding-top:8px;border-top:1px solid var(--color-neutral-800);"><span style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-neutral-400);">{{ r.k }}</span><span style="font-size:13.5px;line-height:1.5;">{{ r.v }}</span></div>
+        </sc-for>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <sc-for list="{{ sheet.links }}" as="l" hint-placeholder-count="1"><a class="btn btn-secondary" href="{{ l.to }}" target="_blank" style="min-height:44px;font-size:13px;text-decoration:none;">{{ l.label }}</a></sc-for>
+          <button class="btn btn-ghost" style="min-height:44px;font-size:13px;" onClick="{{ closeSheet }}">Close</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ askOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:20;display:grid;align-items:end;background:color-mix(in oklab, var(--color-bg) 70%, transparent);" onClick="{{ closeAsk }}">
+      <div class="elev-lg" style="height:78%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;padding:16px 16px 28px;border-radius:18px 18px 0 0;background:var(--color-surface);border-top:1px solid var(--color-neutral-700);" onClick="{{ stop }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:grid;gap:1px;"><span style="font-size:15px;font-weight:500;">SEXTANT</span><span style="font-size:11px;color:var(--color-neutral-400);">Answers from the published graph · 8B rung</span></div><button class="btn btn-ghost" style="min-height:44px;font-size:12px;" onClick="{{ closeAsk }}">Close</button></div>
+        <div style="overflow-y:auto;display:grid;gap:8px;align-content:start;">
+          <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="2"><div style="{{ m.style }}"><span style="font-size:13.5px;line-height:1.5;">{{ m.text }}</span></div></sc-for>
+          <sc-if value="{{ clarify }}" hint-placeholder-val="{{ false }}">
+            <div class="card" style="display:grid;gap:8px;padding:12px;border-color:var(--color-accent-700);"><span class="card-kicker">To answer well, one question</span><span style="font-size:13.5px;">{{ clarifyQ }}</span><sc-for list="{{ clarifyOpts }}" as="o" hint-placeholder-count="3"><button class="btn btn-secondary" style="min-height:44px;font-size:13px;justify-content:flex-start;" onClick="{{ o.fn }}">{{ o.label }}</button></sc-for></div>
+          </sc-if>
+        </div>
+        <div style="display:flex;gap:6px;overflow-x:auto;"><sc-for list="{{ chips }}" as="c" hint-placeholder-count="4"><button class="btn btn-ghost" style="font-size:12px;min-height:44px;white-space:nowrap;" onClick="{{ c.fn }}">{{ c.label }}</button></sc-for></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <nav style="display:grid;grid-template-columns:repeat(5,1fr);padding:4px 4px 24px;border-top:1px solid var(--color-neutral-800);background:var(--color-bg);">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.fn }}" style="{{ t.style }}">{{ t.label }}</button></sc-for>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;tier&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;partner&quot;,&quot;owner&quot;],&quot;default&quot;:&quot;partner&quot;,&quot;tsType&quot;:&quot;'partner'|'owner'&quot;}}">
+const R = '../../research/reports/';
+const PLAN = R + 'Seeded Substrate Plan v4.dc.html';
+const HYPS = [
+  ['H0', 'Seeded, every rung stays within 5 points of 30B', 'Seeded with the curated seed (Q), every rung from L (30B) down to R (LSTM) stays within 5 points of L.', 'Any rung falls more than 5 points below L.', 'P3'],
+  ['H1', 'The seeded small model matches unseeded 30B on schemas', 'The small model seeded (SQ) comes within 5 points of unseeded 30B (L∅) on schema validity at depth up to 6.', 'The gap is above 5 points at any depth from 3.', 'P4'],
+  ['H2', 'Seeding halves the spread between substrates', 'The spread in scores between the largest and smallest substrate halves when seeded.', 'Spread under Q is at least 50% of the spread under ∅.', 'P4'],
+  ['H3', 'The LSTM matches the tiny transformer at a tenth of the cost', 'Seeded, the LSTM (RQ) comes within 5 points of the tiny transformer (TQ) on inferred reachability, at 10× lower CPU cost per item or better.', 'R trails T by more than 5 points under Q.', 'P4'],
+  ['H4', 'The LSTM signature: fails without the seed, passes with it', 'The LSTM fails unseeded (∅) and under condition C, and passes with the curated seed (Q).', 'RC scores about the same as RQ, or RQ about the same as R∅.', 'P3'],
+  ['H5', 'A shuffled seed loses most of the gain', 'A degree-preserving shuffle of the seed (X) removes at least 80% of the gain. This separates structure from extra context.', 'X keeps more than 20% of the Q − ∅ gain.', 'P3'],
+  ['H6', 'The gain grows with schema depth', 'The seeded gain grows as schemas get deeper.', 'The gain is flat or shrinks from depth 1 to 6.', 'P4'],
+  ['H7', 'Seed quality matters more than model size', 'Moving from a minimal to a curated seed moves accuracy more than moving from L to R.', 'The size effect is larger than the seed-quality effect.', 'P4'],
+];
+const LADDER = [['30B', 'GPU', 'Builder, Critic', '100%'], ['8B', 'GPU', 'Theorist, Experimenter, Maintainer, SEXTANT', '30%'], ['1–3B', 'GPU or CPU', 'Scout, Publisher', '10%'], ['Tiny', 'transformer, CPU', 'Shadow candidates', '3%'], ['LSTM', 'CPU', 'Shadow candidates', '1%']];
+const FIGS = [
+  ['7M', 'parameters. TRM scores 44.6% on ARC-AGI-1 by recursing instead of scaling.', 'Samsung SAIL', 'Results depend on heavy test-time augmentation; trained per task family.', 'https://arxiv.org/pdf/2512.11847'],
+  ['10–30×', 'cheaper to serve a 7B model than a 70–175B model.', 'Belcak et al., NVIDIA', 'Large generalists keep an edge in broad language understanding.', 'https://arxiv.org/pdf/2506.02153'],
+  ['~13×', 'cheaper per task each year at a fixed level of capability.', 'Epoch AI, Sept 2026', 'The frontier itself is getting more expensive to run.', 'https://epoch.ai/publications/the-plunging-price-of-thought'],
+  ['77.6%', 'ToolBench pass rate for a fine-tuned 350M model, against 26.0% for ChatGPT-CoT.', 'Jhandi et al.', 'Fine-tuned for the task; our claim is that seeding replaces this training (H7).', 'https://arxiv.org/html/2512.15943v2'],
+];
+const PHASES = [['P0', 'Unify', 'Rex and Jarvis merged as branches of Bridago; one repo, one port map.'], ['P1', 'Replicate', 'Reproduce dspy-router-test unseeded. If it fails, fix the baseline first.'], ['P2', 'Seed', 'Generator, shuffle control and Bridago retrieval, with tests.'], ['P3', 'Small grid', '30B, small and LSTM at depth 1–3. Read H0, H4 and H5 before spending more.'], ['P4', 'Full grid', 'All rungs, depth 1–6, three seed qualities.'], ['P5', 'Publish', 'The 30B-to-LSTM chart, seeded against unseeded, on the public graph.']];
+const REPORTS = [
+  ['Core paper', 'Seeded Substrate Plan v4', '13 Oct 2026', 'The thesis stated so it can fail: one seed, a ladder of five substrates, seed conditions, eight hypotheses with falsifiers, phases P0–P5.', ['Seed format fixed: one file, five blocks', 'Cognition layer: one DSPy signature, the same on every substrate', 'Shuffled-seed control separates structure from extra context'], 'Seeded Substrate Plan v4'],
+  ['Companion A', 'Does the cheap brain work? The public record', '15 Oct 2026', 'Grades published results against the paper\'s hypotheses.', ['Small models on scoped agent work: established', 'Recursion in place of size: established on puzzles', 'A seeded graph letting an LSTM match 30B: no published test'], 'Cheap Brain Evidence'],
+  ['Companion B', 'The dot-com bubble of the AI era', '15 Oct 2026', 'Six links from GPU orders to entry-level job losses, the evidence against, and the indicators that would settle it.', ['Debt share of AI capex: 9% (FY24) to 32% (mid-2026)', 'Ages 22–25 in AI-exposed jobs: employment 19% below less-exposed peers', 'Reading: a sector correction is likely; a depression needs credit contagion and broad job losses'], 'AI Era Bubble'],
+  ['Companion C', 'Institute blueprint v3', '15 Oct 2026', 'Ten agents, four pipelines, three funnels and the moat.', ['Three layers: work, check, oversee', 'Every stage has an exit test and a clock', 'Open the code; keep the seeds and the record'], 'Institute Blueprint v3'],
+  ['Companion D', 'Exposure and templates', '15 Oct 2026', 'If H0 holds: 50 companies scored for exposure, and about 1,000 grouped into 42 archetypes, each covered by one prompt and PRD.', ['Most exposed: debt-funded GPU clouds and frontier labs', 'Gainers: CPU, edge, on-device and graph players', 'Scores are scenario judgements, not forecasts'], 'Exposure and Templates'],
+];
+const SCORE = [['Small models suffice for scoped agent work', 'established', '2.7B on par with 30B; 350M beats ChatGPT-CoT on ToolBench'], ['Recursion substitutes for parameters', 'established on puzzles', '7M TRM: 44.6% on ARC-AGI-1'], ['Structure and memory beat model size', 'supported', 'Memory ablation costs 18.3 points on AIME'], ['Cost per capability falls fast', 'established', 'About 13× cheaper per task per year'], ['A seeded graph lets an LSTM match 30B', 'open', 'No published test. This is the institute\'s experiment.']];
+const IND = [['Debt share of AI capex', '32%', 'keeps rising as free cash flow turns negative'], ['AI share of IG issuance', '10%', 'AI-linked spreads widen faster than the market'], ['Cost per task', '÷13 / yr', 'GPU rental falls faster than capex is written down'], ['Hyperscaler capex (FY26)', '>$690B', 'first coordinated cut'], ['Neoclouds at risk (Gartner)', '>80%', 'defaults rather than acquisitions'], ['Entry-level employment gap', '19%', 'spreads past age 30 or turns into layoffs'], ['US unemployment', '4.1%', 'sustained rise alongside falling AI capex']];
+const AGENTS = [
+  ['Work', 'Scout', 'Reads feeds, papers and repos; writes sources and claims', 'fetch, parse, graph write', '1–3B', 'Critic, Overseer', 'silent'],
+  ['Work', 'Theorist', 'Clusters claims; writes questions with falsifiers', 'graph read/write', '8B', 'Critic', 'noisy'],
+  ['Work', 'Experimenter', 'Turns questions into harness cells, runs them, writes rows', 'sandbox, harness', '8B', 'Critic, Overseer', 'ok'],
+  ['Work', 'Builder', 'Turns findings into repos, apps and APIs', 'sandbox, ship, GitHub', '30B', 'Maintainer', 'ok'],
+  ['Work', 'SEXTANT', 'Talks to visitors and clients; the institute\'s voice', 'published graph only', '8B', 'Publisher, Overseer', 'idle'],
+  ['Check', 'Critic', 'Re-runs results with controls; attacks every claim', 'harness, shuffle', '30B', 'Overseer', 'ok'],
+  ['Check', 'Publisher', 'Proposes public batches and posts through the mindful gate', 'publish, mindful', '1–3B', 'Owner', 'ok'],
+  ['Check', 'Maintainer', 'Incidents, repairs, upgrades, app health', 'heal, upgrades, docker', '8B', 'Overseer', 'ok'],
+  ['Oversee', 'Overseer', 'Watches every agent\'s cadence and failure share; ranks fires', 'read-only on everything', 'no model', 'Owner', 'ok'],
+  ['Oversee', 'Registrar', 'Keeps the staff register; proposes promotions and demotions', 'register, frozen split', 'no model', 'Owner', 'ok'],
+];
+const PIPES = [
+  ['A · Research: claim → finding', [['Ingest', 'Scout · source node with URL, date and quote span · 6 h'], ['Question', 'Theorist · falsifier attached, links to two or more claims · 12 h'], ['Cell', 'Experimenter · harness cell runs on a 4-node seed in CI · 24 h'], ['Result', 'Experimenter · row written with generator seed, shuffled control beside it'], ['Attack', 'Critic · re-run passes, single-fact share reported · 24 h'], ['Promote', 'Registrar → owner · beats the holder on the frozen split for 7 days']]],
+  ['B · Build: finding → repo or API', [['Spec', 'Builder · README names the finding and the hypothesis it depends on · 1 day'], ['Code', 'Builder · tests pass in Docker with no network and no model · 2–5 days'], ['Review', 'Critic and Maintainer · lint, licence, secrets scan, dependency audit · 1 day'], ['Ship', 'Owner · public repo or metered API behind auth']]],
+  ['C · Publish: finding → public graph', [['Propose', 'Publisher proposes a batch with sources'], ['Approve', 'Owner approves in the Overseer'], ['Label', 'Nodes turn from grey to labelled on the public graph'], ['Post', 'Mindful gate: caps, quiet hours, spacing, duplicates, disclosure'], ['Cite', 'SEXTANT can now cite it to visitors']]],
+  ['D · Client: question → private graph → report', [['Contact', 'You describe the question'], ['Qualify', 'SEXTANT checks scope, data and deadline'], ['Accept', 'The owner accepts'], ['Seed', 'A private Rex graph is seeded for you'], ['Run', 'Pipeline A runs on it'], ['Deliver', 'Report and graph delivered to you']]],
+];
+const RULES = [['ok', 'Ran within twice its expected interval, under 30% failures.'], ['silent', 'No round for more than twice its interval (Scout 6 h, Theorist 12 h, Critic 24 h).'], ['noisy', 'Three or more rounds in 24 h and over 30% failed: paused.']];
+const OFFERS = [
+  ['Enterprise', 'Paid study', 'Fixed scope', 'One question and the data behind it. We seed a private graph, run the research pipeline on it and deliver a report and the graph.', ['SEXTANT qualifies scope, data and deadline', 'Private graph seeded for your domain', 'Pipeline A runs with controls', 'Report and graph delivered']],
+  ['Enterprise', 'Design partner, then licence', 'Ongoing', 'Co-develop a seed for your domain; it becomes a cell in the experiment. Then run Bridago on your own CPUs.', ['Start from a paid study', 'Domain seed built with you', 'Bridago licence with a CPU appliance']],
+  ['Developers and researchers', 'Open repos, API and replication', 'Open / metered', 'Run the harness yourself, use the metered API, or reproduce a cell and join the outside-replication programme.', ['Clone a repo; docker compose up', 'Member sign-in; Pro for raw tables', 'Metered API key', 'Submit a replication']],
+];
+const FIRES = [
+  ['spend', 80, 'Spend near the monthly cap', 'owner', '$412 of $450', ['Raise', 'Throttle']],
+  ['inc', 74, 'KeyError in round.merge', 'maintainer', 'patch ready, tests failed once', ['Approve', 'Retry']],
+  ['scout', 69, 'Scout is silent', 'overseer', '14 h, expected every 6 h', ['Wake']],
+  ['shadow', 45, 'LSTM shadow beats 1–3B for Scout', 'registrar', '0.83 vs 0.81 for 7 days', ['Promote', 'Hold']],
+  ['posts', 38, '4 post drafts', 'publisher', 'x, linkedin, reddit', ['Approve all', 'Review']],
+];
+const SUGG = {
+  today: ['The Theorist is noisy. Its question pipeline feeds everything downstream.', 'See the Theorist', s => s.agent(1)],
+  home: ['H0 comes with a falsifier. See exactly what result would refute it.', 'Show the falsifier', s => s.hyp(0)],
+  thesis: ['Want the evidence before the claims? Companion A grades the public record.', 'Open Companion A', s => s.report(1)],
+  research: ['Ask SEXTANT about any figure here. Its answers cite the graph.', 'Ask a question', s => s.setState({ ask: true })],
+  institute: ['Client work runs on pipeline D, the same gates as internal research.', 'See how to engage', s => s.setState({ tab: 'partner' })],
+  partner: ['Not sure which path fits? SEXTANT can ask you two questions.', 'Help me choose', s => s.setState({ ask: true }, () => s.askQ('Which engagement fits me?'))],
+};
+
+class Component extends DCLogic {
+  state = { tier: this.initTier(), tab: null, sheet: null, ask: false, sugOff: {}, sugShown: {}, open: { 0: true }, gone: {}, last: null, org: '', qtext: '', path: 0, sent: null,
+    msgs: [{ me: false, text: 'I answer from the institute\'s published graph and cite what I use. What would you like to know?' }], clarify: null };
+  initTier() { const t = new URLSearchParams(location.search).get('tier') || this.props.tier || 'partner'; return t === 'owner' ? 'owner' : 'partner'; }
+  componentDidMount() { this.arm(); }
+  componentWillUnmount() { clearTimeout(this.st); clearTimeout(this.tt); }
+  curTab() { const tabs = this.tabs(); return tabs.some(t => t[0] === this.state.tab) ? this.state.tab : tabs[0][0]; }
+  tabs() { return this.state.tier === 'owner' ? [['today', 'Today'], ['home', 'Overview'], ['thesis', 'Thesis'], ['research', 'Research'], ['institute', 'Institute']] : [['home', 'Overview'], ['thesis', 'Thesis'], ['research', 'Research'], ['institute', 'Institute'], ['partner', 'Engage']]; }
+  arm() { clearTimeout(this.st); const t = this.curTab(); this.st = setTimeout(() => this.setState(s => ({ sugShown: { ...s.sugShown, [t]: true } })), 1600); }
+  hyp(i) { const h = HYPS[i]; this.setState({ sheet: { kicker: `${h[0]} · read in ${h[4]}`, title: h[2], rows: [{ k: 'Refuted if', v: h[3] }, { k: 'Status', v: 'Open until the grid runs. The result is published either way.' }, { k: 'Read first', v: h[4] === 'P3' ? 'Yes. H0, H4 and H5 decide whether the full grid is worth running.' : 'In the full grid, after P3.' }], links: [{ label: 'Read in Plan v4', to: PLAN }] } }); }
+  fig(i) { const f = FIGS[i]; this.setState({ sheet: { kicker: f[2], title: `${f[0]}: ${f[1]}`, rows: [{ k: 'Limit', v: f[3] }, { k: 'Bears on', v: 'H0 and H7. Supports the parts of the claim; does not test the seeded ladder.' }], links: [{ label: 'Open source', to: f[4] }, { label: 'Companion A', to: R + 'Cheap Brain Evidence.dc.html' }] } }); }
+  report(i) { const r = REPORTS[i]; this.setState({ sheet: { kicker: `${r[0]} · ${r[2]}`, title: r[1], rows: [{ k: 'Summary', v: r[3] }, ...r[4].map((p, j) => ({ k: `Finding ${j + 1}`, v: p }))], links: [{ label: 'Read the full report', to: R + r[5] + '.dc.html' }] } }); }
+  agent(i) { const a = AGENTS[i]; this.setState({ sheet: { kicker: `${a[0]} layer · ${a[4]}`, title: a[1], rows: [{ k: 'Does', v: a[2] }, { k: 'Tools', v: a[3] }, { k: 'Checked by', v: a[5] }, { k: 'Why it matters', v: a[4] === 'no model' ? 'Runs on rules so that nothing judging the agents is itself under study.' : 'Each round is a data point for H0. The Registrar can move it down the ladder if a smaller shadow wins for 7 days.' }, ...(this.state.tier === 'owner' ? [{ k: 'State now', v: a[6] }] : [])], links: [{ label: 'Blueprint v3', to: R + 'Institute Blueprint v3.dc.html' }] } }); }
+  act(id, label) { this.setState(s => ({ gone: { ...s.gone, [id]: 1 }, last: { id, label } })); clearTimeout(this.tt); this.tt = setTimeout(() => this.setState({ last: null }), 4000); }
+  say(q, a) { this.setState(s => ({ msgs: [...s.msgs, ...(q ? [{ me: true, text: q }] : []), ...(a ? [{ me: false, text: a }] : [])] })); }
+  askQ(q) {
+    if (/fit|engage|work with/i.test(q)) return this.setState(s => ({ msgs: [...s.msgs, { me: true, text: q }], clarify: { q: 'What do you have today?', opts: [['A question and the data behind it', 'A paid study fits: fixed scope, a private seeded graph, report and graph delivered. Use the form on the Engage tab.'], ['A domain we could build a seed for', 'Design partner: start with a study, then co-develop the domain seed and license Bridago on your CPUs.'], ['Code or research to reproduce', 'Start with the open harness: clone a repo, run docker compose up, and submit a replication.']] } }));
+    if (/small|cheap|lstm|good/i.test(q)) return this.setState(s => ({ msgs: [...s.msgs, { me: true, text: q }], clarify: { q: 'Do you mean quality or cost?', opts: [['Quality', 'Not yet shown. Small models already match large ones on scoped tasks when fine-tuned. Whether a seed can replace that training is H7, read in phase P4.'], ['Cost', 'A 7B model is 10–30× cheaper to serve than a 70–175B model (NVIDIA). An LSTM on CPU is cheaper again; H3 sets the bar at 10× below the tiny transformer.'], ['Both', 'H0 and H3 together: quality within 5 points of 30B, at a fraction of the cost. Both are open; P3 reads H0 first.']] } }));
+    if (/bubble|recession|gpu/i.test(q)) return this.say(q, 'Companion B argues a sector correction in AI infrastructure is likely. A depression would need losses to spread through lenders while jobs fall broadly; neither has happened. It lists seven indicators we track.');
+    if (/data|private|secure/i.test(q)) return this.say(q, 'Client content stays in a private graph only you and the owner can read. I read the published graph only. Anonymised structure, never content, feeds seed research.');
+    this.say(q, 'H0 is the headline: seeded once, every rung from 30B to an LSTM stays within 5 points. The public record supports its parts; nobody has run the full ladder. Phase P3 reads it first.');
+  }
+  renderVals() {
+    const s = this.state, owner = s.tier === 'owner', tab = this.curTab(), sg = SUGG[tab];
+    if (this.lastTab !== tab) { this.lastTab = tab; if (!s.sugShown[tab]) setTimeout(() => this.arm(), 0); }
+    const fires = FIRES.filter(f => !s.gone[f[0]]);
+    const tagFor = v => v === 'open' ? 'tag tag-outline' : v === 'supported' ? 'tag tag-neutral' : 'tag tag-accent';
+    const stTag = st => st === 'ok' ? 'tag tag-accent' : st === 'idle' ? 'tag tag-neutral' : 'tag tag-outline';
+    const STAGES = ['intake', 'reframe', 'reasoning', 'preact', 'act', 'postact'];
+    return {
+      tierName: owner ? 'Owner' : 'Partner view', otherTier: owner ? 'partner' : 'owner',
+      toggleTier: () => this.setState({ tier: owner ? 'partner' : 'owner', tab: null, sheet: null }),
+      isToday: tab === 'today', isHome: tab === 'home', isThesis: tab === 'thesis', isResearch: tab === 'research', isInstitute: tab === 'institute', isPartner: tab === 'partner',
+      fireHead: fires.length ? `${fires.length} things need you, about ${fires.length * 2} minutes` : 'Nothing needs you',
+      fires: fires.map(f => ({ score: f[1], title: f[2], source: f[3], detail: f[4], acts: f[5].map(l => ({ label: l, fn: () => this.act(f[0], l) })) })), calm: !fires.length,
+      openH0: () => this.hyp(0), goPartner: () => this.setState({ tab: owner ? 'institute' : 'partner' }),
+      ladder: LADDER.map(([name, hw, staff, cost]) => ({ name, hw, staff, cost })),
+      figs: FIGS.map((f, i) => ({ big: f[0], text: f[1], src: f[2], open: () => this.fig(i) })),
+      phases: PHASES.map(([id, name, text]) => ({ id, name, text })),
+      reports: REPORTS.map((r, i) => ({ tag: r[0], title: r[1], date: r[2], sum: r[3], pts: r[4], to: R + r[5] + '.dc.html', open: () => this.report(i) })),
+      hyps: HYPS.map((h, i) => ({ id: h[0], short: h[1], phase: h[4], open: () => this.hyp(i) })),
+      names: [{ k: 'Anima', v: 'The thesis: the graph seed and the DSPy cognition layer carry the intelligence.' }, { k: 'Bridago', v: 'The implementation: one shared seeded brain.' }, { k: 'Rex', v: 'The memory and structure branch of Bridago.' }, { k: 'Jarvis', v: 'The reasoning branch, with an energy-based halting loop.' }],
+      seedBlocks: ['incidence', 'types', 'restriction maps', 'Horn constraints', 'energy'],
+      stages: STAGES.map((n, i) => ({ n, arrow: i < STAGES.length - 1 ? '→' : '' })),
+      risks: [{ k: 'The retriever does the reasoning', v: 'If Bridago returns closures, the model is only copying. Every lookup is logged and the share of single-fact answers is reported.' }, { k: 'More context, not structure', v: 'A seeded prompt is also a longer prompt. The shuffled seed (H5) keeps the size and breaks the structure.' }, { k: 'Task training sneaking in', v: 'Published small-model wins rely on fine-tuning. Our substrates get no task training (H7).' }],
+      score: SCORE.map(([k, verdict, v]) => ({ k, verdict, v, tag: tagFor(verdict) })),
+      indicators: IND.map(([k, v, w]) => ({ k, v, w })),
+      layers: ['Work', 'Check', 'Oversee'].map(name => ({ name, agents: AGENTS.map((a, i) => ({ a, i })).filter(x => x.a[0] === name).map(({ a, i }) => ({ name: a[1], does: a[2], rung: a[4], state: a[6], stateTag: stTag(a[6]), showState: owner, open: () => this.agent(i) })) })),
+      pipes: PIPES.map(([name, st], i) => ({ name, open: !!s.open[i], hint: s.open[i] ? 'Hide' : `${st.length} stages`, toggle: () => this.setState(x => ({ open: { ...x.open, [i]: !x.open[i] } })), stages: st.map(([k, v], j) => ({ n: j + 1, k, v })) })),
+      rules: RULES.map(([k, v]) => ({ k, v })),
+      offers: OFFERS.map(([who, name, form, text, steps]) => ({ who, name, form, text, steps })),
+      org: s.org, onOrg: e => this.setState({ org: e.target.value }), qtext: s.qtext, onQtext: e => this.setState({ qtext: e.target.value }),
+      paths: ['Paid study', 'Design partner', 'Developer or research'].map((label, i) => ({ label, cls: s.path === i ? 'btn-primary' : 'btn-ghost', pick: () => this.setState({ path: i }) })),
+      notSent: !s.sent, sent: !!s.sent, sentText: s.sent || '',
+      submit: () => { if (!s.qtext.trim()) return this.setState({ ask: true }, () => this.say(null, 'Before you send: what question do you want answered? One or two sentences is enough.')); this.setState({ sent: `Received${s.org ? ' from ' + s.org : ''}. SEXTANT has logged your question and path. The owner reviews every request before accepting; you will hear back by email.` }); },
+      resetForm: () => this.setState({ sent: null, qtext: '', org: '' }),
+      showSugg: !!sg && s.sugShown[tab] && !s.sugOff[tab] && !s.sheet && !s.ask && !s.last,
+      sugg: sg ? { text: sg[0], cta: sg[1], go: () => { this.setState(x => ({ sugOff: { ...x.sugOff, [tab]: true } })); sg[2](this); } } : { text: '', cta: '', go: () => {} },
+      dismissSugg: () => this.setState(x => ({ sugOff: { ...x.sugOff, [tab]: true } })),
+      toast: !!s.last, toastText: s.last ? `${s.last.label}: done` : '',
+      undo: () => this.setState(x => { const g = { ...x.gone }; delete g[x.last.id]; return { gone: g, last: null }; }),
+      sheetOpen: !!s.sheet, sheet: s.sheet || { kicker: '', title: '', rows: [], links: [] }, closeSheet: () => this.setState({ sheet: null }), stop: e => e.stopPropagation(),
+      askOpen: s.ask, openAsk: () => this.setState({ ask: true }), closeAsk: () => this.setState({ ask: false }),
+      msgs: s.msgs.map(m => ({ text: m.text, style: m.me ? 'justify-self:end;max-width:82%;padding:9px 12px;border-radius:12px;background:var(--color-accent-900);border:1px solid var(--color-accent-700);' : 'justify-self:start;max-width:90%;padding:9px 12px;border-radius:12px;background:var(--color-neutral-900);border:1px solid var(--color-neutral-800);' })),
+      clarify: !!s.clarify, clarifyQ: s.clarify ? s.clarify.q : '',
+      clarifyOpts: (s.clarify ? s.clarify.opts : []).map(([label, ans]) => ({ label, fn: () => this.setState(x => ({ clarify: null, msgs: [...x.msgs, { me: true, text: label }, { me: false, text: ans }] })) })),
+      chips: ['Can a small model be as good?', 'Which engagement fits me?', 'Is the GPU boom a bubble?', 'What happens to our data?'].map(l => ({ label: l, fn: () => this.askQ(l) })),
+      tabs: this.tabs().map(([id, label]) => ({ label, fn: () => this.setState({ tab: id, sheet: null }), style: `min-height:48px;background:none;border:0;font:inherit;font-size:11.5px;cursor:pointer;color:${id === tab ? 'var(--color-accent-200)' : 'var(--color-neutral-400)'};border-top:2px solid ${id === tab ? 'var(--color-accent)' : 'transparent'};` })),
+    };
+  }
+}
+</script>
+</body>
+</html>

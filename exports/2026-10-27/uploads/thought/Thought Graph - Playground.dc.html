@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    html, body { height: 100%; margin: 0; background: var(--color-bg); }
+    a { color: var(--color-accent); } a:hover { color: var(--color-accent-400); }
+    @keyframes tg-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+    @keyframes tg-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes tg-sweep { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+    @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
+    input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; height: 16px; cursor: pointer; }
+    input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--color-neutral-800); }
+    input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--color-neutral-800); }
+    input[type="range"]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--color-accent-600); }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; margin-top: -4px; border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 8px var(--color-accent-700); }
+    input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border: none; border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 8px var(--color-accent-700); }
+    input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  </style>
+</helmet>
+<div data-screen-label="Playground" style="min-height: 100vh; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); font-size: 14px;">
+  <header style="display: flex; align-items: center; gap: var(--space-3) var(--space-4); padding: var(--space-3) var(--space-4); flex-wrap: wrap; border-bottom: 1px solid var(--color-divider);">
+    <div style="display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 16px; flex: none; white-space: nowrap;">
+      <span style="width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--color-accent); box-shadow: 0 0 10px var(--color-accent-600);"></span>
+      <span>Thought Graph</span>
+      <span class="tag tag-neutral">Playground</span>
+    </div>
+    <a class="btn btn-ghost" href="Thought Graph.dc.html" style="text-decoration: none; white-space: nowrap;">← Back to the graph</a>
+    <form onSubmit="{{ onSeedSubmit }}" style="display: flex; gap: var(--space-2); flex: 1 1 220px; max-width: 420px;">
+      <input class="input" value="{{ seedText }}" onChange="{{ onSeedText }}" placeholder="Sandbox seed" aria-label="Sandbox seed">
+      <button type="submit" class="btn btn-secondary">Reset sandbox</button>
+    </form>
+    <div style="display: flex; align-items: center; gap: var(--space-2); margin-left: auto; min-width: 0;">
+      <span style="font-size: 12px; color: var(--color-neutral-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ status }}</span>
+      <button type="button" class="btn btn-primary" style="white-space: nowrap; flex: none;" onClick="{{ runSuite }}">{{ runLabel }}</button>
+    </div>
+  </header>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: var(--space-4); padding: var(--space-4); min-height: 0; align-items: start;">
+    <aside style="display: grid; gap: var(--space-4);">
+      <div class="card">
+        <div class="card-kicker">Agent parameters</div>
+        <label style="display: grid; gap: 4px; font-size: 11px; color: var(--color-neutral-500);">
+          <span style="display: flex; justify-content: space-between;"><span>Wild</span><span style="color: var(--color-neutral-300); font-variant-numeric: tabular-nums;">{{ wild }}</span></span>
+          <input type="range" min="0" max="100" step="5" value="{{ wild }}" onChange="{{ onWild }}" style="width: 100%; accent-color: var(--color-accent);" aria-label="Wildness">
+        </label>
+        <div style="display: grid; gap: 4px;">
+          <button type="button" class="{{ giClass }}" style="justify-content: space-between; padding: 4px 10px; font-size: 12px;" onClick="{{ toggleGi }}"><span>Graph-intelligent frontier</span><span style="font-size: 11px; opacity: .8;">{{ giLabel }}</span></button>
+          <button type="button" class="{{ brainClass }}" style="justify-content: space-between; padding: 4px 10px; font-size: 12px;" onClick="{{ toggleBrain }}"><span>Brain cycles in auto</span><span style="font-size: 11px; opacity: .8;">{{ brainLabel }}</span></button>
+          <button type="button" class="{{ liveClass }}" style="justify-content: space-between; padding: 4px 10px; font-size: 12px;" onClick="{{ toggleLive }}"><span>Live Claude</span><span style="font-size: 11px; opacity: .8;">{{ liveLabel }}</span></button>
+        </div>
+        <div style="font-size: 11px; color: var(--color-neutral-500); line-height: 1.5; text-wrap: pretty;">The sandbox graph grows here only. Parameters apply to the next step and to the module-yield experiment inside the suite.</div>
+      </div>
+      <div class="card" style="gap: var(--space-2);">
+        <div style="display: flex; align-items: center; gap: var(--space-2);"><div class="card-kicker" style="white-space: nowrap;">Module pool · 39</div><span style="font-size: 11px; color: var(--color-neutral-500); margin-left: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ forcedLabel }}</span></div>
+        <div style="font-size: 11px; color: var(--color-neutral-500);">Click a module to force it on the next step; click again to release.</div>
+        <sc-for list="{{ pool }}" as="grp" hint-placeholder-count="4">
+          <div style="display: grid; gap: 3px;">
+            <div style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">{{ grp.label }} · {{ grp.count }}</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 3px;">
+              <sc-for list="{{ grp.items }}" as="m" hint-placeholder-count="3">
+                <button type="button" class="{{ m.cls }}" style="padding: 1px 7px; font-size: 11px; white-space: nowrap;" onClick="{{ m.onPick }}" title="{{ m.desc }}">{{ m.type }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+
+    <main style="display: grid; gap: var(--space-4); min-width: 0;">
+      <div class="card" style="gap: var(--space-3);">
+        <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+          <div class="card-kicker" style="white-space: nowrap;">Pipeline · one step</div>
+          <span style="font-size: 11px; color: var(--color-neutral-500);">{{ sandboxLine }}</span>
+          <div style="display: flex; gap: var(--space-2); margin-left: auto;">
+            <button type="button" class="btn btn-primary" style="padding: 4px 10px;" onClick="{{ step }}">Step</button>
+            <button type="button" class="btn btn-secondary" style="padding: 4px 10px;" onClick="{{ run10 }}">Run 10</button>
+            <button type="button" class="btn btn-secondary" style="padding: 4px 10px;" onClick="{{ sleepNow }}">Sleep</button>
+            <button type="button" class="btn btn-secondary" style="padding: 4px 10px;" onClick="{{ evolveNow }}">Evolve</button>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-3);">
+          <div style="display: grid; gap: 4px; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
+            <div style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Frontier</div>
+            <div style="font-size: 13px; color: var(--color-neutral-200); text-wrap: pretty;">{{ last.target }}</div>
+            <div style="font-size: 11px; color: var(--color-neutral-500);">{{ last.targetMeta }}</div>
+          </div>
+          <div style="display: grid; gap: 4px; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg); border: 1px solid var(--color-accent-800);">
+            <div style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent-400);">Select</div>
+            <div style="font-size: 13px; color: var(--color-neutral-200);">{{ last.module }}</div>
+            <div style="font-size: 11px; color: var(--color-neutral-500); text-wrap: pretty;">{{ last.moduleDesc }}</div>
+          </div>
+          <div style="display: grid; gap: 4px; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg); border: 1px solid var(--color-accent-800);">
+            <div style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent-400);">Adapt</div>
+            <div style="font-size: 13px; color: var(--color-neutral-200); text-wrap: pretty;">{{ last.adapt }}</div>
+          </div>
+          <div style="display: grid; gap: 4px; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg); border: 1px solid var(--color-accent-800);">
+            <div style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent-400);">Implement</div>
+            <sc-for list="{{ last.added }}" as="a" hint-placeholder-count="1">
+              <div style="display: grid; gap: 2px;">
+                <div style="font-size: 13px; color: var(--color-neutral-200); text-wrap: pretty;">{{ a.label }}</div>
+                <div style="display: flex; gap: 6px; align-items: center; font-size: 11px; color: var(--color-neutral-500);"><span class="tag tag-outline" style="font-size: 10px; padding: 0 6px;">{{ a.plane }}</span><span>{{ a.meta }}</span></div>
+              </div>
+            </sc-for>
+            <div style="font-size: 11px; color: var(--color-neutral-600);">{{ last.none }}</div>
+          </div>
+        </div>
+        <div style="display: grid; gap: 3px;">
+          <sc-for list="{{ planes }}" as="sp" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: 66px minmax(0, 1fr) 24px; gap: 8px; align-items: center; font-size: 11px; color: var(--color-neutral-500);"><span>{{ sp.label }}</span><div style="height: 4px; border-radius: 2px; background: var(--color-neutral-900);"><div style="{{ sp.style }}"></div></div><span style="text-align: right; font-variant-numeric: tabular-nums;">{{ sp.n }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+      <div class="card" style="gap: var(--space-2);">
+        <div style="display: flex; align-items: center; gap: var(--space-2);"><div class="card-kicker">Step log</div><span style="font-size: 11px; color: var(--color-neutral-500); margin-left: auto;">{{ stepCount }}</span></div>
+        <div style="display: grid; gap: 2px; max-height: 320px; overflow: auto;">
+          <sc-for list="{{ steps }}" as="st" hint-placeholder-count="2">
+            <div style="display: grid; grid-template-columns: 28px minmax(0, 1.2fr) minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 3px 0; font-size: 12px; animation: tg-fade .2s ease-out both;">
+              <span style="color: var(--color-neutral-600); font-variant-numeric: tabular-nums;">{{ st.i }}</span>
+              <span style="color: var(--color-accent-300); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ st.module }}</span>
+              <span style="color: var(--color-neutral-400); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ st.target }}</span>
+              <span style="color: var(--color-neutral-500); white-space: nowrap;">{{ st.result }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div class="card" style="gap: var(--space-2);">
+        <div style="display: flex; align-items: center; gap: var(--space-2);"><div class="card-kicker">Agent trace</div><span style="font-size: 11px; color: var(--color-neutral-500); margin-left: auto;">{{ traceCount }}</span></div>
+        <div style="display: grid; gap: 2px; max-height: 260px; overflow: auto;">
+          <sc-for list="{{ trace }}" as="t" hint-placeholder-count="3">
+            <div style="display: grid; grid-template-columns: 82px minmax(0, 1fr) auto; gap: 8px; align-items: start; font-size: 12px; padding: 2px 0;">
+              <span class="{{ t.tagClass }}" style="justify-content: center; font-size: 10px; padding: 1px 6px;">{{ t.kind }}</span>
+              <span style="color: var(--color-neutral-300); line-height: 1.4; overflow-wrap: anywhere;">{{ t.text }}</span>
+              <span style="color: var(--color-neutral-600); font-variant-numeric: tabular-nums;">{{ t.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </main>
+
+    <aside style="display: grid; gap: var(--space-4); min-width: 0;">
+      <div class="card" style="gap: var(--space-2);">
+        <div style="display: flex; align-items: center; gap: var(--space-2);">
+          <div class="card-kicker" style="white-space: nowrap;">Test suite · 30</div>
+          <span style="font-size: 11px; color: var(--color-neutral-500); margin-left: auto; white-space: nowrap;">{{ suiteLine }}</span>
+        </div>
+        <div style="position: relative; height: 4px; border-radius: 2px; background: var(--color-neutral-900); display: flex; overflow: hidden;">
+          <div style="{{ passBar }}"></div><div style="{{ failBar }}"></div>
+          <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><div style="position: absolute; inset: 0 auto 0 0; width: 30%; background: linear-gradient(90deg, transparent, var(--color-accent-500), transparent); animation: tg-sweep 1.1s linear infinite;"></div></sc-if>
+        </div>
+        <div style="display: grid; gap: 1px; max-height: 420px; overflow: auto;">
+          <sc-for list="{{ tests }}" as="t" hint-placeholder-count="6">
+            <button type="button" class="btn btn-ghost" style="{{ t.style }}" onClick="{{ t.onPick }}">
+              <span style="{{ t.dot }}"></span>
+              <span style="display: grid; gap: 2px; min-width: 0; text-align: left; flex: 1;">
+                <span style="display: flex; gap: 8px; justify-content: space-between;"><span style="font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.name }}</span><span style="font-size: 10px; color: var(--color-neutral-600); white-space: nowrap;">{{ t.ms }}</span></span>
+                <sc-if value="{{ t.open }}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 400; color: var(--color-neutral-400); line-height: 1.45; white-space: normal; overflow-wrap: anywhere;">{{ t.evidence }}</span><span style="font-size: 10px; font-weight: 400; color: var(--color-neutral-600);">claim · {{ t.claim }}</span></sc-if>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      <div class="card" style="gap: var(--space-2);">
+        <div style="display: flex; align-items: center; gap: var(--space-2);"><div class="card-kicker">Findings · paper claims</div><span style="font-size: 11px; color: var(--color-neutral-500); margin-left: auto; white-space: nowrap;">{{ findingsLine }}</span></div>
+        <sc-for list="{{ claims }}" as="c" hint-placeholder-count="3">
+          <div style="display: grid; gap: 2px; padding: 4px 0;">
+            <div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 12px; color: var(--color-neutral-200);">{{ c.title }}</span><span class="{{ c.cls }}" style="font-size: 10px; padding: 0 7px; margin-left: auto; white-space: nowrap;">{{ c.status }}</span></div>
+            <div style="font-size: 11px; color: var(--color-neutral-500); text-wrap: pretty;">{{ c.paper }}</div>
+            <div style="font-size: 11px; color: var(--color-neutral-400);">{{ c.score }}</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ hasModules }}" hint-placeholder-val="{{ false }}">
+          <div style="display: grid; gap: 3px; padding-top: var(--space-2);">
+            <div style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-500);">Modules by evidence yield · 24 auto steps</div>
+            <sc-for list="{{ modules }}" as="m" hint-placeholder-count="3">
+              <div style="display: grid; grid-template-columns: minmax(0, 1fr) 70px auto; gap: 8px; align-items: center; font-size: 11px;">
+                <span style="color: var(--color-neutral-300); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ m.type }}</span>
+                <div style="height: 4px; border-radius: 2px; background: var(--color-neutral-900);"><div style="{{ m.bar }}"></div></div>
+                <span style="color: var(--color-neutral-500); white-space: nowrap; font-variant-numeric: tabular-nums;">{{ m.meta }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; padding-top: var(--space-2);">
+          <button type="button" class="btn btn-primary" style="padding: 4px 10px;" onClick="{{ sendFindings }}">{{ sendLabel }}</button>
+          <button type="button" class="btn btn-ghost" style="padding: 4px 10px;" onClick="{{ exportFindings }}">Export findings .json</button>
+        </div>
+        <div style="font-size: 11px; color: var(--color-neutral-600); text-wrap: pretty;">Sending stores the findings for the main graph: the Insights rail shows them and thoughts produced by the top-yield modules get a thin light ring.</div>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;seed&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Teach a city to sleep better&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Sandbox&quot;},&quot;wildness&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:40,&quot;min&quot;:0,&quot;max&quot;:100,&quot;step&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Sandbox&quot;},&quot;autoRun&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Suite&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, seedText: this.props.seed || 'Teach a city to sleep better', wild: this.props.wildness ?? 40, gi: true, brain: true, live: false, forced: null, status: 'Loading engine…', running: false, results: [], findings: null, openTest: null, steps: [], last: null, sent: false };
+  async componentDidMount() {
+    this.E = await import('./thought-engine.js'); this.T = await import('./thought-tests.js');
+    await this.E.loadModules('reasoning_modules.json');
+    this.reset(this.state.seedText);
+    const saved = this.read('tg-findings'); if (saved) this.setState({ findings: saved, status: `Last run ${new Date(saved.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${saved.passed}/${saved.total}` });
+    if (this.props.autoRun) this.runSuite();
+  }
+  componentWillUnmount() { this.dead = true; }
+  read(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* blocked */ } }
+  reset(seed) { this.g = this.E.createGraph(seed, { w: 800, h: 600 }); this.E.seedGraph(this.g, 4); this.setState({ ready: true, steps: [], last: null, status: `Sandbox seeded · ${this.g.nodes.length} thoughts` }); }
+  opts() { return { wild: this.state.wild, graphIntel: this.state.gi, brain: this.state.brain, live: this.state.live && this.E.liveAvailable() }; }
+  step = async () => {
+    const E = this.E, g = this.g, o = this.opts();
+    let target, mod, added, cycle = null;
+    if (this.state.forced != null) { target = E.pickFrontier(g, o); mod = E.moduleById(this.state.forced); added = await E.expand(g, target.id, mod.id, o); g.step++; }
+    else { const r = await E.autoTick(g, o); target = r.target; mod = r.mod; added = r.added; cycle = r.cycle; }
+    if (this.dead) return;
+    const e = added[0] ? g.edges.find(x => x.a === target.id && x.b === added[0].id) : null;
+    const entry = { i: this.state.steps.length + 1, target, mod, added, adapt: e && e.structure ? e.structure.adapt : E.adaptQuestion(mod, target.label), cycle };
+    this.setState(s => ({ steps: [entry, ...s.steps].slice(0, 60), last: entry, forced: null, status: `Step ${entry.i} · ${mod.type} → ${added.length} new${cycle ? ' · ' + cycle.toUpperCase() : ''}` }));
+  };
+  run10 = async () => { for (let i = 0; i < 10; i++) { if (this.dead) return; await this.step(); await new Promise(r => setTimeout(r, 60)); } };
+  sleepNow = () => { const r = this.E.sleep(this.g, this.opts()); this.setState({ status: `SLEEP · ${r.merged} merged, ${r.pruned} pruned, ${r.dreams.length} dreams` }); };
+  evolveNow = () => { this.E.evolve(this.g, this.opts()).then(r => { if (!this.dead) this.setState({ status: `EVOLVE · gen ${r.gen} · ${r.born.length} born, ${r.culled.length} culled` }); }); };
+  runSuite = async () => {
+    if (this.state.running) return;
+    this.setState({ running: true, results: [], status: 'Running 30 tests…', sent: false });
+    const out = await this.T.runSuite(this.E, { onProgress: rs => { if (!this.dead) this.setState({ results: rs, status: `Test ${rs.length}/30 · ${rs.filter(r => r.pass).length} passing` }); } });
+    if (this.dead) return;
+    this.setState({ running: false, results: out.results, findings: out.findings, status: `${out.findings.passed}/${out.findings.total} passed in ${out.findings.ms} ms` });
+  };
+  sendFindings = () => { if (!this.state.findings) return; this.write('tg-findings', this.state.findings); this.setState({ sent: true, status: 'Findings sent to the main graph' }); };
+  exportFindings = () => { if (!this.state.findings) return; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(this.state.findings, null, 2)], { type: 'application/json' })); a.download = 'thought-graph-findings.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+  renderVals() {
+    const E = this.E, T = this.T, s = this.state, g = this.g;
+    const tog = (on) => on ? 'btn btn-primary' : 'btn btn-secondary';
+    const base = {
+      ready: s.ready, seedText: s.seedText, onSeedText: e => this.setState({ seedText: e.target.value }), onSeedSubmit: e => { e.preventDefault(); if (this.E && s.seedText.trim()) this.reset(s.seedText.trim()); },
+      wild: s.wild, onWild: e => this.setState({ wild: +e.target.value }),
+      giClass: tog(s.gi), giLabel: s.gi ? 'on' : 'off', toggleGi: () => this.setState({ gi: !s.gi }),
+      brainClass: tog(s.brain), brainLabel: s.brain ? 'on' : 'off', toggleBrain: () => this.setState({ brain: !s.brain }),
+      liveClass: tog(s.live), liveLabel: s.live ? (E && E.liveAvailable() ? 'on' : 'no helper') : 'off', toggleLive: () => this.setState({ live: !s.live }),
+      status: s.status, running: s.running, runLabel: s.running ? 'Running…' : 'Run 30 tests', runSuite: this.runSuite, step: this.step, run10: this.run10, sleepNow: this.sleepNow, evolveNow: this.evolveNow,
+      forcedLabel: s.forced != null && E ? `next: ${E.moduleById(s.forced).type}` : 'auto SELECT', pool: [], planes: [], steps: [], stepCount: '', trace: [], traceCount: '', sandboxLine: '',
+      last: { target: 'No step yet', targetMeta: 'Press Step to run one SELECT → ADAPT → IMPLEMENT cycle on the sandbox.', module: '—', moduleDesc: '', adapt: '—', added: [], none: '' },
+      tests: [], suiteLine: '', passBar: {}, failBar: {}, claims: [], findingsLine: '', hasModules: false, modules: [], sendFindings: this.sendFindings, exportFindings: this.exportFindings, sendLabel: s.sent ? 'Sent ✓' : 'Send findings to the graph',
+    };
+    if (!E) return base;
+    const groups = { facts: [], concepts: [], principles: [], wild: [] };
+    for (const m of E.modules()) groups[E.planeForModule(m.id)].push(m);
+    base.pool = E.PLANES.map(p => ({ id: p.id, label: p.label, count: groups[p.id].length, items: groups[p.id].map(m => ({ id: m.id, type: m.type, desc: m.description, cls: s.forced === m.id ? 'btn btn-primary' : 'btn btn-ghost', onPick: () => this.setState({ forced: s.forced === m.id ? null : m.id }) })) }));
+    const planeColor = p => p === 'wild' ? 'var(--color-accent-700)' : p === 'facts' ? 'var(--color-accent-300)' : 'var(--color-accent-500)';
+    if (g) {
+      const st = E.stats(g), B = E.brainState(g);
+      base.sandboxLine = `${st.nodes} thoughts · ${st.edges} edges · ${Math.round(st.avgGrounding * 100)}% grounded · ${st.communities} communities · gen ${B.gen}`;
+      base.planes = E.PLANES.map(p => ({ id: p.id, label: p.label, n: st.byPlane[p.id], style: { height: 4, borderRadius: 2, background: planeColor(p.id), width: `${Math.max(2, Math.round(100 * st.byPlane[p.id] / (st.nodes || 1)))}%` } }));
+      base.steps = s.steps.map(x => ({ id: x.i, i: String(x.i), module: x.mod.type, target: E.short(x.target.label, 40), result: `+${x.added.length}${x.cycle ? ' · ' + x.cycle : ''}` })); base.stepCount = `${s.steps.length} steps`;
+      const tagFor = { select: 'tag tag-accent', adapt: 'tag tag-accent', implement: 'tag tag-accent', graph: 'tag tag-neutral', time: 'tag tag-neutral', internet: 'tag tag-outline', papers: 'tag tag-outline', sleep: 'tag tag-accent-2', evolve: 'tag tag-accent-2', brain: 'tag tag-accent-2' };
+      base.trace = [...g.trace].reverse().slice(0, 40).map(t => ({ id: t.i, kind: t.kind.toUpperCase(), text: t.text.replace(/^[A-Z]+ · /, ''), t: t.t, tagClass: tagFor[t.kind] || 'tag tag-neutral' })); base.traceCount = `${g.trace.length} steps`;
+      if (s.last) { const L = s.last, M = E.metrics(g).by.get(L.target.id); base.last = { target: L.target.label, targetMeta: `${E.PLANE_OF[L.target.plane].label} · degree ${L.target.deg} · ${M ? 'bridge ' + Math.round(M.betweenness * 100) + '%' : ''} · ${Math.round(L.target.g * 100)}% grounded`, module: `${L.mod.type} · #${L.mod.id}`, moduleDesc: L.mod.description, adapt: L.adapt, added: L.added.map(a => ({ id: a.id, label: a.label, plane: E.PLANE_OF[a.plane].label, meta: `${Math.round(a.g * 100)}% · ${a.via}${a.evidence.length ? ' · ' + a.evidence[0].src : ''}` })), none: L.added.length ? '' : 'Nothing new: the module found no fresh thought here.' }; }
+    }
+    const R = s.results, passed = R.filter(r => r.pass).length, total = T ? T.TESTS.length : 30;
+    base.suiteLine = R.length ? `${passed}/${R.length} passed${s.running ? ' · running' : ''}` : 'not run yet';
+    base.passBar = { width: `${100 * passed / total}%`, background: 'var(--color-accent-400)', transition: 'width .2s' }; base.failBar = { width: `${100 * (R.length - passed) / total}%`, background: 'var(--color-neutral-600)', transition: 'width .2s' };
+    const list = T ? T.TESTS : [];
+    base.tests = list.map(t => { const r = R.find(x => x.id === t.id), open = s.openTest === t.id; return { id: t.id, name: `${t.id}. ${t.name}`, ms: r ? r.ms + ' ms' : '', evidence: r ? r.evidence : 'not run', claim: (T.CLAIMS.find(c => c.id === t.claim) || {}).title || t.claim, open,
+      style: { justifyContent: 'flex-start', alignItems: 'flex-start', gap: 8, padding: '4px 6px', width: '100%', fontWeight: 400, color: 'var(--color-neutral-300)', background: open ? 'var(--color-bg)' : 'transparent' },
+      dot: { width: 8, height: 8, borderRadius: '50%', flex: 'none', marginTop: 4, border: '1.5px solid ' + (!r ? 'var(--color-neutral-700)' : r.pass ? 'var(--color-accent-300)' : 'var(--color-neutral-500)'), background: !r ? 'transparent' : r.pass ? 'var(--color-accent-900)' : 'var(--color-neutral-800)', boxShadow: r && r.pass ? '0 0 6px var(--color-accent-700)' : 'none' },
+      onPick: () => this.setState({ openTest: open ? null : t.id }) }; });
+    const F = s.findings;
+    if (F) {
+      base.findingsLine = `${F.passed}/${F.total} · ${F.fidelity != null ? 'fidelity ' + Math.round(F.fidelity * 100) + '%' : ''} · ${new Date(F.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      base.claims = F.claims.map(c => ({ id: c.id, title: c.title, paper: c.paper, status: c.status, score: `${c.passed}/${c.total} tests · ${(c.evidence.find(e => e.startsWith('✓')) || c.evidence[0] || '').replace(/^[✓✗] /, '').slice(0, 120)}`, cls: c.status === 'supported' ? 'tag tag-accent' : c.status === 'partial' ? 'tag tag-outline' : 'tag tag-neutral' }));
+      const mx = Math.max(0.01, ...(F.modules || []).map(m => m.avgG + m.evRate));
+      base.hasModules = (F.modules || []).length > 0;
+      base.modules = (F.modules || []).slice(0, 8).map(m => ({ id: m.id, type: m.type, meta: `${Math.round(m.avgG * 100)}% · ${Math.round(m.evRate * 100)}% sourced · ${m.n}`, bar: { height: 4, borderRadius: 2, width: `${Math.round(100 * (m.avgG + m.evRate) / mx)}%`, background: 'var(--color-accent-400)' } }));
+    } else { base.findingsLine = 'run the suite'; base.claims = (T ? T.CLAIMS : []).map(c => ({ id: c.id, title: c.title, paper: c.paper, status: 'untested', score: '', cls: 'tag tag-neutral' })); }
+    return base;
+  }
+}
+</script>
+</body>
+</html>

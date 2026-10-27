@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saltline · Onboarding</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="suite-theme.css">
+<script src="suite-theme.js"></script>
+<script src="suite-launcher.js"></script>
+<script src="suite-nav.js"></script>
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--color-bg);color:var(--color-text);font-size:14px;line-height:1.55;display:flex;flex-direction:column;overflow:hidden}
+a{color:var(--color-accent-300);text-decoration:none}a:hover{color:var(--color-accent-200)}
+.top{display:flex;align-items:center;gap:16px;padding:11px 20px;border-bottom:1px solid var(--color-neutral-800);background:color-mix(in srgb,var(--color-bg) 82%,transparent);backdrop-filter:blur(12px);flex:none}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.brand .mk{width:28px;height:28px;border-radius:8px;background:var(--color-accent);color:var(--color-on-accent);display:grid;place-items:center;font-size:16px}
+.brand small{display:block;font-weight:500;font-size:11.5px;color:var(--color-neutral-500);line-height:1}
+.prg{flex:1;max-width:320px;height:6px;background:var(--color-neutral-900);border-radius:4px;overflow:hidden}
+.prg i{display:block;height:100%;width:0;background:var(--color-accent);transition:width .4s cubic-bezier(.3,0,.2,1)}
+.prgN{font:500 12px var(--font-mono);color:var(--color-neutral-500);white-space:nowrap}
+.sp{flex:1}
+.split{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 400px;min-height:0}
+@media(max-width:940px){.split{grid-template-columns:1fr;overflow:auto}body{overflow:auto}.split>.left{min-height:calc(100vh - 58px)}.split>.right{border-left:0;border-top:1px solid var(--color-neutral-800)}}
+/* LEFT — the conversation */
+.left{display:flex;flex-direction:column;min-height:0;position:relative}
+.thread{flex:1;overflow:auto;padding:30px clamp(20px,5vw,64px) 14px;display:flex;flex-direction:column;gap:20px;scroll-behavior:smooth}
+.turn{display:flex;flex-direction:column;gap:12px;animation:rise .4s cubic-bezier(.2,.7,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.q{display:flex;gap:12px;align-items:flex-start;max-width:640px}
+.q .av{width:30px;height:30px;border-radius:9px;background:var(--color-accent-900);color:var(--color-accent-300);display:grid;place-items:center;flex:none;font-size:16px;margin-top:2px}
+.q .txt{font-size:clamp(17px,2.3vw,22px);font-weight:500;letter-spacing:-.01em;line-height:1.35;text-wrap:pretty;padding-top:2px}
+.turn.past .q .txt{font-size:15px;font-weight:500;color:var(--color-neutral-400)}
+.turn.past .q .av{background:var(--color-neutral-900);color:var(--color-neutral-500);width:24px;height:24px;font-size:13px}
+.ans{align-self:flex-end;max-width:560px;background:var(--color-accent);color:var(--color-on-accent);border-radius:14px 14px 4px 14px;padding:9px 14px;font-size:14.5px;white-space:pre-wrap;animation:rise .3s ease-out}
+.ans.skip{background:var(--color-neutral-900);color:var(--color-neutral-400);font-style:italic}
+.typing{display:flex;gap:4px;padding:6px 2px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--color-neutral-600);animation:bob 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bob{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+.composer{flex:none;border-top:1px solid var(--color-neutral-800);padding:14px clamp(20px,5vw,64px);background:var(--color-bg)}
+.cwrap{max-width:660px;position:relative}
+.cbox{display:flex;align-items:flex-end;gap:10px;background:var(--color-surface);border:1.5px solid var(--color-neutral-800);border-radius:14px;padding:8px 8px 8px 14px;transition:border-color .15s}
+.cbox:focus-within{border-color:var(--color-accent)}
+.cbox textarea{flex:1;border:0;outline:none;resize:none;background:transparent;color:var(--color-text);font:15px var(--font-body);line-height:1.5;max-height:140px;padding:6px 0}
+.cbox textarea::placeholder{color:var(--color-neutral-500)}
+.send{flex:none;width:38px;height:38px;border-radius:10px;border:0;background:var(--color-accent);color:var(--color-on-accent);display:grid;place-items:center;cursor:pointer;transition:filter .15s}
+.send:hover{filter:brightness(1.08)}.send:disabled{opacity:.4;cursor:default}
+.chints{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:12px;color:var(--color-neutral-500);flex-wrap:wrap}
+.chints kbd{font:500 11px var(--font-mono);background:var(--color-neutral-900);border-radius:5px;padding:1px 6px}
+.skipbtn{background:none;border:0;color:var(--color-neutral-500);cursor:pointer;font:500 12px var(--font-body);text-decoration:underline;text-underline-offset:2px}
+.skipbtn:hover{color:var(--color-text)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.chip{background:var(--color-surface);border:1px solid var(--color-neutral-800);border-radius:999px;padding:6px 12px;font:500 13px var(--font-body);color:var(--color-neutral-300);cursor:pointer;transition:border-color .15s,color .15s}
+.chip:hover{border-color:var(--color-accent);color:var(--color-text)}
+/* intro overlay */
+.intro{position:absolute;inset:0;background:var(--color-bg);z-index:5;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(20px,6vw,72px);gap:18px;overflow:auto}
+@media(max-width:940px){.intro{position:fixed;inset:58px 0 0;justify-content:flex-start;padding-top:40px}}
+.intro .k{font:600 12px var(--font-body);letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300)}
+.intro h1{margin:0;font-size:clamp(30px,5vw,46px);font-weight:600;letter-spacing:-.02em;line-height:1.08;max-width:560px;text-wrap:balance}
+.intro p{margin:0;font-size:16px;color:var(--color-neutral-400);max-width:480px}
+.intro .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:4px;font-size:13px;color:var(--color-neutral-500)}
+.intro .meta span{display:flex;align-items:center;gap:6px}.intro .meta i{color:var(--color-accent)}
+.intro.hide{opacity:0;pointer-events:none;transition:opacity .4s}
+/* RIGHT — the live profile / QA */
+.right{border-left:1px solid var(--color-neutral-800);background:var(--color-surface-2,var(--color-surface));overflow:auto;padding:18px}
+.rh{font:600 11px var(--font-body);letter-spacing:.09em;text-transform:uppercase;color:var(--color-neutral-500);margin:0 0 10px;display:flex;align-items:center;gap:7px}
+.rh i{color:var(--color-accent);font-size:14px}
+.pcard{background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:16px;margin-bottom:12px}
+.ring-row{display:flex;align-items:center;gap:14px}
+.ring{transform:rotate(-90deg)}
+.ring-tx b{display:block;font:600 22px var(--font-mono);letter-spacing:-.02em}
+.ring-tx span{font-size:12px;color:var(--color-neutral-500)}
+.pf{display:flex;flex-direction:column;gap:2px;padding:7px 0;border-bottom:1px solid var(--color-neutral-900)}
+.pf:last-child{border:0}
+.pf .l{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--color-neutral-500)}
+.pf .v{font-size:14px;color:var(--color-text);transition:background .5s}
+.pf .v.empty{color:var(--color-neutral-600);font-style:italic}
+.pf.flash .v{background:color-mix(in srgb,var(--color-accent) 22%,transparent);border-radius:4px}
+.prod{display:flex;gap:11px;align-items:flex-start}
+.prod .ic{width:36px;height:36px;border-radius:10px;background:var(--color-accent-900);color:var(--color-accent-300);display:grid;place-items:center;font-size:19px;flex:none}
+.prod b{font-weight:600;font-size:14.5px;display:block;line-height:1.25}
+.prod .why{font-size:12.5px;color:var(--color-neutral-400);margin-top:3px}
+.prod .alt{margin-top:9px;font-size:12px;color:var(--color-neutral-500)}
+.prod .alt select{background:var(--color-surface);border:1px solid var(--color-neutral-800);border-radius:7px;color:var(--color-text);font:12.5px var(--font-body);padding:4px 7px;margin-top:3px;width:100%}
+.seclist{display:flex;flex-direction:column;gap:5px}
+.sec{display:flex;align-items:center;gap:9px;font-size:13px}
+.sec .n{width:18px;height:18px;border-radius:50%;background:var(--color-neutral-900);color:var(--color-neutral-500);display:grid;place-items:center;font:600 10px var(--font-mono);flex:none}
+.sec .nm{flex:1}
+.sec .st{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px}
+.st-ev{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.st-need{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.docl{display:flex;flex-direction:column;gap:6px}
+.doc{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--color-neutral-300)}
+.doc i{color:var(--color-accent);margin-top:2px;font-size:15px;flex:none}
+.finish{position:sticky;bottom:0;background:linear-gradient(transparent,var(--color-surface-2,var(--color-surface)) 30%);padding-top:14px}
+.btn-block{width:100%}
+.done-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ok);font-weight:600;margin-bottom:8px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div data-suite-nav="onboarding"></div>
+<span data-nav-extra="" style="display:flex;align-items:center;gap:10px"><div class="prg"><i id="prg"></i></div><span class="prgN" id="prgN">0%</span><a class="btn btn-ghost" href="Dossier.html#/intake"><i class="ph ph-rows"></i>Quick form</a></span>
+
+<div class="split">
+  <section class="left">
+    <div class="intro" id="intro">
+      <div class="k">AI onboarding</div>
+      <h1>Let's turn what you know into a regulator-ready file.</h1>
+      <p>I'll ask a handful of natural questions about your project. As you answer, the panel on the right builds your profile, recommends the right document, and shows a live readiness check.</p>
+      <div class="meta"><span><i class="ph ph-chats-circle"></i> ~6 questions</span><span><i class="ph ph-clock"></i> about 3 minutes</span><span><i class="ph ph-shield-check"></i> stays in your browser</span></div>
+      <div><button class="btn btn-primary" id="begin" style="font-size:15px;padding:11px 20px"><i class="ph ph-sparkle"></i> Begin</button></div>
+    </div>
+    <div class="thread" id="thread"></div>
+    <div class="composer" id="composer" style="visibility:hidden">
+      <div class="cwrap">
+        <div class="cbox"><textarea id="inp" rows="1" placeholder="Type your answer…" autocomplete="off"></textarea><button class="send" id="send" aria-label="Send"><i class="ph ph-arrow-up"></i></button></div>
+        <div class="chints"><span><kbd>Enter</kbd> to send · <kbd>Shift</kbd>+<kbd>Enter</kbd> for a new line</span><span class="sp" style="flex:1"></span><button class="skipbtn" id="skip" style="display:none">Skip this</button></div>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="right" id="right">
+    <p class="rh"><i class="ph ph-identification-card"></i>Your project</p>
+    <div class="pcard" id="profile"></div>
+    <p class="rh"><i class="ph ph-package"></i>Recommended document</p>
+    <div class="pcard" id="recoCard"><div class="prod"><div class="ic"><i class="ph ph-sparkle"></i></div><div><b>Finding your best fit…</b><div class="why">I'll recommend one as soon as I know what you're building.</div></div></div></div>
+    <p class="rh"><i class="ph ph-shield-check"></i>Readiness check · client QA</p>
+    <div class="pcard" id="qaCard"></div>
+    <p class="rh"><i class="ph ph-folders"></i>Documents to bring</p>
+    <div class="pcard" id="docCard"></div>
+    <div class="finish" id="finishWrap"></div>
+  </aside>
+</div>
+
+<script type="module">
+import * as C from './suite-core.js';
+const $ = s => document.querySelector(s), esc = C.esc;
+const store = C.db.get('client', null) || { ob: 0, client: {}, intake: {}, product: null, docs: [], dossier: null, chat: [] };
+const I = store.intake || (store.intake = {});
+
+// conversational slots → intake fields
+const SLOTS = [
+  { f: 'org', req: 1, icon: 'ph-buildings', q: "First — what's the name of your organisation?", hint: "the client's organisation name", chips: [] },
+  { f: 'project', req: 1, icon: 'ph-folder-notch', q: "And what's the project called, or how would you describe it in a few words?", hint: 'the project name or a short description' },
+  { f: 'location', req: 1, icon: 'ph-map-pin', q: "Where's the site? A region, coast, or nearest town is plenty.", hint: 'the site location' },
+  { f: 'activity', req: 1, icon: 'ph-wrench', q: "In plain terms, what will actually happen on site?", hint: 'what physically happens on site — the activity' },
+  { f: 'scale', req: 1, icon: 'ph-ruler', q: "Roughly how big is it, and over what timeframe?", hint: 'scale (area/size) and duration' },
+  { f: 'authority', req: 0, icon: 'ph-bank', q: "Who are you preparing this for — a regulator, or a consultancy you'll brief?", hint: 'the regulator or consultancy they will meet', chips: ['A national regulator', 'A state / provincial agency', 'An environmental consultancy', 'Not sure yet'] },
+  { f: 'sensitivities', req: 0, icon: 'ph-leaf', q: "Anything nearby you're conscious of? Habitats, water, wildlife, communities…", hint: 'known environmental or social sensitivities', chips: ['Wetlands / mudflats', 'Protected birds', 'Groundwater', 'A nearby community', 'Nothing major'] },
+  { f: 'meeting', req: 0, icon: 'ph-calendar-blank', q: "Any date you're working towards?", hint: 'a target meeting or submission date', chips: ['Within a month', 'This quarter', 'No fixed date'] },
+  { f: 'contact', req: 0, icon: 'ph-user', q: "Last one — who should I note as the main contact? A name and email is ideal.", hint: 'contact name and email' },
+];
+const FIELDLABEL = { org: 'Organisation', project: 'Project', location: 'Location', activity: 'Activity', scale: 'Scale & duration', authority: 'Preparing for', sensitivities: 'Sensitivities', meeting: 'Target date', contact: 'Contact' };
+const PROFILE_ORDER = ['org', 'project', 'location', 'activity', 'scale', 'authority', 'sensitivities', 'meeting', 'contact'];
+const ACKS = ['Got it.', 'Perfect.', 'Noted.', 'Great.', 'Thanks.', 'Makes sense.'];
+
+const DOCHINT = { baseline: ['ph-notebook', 'Baseline survey notes'], water: ['ph-drop', 'Water-quality / salinity data (CSV or lab results)'], bio: ['ph-bird', 'Ecological or species survey'], setting: ['ph-identification-badge', 'Regulator correspondence or permit letter'], project: ['ph-blueprint', 'Project description or site plan'], social: ['ph-users-three', 'Stakeholder / community meeting notes'], monitoring: ['ph-chart-line', 'Any existing monitoring data'], mitigation: ['ph-shield', 'Draft mitigation or management measures'] };
+
+let current = null, skipped = new Set(), busy = false, finished = false, prevProfile = {};
+
+/* ---------- product recommendation ---------- */
+function heuristicProduct() {
+  const t = ((I.activity || '') + ' ' + (I.sensitivities || '') + ' ' + (I.project || '') + ' ' + (I.authority || '')).toLowerCase();
+  if (/permit|licen|consent|submission|regulator|approval/.test(t)) return ['permit', 'You have a regulator submission in view, so a readiness check fits.'];
+  if (/bird|wetland|mudflat|habitat|species|mangrove|ecolog|marsh|seagrass/.test(t)) return ['bio', 'Nearby habitats and wildlife make biodiversity screening the priority.'];
+  if (/monitor|mrv|carbon|credit|restoration/.test(t)) return ['monitor', 'Ongoing work points to a monitoring & MRV plan.'];
+  if (/early|concept|baseline|scoping|survey|scattered/.test(t)) return ['baseline', 'Early-stage work is best organised into a baseline evidence pack.'];
+  return ['dossier', 'The full pre-submission dossier covers everything a regulator or consultancy expects.'];
+}
+
+/* ---------- rendering the right panel ---------- */
+function profileFields() {
+  return PROFILE_ORDER.map(f => {
+    const v = (I[f] || '').trim(), was = (prevProfile[f] || '').trim();
+    const flash = v && v !== was ? ' flash' : '';
+    return `<div class="pf${flash}"><span class="l">${esc(FIELDLABEL[f])}</span><span class="v${v ? '' : ' empty'}">${v ? esc(v) : (SLOTS.find(s => s.f === f).req ? 'needed' : 'optional')}</span></div>`;
+  }).join('');
+}
+function renderRight() {
+  $('#profile').innerHTML = profileFields();
+  // product
+  const [pid, why] = store.product ? [store.product, store._why || ''] : heuristicProduct();
+  if (!store.product) { store.product = pid; store._why = why; }
+  const P = C.PRODUCTS.find(p => p.id === store.product) || C.PRODUCTS[0];
+  const known = PROFILE_ORDER.some(f => I[f]);
+  $('#recoCard').innerHTML = `<div class="prod"><div class="ic"><i class="ph ${P.icon}"></i></div><div style="min-width:0"><b>${esc(P.name)}</b><div class="why">${esc(known ? (store._why || P.for) : 'I\'ll recommend one as soon as I know what you\'re building.')}</div>
+    <div class="alt">Prefer another? <select id="psel">${C.PRODUCTS.map(p => `<option value="${p.id}"${p.id === store.product ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select></div></div></div>`;
+  $('#psel').onchange = e => { store.product = e.target.value; store._why = (C.PRODUCTS.find(p => p.id === e.target.value) || {}).for; prevProfile = { ...I }; renderRight(); persist(); };
+  // readiness / QA
+  const req = SLOTS.filter(s => s.req), reqFilled = req.filter(s => (I[s.f] || '').trim()).length;
+  const opt = SLOTS.filter(s => !s.req), optFilled = opt.filter(s => (I[s.f] || '').trim()).length;
+  const frac = reqFilled / req.length;
+  const pct = Math.round((reqFilled + optFilled * 0.4) / (req.length + opt.length * 0.4) * 100);
+  const C_ = 207.3, off = (C_ * (1 - pct / 100)).toFixed(1);
+  const missing = req.filter(s => !(I[s.f] || '').trim()).map(s => FIELDLABEL[s.f]);
+  $('#qaCard').innerHTML = `<div class="ring-row"><svg width="64" height="64" viewBox="0 0 76 76" class="ring"><circle cx="38" cy="38" r="33" fill="none" stroke="var(--color-neutral-900)" stroke-width="7"/><circle cx="38" cy="38" r="33" fill="none" stroke="${pct >= 80 ? 'var(--ok)' : 'var(--color-accent)'}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C_}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset .5s"/></svg>
+    <div class="ring-tx"><b>${pct}%</b><span>profile complete</span></div></div>
+    <div style="margin-top:10px;font-size:12.5px;color:var(--color-neutral-400)">${missing.length ? 'Still needed: <b style="color:var(--color-text);font-weight:600">' + missing.map(esc).join(', ') + '</b>' : 'Core details captured. Documents are the next step to lift confidence.'}</div>`;
+  // sections + docs for recommended product
+  const secIds = P.sections;
+  $('#docCard').innerHTML = `<div style="margin-bottom:10px"><div class="rh" style="margin:0 0 7px">${P.name} · ${secIds.length} sections</div><div class="seclist">${secIds.map((s, i) => `<div class="sec"><span class="n">${i + 1}</span><span class="nm">${esc(C.SECTIONS[s].t)}</span></div>`).join('')}</div></div>`;
+  const docs = [...new Set(secIds.map(s => DOCHINT[s]).filter(Boolean).map(d => d.join('|')))].map(d => d.split('|'));
+  $('#docCard').insertAdjacentHTML('beforeend', `<div class="rh" style="margin:14px 0 7px">Bring these so each section has evidence</div><div class="docl">${docs.map(d => `<div class="doc"><i class="ph ${d[0]}"></i>${esc(d[1])}</div>`).join('')}</div>`);
+  // progress bar in header
+  $('#prg').style.width = pct + '%'; $('#prgN').textContent = pct + '%';
+  renderFinish(reqFilled === req.length);
+}
+function renderFinish(ready) {
+  if (finished) return;
+  $('#finishWrap').innerHTML = ready
+    ? `<a class="btn btn-primary btn-block" href="Dossier.html#/intake" id="toDocs" style="padding:11px"><i class="ph ph-arrow-right"></i> Continue to documents</a>`
+    : `<button class="btn btn-secondary btn-block" id="toDocs" style="padding:11px" title="Answer the core questions first" disabled><i class="ph ph-lock-simple"></i> Finish the core questions</button>`;
+  const b = $('#toDocs'); if (b && ready) b.onclick = () => commit();
+}
+
+/* ---------- conversation ---------- */
+function addTurn(slot, question) {
+  document.querySelectorAll('.turn').forEach(t => t.classList.add('past'));
+  const el = document.createElement('div'); el.className = 'turn'; el.dataset.f = slot.f;
+  el.innerHTML = `<div class="q"><span class="av"><i class="ph ${slot.icon}"></i></span><span class="txt">${esc(question)}</span></div>`;
+  $('#thread').appendChild(el); scrollDown();
+  // chips
+  const chips = slot.chips || [];
+  $('#chips').innerHTML = chips.map(c => `<button class="chip">${esc(c)}</button>`).join('');
+  $('#chips').querySelectorAll('.chip').forEach(b => b.onclick = () => { $('#inp').value = b.textContent; send(); });
+  $('#skip').style.display = slot.req ? 'none' : '';
+  current = slot;
+  setTimeout(() => $('#inp').focus(), 60);
+}
+function addAnswer(text, isSkip) {
+  const el = document.querySelector('.turn:last-child');
+  const a = document.createElement('div'); a.className = 'ans' + (isSkip ? ' skip' : ''); a.textContent = isSkip ? 'Skipped' : text;
+  el.appendChild(a); scrollDown();
+}
+function showTyping() { const el = document.createElement('div'); el.className = 'turn'; el.id = 'typing'; el.innerHTML = '<div class="q"><span class="av"><i class="ph ph-sparkle"></i></span><span class="typing"><i></i><i></i><i></i></span></div>'; $('#thread').appendChild(el); scrollDown(); }
+function hideTyping() { const t = $('#typing'); if (t) t.remove(); }
+const scrollDown = () => { const t = $('#thread'); requestAnimationFrame(() => t.scrollTop = t.scrollHeight); };
+function nextSlot() { return SLOTS.find(s => !(I[s.f] || '').trim() && !skipped.has(s.f)); }
+
+async function send() {
+  if (busy || !current) return;
+  const raw = $('#inp').value.trim(); if (!raw) return;
+  $('#inp').value = ''; autoGrow(); $('#chips').innerHTML = '';
+  addAnswer(raw); busy = true; $('#send').disabled = true;
+  const asked = current;
+  prevProfile = { ...I };
+  // apply raw to the asked slot immediately as a safety net
+  if (!(I[asked.f] || '').trim()) I[asked.f] = raw;
+  const next = (() => { const n = SLOTS.find(s => !(I[s.f] || '').trim() && !skipped.has(s.f) && s.f !== asked.f); return n; })();
+  let ack = ACKS[Math.floor(Math.random() * ACKS.length)], question = next ? next.q : '', pid = null, why = '';
+  if (C.hasClaude()) {
+    showTyping();
+    try {
+      const out = await C.llm(
+        'You are Devi, a warm, concise onboarding specialist for Saltline, which prepares environmental dossiers that clients take to regulators or consultancies. You interview clients one question at a time. Output ONLY valid JSON, no prose.',
+        `Known intake so far: ${JSON.stringify(I)}\nWe just asked for: ${asked.hint}\nThe client replied: "${raw}"\nThe next field to ask about: ${next ? next.hint : 'NONE — wrap up warmly'}\nProduct options: ${C.PRODUCTS.map(p => p.id + ' = ' + p.name).join('; ')}\n\nReturn JSON exactly: {"extracted":{<intakeField>:<cleaned value>}, "ack":"<=14 word acknowledgement, no question", "question":"${next ? 'natural one-sentence question for the next field, warm' : ''}", "product":"<best-fit product id>", "rationale":"<=16 words why"}\nValid intake fields: org, project, location, activity, scale, authority, sensitivities, meeting, contact. Only include fields you can fill confidently from the reply. Keep the client's own wording for names.`,
+        420);
+      const j = JSON.parse(/\{[\s\S]*\}/.exec(out)[0]);
+      if (j.extracted && typeof j.extracted === 'object') for (const [k, v] of Object.entries(j.extracted)) { if (FIELDLABEL[k] && String(v).trim() && !skipped.has(k)) I[k] = String(v).trim(); }
+      if (j.ack) ack = String(j.ack); if (typeof j.question === 'string' && j.question.trim()) question = j.question.trim();
+      if (j.product && C.PRODUCTS.some(p => p.id === j.product)) { pid = j.product; why = String(j.rationale || ''); }
+      hideTyping();
+    } catch (e) { hideTyping(); }
+  }
+  if (pid) { store.product = pid; store._why = why; } else { const [hp, hw] = heuristicProduct(); store.product = hp; store._why = hw; }
+  const n2 = nextSlot();
+  renderRight(); persist();
+  if (!n2) { finish(ack); busy = false; $('#send').disabled = false; return; }
+  // render ack as part of the next question for a natural flow
+  const q = (ack && question && !/\?$/.test(ack)) ? ack + ' ' + question : (question || ack);
+  addTurn(n2, q);
+  busy = false; $('#send').disabled = false;
+}
+function skip() {
+  if (busy || !current || current.req) return;
+  skipped.add(current.f); addAnswer('', true);
+  const n = nextSlot(); renderRight(); persist();
+  if (!n) { finish('All set — that\'s everything I need.'); return; }
+  const ack = ACKS[Math.floor(Math.random() * ACKS.length)];
+  addTurn(n, ack + ' ' + n.q);
+}
+function finish(line) {
+  finished = true; current = null; $('#composer').style.visibility = 'hidden';
+  document.querySelectorAll('.turn').forEach(t => t.classList.add('past'));
+  const el = document.createElement('div'); el.className = 'turn';
+  const P = C.PRODUCTS.find(p => p.id === store.product) || C.PRODUCTS[0];
+  el.innerHTML = `<div class="q"><span class="av"><i class="ph ph-check-circle"></i></span><span class="txt">${esc(line || 'That\'s everything I need.')} Based on your answers I'd prepare the <b>${esc(P.name)}</b>. Upload your documents next and I'll draft it, cited to your own files.</span></div>`;
+  $('#thread').appendChild(el); scrollDown();
+  $('#finishWrap').innerHTML = `<div class="done-badge"><i class="ph ph-check-circle"></i> Profile complete</div><a class="btn btn-primary btn-block" href="Dossier.html#/intake" style="padding:11px" id="go"><i class="ph ph-arrow-right"></i> Continue to documents</a><a class="btn btn-ghost btn-block" href="Command Center.html" style="padding:9px;margin-top:6px">View in the console</a>`;
+  $('#go').onclick = () => commit();
+  commit(true);
+}
+function commit(silent) {
+  store.ob = 3; store.client = { ...store.client, org: I.org, project: I.project, location: I.location, authority: I.authority, contact: I.contact, meeting: I.meeting };
+  persist(); C.emit('client', { org: I.org, project: I.project, product: store.product });
+  if (!silent) location.href = 'Dossier.html#/intake';
+}
+function persist() { C.db.set('client', store); }
+
+function autoGrow() { const t = $('#inp'); t.style.height = 'auto'; t.style.height = Math.min(140, t.scrollHeight) + 'px'; }
+$('#inp').addEventListener('input', autoGrow);
+$('#inp').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+$('#send').onclick = send; $('#skip').onclick = skip;
+
+function begin() {
+  $('#intro').classList.add('hide'); $('#composer').style.visibility = 'visible';
+  // resume: skip slots already known from a prior session
+  const first = nextSlot();
+  if (!first) { finish('Welcome back — your profile is already complete.'); return; }
+  // warm opener (scripted to avoid first-call latency)
+  const opener = Object.keys(I).some(k => I[k]) ? "Welcome back. " + first.q : first.q;
+  addTurn(first, opener);
+}
+$('#begin').onclick = begin;
+renderRight();
+// if arriving with everything prefilled, still let them press Begin to review
+</script>
+</body>
+</html>

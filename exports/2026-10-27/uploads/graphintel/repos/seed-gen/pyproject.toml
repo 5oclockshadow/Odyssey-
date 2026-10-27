@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools==75.6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anima-seed-gen"
+version = "0.1.0"
+description = "Generate hypergraph seeds at any size and depth, reproducible from one integer."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+seedgen = "seedgen.__main__:main"
+
+[tool.setuptools]
+packages = ["seed_gen"]

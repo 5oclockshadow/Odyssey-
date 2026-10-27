@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Odyssey Maturity</title>
+<style>
+  :root{
+    --bg:#070b11;--bg2:#0a0f17;--panel:#0c131d;--panel2:#0e1725;--line:#1a2740;
+    --text:#dbe8ff;--dim:#7488a3;--dim2:#45566e;
+    --acc:#39ff9f;--acc2:#79ffc6;--cyan:#45d6ff;--amb:#ffb347;--bad:#ff6b7d;--vio:#b58cff;
+    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+    --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);}
+  :root:not([data-theme="light"]){color-scheme:dark;}
+  .wrap{max-width:1100px;margin:0 auto;padding:22px 18px 60px;}
+  h1{margin:0 0 4px;font-size:23px;letter-spacing:-.01em;}
+  .lede{color:var(--dim);font-size:13.5px;line-height:1.55;max-width:80ch;margin:0 0 20px;}
+  .hero{display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:center;background:var(--panel);
+    border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:18px;}
+  .gauge{position:relative;display:grid;place-items:center;}
+  .gnum{position:absolute;text-align:center;}
+  .gnum b{font-size:44px;font-weight:700;letter-spacing:-.02em;}
+  .gnum span{display:block;font-size:11px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase;margin-top:2px;}
+  .scale{display:flex;flex-direction:column;gap:12px;}
+  .mk{display:flex;align-items:center;gap:12px;}
+  .mk .lab{width:120px;font-size:12px;color:var(--dim);}
+  .mk .track{flex:1;height:10px;border-radius:5px;background:var(--line);overflow:hidden;position:relative;}
+  .mk .track i{display:block;height:100%;}
+  .mk .val{width:52px;text-align:right;font-family:var(--mono);font-size:13px;}
+  .mk .track .tick{position:absolute;top:-3px;width:2px;height:16px;background:var(--acc2);}
+  .grid{display:grid;gap:14px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0;}
+  .ck{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2);margin-bottom:12px;}
+  h3.sec{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);margin:24px 0 10px;}
+  /* app rows */
+  .app{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line);}
+  .app:first-child{border-top:0;}
+  .app .nm{width:150px;font-size:13px;font-weight:500;}
+  .app .nm small{display:block;color:var(--dim2);font-weight:400;font-size:10.5px;}
+  .app .track{flex:1;height:14px;border-radius:7px;background:var(--line);position:relative;overflow:hidden;}
+  .app .track .cur{display:block;height:100%;border-radius:7px;}
+  .app .track .ceil{position:absolute;top:-2px;height:18px;width:2px;background:var(--acc2);opacity:.8;}
+  .app .pct{width:44px;text-align:right;font-family:var(--mono);font-size:13px;}
+  .app .band{width:60px;text-align:right;font-size:10px;}
+  .b-bad{color:var(--bad);} .b-poor{color:var(--amb);} .b-mid{color:var(--cyan);} .b-ok{color:var(--acc);}
+  /* heatmap */
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th{text-align:center;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim2);font-weight:500;padding:0 4px 8px;}
+  th.l,td.l{text-align:left;}
+  td{padding:4px;text-align:center;}
+  td.l{font-size:12px;padding-left:0;white-space:nowrap;}
+  .cell{display:block;border-radius:6px;padding:7px 0;font-family:var(--mono);font-size:11px;color:#06100a;font-weight:600;}
+  .note{font-size:12.5px;color:var(--dim);line-height:1.6;}
+  .note b{color:var(--text);}
+  .pt{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:12.5px;align-items:baseline;}
+  .pt:first-child{border-top:0;}
+  .pt .n{font-family:var(--mono);color:var(--bad);font-size:12px;flex:0 0 26px;}
+  .pt.good .n{color:var(--acc);}
+  .pt .t b{color:var(--text);}
+  .tag{font-size:10px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--dim);}
+  .verdict{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--amb);border:1px solid color-mix(in srgb,var(--amb) 40%,transparent);
+    background:color-mix(in srgb,var(--amb) 10%,transparent);border-radius:999px;padding:5px 12px;margin-left:10px;}
+  @media(max-width:820px){.hero{grid-template-columns:1fr;}.g2{grid-template-columns:1fr;}.app .nm{width:120px;}
+    table{font-size:10.5px;} .app .band{display:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Odyssey — Honest Maturity <span class="verdict" id="verdict">◆ poor · breadth over depth</span></h1>
+  <p class="lede">An unflinching read of the portfolio. The average app is ~31%. Even making <b>every app 50× better at what it currently does</b> tops out around <b>40%</b> — because the things holding the score down aren't polish, they're <b>depth</b>: real eval, real rewards, real model quality, proven autonomy, real revenue. Here's what I think that actually looks like, and what it would take to break the 40% ceiling.</p>
+
+  <div class="hero">
+    <div class="gauge">
+      <svg width="220" height="220" viewBox="0 0 220 220">
+        <circle cx="110" cy="110" r="92" fill="none" stroke="#1a2740" stroke-width="16"/>
+        <circle id="arcCeil" cx="110" cy="110" r="92" fill="none" stroke="#1a7f55" stroke-width="16"
+          stroke-linecap="round" stroke-dasharray="578" stroke-dashoffset="578" transform="rotate(-90 110 110)" opacity=".5"/>
+        <circle id="arcCur" cx="110" cy="110" r="92" fill="none" stroke="#39ff9f" stroke-width="16"
+          stroke-linecap="round" stroke-dasharray="578" stroke-dashoffset="578" transform="rotate(-90 110 110)"/>
+      </svg>
+      <div class="gnum"><b id="gpct">0%</b><span>portfolio now</span></div>
+    </div>
+    <div class="scale">
+      <div class="mk"><span class="lab">Now</span><div class="track"><i style="width:31%;background:linear-gradient(90deg,#8f5e1a,var(--amb))"></i></div><span class="val">31%</span></div>
+      <div class="mk"><span class="lab">50× polish ceiling</span><div class="track"><i style="width:40%;background:linear-gradient(90deg,#1a7f55,var(--acc))"></i><div class="tick" style="left:40%"></div></div><span class="val">~40%</span></div>
+      <div class="mk"><span class="lab">Depth rebuild</span><div class="track"><i style="width:78%;background:linear-gradient(90deg,#1a6a8f,var(--cyan))"></i></div><span class="val">~78%</span></div>
+      <div class="mk"><span class="lab">Frontier</span><div class="track"><i style="width:100%;background:linear-gradient(90deg,#5e3f8f,var(--vio))"></i></div><span class="val">100%</span></div>
+      <p class="note" style="margin:8px 0 0">The gap between <b>40%</b> and <b>78%</b> is the whole game. Polish gets you the first; only the depth moves below get you the second.</p>
+    </div>
+  </div>
+
+  <h3 class="sec">Per-app · current (fill) vs 50× ceiling (tick)</h3>
+  <div class="card"><div id="apps"></div></div>
+
+  <h3 class="sec">Where the points are missing · apps × dimensions</h3>
+  <div class="card" style="overflow:auto"><div id="heat"></div></div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card">
+      <div class="ck">why 50× only buys 40%</div>
+      <div class="pt"><span class="n">01</span><span class="t"><b>Breadth over depth.</b> ~14 apps each half-wired. 50× the breadth is still breadth — many 40%s, no 80%.</span></div>
+      <div class="pt"><span class="n">02</span><span class="t"><b>No real eval.</b> Scores are claimed, not measured. You can't 50× what you don't score — you just move faster blind.</span></div>
+      <div class="pt"><span class="n">03</span><span class="t"><b>Rewards are stubbed.</b> Q-tables with no real reward signal (watch-time/CTR/revenue) don't learn — plasticity is cosmetic.</span></div>
+      <div class="pt"><span class="n">04</span><span class="t"><b>Media/output quality ~3%.</b> The thing customers actually pay for is the weakest link; polishing the harness doesn't touch it.</span></div>
+      <div class="pt"><span class="n">05</span><span class="t"><b>Autonomy unproven.</b> Mechanisms exist; end-to-end zero-touch outcomes don't. "Autonomous" is wired, not demonstrated.</span></div>
+      <div class="pt"><span class="n">06</span><span class="t"><b>No revenue loop.</b> Nothing closes money→reward→improvement. Without it the system can't tell good work from busy work.</span></div>
+    </div>
+    <div class="card">
+      <div class="ck">ceiling breakers · what moves it past 40%</div>
+      <div class="pt good"><span class="n">A</span><span class="t"><b>Pick 2 apps, kill or freeze the rest.</b> Drive two to 80% (codegen + one revenue app). One deep win beats twelve shallow ones.</span></div>
+      <div class="pt good"><span class="n">B</span><span class="t"><b>Real eval harness first.</b> Golden sets + measured scores per module before any "improve." Make the number honest, then move it.</span></div>
+      <div class="pt good"><span class="n">C</span><span class="t"><b>Wire real rewards.</b> Analytics OAuth / revenue / test-pass as the Q-table signal. Then plasticity means something.</span></div>
+      <div class="pt good"><span class="n">D</span><span class="t"><b>Fix output quality at the model.</b> DSPy-optimize + ground the media/synthesis step against a real metric — the 3% is the biggest ROI on the board.</span></div>
+      <div class="pt good"><span class="n">E</span><span class="t"><b>Prove one autonomous loop end-to-end.</b> One channel / one money play, zero-touch, measured. Then replicate.</span></div>
+      <div class="pt good"><span class="n">F</span><span class="t"><b>Consolidate the router + graph.</b> One shared spine, not per-app reimplementations. Depth compounds; sprawl divides effort.</span></div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:18px">Read it this way: <b>31% isn't a bug list, it's a strategy signal.</b> The portfolio is wide and shallow because effort is split 14 ways with no measured feedback. 50× more of the same lands at 40% — genuinely better, still not sellable-great. The jump to ~78% is a different <i>kind</i> of work: fewer apps, real scores, real rewards, one proven loop. That's the call in front of you, and it's a choice, not a grind.</p>
+</div>
+
+<script>
+"use strict";
+/* apps: [name, note, current, ceiling] */
+const APPS=[
+  ["Fleet Router","works, not optimal",45,58],
+  ["Rex","trader, live-ish",44,55],
+  ["codegen-v3","router+graph wired",42,70],
+  ["Jarvis","butler/ops",40,52],
+  ["Tester","checks real, outcomes not",38,60],
+  ["Vestal","search quality mid",33,46],
+  ["AppBuilder / Kiln","loop unwired",30,44],
+  ["Murmur","briefings",29,42],
+  ["TenderGraph (science)","bid-seeker, new",28,45],
+  ["Broadcaster","media-gen ~3%",24,40],
+  ["Graph API","concept",15,38],
+  ["Money Engine","concept",12,36],
+];
+function band(v){return v<30?["bad","poor"]:v<40?["poor","weak"]:v<52?["mid","fair"]:["ok","decent"];}
+function barcol(v){return v<30?"linear-gradient(90deg,#7a2530,#ff6b7d)":v<40?"linear-gradient(90deg,#8f5e1a,#ffb347)":v<52?"linear-gradient(90deg,#1a6a8f,#45d6ff)":"linear-gradient(90deg,#1a7f55,#39ff9f)";}
+const ac=document.getElementById("apps");
+APPS.forEach(a=>{const[nm,nt,cur,ceil]=a;const[b,lab]=band(cur);
+  const row=document.createElement("div");row.className="app";
+  row.innerHTML='<div class="nm">'+nm+'<small>'+nt+'</small></div>'+
+    '<div class="track"><span class="cur" style="width:'+cur+'%;background:'+barcol(cur)+'"></span><div class="ceil" style="left:'+ceil+'%"></div></div>'+
+    '<div class="pct">'+cur+'%</div><div class="band b-'+b+'">'+lab+'</div>';
+  ac.appendChild(row);});
+
+/* heatmap: apps x dimensions */
+const DIMS=["real-model","autonomy","output qual","tests/CI","SaaS","UX"];
+const SC={
+ "Fleet Router":[70,40,55,45,50,45],"Rex":[60,45,50,40,35,44],"codegen-v3":[65,42,45,55,50,40],
+ "Jarvis":[55,40,48,35,30,50],"Tester":[60,35,55,60,30,38],"Vestal":[50,25,45,40,35,40],
+ "AppBuilder / Kiln":[45,20,35,30,40,42],"Murmur":[48,22,40,30,25,45],"TenderGraph (science)":[45,30,35,28,40,30],
+ "Broadcaster":[40,24,3,30,45,35],"Graph API":[30,15,20,10,25,20],"Money Engine":[25,12,15,8,20,30],
+};
+function hc(v){ // color by score
+  if(v<20)return "#5a1f28"; if(v<35)return "#8f5e1a"; if(v<50)return "#1a6a8f"; if(v<65)return "#1a7f55"; return "#39ff9f";}
+let html='<table><thead><tr><th class="l">app</th>'+DIMS.map(d=>'<th>'+d+'</th>').join("")+'<th>avg</th></tr></thead><tbody>';
+Object.keys(SC).forEach(k=>{const r=SC[k];const avg=Math.round(r.reduce((a,b)=>a+b,0)/r.length);
+  html+='<tr><td class="l">'+k+'</td>'+r.map(v=>'<td><span class="cell" style="background:'+hc(v)+';color:'+(v<35?'#ffdca8':'#06100a')+'">'+v+'</span></td>').join("")+
+    '<td><span class="cell" style="background:'+hc(avg)+';color:'+(avg<35?'#ffdca8':'#06100a')+'">'+avg+'</span></td></tr>';});
+html+='</tbody></table>';
+document.getElementById("heat").innerHTML=html;
+
+/* gauge animate */
+const C=578, cur=31, ceil=40;
+document.getElementById("arcCeil").style.strokeDashoffset=C*(1-ceil/100);
+const arc=document.getElementById("arcCur"),g=document.getElementById("gpct");
+let t=0;const iv=setInterval(()=>{t+=1;if(t>=cur){t=cur;clearInterval(iv);}
+  arc.style.strokeDashoffset=C*(1-t/100);g.textContent=t+"%";},26);
+</script>
+</body>
+</html>

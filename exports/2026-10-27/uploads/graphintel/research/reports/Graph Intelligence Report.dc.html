@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-300); text-decoration-color: var(--color-accent-700); text-underline-offset: 3px; }
+    a:hover { color: var(--color-accent-200); text-decoration-color: var(--color-accent); }
+    ::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+  </style>
+</helmet>
+
+<article style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);padding:0 0 120px 0;">
+
+<div style="max-width:1040px;padding:56px clamp(20px,5vw,72px) 0;display:flex;flex-direction:column;gap:56px;">
+
+<!-- ───────── Masthead ───────── -->
+<header data-screen-label="Masthead" style="display:grid;grid-template-columns:minmax(0,1fr);gap:20px;max-width:860px;">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">
+    <span>Research report</span><span style="color:var(--color-neutral-600);">/</span><span>29 September 2026</span><span style="color:var(--color-neutral-600);">/</span><span>For engineers building agent systems</span>
+  </div>
+  <h1 style="font-size:clamp(38px,5vw,54px);line-height:1.05;letter-spacing:-0.02em;font-weight:500;margin:0;max-width:820px;">Agent and graph, one and the same</h1>
+  <p style="font-size:clamp(19px,2.2vw,24px);line-height:1.3;margin:0;color:var(--color-neutral-300);max-width:760px;">Graph intelligence in the age of AI and LLMs: what the mathematics says, what the experiments show, and how to test whether a graph can live inside a single inference round instead of beside it.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+    <span class="tag tag-neutral">Deep dive · 30 min</span>
+    <span class="tag tag-neutral">46 sources, live-checked</span>
+    <span class="tag tag-outline">Equations with walkthroughs</span>
+  </div>
+  <p style="font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:720px;margin:8px 0 0;">Stance: neutral. Each claim below is marked <span class="tag tag-accent" style="font-size:10px;padding:1px 8px;vertical-align:middle;">established</span> when peer-reviewed results support it, <span class="tag tag-outline" style="font-size:10px;padding:1px 8px;vertical-align:middle;">contested</span> when credible results cut both ways, and <span class="tag tag-neutral" style="font-size:10px;padding:1px 8px;vertical-align:middle;">inferred</span> when it is our reading rather than a published finding. Bracketed numbers link to the source list.</p>
+  <div class="hr" style="margin:12px 0 0;"></div>
+</header>
+
+<!-- ───────── Takeaways ───────── -->
+<section data-screen-label="Takeaways" style="display:grid;grid-template-columns:minmax(0,1fr);gap:24px;max-width:900px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Headline takeaways</div>
+  <ol style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;">
+    <li style="display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);">
+      <span style="font-size:12px;color:var(--color-accent);">01</span>
+      <strong style="font-weight:500;font-size:17px;line-height:1.25;">The identity is exact in one place and heuristic everywhere else.</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Attention is message passing on a complete token graph <a href="#src-1">[1]</a> and one energy-descent step of a modern Hopfield network <a href="#src-2">[2]</a>. Agent workflows are computational graphs by construction <a href="#src-29">[29]</a>. The model's own computation can be read out as an attribution graph <a href="#src-19">[19]</a>. "Agent ≡ graph" is a theorem about the operator, a design pattern for the workflow, and a measurement of the computation.</p>
+    </li>
+    <li style="display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);">
+      <span style="font-size:12px;color:var(--color-accent);">02</span>
+      <strong style="font-weight:500;font-size:17px;line-height:1.25;">Latent space does hold structure it was never told.</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Board states recovered by linear probes <a href="#src-15">[15]</a><a href="#src-16">[16]</a>; the full belief-state simplex of a hidden process, fractal and linear in the residual stream <a href="#src-14">[14]</a>; adjacency and reachability matrices in the weights of a path-finding transformer <a href="#src-12">[12]</a>. This is the strongest part of the case.</p>
+    </li>
+    <li style="display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);">
+      <span style="font-size:12px;color:var(--color-accent);">03</span>
+      <strong style="font-weight:500;font-size:17px;line-height:1.25;">The structure it holds is often the wrong shape.</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Shortest paths without a coherent map <a href="#src-17">[17]</a>; adjacency learned but transitivity not <a href="#src-12">[12]</a>; graph search that fails to scale with graph size regardless of model scale <a href="#src-13">[13]</a>. Latent is not the same as correct.</p>
+    </li>
+    <li style="display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);">
+      <span style="font-size:12px;color:var(--color-accent);">04</span>
+      <strong style="font-weight:500;font-size:17px;line-height:1.25;">Pure-math input with no natural language is no longer exotic.</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">AlphaProof's encoder reads Lean tactic states, not prose <a href="#src-20">[20]</a>. Open provers now saturate miniF2F and solve about 88% of PutnamBench <a href="#src-21">[21]</a>. Formal-only reasoning works when a verifier closes the loop.</p>
+    </li>
+    <li style="display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);">
+      <span style="font-size:12px;color:var(--color-accent);">05</span>
+      <strong style="font-weight:500;font-size:17px;line-height:1.25;">Geometry is a lever, with diminishing returns at scale.</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Five hyperbolic dimensions beat 200 Euclidean ones on WordNet reconstruction (MAP 0.823 vs 0.168) <a href="#src-4">[4]</a>, yet a fully hyperbolic billion-parameter LLM gains about 4% <a href="#src-5">[5]</a>. Sheaves cure oversmoothing by changing the Laplacian <a href="#src-6">[6]</a>; hyperedges shorten inference paths for n-ary facts <a href="#src-22">[22]</a><a href="#src-23">[23]</a>.</p>
+    </li>
+    <li style="display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);">
+      <span style="font-size:12px;color:var(--color-accent);">06</span>
+      <strong style="font-weight:500;font-size:17px;line-height:1.25;">External graphs are the hedge, not the thesis.</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">GraphRAG wins 72–83% of head-to-heads on global sense-making <a href="#src-24">[24]</a> and loses to plain retrieval on simple recall <a href="#src-25">[25]</a>. The experiment in Part 7 asks whether the graph can live inside the round instead of beside it.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ───────── Part 1: Thesis ───────── -->
+<section data-screen-label="Part 1 Thesis" style="display:grid;grid-template-columns:minmax(0,1fr);gap:20px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 1</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;">The thesis, stated so it can fail</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;">"Agent and graph are one and the same" packs three separate claims. They have different evidentiary status and the report treats them separately.</p>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:14px;">
+    <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;">
+      <span style="font-size:13px;color:var(--color-accent);padding-top:3px;">C1</span>
+      <p style="margin:0;font-size:16px;line-height:1.6;"><strong style="font-weight:500;">Computational identity.</strong> The operator an LLM agent runs is a graph operator: attention is message passing, and an agent loop is a graph of calls. If true, "add a graph to the agent" is a category error; the agent already is one.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;">
+      <span style="font-size:13px;color:var(--color-accent);padding-top:3px;">C2</span>
+      <p style="margin:0;font-size:16px;line-height:1.6;"><strong style="font-weight:500;">Latent structure.</strong> The vector state inside a model can carry an ontology (what kinds of things exist and how they may relate) and a topology (which things are connected, at what order), without those being written down anywhere in the model's inputs or code.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;">
+      <span style="font-size:13px;color:var(--color-accent);padding-top:3px;">C3</span>
+      <p style="margin:0;font-size:16px;line-height:1.6;"><strong style="font-weight:500;">Runtime determination from pure mathematics.</strong> That structure can be fixed at inference time, within the same forward passes that use it, from formal objects alone: matrices, typed symbols, an energy, constraint formulas, with no natural language.</p>
+    </div>
+  </div>
+  <p style="margin:0;font-size:16px;line-height:1.65;">C1 is mostly settled. C2 has strong positive evidence and strong negative evidence, which is the interesting state for a claim to be in. C3 is the open question, and it is testable. Part 7 designs the test.</p>
+
+  <figure style="margin:12px 0 0;display:flex;flex-direction:column;gap:10px;max-width:960px;">
+    <svg viewBox="0 0 960 292" role="img" aria-label="One object, three views: an agent loop, the same loop as a graph, and its trajectory in latent space" style="width:100%;height:auto;display:block;color:var(--color-neutral-400);font-family:var(--font-body);">
+      <g font-size="11" letter-spacing="1" fill="var(--color-accent-300)">
+        <text x="20" y="22">A · AGENT LOOP</text>
+        <text x="340" y="22">B · THE SAME LOOP AS A GRAPH</text>
+        <text x="660" y="22">C · ITS TRAJECTORY IN LATENT SPACE</text>
+      </g>
+      <g stroke="var(--color-neutral-700)" stroke-width="1" fill="var(--color-surface)">
+        <rect x="30" y="60" width="110" height="40" rx="8"></rect>
+        <rect x="170" y="60" width="110" height="40" rx="8"></rect>
+        <rect x="170" y="180" width="110" height="40" rx="8"></rect>
+        <rect x="30" y="180" width="110" height="40" rx="8"></rect>
+      </g>
+      <g font-size="13" fill="var(--color-text)" text-anchor="middle">
+        <text x="85" y="85">observe</text>
+        <text x="225" y="85">retrieve</text>
+        <text x="225" y="205">plan</text>
+        <text x="85" y="205">act</text>
+      </g>
+      <g stroke="var(--color-accent)" stroke-width="1.5" fill="none">
+        <path d="M140 80 L170 80"></path>
+        <path d="M225 100 L225 180"></path>
+        <path d="M170 200 L140 200"></path>
+        <path d="M85 180 L85 100"></path>
+      </g>
+      <g fill="var(--color-accent)">
+        <path d="M166 76 L172 80 L166 84 Z"></path>
+        <path d="M221 176 L225 182 L229 176 Z"></path>
+        <path d="M144 196 L138 200 L144 204 Z"></path>
+        <path d="M81 104 L85 98 L89 104 Z"></path>
+      </g>
+      <g stroke="var(--color-neutral-700)" stroke-width="1" fill="var(--color-surface)">
+        <circle cx="380" cy="80" r="14"></circle>
+        <circle cx="470" cy="60" r="14"></circle>
+        <circle cx="560" cy="100" r="14"></circle>
+        <circle cx="420" cy="170" r="14"></circle>
+        <circle cx="530" cy="200" r="14"></circle>
+        <circle cx="600" cy="170" r="14"></circle>
+      </g>
+      <g stroke="var(--color-accent)" stroke-width="1.5" fill="none" opacity="0.9">
+        <path d="M394 80 L456 64"></path>
+        <path d="M484 64 L546 96"></path>
+        <path d="M560 114 L536 186"></path>
+        <path d="M516 200 L434 176"></path>
+        <path d="M420 156 L384 94"></path>
+        <path d="M574 104 L590 158"></path>
+      </g>
+      <g stroke="var(--color-neutral-600)" stroke-width="1" stroke-dasharray="3 3" fill="none">
+        <path d="M470 74 L426 158"></path>
+        <path d="M544 194 L586 178"></path>
+      </g>
+      <g font-size="10" fill="var(--color-neutral-400)" text-anchor="middle">
+        <text x="380" y="110">s₀</text>
+        <text x="470" y="46">k</text>
+        <text x="560" y="130">s₁</text>
+        <text x="420" y="198">p</text>
+        <text x="530" y="228">a</text>
+        <text x="600" y="198">s₂</text>
+      </g>
+      <text x="340" y="262" font-size="11" fill="var(--color-neutral-500)">nodes = calls and states · edges = information flow</text>
+      <text x="340" y="276" font-size="11" fill="var(--color-neutral-500)">dashed = learned shortcuts</text>
+      <g stroke="var(--color-neutral-700)" stroke-width="1" fill="none">
+        <path d="M700 230 L900 230 L800 60 Z"></path>
+      </g>
+      <path d="M720 214 C760 200, 770 150, 790 140 S830 120, 845 170 S870 210, 880 224" stroke="var(--color-accent)" stroke-width="1.5" fill="none"></path>
+      <g fill="var(--color-accent-300)">
+        <circle cx="720" cy="214" r="3"></circle>
+        <circle cx="790" cy="140" r="3"></circle>
+        <circle cx="845" cy="170" r="3"></circle>
+        <circle cx="880" cy="224" r="3"></circle>
+      </g>
+      <g font-size="10" fill="var(--color-neutral-400)">
+        <text x="708" y="246">belief(s₀)</text>
+        <text x="798" y="132">belief(s₁)</text>
+        <text x="856" y="246">belief(s₂)</text>
+      </g>
+      <text x="660" y="262" font-size="11" fill="var(--color-neutral-500)">the residual stream traces the same walk</text>
+      <text x="660" y="276" font-size="11" fill="var(--color-neutral-500)">as a path on a belief simplex [14]</text>
+    </svg>
+    <figcaption style="font-size:12px;color:var(--color-neutral-400);line-height:1.5;">Figure 1. One object, three views. The loop an engineer writes (A) is a directed graph of calls and states (B). Inside the model, the same walk appears as a trajectory through a geometric object, in the measured case a belief simplex <a href="#src-14">[14]</a>. The thesis says these are one thing seen three ways.</figcaption>
+  </figure>
+</section>
+
+<!-- ───────── Part 2: Where graphs live today ───────── -->
+<section data-screen-label="Part 2 External graphs" style="display:grid;grid-template-columns:minmax(0,1fr);gap:20px;max-width:960px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 2</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;max-width:760px;">Where graphs live today: beside the model</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;max-width:760px;">Almost every production "graph + LLM" system in 2026 keeps the graph outside the model, in a store the agent reads and writes between calls. This is the contrast case for the thesis, so the numbers matter. They are good and they are conditional.</p>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:720px;">
+      <thead><tr><th>System</th><th>Where the graph is</th><th>Reported gain</th><th>Reported limit</th></tr></thead>
+      <tbody>
+        <tr><td>GraphRAG, Microsoft <a href="#src-24">[24]</a></td><td>LLM-extracted entity graph, Leiden communities, pre-summarised</td><td>72–83% win rate on comprehensiveness vs vector RAG on ~1M-token corpora; root summaries use 2–3% of the tokens</td><td>Vector RAG wins on direct lookups; LLM-judge position bias can move win rates by over 30 points <a href="#src-40">[40]</a></td></tr>
+        <tr><td>GraphRAG-Bench <a href="#src-25">[25]</a></td><td>Benchmark across graph-RAG systems</td><td>Graphs help on multi-hop reasoning over large, dense corpora</td><td>"Frequently underperforms vanilla RAG" on simple fact retrieval; a token tax on every query</td></tr>
+        <tr><td>HippoRAG 2 <a href="#src-26">[26]</a></td><td>Triple graph plus Personalized PageRank, passages integrated</td><td>+7% on associative-memory tasks over the best embedding retriever</td><td>Earlier KG-RAG methods fell "considerably below standard RAG" on factual recall; v2 exists to fix that</td></tr>
+        <tr><td>Zep / Graphiti <a href="#src-27">[27]</a></td><td>Bi-temporal knowledge graph as agent memory</td><td>Up to +18.5% on LongMemEval with ~90% lower latency than full context</td><td>Single-session assistant questions dropped 9–18% versus full context</td></tr>
+        <tr><td>Mem0 (graph variant) <a href="#src-28">[28]</a></td><td>Extracted memories with an optional relation graph</td><td>26% relative gain over a hosted memory baseline on LoCoMo; graph adds ~2 points</td><td>Independent 2026 benchmarks disagree sharply on rankings; the vendor itself warns small benchmarks are gameable</td></tr>
+        <tr><td>HyperGraphRAG <a href="#src-22">[22]</a></td><td>Hyperedges for n-ary facts, bipartite store plus two vector indexes</td><td>Beats standard RAG and graph RAG across medicine, agriculture, CS, law</td><td>Each hyperedge still carries a natural-language description; the LLM reads text, not structure</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin:0;font-size:16px;line-height:1.65;max-width:760px;">Two patterns recur. The graph helps exactly when the question needs many hops or a global view, and hurts when it does not. And in every one of these systems the graph reaches the model as text: serialized triples, community summaries, hyperedge descriptions. The model never touches an adjacency matrix. That is the gap the rest of this report is about.</p>
+</section>
+
+<!-- ───────── Part 3: Math stack ───────── -->
+<sc-if value="{{ isFull }}" hint-placeholder-val="{{ true }}">
+<section data-screen-label="Part 3 Math stack" style="display:grid;grid-template-columns:minmax(0,1fr);gap:28px;max-width:960px;">
+  <div style="display:grid;gap:20px;max-width:760px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 3</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;">The mathematics: seven framings of one operator</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Each framing below is a way of writing the same forward pass so that a graph, a geometry, or an energy becomes visible in it. For each we give the equation, a walkthrough, the best evidence, and what it does not buy you.</p>
+  </div>
+
+  <!-- 3.1 -->
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;"><span style="color:var(--color-accent);font-size:14px;margin-right:12px;vertical-align:middle;">3.1</span>Attention is message passing on a complete graph</h3>
+    <sc-if value="{{ showEq }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;gap:10px;padding:18px 22px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Eq. 1 · message passing, then attention as its special case</div>
+      <div style="font-size:17px;line-height:1.8;"><i>h</i><sub>i</sub>′ = φ( <i>h</i><sub>i</sub>, ⊕<sub>j∈N(i)</sub> ψ(<i>h</i><sub>i</sub>, <i>h</i><sub>j</sub>) )</div>
+      <div style="font-size:17px;line-height:1.8;"><i>h</i><sub>i</sub>′ = Σ<sub>j</sub> softmax<sub>j</sub>( <i>q</i><sub>i</sub>·<i>k</i><sub>j</sub> / √<i>d</i> ) <i>v</i><sub>j</sub>, with N(i) = all tokens</div>
+    </div>
+    </sc-if>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Read the first line as: each node updates itself from an aggregate ⊕ of messages ψ from its neighbours. Set the neighbourhood to every token, make ψ a similarity-weighted copy of <i>v</i><sub>j</sub>, make ⊕ a softmax-normalised sum, and you have the second line: a transformer layer. Joshi's 2025 write-up of the argument he first made in 2020 puts it this way: transformers are graph neural networks on a fully connected token graph, attention is the learned relative importance of each neighbour, and positional encodings are structure hints injected because the graph itself carries none <a href="#src-1">[1]</a>.</p>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Why this matters for the thesis: the graph is not something you add to the model. It is the model's native object, and the "edges" it learns are the attention weights, recomputed at every forward pass, from the inputs. That is runtime-determined topology, in the literal sense. The 2026 follow-on work runs the identity the other way, using GNN over-squashing and bottleneck theory to explain attention sinks and the lost-in-the-middle effect as graph pathologies <a href="#src-36">[36]</a>.</p>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-400);">Limit. A complete graph with learned soft edges is not a sparse graph with hard edges. Joshi notes GNNs are "currently losing the hardware lottery": dense matmul is what accelerators do well, so the transformer's graph stays implicit and dense <a href="#src-1">[1]</a>. Whether a model can hold a specific sparse topology in that dense operator is the empirical question of Part 4.</p>
+  </div>
+
+  <!-- 3.2 -->
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;"><span style="color:var(--color-accent);font-size:14px;margin-right:12px;vertical-align:middle;">3.2</span>Attention is one step of energy descent</h3>
+    <sc-if value="{{ showEq }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;gap:10px;padding:18px 22px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Eq. 2 · modern Hopfield energy and its update rule</div>
+      <div style="font-size:17px;line-height:1.8;"><i>E</i>(ξ) = −lse(β, <i>X</i><sup>T</sup>ξ) + ½ ξ<sup>T</sup>ξ + <i>c</i>, where lse(β, <i>z</i>) = β<sup>−1</sup> log Σ<sub>i</sub> exp(β <i>z</i><sub>i</sub>)</div>
+      <div style="font-size:17px;line-height:1.8;">ξ<sup>new</sup> = <i>X</i> softmax(β <i>X</i><sup>T</sup>ξ) &nbsp;=&nbsp; softmax(<i>QK</i><sup>T</sup>/√<i>d</i><sub>k</sub>) <i>V</i> after <i>X</i> = <i>W</i><sub>K</sub><sup>T</sup><i>Y</i>, ξ = <i>W</i><sub>Q</sub><sup>T</sup><i>R</i>, and a final <i>W</i><sub>V</sub></div>
+    </div>
+    </sc-if>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Here <i>X</i> holds stored patterns (keys), ξ is a query state, and β is an inverse temperature. The energy has a log-sum-exp well around each stored pattern plus a quadratic term that keeps ξ bounded. Taking one step of the update rule that minimises this energy gives softmax-weighted retrieval, and Ramsauer and colleagues prove that under the key/query/value substitutions this is exactly transformer attention <a href="#src-2">[2]</a>. The network stores exponentially many patterns in the dimension of the associative space, retrieves in one step with exponentially small error, and has three kinds of fixed points: a global average, metastable averages over subsets, and single stored patterns. Early transformer layers sit near the first kind; later layers near the second <a href="#src-2">[2]</a>.</p>
+    <p style="margin:0;font-size:16px;line-height:1.65;">The 2026 generation makes the energy explicit rather than implicit. Energy-Based Transformers assign a scalar energy to every (context, candidate) pair and predict by gradient descent on that energy until convergence; the authors report up to 35% faster scaling than a tuned Transformer++ across data, parameters, FLOPs and depth, and up to 29% larger gains from inference-time "thinking" on language tasks, with the benefit growing further out of distribution <a href="#src-3">[3]</a>. This is the mechanism a seed-defined objective would plug into (Part 7): the seed supplies <i>E</i>, inference is descent on it.</p>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-400);">Limit. The Hopfield identity covers the attention operation alone, not residuals, normalisation, the MLP, masking or training dynamics <a href="#src-2">[2]</a>. The EBT authors themselves flag some of their scaling deltas (a 2.92% figure) as marginal and in need of larger runs <a href="#src-3">[3]</a>.</p>
+  </div>
+
+  <!-- 3.3 -->
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;"><span style="color:var(--color-accent);font-size:14px;margin-right:12px;vertical-align:middle;">3.3</span>Hierarchy wants negative curvature</h3>
+    <sc-if value="{{ showEq }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;gap:10px;padding:18px 22px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Eq. 3 · Poincaré-ball distance</div>
+      <div style="font-size:17px;line-height:1.8;"><i>d</i>(<i>u</i>, <i>v</i>) = arcosh( 1 + 2 ‖<i>u</i> − <i>v</i>‖² / ((1 − ‖<i>u</i>‖²)(1 − ‖<i>v</i>‖²)) ), &nbsp;‖<i>u</i>‖, ‖<i>v</i>‖ &lt; 1</div>
+    </div>
+    </sc-if>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Distances blow up near the boundary of the unit ball, so the available "room" grows exponentially with radius, which is exactly how the number of nodes grows with depth in a tree. Nickel and Kiela embedded the transitive closure of the WordNet noun hierarchy (about 82,000 nouns, 740,000 hypernymy relations) and reconstructed it with mean average precision 0.823 in five dimensions; Euclidean embeddings reached 0.168 at 200 dimensions <a href="#src-4">[4]</a>. Radius became depth in the ontology, direction became branch. That is an ontology encoded as geometry with no symbols at all.</p>
+  </div>
+
+  <figure style="margin:0;display:grid;gap:12px;max-width:760px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">WordNet noun reconstruction, mean average precision (higher is better) <a href="#src-4">[4]</a></div>
+    <div style="display:grid;grid-template-columns:minmax(150px,220px) minmax(0,1fr) 56px;row-gap:12px;column-gap:14px;align-items:center;font-size:14px;">
+      <span style="color:var(--color-neutral-300);">Euclidean, 200-d</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-800);"><div style="width:16.8%;height:100%;border-radius:5px;background:var(--color-neutral-500);"></div></div><span style="text-align:right;color:var(--color-neutral-300);">0.168</span>
+      <span style="color:var(--color-neutral-300);">Poincaré, 5-d</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-800);"><div style="width:82.3%;height:100%;border-radius:5px;background:var(--color-accent);"></div></div><span style="text-align:right;color:var(--color-text);">0.823</span>
+      <span style="color:var(--color-neutral-300);">Poincaré, 200-d</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-800);"><div style="width:87%;height:100%;border-radius:5px;background:var(--color-accent-600);"></div></div><span style="text-align:right;color:var(--color-neutral-300);">0.870</span>
+    </div>
+    <figcaption style="font-size:12px;color:var(--color-neutral-400);line-height:1.5;">Figure 2. Forty times fewer coordinates and a five-fold better reconstruction, on data that is a tree. On data that is not a tree the advantage shrinks.</figcaption>
+  </figure>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;">
+    <p style="margin:0;font-size:16px;line-height:1.65;">At language-model scale the lever is real but smaller. HELM, the first fully hyperbolic LLM family trained at billion-parameter scale, with a mixture-of-curvature expert layer so different experts live in spaces of different curvature, reports consistent gains of up to 4% over LLaMA- and DeepSeek-style Euclidean baselines on MMLU and ARC <a href="#src-5">[5]</a>. The interesting design idea for our purposes is the mixture of curvatures: the model chooses, per expert, how tree-like to treat its input, at inference time.</p>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-400);">Limit. Numerical precision. Deep hierarchies push points toward the boundary where float32 runs out; follow-up work on combinatorial constructions found WordNet needs on the order of 500 bits of precision for exact embedding, which is why the Lorentz model and mixed curvature exist. And 4% is what "geometry as the whole answer" buys at scale.</p>
+  </div>
+
+  <!-- 3.4 -->
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;"><span style="color:var(--color-accent);font-size:14px;margin-right:12px;vertical-align:middle;">3.4</span>Sheaves: put a coordinate frame on every node</h3>
+    <sc-if value="{{ showEq }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;gap:10px;padding:18px 22px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Eq. 4 · cellular sheaf, sheaf Laplacian, sheaf diffusion</div>
+      <div style="font-size:17px;line-height:1.8;">restriction maps <i>F</i><sub>v⊴e</sub> : <i>F</i>(<i>v</i>) → <i>F</i>(<i>e</i>) for each node <i>v</i> incident to edge <i>e</i></div>
+      <div style="font-size:17px;line-height:1.8;">(δ<i>x</i>)<sub>e</sub> = <i>F</i><sub>v⊴e</sub> <i>x</i><sub>v</sub> − <i>F</i><sub>u⊴e</sub> <i>x</i><sub>u</sub>, &nbsp; <i>L</i><sub>F</sub> = δ<sup>T</sup>δ, &nbsp; <i>Ẋ</i> = −<i>L</i><sub>F</sub> <i>X</i></div>
+      <div style="font-size:17px;line-height:1.8;">GCN(<i>X</i>, <i>A</i>) = σ((<i>I</i> − Δ<sub>0</sub>) <i>X W</i>) is one Euler step of this with every <i>F</i><sub>v⊴e</sub> = identity</div>
+    </div>
+    </sc-if>
+    <p style="margin:0;font-size:16px;line-height:1.65;">A cellular sheaf assigns a vector space to every node and edge and a linear map from each node's space into each incident edge's space. Two neighbours "agree" when their restrictions to the shared edge coincide; the sheaf Laplacian measures total disagreement; diffusion reduces it. Bodnar and colleagues show a plain GCN is sheaf diffusion with the trivial sheaf, which is why it oversmooths: heat diffusion makes neighbours identical. With non-trivial, learned restriction maps the diffusion can keep classes linearly separable in the infinite-time limit and handles heterophilic graphs where neighbours should differ <a href="#src-6">[6]</a>. The maps can be learned from data, and the 2025 polynomial variant adds spectral filtering on the sheaf Laplacian <a href="#src-43">[43]</a>.</p>
+    <p style="margin:0;font-size:16px;line-height:1.65;">For the seed in Part 7, restriction maps are how an ontology says more than "connected": a rotation on one edge says two nodes' frames disagree by a fixed angle; a projection says one node sees only part of another. That is relational typing in matrices, with no words.</p>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-400);">Limit. Sheaf networks are GNN-native. Nobody has yet shown a transformer reading restriction maps from context and behaving as sheaf diffusion; the closest is the fully connected token graph being a trivial sheaf with learned soft edge weights.</p>
+  </div>
+
+  <!-- 3.5 -->
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;"><span style="color:var(--color-accent);font-size:14px;margin-right:12px;vertical-align:middle;">3.5</span>Category theory: architectures as algebras, ontologies as functors</h3>
+    <sc-if value="{{ showEq }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;gap:10px;padding:18px 22px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Eq. 5 · categorical deep learning</div>
+      <div style="font-size:17px;line-height:1.8;">a network <i>f</i> : (<i>A</i>, <i>a</i>) → (<i>B</i>, <i>b</i>) is a homomorphism of algebras for a monad (<i>M</i>, η, μ): &nbsp; <i>f</i> ∘ <i>a</i> = <i>b</i> ∘ <i>M</i>(<i>f</i>)</div>
+      <div style="font-size:17px;line-height:1.8;">geometric deep learning is the case <i>M</i>(<i>X</i>) = <i>G</i> × <i>X</i>, the group-action monad; equivariance is the homomorphism law</div>
+    </div>
+    </sc-if>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Gavranović, Veličković and colleagues propose that the constraints a model must satisfy and the implementation that satisfies them are the same object: an algebra for a monad, with layers as homomorphisms. Choosing the group-action monad recovers geometric deep learning and its equivariant architectures; other monads recover recurrent networks and constructs from automata theory <a href="#src-7">[7]</a><a href="#src-41">[41]</a>. A 2025 extension takes the step relevant here: a logical theory (a Lawvere theory) also generates a monad, so logical constraints and geometric constraints sit in one framework, and a network that is a homomorphism for that monad provably respects the logic <a href="#src-39">[39]</a>.</p>
+    <p style="margin:0;font-size:16px;line-height:1.65;">On the knowledge side, ologs (ontology logs) express an ontology as a category: types are objects, relations are morphisms, facts are functors into sets <a href="#src-35">[35]</a>. An olog is precisely a typed ontology with no natural language required for its semantics, which makes it a candidate format for the seed.</p>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-400);">Limit. A 2024 survey of the field says plainly that it is too young to know whether the "theory of all architectures" will be fulfilled <a href="#src-7">[7]</a>. Nothing categorical has been shown to run inside a frozen LLM at inference time; this framing constrains what you build, it does not describe what a pretrained model does.</p>
+  </div>
+
+  <!-- 3.6 -->
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;"><span style="color:var(--color-accent);font-size:14px;margin-right:12px;vertical-align:middle;">3.6</span>Topology: persistence and higher-order domains</h3>
+    <sc-if value="{{ showEq }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;gap:10px;padding:18px 22px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Eq. 6 · a filtration and its persistence</div>
+      <div style="font-size:17px;line-height:1.8;"><i>K</i><sub>ε₁</sub> ⊆ <i>K</i><sub>ε₂</sub> ⊆ … ⊆ <i>K</i><sub>εₙ</sub>, &nbsp; <i>H</i><sub>k</sub>(<i>K</i><sub>εᵢ</sub>) → <i>H</i><sub>k</sub>(<i>K</i><sub>εⱼ</sub>) for <i>i</i> ≤ <i>j</i></div>
+      <div style="font-size:17px;line-height:1.8;">a <i>k</i>-dimensional hole "born" at ε<sub>b</sub> and "dying" at ε<sub>d</sub> has persistence ε<sub>d</sub> − ε<sub>b</sub></div>
+    </div>
+    </sc-if>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Persistent homology grows a complex over a point cloud by relaxing a threshold and records when connected components, loops and voids appear and disappear. Long-lived features are shape; short-lived ones are noise. Applied to a model's activations or attention maps, it gives a coordinate-free description of the latent topology, which is what you want when the question is "did the model form the right structure" rather than "did it place points where I expected".</p>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Topological deep learning goes the other direction and builds models on higher-order domains. Combinatorial complexes impose no constraint on which sets may form a relation (like hypergraphs) while allowing hierarchical ranks (like cell complexes), and message passing can run within and across ranks <a href="#src-9">[9]</a>. The 2024 position paper argues this is the natural frontier for relational learning, and the TopoX suite (TopoNetX, TopoEmbedX, TopoModelX) plus TopoBench make it runnable; the ICML 2024 challenge drew 52 valid submissions from 31 teams <a href="#src-8">[8]</a><a href="#src-34">[34]</a>.</p>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-400);">Limit. Persistence is descriptive. It can tell you the latent space has three loops; it cannot tell you the model uses them. Pair it with causal probes (Part 4) or it becomes decoration.</p>
+  </div>
+
+  <!-- 3.7 -->
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;"><span style="color:var(--color-accent);font-size:14px;margin-right:12px;vertical-align:middle;">3.7</span>Graph tokenization and structure-only training</h3>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Three ways to get a graph into a transformer, in increasing order of purity. Serialize it as text: the Google study of graph-to-text encodings found LLMs perform below the majority baseline on edge existence and cycle checks, and that the choice of encoding alone moves accuracy by 4.8 to 61.8 points depending on the task <a href="#src-10">[10]</a>. Encode it with a small GNN into soft tokens the LLM consumes without any words (GraphToken) <a href="#src-11">[11]</a>. Or train on structure alone, with no natural language anywhere, which is the regime the user's thesis lives in and the one Part 4 examines.</p>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-400);">Limit. The text route is the one every production system in Part 2 uses. It is also the one with the worst measured graph reasoning.</p>
+  </div>
+</section>
+</sc-if>
+
+<!-- ───────── Part 4: Evidence ───────── -->
+<section data-screen-label="Part 4 Evidence" style="display:grid;grid-template-columns:minmax(0,1fr);gap:24px;max-width:960px;">
+  <div style="display:grid;gap:20px;max-width:760px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 4</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;">What the experiments show about structure in latent space</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">The cleanest evidence for C2 and C3 comes from models trained on synthetic structure with no natural language at all, then opened up. Here are the results that carry the most weight, for and against.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">
+    <div style="display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Board games</span><span class="tag tag-accent">for</span></div>
+      <strong style="font-weight:500;font-size:16px;line-height:1.3;">Othello-GPT computes the board it was never shown</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Trained only on sequences of legal moves, with no rules and no board, a GPT develops an internal representation of the board state that probes recover and that interventions change causally <a href="#src-15">[15]</a>. Nanda later showed the representation is linear once framed as "mine / theirs" rather than black / white, controllable by vector arithmetic <a href="#src-16">[16]</a>; linear probes reach near-perfect accuracy in deeper layers and work even on a one-layer model <a href="#src-46">[46]</a>.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Hidden Markov processes</span><span class="tag tag-accent">for</span></div>
+      <strong style="font-weight:500;font-size:16px;line-height:1.3;">The residual stream holds the full belief simplex, fractal and linear</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Train a transformer on the output of a three-state hidden Markov process with a three-letter alphabet. A linear regression from 64-dimensional activations to the 3-dimensional belief distribution recovers the process's fractal belief-state geometry; a shuffled control collapses to a point. For a richer process the 36 belief states, a 4-simplex, are spread across layers with distances matching at R² ≈ 0.95. Belief states carry information about the entire future, not just the next token <a href="#src-14">[14]</a>.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Path finding</span><span class="tag tag-outline">mixed</span></div>
+      <strong style="font-weight:500;font-size:16px;line-height:1.3;">ALPINE: adjacency and reachability live in the weights, transitivity does not</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Planning abstracted as source-to-target path finding. The transformer stores the adjacency matrix in one weight block and the observed reachability matrix in another, and gradient descent provably learns both. But it learns only reachability it has seen: it cannot compose two known paths into a new one, so concatenation tasks fail <a href="#src-12">[12]</a>.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Graph search</span><span class="tag tag-outline">mixed</span></div>
+      <strong style="font-weight:500;font-size:16px;line-height:1.3;">Small transformers learn to search, and stop scaling</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">With the right training distribution a small transformer learns graph connectivity, and interpretability reveals the algorithm: each vertex embedding stores the set of vertices reachable from it and each layer merges those sets, so depth <i>L</i> covers paths exponential in <i>L</i>. Yet difficulty rises with graph size, larger models do not fix it, and chain-of-thought does not either <a href="#src-13">[13]</a>. Later work finds which graphs are learnable: grid dimensionality predicts success; many disconnected components predict failure <a href="#src-37">[37]</a>.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Navigation</span><span class="tag tag-neutral">against</span></div>
+      <strong style="font-weight:500;font-size:16px;line-height:1.3;">Shortest paths in Manhattan from an incoherent map</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Transformers trained on turn-by-turn NYC taxi routes find valid, usually shortest, routes. Metrics built on the Myhill–Nerode theorem then show the implicit world model is incoherent: the reconstructed street map has impossible orientations and flyovers and "bears little resemblance" to the city, and planning collapses when detours are introduced <a href="#src-17">[17]</a>. A 2026 rejoinder argues behaviour underdetermines mechanism: a coherent map with a misfiring localiser would look the same from outside <a href="#src-38">[38]</a>.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Latent reasoning</span><span class="tag tag-accent">for</span></div>
+      <strong style="font-weight:500;font-size:16px;line-height:1.3;">Coconut: breadth-first search emerges in continuous thoughts</strong>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Feed the last hidden state back as the next input embedding instead of decoding a token. On ProsQA, a benchmark of directed acyclic graphs where the model must find a valid reasoning path, the continuous thoughts encode several candidate next nodes at once and prune them across steps, a BFS with an implicit value function, beating chain-of-thought where search is needed and using fewer tokens <a href="#src-18">[18]</a>. Without the staged curriculum it performs no better than answering directly.</p>
+    </div>
+  </div>
+
+  <div style="display:grid;gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;">Reading the computation as a graph</h3>
+    <p style="margin:0;font-size:16px;line-height:1.65;">The mechanistic tooling closes the loop on C1. Anthropic's attribution graphs replace a model's neurons with sparse, interpretable features from cross-layer transcoders, then prune the flow of influence between features for one prompt down to a graph that explains the output. The library was open-sourced in May 2025 with a Neuronpedia front end and support for Gemma-2-2b and Llama-3.2-1b; it has been used to trace multi-step reasoning such as "the capital of the state containing Dallas" <a href="#src-19">[19]</a>. The agent's computation, on any given round, is literally rendered as a directed graph you can edit and re-run.</p>
+  </div>
+
+  <div style="display:grid;gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;">Formal input, no prose: the theorem provers</h3>
+    <p style="margin:0;font-size:16px;line-height:1.65;">The strongest existence proof for C3's "pure mathematics in" is formal theorem proving. AlphaProof's 3-billion-parameter encoder-decoder takes the pretty-printed Lean tactic state, a formal object, and produces a latent from which policy and value heads propose tactics; trained on 300,000 human Lean proofs and then roughly 80 million auto-formalised problems with AlphaZero-style reinforcement learning, it proved three of the six 2024 IMO problems, and with AlphaGeometry 2 the system scored 28 of 42, one point under gold <a href="#src-20">[20]</a>. Every proof is checked by the Lean kernel against three standard axioms. The catch: humans still translate the problem statements into Lean, and the resulting proofs were described by a working mathematician as "barely comprehensible" <a href="#src-44">[44]</a>.</p>
+  </div>
+
+  <figure style="margin:0;display:grid;gap:12px;max-width:760px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">PutnamBench, 672 undergraduate competition problems in Lean: share solved <a href="#src-21">[21]</a></div>
+    <div style="display:grid;grid-template-columns:minmax(150px,240px) minmax(0,1fr) 56px;row-gap:12px;column-gap:14px;align-items:center;font-size:14px;">
+      <span style="color:var(--color-neutral-300);">Goedel-Prover-V2 · 2025</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-800);"><div style="width:13%;height:100%;border-radius:5px;background:var(--color-neutral-500);"></div></div><span style="text-align:right;color:var(--color-neutral-300);">13.0%</span>
+      <span style="color:var(--color-neutral-300);">Seed-Prover · 2025</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-800);"><div style="width:50.4%;height:100%;border-radius:5px;background:var(--color-accent-700);"></div></div><span style="text-align:right;color:var(--color-neutral-300);">50.4%</span>
+      <span style="color:var(--color-neutral-300);">Hilbert · late 2025</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-800);"><div style="width:70%;height:100%;border-radius:5px;background:var(--color-accent-600);"></div></div><span style="text-align:right;color:var(--color-neutral-300);">70.0%</span>
+      <span style="color:var(--color-neutral-300);">Seed-Prover 1.5</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-800);"><div style="width:87.9%;height:100%;border-radius:5px;background:var(--color-accent-500);"></div></div><span style="text-align:right;color:var(--color-neutral-300);">87.9%</span>
+      <span style="color:var(--color-neutral-300);">Goedel-Architect (+NL) · 2026</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-800);"><div style="width:88.8%;height:100%;border-radius:5px;background:var(--color-accent);"></div></div><span style="text-align:right;color:var(--color-text);">88.8%</span>
+    </div>
+    <figcaption style="font-size:12px;color:var(--color-neutral-400);line-height:1.5;">Figure 3. Figures as reported in the Goedel-Architect comparison table (June 2026); sampling budgets differ between rows, so treat the trend, not the decimals. The easier miniF2F test set is now effectively saturated at 99–100%.</figcaption>
+  </figure>
+
+  <div style="display:grid;gap:16px;max-width:760px;">
+    <p style="margin:0;font-size:16px;line-height:1.65;">The lesson for the thesis is precise. Models can operate entirely in a formal language when two conditions hold: a verifier that returns ground truth at every step, and enough problems in that language to learn from, whether human-written or auto-formalised. Neither condition is about natural language. Both are about closing a loop. Note too that the best 2026 systems are agentic decompositions over provers, Hilbert and Goedel-Architect among them, which is C1 again: the prover is a graph of calls <a href="#src-21">[21]</a>.</p>
+  </div>
+</section>
+
+<!-- ───────── Part 5: Hypergraphs ───────── -->
+<section data-screen-label="Part 5 Hypergraphs" style="display:grid;grid-template-columns:minmax(0,1fr);gap:24px;max-width:960px;">
+  <div style="display:grid;gap:20px;max-width:760px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 5</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;">Hypergraphs: relations of any arity, and why the seed should be one</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">A graph edge joins two things. Most facts do not: a dosage links a patient class, a sex, a lab range and a diagnosis at once. Decomposing that into binary triples fragments the fact and lengthens every reasoning path over it <a href="#src-23">[23]</a>. A hypergraph keeps the fact whole.</p>
+  </div>
+
+  <sc-if value="{{ showEq }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid;gap:10px;padding:18px 22px;border-radius:var(--radius-md);background:var(--color-surface);max-width:760px;">
+    <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Eq. 7 · hypergraph, incidence matrix, hypergraph Laplacian, set-function message passing</div>
+    <div style="font-size:17px;line-height:1.8;"><i>H</i> = (<i>V</i>, <i>E</i>), <i>E</i> ⊆ 2<sup><i>V</i></sup>; incidence <i>B</i> ∈ {0,1}<sup>|V|×|E|</sup>, <i>B</i><sub>ve</sub> = 1 iff <i>v</i> ∈ <i>e</i></div>
+    <div style="font-size:17px;line-height:1.8;">Δ = <i>I</i> − <i>D</i><sub>v</sub><sup>−½</sup> <i>B W D</i><sub>e</sub><sup>−1</sup> <i>B</i><sup>T</sup> <i>D</i><sub>v</sub><sup>−½</sup> &nbsp; (HGNN: node → hyperedge → node in one operator)</div>
+    <div style="font-size:17px;line-height:1.8;"><i>z</i><sub>e</sub> = <i>f</i><sub>V→E</sub>({<i>x</i><sub>v</sub> : <i>v</i> ∈ <i>e</i>}), &nbsp; <i>x</i><sub>v</sub>′ = <i>f</i><sub>E→V</sub>({<i>z</i><sub>e</sub> : <i>v</i> ∈ <i>e</i>}) &nbsp; (AllSet: any permutation-invariant set functions, e.g. attention)</div>
+  </div>
+  </sc-if>
+
+  <div style="display:grid;gap:16px;max-width:760px;">
+    <p style="margin:0;font-size:16px;line-height:1.65;">The incidence matrix is the whole topology in one array, which is why it is the first thing the Part 7 seed carries. HGNN's Laplacian sends a node's signal to every hyperedge it belongs to, averages within the hyperedge, and returns it, so one layer is a two-hop, node-edge-node convolution <a href="#src-32">[32]</a>. AllSet shows the two stages can be any learnable multiset functions, with attention being one choice, which makes a hypergraph layer a strict generalisation of a transformer layer whose "hyperedges" are the softmax neighbourhoods <a href="#src-33">[33]</a>. Combinatorial complexes go one step further and let hyperedges themselves be ranked and related <a href="#src-9">[9]</a>.</p>
+  </div>
+
+  <figure style="margin:0;display:flex;flex-direction:column;gap:10px;">
+    <svg viewBox="0 0 960 250" role="img" aria-label="Binary graph versus hypergraph versus incidence matrix" style="width:100%;height:auto;display:block;font-family:var(--font-body);">
+      <g font-size="11" letter-spacing="1" fill="var(--color-accent-300)">
+        <text x="20" y="22">A · BINARY GRAPH: 3 TRIPLES FOR ONE FACT</text>
+        <text x="380" y="22">B · HYPERGRAPH: ONE HYPEREDGE</text>
+        <text x="700" y="22">C · INCIDENCE MATRIX B</text>
+      </g>
+      <g stroke="var(--color-accent)" stroke-width="1.5" fill="none">
+        <path d="M80 90 L180 70"></path>
+        <path d="M180 70 L260 130"></path>
+        <path d="M80 90 L150 190"></path>
+        <path d="M260 130 L150 190"></path>
+        <path d="M180 70 L150 190"></path>
+      </g>
+      <g stroke="var(--color-neutral-700)" stroke-width="1" fill="var(--color-surface)">
+        <circle cx="80" cy="90" r="14"></circle>
+        <circle cx="180" cy="70" r="14"></circle>
+        <circle cx="260" cy="130" r="14"></circle>
+        <circle cx="150" cy="190" r="14"></circle>
+      </g>
+      <g font-size="11" fill="var(--color-text)" text-anchor="middle">
+        <text x="80" y="94">v₀</text><text x="180" y="74">v₁</text><text x="260" y="134">v₂</text><text x="150" y="194">v₃</text>
+      </g>
+      <text x="20" y="236" font-size="11" fill="var(--color-neutral-500)">5 edges, 3 hops to reassemble the fact</text>
+      <path d="M430 60 C470 30, 620 40, 640 110 S560 200, 470 190 S400 110, 430 60 Z" fill="var(--color-accent-900)" stroke="var(--color-accent-700)" stroke-width="1" opacity="0.9"></path>
+      <path d="M560 150 C600 160, 660 150, 660 190 S600 230, 560 210 S530 160, 560 150 Z" fill="var(--color-accent-900)" stroke="var(--color-accent-700)" stroke-width="1" opacity="0.7"></path>
+      <g stroke="var(--color-neutral-700)" stroke-width="1" fill="var(--color-surface)">
+        <circle cx="460" cy="80" r="14"></circle>
+        <circle cx="560" cy="70" r="14"></circle>
+        <circle cx="600" cy="140" r="14"></circle>
+        <circle cx="490" cy="160" r="14"></circle>
+        <circle cx="630" cy="200" r="14"></circle>
+      </g>
+      <g font-size="11" fill="var(--color-text)" text-anchor="middle">
+        <text x="460" y="84">v₀</text><text x="560" y="74">v₁</text><text x="600" y="144">v₂</text><text x="490" y="164">v₃</text><text x="630" y="204">v₄</text>
+      </g>
+      <g font-size="11" fill="var(--color-accent-300)">
+        <text x="640" y="60">e₀ (4-ary)</text>
+        <text x="672" y="176">e₁ (2-ary)</text>
+      </g>
+      <text x="380" y="236" font-size="11" fill="var(--color-neutral-500)">1 hop: the fact is a single element of E</text>
+      <g font-size="11" fill="var(--color-neutral-400)" text-anchor="middle">
+        <text x="770" y="60">e₀</text><text x="820" y="60">e₁</text>
+        <text x="730" y="90">v₀</text><text x="730" y="120">v₁</text><text x="730" y="150">v₂</text><text x="730" y="180">v₃</text><text x="730" y="210">v₄</text>
+      </g>
+      <g stroke="var(--color-neutral-700)" stroke-width="1">
+        <rect x="755" y="76" width="30" height="20" fill="var(--color-accent)"></rect>
+        <rect x="805" y="76" width="30" height="20" fill="var(--color-surface)"></rect>
+        <rect x="755" y="106" width="30" height="20" fill="var(--color-accent)"></rect>
+        <rect x="805" y="106" width="30" height="20" fill="var(--color-surface)"></rect>
+        <rect x="755" y="136" width="30" height="20" fill="var(--color-accent)"></rect>
+        <rect x="805" y="136" width="30" height="20" fill="var(--color-accent)"></rect>
+        <rect x="755" y="166" width="30" height="20" fill="var(--color-accent)"></rect>
+        <rect x="805" y="166" width="30" height="20" fill="var(--color-surface)"></rect>
+        <rect x="755" y="196" width="30" height="20" fill="var(--color-surface)"></rect>
+        <rect x="805" y="196" width="30" height="20" fill="var(--color-accent)"></rect>
+      </g>
+      <text x="700" y="236" font-size="11" fill="var(--color-neutral-500)">|V| × |E| zeros and ones; no words</text>
+    </svg>
+    <figcaption style="font-size:12px;color:var(--color-neutral-400);line-height:1.5;">Figure 4. The same four-entity fact as binary edges, as a hyperedge, and as the matrix the seed will carry. The matrix is the only one of the three a model can be handed with no natural language attached.</figcaption>
+  </figure>
+
+  <div style="display:grid;gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;">What hypergraphs have delivered so far</h3>
+    <p style="margin:0;font-size:16px;line-height:1.65;">HyperGraphRAG (NeurIPS 2025) extracts n-ary facts with an LLM, stores them as a bipartite graph with separate vector indexes for entities and hyperedges, and beats both standard RAG and binary graph RAG on accuracy, retrieval efficiency and generation quality across medicine, agriculture, computer science and law <a href="#src-22">[22]</a>. HyperRAG (2026) argues the mechanism explicitly: n-ary hypergraphs "preserve high-order relational integrity, enabling shallower" inference, and its trainable retriever gains 2.95 points of MRR over the strongest baseline across WikiTopics, HotpotQA, MuSiQue and 2WikiMultiHopQA <a href="#src-23">[23]</a>. Modest numbers, consistent direction.</p>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-400);">Limit. Both systems still hand the LLM a natural-language description of each hyperedge. Whether a model can use the incidence structure itself, rather than a sentence about it, is untested. That is the question the experiment isolates by removing the sentences.</p>
+  </div>
+</section>
+
+<!-- ───────── Part 6: Ledger ───────── -->
+<section data-screen-label="Part 6 Ledger" style="display:grid;grid-template-columns:minmax(0,1fr);gap:20px;max-width:960px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 6</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;max-width:760px;">Evidence ledger</h2>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:760px;">
+      <thead><tr><th>Claim</th><th>For</th><th>Against or bounded by</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Attention is a graph operator and an energy step</td><td>Exact identities <a href="#src-1">[1]</a><a href="#src-2">[2]</a></td><td>Identity covers the attention op only</td><td><span class="tag tag-accent">established</span></td></tr>
+        <tr><td>An LLM agent is a computational graph</td><td>GPTSwarm optimises nodes and edges with REINFORCE <a href="#src-29">[29]</a>; LangGraph is the dominant framework <a href="#src-30">[30]</a></td><td>Plain chain-of-thought is often as robust at lower overhead <a href="#src-30">[30]</a></td><td><span class="tag tag-accent">established</span></td></tr>
+        <tr><td>Latent space holds an unseen world state</td><td>Othello board, linear and causal <a href="#src-15">[15]</a><a href="#src-16">[16]</a>; belief simplex, R² ≈ 0.95 <a href="#src-14">[14]</a></td><td>NYC map incoherent under Myhill–Nerode metrics <a href="#src-17">[17]</a></td><td><span class="tag tag-outline">contested</span></td></tr>
+        <tr><td>Latent space holds graph topology</td><td>Adjacency and reachability in weights <a href="#src-12">[12]</a>; path-merging search algorithm <a href="#src-13">[13]</a></td><td>No transitive closure <a href="#src-12">[12]</a>; fails to scale with graph size <a href="#src-13">[13]</a><a href="#src-37">[37]</a></td><td><span class="tag tag-outline">contested</span></td></tr>
+        <tr><td>Search can happen in latent space, not tokens</td><td>Coconut's BFS on DAGs <a href="#src-18">[18]</a></td><td>GPT-2 scale; needs a staged curriculum</td><td><span class="tag tag-outline">contested</span></td></tr>
+        <tr><td>Pure formal input suffices for reasoning</td><td>Lean provers: ~88% PutnamBench, IMO silver <a href="#src-20">[20]</a><a href="#src-21">[21]</a></td><td>Requires a verifier in the loop and human formalisation of statements</td><td><span class="tag tag-accent">established, conditional</span></td></tr>
+        <tr><td>Geometry alone encodes ontology</td><td>5-d Poincaré, MAP 0.823 <a href="#src-4">[4]</a></td><td>~4% at LLM scale <a href="#src-5">[5]</a>; precision limits</td><td><span class="tag tag-accent">established, bounded</span></td></tr>
+        <tr><td>Hyperedges shorten inference</td><td>HyperGraphRAG, HyperRAG <a href="#src-22">[22]</a><a href="#src-23">[23]</a></td><td>Still delivered as text; small margins</td><td><span class="tag tag-outline">contested</span></td></tr>
+        <tr><td>Ontology and topology can be fixed at inference from math alone (C3)</td><td>Pieces exist: soft tokens <a href="#src-11">[11]</a>, formal-state encoders <a href="#src-20">[20]</a>, energy descent at inference <a href="#src-3">[3]</a></td><td>No published experiment combines them; Part 7 proposes one</td><td><span class="tag tag-neutral">inferred</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ───────── Part 7: Experiment ───────── -->
+<section data-screen-label="Part 7 Experiment" style="display:grid;grid-template-columns:minmax(0,1fr);gap:24px;max-width:960px;">
+  <div style="display:grid;gap:20px;max-width:760px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 7</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;">Proposed experiment: seed, destroy, probe</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">The thesis becomes a measurement with one protocol. Hand a model a formal seed (a hypergraph with typed nodes, restriction maps, an energy and logic constraints, no prose), let it read the seed once in a single inference round, delete the seed, then ask questions only the structure can answer and look inside for the structure. Two arms decide where the structure may live afterwards; four runtimes decide what "the model" is.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start;max-width:760px;">
+    <div style="display:grid;gap:10px;">
+      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">The seed, read once and destroyed</div>
+      <pre style="margin:0;padding:18px 20px;border-radius:var(--radius-md);background:var(--color-surface);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;color:var(--color-neutral-200);overflow-x:auto;white-space:pre;">seed:
+  version: 1
+  lifecycle: read_once_then_destroy
+  types: [T0, T1, T2, T3]    # ontology as symbols
+  nodes:
+    v0: T0
+    v1: T1
+    v2: T2
+    v3: T1
+    v4: T3
+  relations: {R0: arity 4, R1: arity 2}
+  incidence:                 # B ∈ {0,1}^{|V|×|E|}
+    e0: {rel: R0, members: [v0, v1, v2, v3]}
+    e1: {rel: R1, members: [v2, v4]}
+  restriction_maps:          # sheaf F_{v⊴e}, 2×2
+    v0>e0: [[1, 0], [0, 1]]
+    v1>e0: [[0, 1], [-1, 0]] # frames differ by 90°
+    v2>e1: [[1, 0], [0, 0]]  # v2 seen only in part
+  constraints:               # logic, no prose
+    - "∀x,y,z. R1(x,y) ∧ R1(y,z) → R1(x,z)"
+    - "∀x. T0(x) → ¬T3(x)"
+    - "∀e. rel(e)=R0 → |e| = 4"
+  objective:
+    energy: "E(x) = Σ_e ‖δ_e x‖² + λ·Σ_c 𝟙[c violated]"
+    minimize: true
+  queries_after_destroy:
+    - reach(v0, v4)
+    - complete(R0, [v0, ?, v2, v3])
+    - consistent(add: R1(v4, v0))</pre>
+    </div>
+    <div style="display:grid;gap:14px;">
+      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">What each field tests</div>
+      <div style="display:grid;gap:12px;font-size:15px;line-height:1.55;">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;"><span style="color:var(--color-accent);">B</span><span><strong style="font-weight:500;">Incidence.</strong> Can topology of arbitrary arity survive as activations? Measured by reachability and completion queries (ALPINE, Saparov).</span></div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;"><span style="color:var(--color-accent);">T</span><span><strong style="font-weight:500;">Types.</strong> Can an ontology with no lexical content be respected? Measured by type-violation rate on completions.</span></div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;"><span style="color:var(--color-accent);">F</span><span><strong style="font-weight:500;">Restriction maps.</strong> Does the model treat relations as frame changes rather than mere links? Measured by whether it predicts disagreement after two 90° edges compose to 180°.</span></div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;"><span style="color:var(--color-accent);">C</span><span><strong style="font-weight:500;">Constraints.</strong> Transitivity is the known failure <a href="#src-12">[12]</a>. A stated axiom either rescues it or does not.</span></div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;"><span style="color:var(--color-accent);">E</span><span><strong style="font-weight:500;">Energy.</strong> For energy-based runtimes, the seed's <i>E</i> replaces the learned one; for others it defines the scoring of candidate answers.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <figure style="margin:0;display:flex;flex-direction:column;gap:10px;">
+    <svg viewBox="0 0 960 300" role="img" aria-label="Pipeline: seed read once, destroyed, then two arms probed across four runtimes" style="width:100%;height:auto;display:block;font-family:var(--font-body);">
+      <g stroke="var(--color-neutral-700)" stroke-width="1" fill="var(--color-surface)">
+        <rect x="20" y="100" width="130" height="56" rx="8"></rect>
+        <rect x="200" y="100" width="150" height="56" rx="8"></rect>
+        <rect x="400" y="100" width="120" height="56" rx="8"></rect>
+        <rect x="580" y="40" width="170" height="56" rx="8"></rect>
+        <rect x="580" y="160" width="170" height="56" rx="8"></rect>
+        <rect x="800" y="100" width="140" height="56" rx="8"></rect>
+      </g>
+      <g font-size="13" fill="var(--color-text)" text-anchor="middle">
+        <text x="85" y="124">formal seed</text>
+        <text x="275" y="124">one inference round</text>
+        <text x="460" y="124">destroy seed</text>
+        <text x="665" y="64">Arm A</text>
+        <text x="665" y="184">Arm B</text>
+        <text x="870" y="124">queries + probes</text>
+      </g>
+      <g font-size="11" fill="var(--color-neutral-400)" text-anchor="middle">
+        <text x="85" y="142">YAML, no prose</text>
+        <text x="275" y="142">read, no decoding</text>
+        <text x="460" y="142">context cleared</text>
+        <text x="665" y="82">activations / KV only</text>
+        <text x="665" y="202">re-emit graph store, then query it</text>
+        <text x="870" y="142">same battery, both arms</text>
+      </g>
+      <g stroke="var(--color-accent)" stroke-width="1.5" fill="none">
+        <path d="M150 128 L200 128"></path>
+        <path d="M350 128 L400 128"></path>
+        <path d="M520 128 L560 128 L560 68 L580 68"></path>
+        <path d="M560 128 L560 188 L580 188"></path>
+        <path d="M750 68 L780 68 L780 128 L800 128"></path>
+        <path d="M750 188 L780 188 L780 128"></path>
+      </g>
+      <g fill="var(--color-accent)">
+        <path d="M196 124 L202 128 L196 132 Z"></path>
+        <path d="M396 124 L402 128 L396 132 Z"></path>
+        <path d="M576 64 L582 68 L576 72 Z"></path>
+        <path d="M576 184 L582 188 L576 192 Z"></path>
+        <path d="M796 124 L802 128 L796 132 Z"></path>
+      </g>
+      <g font-size="11" letter-spacing="1" fill="var(--color-accent-300)">
+        <text x="20" y="262">RUNTIMES</text>
+      </g>
+      <g font-size="12" fill="var(--color-neutral-300)">
+        <text x="100" y="262">① frozen frontier model via API</text>
+        <text x="330" y="262">② small open model, probed and fine-tuned</text>
+        <text x="620" y="262">③ tiny transformer from scratch</text>
+        <text x="830" y="262">④ hypergraph GNN</text>
+      </g>
+      <path d="M20 240 L940 240" stroke="var(--color-divider)" stroke-width="1"></path>
+    </svg>
+    <figcaption style="font-size:12px;color:var(--color-neutral-400);line-height:1.5;">Figure 5. Arm A is the thesis in its strong form: the structure lives only in what the round left behind. Arm B is the control every production system already uses, with the twist that the model must rebuild the store itself. The same query battery and the same probes run on both.</figcaption>
+  </figure>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;">
+    <div style="display:grid;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Runtime ① · frozen frontier via API</div>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Seed goes in as the first turn; the context is then truncated to a marker so nothing but the model's own continuation carries state (Arm A) or the model is asked to emit the store first (Arm B). Only behavioural metrics are available. Expect the text-encoding penalty from <a href="#src-10">[10]</a> to dominate; vary the seed serialization as a controlled factor.</p>
+    </div>
+    <div style="display:grid;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Runtime ② · small open model, probed and fine-tuned</div>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">The main runtime. Linear probes for <i>B</i> and its transitive closure on the residual stream after the seed is read (the ALPINE test); regression from activations to a belief simplex over "which hyperedge am I in" (the Shai test); attribution graphs on the reachability query with circuit-tracer <a href="#src-19">[19]</a>. Fine-tune on synthetic seeds with a Coconut-style curriculum to see whether latent search emerges <a href="#src-18">[18]</a>. Optionally replace the input embedding with a GraphToken encoder so the seed never becomes text <a href="#src-11">[11]</a>.</p>
+    </div>
+    <div style="display:grid;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Runtime ③ · tiny transformer from scratch</div>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">Train only on seed → query → answer triples over random hypergraphs. No natural language exists anywhere in the pipeline, so any structure found is structure from math. Sweep depth against hyperedge count to reproduce or break the exponential path-merging bound <a href="#src-13">[13]</a>. Add an energy-based head so <i>E</i> from the seed can be minimised at inference <a href="#src-3">[3]</a>.</p>
+    </div>
+    <div style="display:grid;gap:10px;padding:18px;border-radius:var(--radius-md);background:var(--color-surface);">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Runtime ④ · hypergraph GNN baseline</div>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--color-neutral-300);">AllSet or a TopoModelX combinatorial-complex network fed <i>B</i> directly, with the restriction maps implemented as a learned sheaf. This is the ceiling: an architecture whose inductive bias is the seed. If runtimes ①–③ approach it, the graph does not need to be an architecture. If they do not, it does.</p>
+    </div>
+  </div>
+
+  <div style="display:grid;gap:16px;max-width:760px;">
+    <h3 style="margin:0;font-size:25px;line-height:1.15;font-weight:500;">Metrics and what would count as a result</h3>
+    <ul style="margin:0;padding-left:20px;display:grid;gap:10px;font-size:16px;line-height:1.6;">
+      <li><strong style="font-weight:500;">Reachability accuracy split by observed versus inferred pairs.</strong> The ALPINE gap; a transitivity axiom in the seed either closes it or does not <a href="#src-12">[12]</a>.</li>
+      <li><strong style="font-weight:500;">Myhill–Nerode compression and distinction.</strong> Do two seeds that induce the same structure get the same continuations, and different structures different ones? This is the test that exposed the incoherent Manhattan map <a href="#src-17">[17]</a>.</li>
+      <li><strong style="font-weight:500;">Probe recovery of <i>B</i>, its closure, and the type vector.</strong> Linear first, then nonlinear; report the layer where each first becomes decodable.</li>
+      <li><strong style="font-weight:500;">Frame-composition error.</strong> Predicted versus true disagreement after composing restriction maps along a path.</li>
+      <li><strong style="font-weight:500;">Arm A versus Arm B at matched accuracy.</strong> Tokens, latency, and the failure modes of each; this is the cost of keeping the graph inside.</li>
+    </ul>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Support for the thesis looks like: Arm A within a few points of Arm B on inferred reachability, with <i>B</i> and its closure linearly decodable after the seed is gone, and the gap to runtime ④ shrinking as the curriculum lengthens. Refutation looks like: Arm A matching Arm B only on observed pairs, probes recovering <i>B</i> but never its closure, and accuracy collapsing with hyperedge count no matter the model size, the pattern <a href="#src-13">[13]</a> already reports for plain graphs. Either outcome is publishable; only the first would make "agent and graph, one and the same" a statement about inference rather than architecture.</p>
+  </div>
+</section>
+
+<!-- ───────── Part 8: Stack ───────── -->
+<section data-screen-label="Part 8 Stack" style="display:grid;grid-template-columns:minmax(0,1fr);gap:20px;max-width:960px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 8</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;max-width:760px;">The logic stack and the open-source pieces</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;max-width:760px;">Reading bottom-up: the seed format, the runtimes that consume it, the probes that look inside, and the external stores that serve as Arm B. Everything listed is public code as of this writing.</p>
+  <sc-if value="{{ isFull }}" hint-placeholder-val="{{ true }}">
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:760px;">
+      <thead><tr><th>Layer</th><th>Project</th><th>What it gives you</th><th>Role here</th></tr></thead>
+      <tbody>
+        <tr><td>Seed</td><td><a href="https://github.com/pyt-team/TopoNetX">TopoNetX</a> · <a href="https://github.com/pnnl/HyperNetX">HyperNetX</a> · <a href="https://github.com/xgi-org/xgi">XGI</a></td><td>Hypergraph and combinatorial-complex data structures, incidence matrices, lifts from graphs <a href="#src-34">[34]</a></td><td>Generate and validate seeds; compute ground-truth closures</td></tr>
+        <tr><td>Seed</td><td>Lean 4 + Mathlib</td><td>A formal language with a kernel verifier; the language provers already read <a href="#src-20">[20]</a></td><td>Optional constraint encoding with machine-checkable semantics</td></tr>
+        <tr><td>Runtime ④</td><td><a href="https://github.com/pyt-team/TopoModelX">TopoModelX</a> · <a href="https://github.com/iMoonLab/DeepHypergraph">DHG</a> · <a href="https://github.com/jianhao2016/AllSet">AllSet</a></td><td>Hypergraph and higher-order message passing layers <a href="#src-32">[32]</a><a href="#src-33">[33]</a></td><td>The architectural ceiling</td></tr>
+        <tr><td>Runtime ④</td><td><a href="https://github.com/twitter-research/neural-sheaf-diffusion">Neural Sheaf Diffusion</a></td><td>Learned restriction maps and the sheaf Laplacian <a href="#src-6">[6]</a></td><td>Implements the seed's <i>F</i><sub>v⊴e</sub> natively</td></tr>
+        <tr><td>Runtime ③</td><td><a href="https://github.com/facebookresearch/coconut">Coconut</a></td><td>Latent-thought training loop and curriculum on GPT-2 <a href="#src-18">[18]</a></td><td>Latent search from scratch on seed → query data</td></tr>
+        <tr><td>Runtime ③</td><td><a href="https://github.com/alexiglad/EBT">Energy-Based Transformers</a> · <a href="https://github.com/ml-jku/hopfield-layers">hopfield-layers</a></td><td>Inference by energy minimisation; Hopfield layers as drop-in attention <a href="#src-3">[3]</a><a href="#src-2">[2]</a></td><td>Consume the seed's objective directly</td></tr>
+        <tr><td>Runtime ②</td><td><a href="https://github.com/google-research/talk-like-a-graph">talk-like-a-graph</a> · GraphToken</td><td>Graph-to-text encoders and the GraphQA benchmark; learned soft-token encoder <a href="#src-10">[10]</a><a href="#src-11">[11]</a></td><td>Controlled serialization factor; the no-text input path</td></tr>
+        <tr><td>Runtime ②</td><td><a href="https://github.com/hyperbolic-learning">HyperCore / HELM</a></td><td>Hyperbolic LLM building blocks: attention, RoPE, norms, mixture of curvature <a href="#src-5">[5]</a><a href="#src-45">[45]</a></td><td>Geometry ablation for tree-shaped seeds</td></tr>
+        <tr><td>Probes</td><td><a href="https://github.com/safety-research/circuit-tracer">circuit-tracer</a> · <a href="https://github.com/TransformerLensOrg/TransformerLens">TransformerLens</a></td><td>Attribution graphs; hooks on the residual stream <a href="#src-19">[19]</a></td><td>Render the round's computation as a graph; run linear probes</td></tr>
+        <tr><td>Probes</td><td><a href="https://github.com/likenneth/othello_world">othello_world</a> · Shai et al. code</td><td>Probe-and-intervene recipes; belief-geometry regression <a href="#src-15">[15]</a><a href="#src-14">[14]</a></td><td>Templates for the <i>B</i>-closure and simplex probes</td></tr>
+        <tr><td>Probes</td><td>Vafa et al. metrics</td><td>Compression and distinction tests from the Myhill–Nerode theorem <a href="#src-17">[17]</a></td><td>Coherence of the recovered structure</td></tr>
+        <tr><td>Probes</td><td>giotto-tda · Ripser</td><td>Persistent homology on activations</td><td>Coordinate-free check of latent topology (Part 3.6)</td></tr>
+        <tr><td>Arm B</td><td><a href="https://github.com/LHRLAB/HyperGraphRAG">HyperGraphRAG</a> · <a href="https://github.com/OSU-NLP-Group/HippoRAG">HippoRAG</a> · <a href="https://github.com/getzep/graphiti">Graphiti</a></td><td>External hypergraph, PageRank-over-triples, and temporal-graph stores <a href="#src-22">[22]</a><a href="#src-26">[26]</a><a href="#src-27">[27]</a></td><td>The rebuilt-store control</td></tr>
+        <tr><td>Orchestration</td><td><a href="https://github.com/metauto-ai/GPTSwarm">GPTSwarm</a> · LangGraph</td><td>Agents as optimisable graphs; state-graph runtime <a href="#src-29">[29]</a><a href="#src-30">[30]</a></td><td>Runs the battery across arms and runtimes</td></tr>
+        <tr><td>Benchmarks</td><td><a href="https://github.com/GraphRAG-Bench/GraphRAG-Benchmark">GraphRAG-Bench</a> · ProsQA · NLGraph</td><td>When graphs help; DAG path finding; graph reasoning in text <a href="#src-25">[25]</a><a href="#src-18">[18]</a></td><td>External validity checks</td></tr>
+      </tbody>
+    </table>
+  </div>
+  </sc-if>
+</section>
+
+<!-- ───────── Part 9: Limits ───────── -->
+<section data-screen-label="Part 9 Limits" style="display:grid;grid-template-columns:minmax(0,1fr);gap:20px;max-width:760px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Part 9</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;letter-spacing:-0.015em;font-weight:500;">What this evidence does not establish</h2>
+  <ul style="margin:0;padding-left:20px;display:grid;gap:12px;font-size:16px;line-height:1.6;">
+    <li>That structure found by a probe is structure the model uses. Othello and the belief-simplex work include causal interventions; most other probing results do not, and the Manhattan rejoinder shows how far behaviour underdetermines mechanism <a href="#src-38">[38]</a>.</li>
+    <li>That any of the from-scratch results transfer to frontier models. Othello-GPT, Coconut, the belief-geometry and search papers all run at GPT-2 scale or below <a href="#src-13">[13]</a><a href="#src-14">[14]</a><a href="#src-18">[18]</a>.</li>
+    <li>That the external-graph numbers are as large as they look. The GraphRAG evaluation methodology has a documented judge bias of over 30 points <a href="#src-40">[40]</a>, and the memory-graph vendors' benchmark rankings are contradicted by independent 2026 evaluations <a href="#src-28">[28]</a>.</li>
+    <li>That category and sheaf theory describe what pretrained transformers do. Today they describe what one can build <a href="#src-7">[7]</a>.</li>
+    <li>That "no natural language" has been achieved end to end anywhere except formal mathematics, where a human still writes the theorem statement <a href="#src-20">[20]</a>.</li>
+  </ul>
+  <p style="margin:0;font-size:16px;line-height:1.65;">The honest summary: the operator is a graph (proved), the latent space can hold graphs (shown, at small scale, imperfectly), and whether a graph handed over as pure structure can be held and used within one round is unknown and, as of this writing, unattempted in the form described here.</p>
+</section>
+
+<!-- ───────── Sources ───────── -->
+<section data-screen-label="Sources" style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:960px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Sources</div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:760px;">Verified against the linked pages on 29 September 2026. Venue and year given where known; arXiv identifiers where the paper is a preprint or the arXiv page is the canonical copy.</p>
+  <ol style="margin:0;padding-left:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px 28px;font-size:13px;line-height:1.5;color:var(--color-neutral-300);">
+    <li id="src-1"><span style="color:var(--color-accent);">[1]</span> Joshi, C. "Transformers are Graph Neural Networks." arXiv 2506.22084, June 2025. <a href="https://arxiv.org/abs/2506.22084">arxiv.org/abs/2506.22084</a></li>
+    <li id="src-2"><span style="color:var(--color-accent);">[2]</span> Ramsauer, H. et al. "Hopfield Networks is All You Need." ICLR 2021. <a href="https://arxiv.org/abs/2008.02217">arxiv.org/abs/2008.02217</a></li>
+    <li id="src-3"><span style="color:var(--color-accent);">[3]</span> Gladstone, A. et al. "Energy-Based Transformers are Scalable Learners and Thinkers." ICLR 2026 (oral). <a href="https://arxiv.org/abs/2507.02092">arxiv.org/abs/2507.02092</a></li>
+    <li id="src-4"><span style="color:var(--color-accent);">[4]</span> Nickel, M., Kiela, D. "Poincaré Embeddings for Learning Hierarchical Representations." NeurIPS 2017. <a href="https://arxiv.org/abs/1705.08039">arxiv.org/abs/1705.08039</a></li>
+    <li id="src-5"><span style="color:var(--color-accent);">[5]</span> He, N. et al. "HELM: Hyperbolic Large Language Models via Mixture-of-Curvature Experts." NeurIPS 2025. <a href="https://arxiv.org/abs/2505.24722">arxiv.org/abs/2505.24722</a></li>
+    <li id="src-6"><span style="color:var(--color-accent);">[6]</span> Bodnar, C. et al. "Neural Sheaf Diffusion." NeurIPS 2022. <a href="https://arxiv.org/abs/2202.04579">arxiv.org/abs/2202.04579</a></li>
+    <li id="src-7"><span style="color:var(--color-accent);">[7]</span> Gavranović, B. et al. "Position: Categorical Deep Learning is an Algebraic Theory of All Architectures." ICML 2024. <a href="https://arxiv.org/abs/2402.15332">arxiv.org/abs/2402.15332</a>; survey: <a href="https://arxiv.org/abs/2410.05353">arxiv.org/abs/2410.05353</a></li>
+    <li id="src-8"><span style="color:var(--color-accent);">[8]</span> Papamarkou, T. et al. "Position: Topological Deep Learning is the New Frontier for Relational Learning." ICML 2024. <a href="https://arxiv.org/abs/2402.08871">arxiv.org/abs/2402.08871</a></li>
+    <li id="src-9"><span style="color:var(--color-accent);">[9]</span> Hajij, M. et al. "Topological Deep Learning: Going Beyond Graph Data." 2022. <a href="https://arxiv.org/abs/2206.00606">arxiv.org/abs/2206.00606</a></li>
+    <li id="src-10"><span style="color:var(--color-accent);">[10]</span> Fatemi, B., Halcrow, J., Perozzi, B. "Talk like a Graph: Encoding Graphs for Large Language Models." ICLR 2024. <a href="https://arxiv.org/abs/2310.04560">arxiv.org/abs/2310.04560</a></li>
+    <li id="src-11"><span style="color:var(--color-accent);">[11]</span> Perozzi, B. et al. "Let Your Graph Do the Talking: Encoding Structured Data for LLMs." 2024. <a href="https://arxiv.org/abs/2402.05862">arxiv.org/abs/2402.05862</a></li>
+    <li id="src-12"><span style="color:var(--color-accent);">[12]</span> Wang, S. et al. "ALPINE: Unveiling the Planning Capability of Autoregressive Learning in Networks." NeurIPS 2024. <a href="https://arxiv.org/abs/2405.09220">arxiv.org/abs/2405.09220</a></li>
+    <li id="src-13"><span style="color:var(--color-accent);">[13]</span> Saparov, A. et al. "Transformers Struggle to Learn to Search." ICLR 2025. <a href="https://arxiv.org/abs/2412.04703">arxiv.org/abs/2412.04703</a></li>
+    <li id="src-14"><span style="color:var(--color-accent);">[14]</span> Shai, A. et al. "Transformers Represent Belief State Geometry in their Residual Stream." NeurIPS 2024. <a href="https://arxiv.org/abs/2405.15943">arxiv.org/abs/2405.15943</a></li>
+    <li id="src-15"><span style="color:var(--color-accent);">[15]</span> Li, K. et al. "Emergent World Representations: Exploring a Sequence Model Trained on a Synthetic Task." ICLR 2023. <a href="https://arxiv.org/abs/2210.13382">arxiv.org/abs/2210.13382</a></li>
+    <li id="src-16"><span style="color:var(--color-accent);">[16]</span> Nanda, N., Lee, A., Wattenberg, M. "Emergent Linear Representations in World Models of Self-Supervised Sequence Models." 2023. <a href="https://arxiv.org/abs/2309.00941">arxiv.org/abs/2309.00941</a></li>
+    <li id="src-17"><span style="color:var(--color-accent);">[17]</span> Vafa, K. et al. "Evaluating the World Model Implicit in a Generative Model." NeurIPS 2024. <a href="https://arxiv.org/abs/2406.03689">arxiv.org/abs/2406.03689</a></li>
+    <li id="src-18"><span style="color:var(--color-accent);">[18]</span> Hao, S. et al. "Training Large Language Models to Reason in a Continuous Latent Space." FAIR, Dec 2024, rev. Nov 2025. <a href="https://arxiv.org/abs/2412.06769">arxiv.org/abs/2412.06769</a></li>
+    <li id="src-19"><span style="color:var(--color-accent);">[19]</span> Anthropic. "Open-sourcing circuit-tracing tools." 30 May 2025. <a href="https://www.anthropic.com/research/open-source-circuit-tracing">anthropic.com/research/open-source-circuit-tracing</a>; code: <a href="https://github.com/safety-research/circuit-tracer">github.com/safety-research/circuit-tracer</a></li>
+    <li id="src-20"><span style="color:var(--color-accent);">[20]</span> Hubert, T. et al. "Olympiad-level formal mathematical reasoning with reinforcement learning." Nature, Nov 2025. <a href="https://www.nature.com/articles/s41586-025-09833-y">nature.com/articles/s41586-025-09833-y</a></li>
+    <li id="src-21"><span style="color:var(--color-accent);">[21]</span> "Goedel-Architect: Streamlining Formal Theorem Proving with Blueprint Generation and Refinement," Table 1, June 2026. <a href="https://arxiv.org/abs/2606.06468">arxiv.org/abs/2606.06468</a>; Varambally, S. et al. "Hilbert." <a href="https://arxiv.org/abs/2509.22819">arxiv.org/abs/2509.22819</a></li>
+    <li id="src-22"><span style="color:var(--color-accent);">[22]</span> Luo, H. et al. "HyperGraphRAG: Retrieval-Augmented Generation via Hypergraph-Structured Knowledge Representation." NeurIPS 2025. <a href="https://arxiv.org/abs/2503.21322">arxiv.org/abs/2503.21322</a></li>
+    <li id="src-23"><span style="color:var(--color-accent);">[23]</span> "HyperRAG: n-ary hypergraph retrieval-augmented generation." Feb 2026. <a href="https://arxiv.org/abs/2602.14470">arxiv.org/abs/2602.14470</a></li>
+    <li id="src-24"><span style="color:var(--color-accent);">[24]</span> Edge, D. et al. "From Local to Global: A Graph RAG Approach to Query-Focused Summarization." Microsoft, 2024, rev. Feb 2025. <a href="https://arxiv.org/abs/2404.16130">arxiv.org/abs/2404.16130</a></li>
+    <li id="src-25"><span style="color:var(--color-accent);">[25]</span> Xiang, Z. et al. "When to use Graphs in RAG: A Comprehensive Analysis for Graph Retrieval-Augmented Generation." ICLR 2026. <a href="https://arxiv.org/abs/2506.05690">arxiv.org/abs/2506.05690</a></li>
+    <li id="src-26"><span style="color:var(--color-accent);">[26]</span> Gutiérrez, B. J. et al. "From RAG to Memory: Non-Parametric Continual Learning for LLMs" (HippoRAG 2). ICML 2025. <a href="https://arxiv.org/abs/2502.14802">arxiv.org/abs/2502.14802</a></li>
+    <li id="src-27"><span style="color:var(--color-accent);">[27]</span> Rasmussen, P. et al. "Zep: A Temporal Knowledge Graph Architecture for Agent Memory." Jan 2025. <a href="https://arxiv.org/abs/2501.13956">arxiv.org/abs/2501.13956</a></li>
+    <li id="src-28"><span style="color:var(--color-accent);">[28]</span> Chhikara, P. et al. "Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory." ECAI 2025. <a href="https://arxiv.org/abs/2504.19413">arxiv.org/abs/2504.19413</a>; vendor 2026 update: <a href="https://mem0.ai/research">mem0.ai/research</a>; counter-benchmark: <a href="https://arxiv.org/abs/2608.05095">arxiv.org/abs/2608.05095</a></li>
+    <li id="src-29"><span style="color:var(--color-accent);">[29]</span> Zhuge, M. et al. "GPTSwarm: Language Agents as Optimizable Graphs." ICML 2024. <a href="https://arxiv.org/abs/2402.16823">arxiv.org/abs/2402.16823</a></li>
+    <li id="src-30"><span style="color:var(--color-accent);">[30]</span> "From Agent Loops to Structured Graphs." April 2026. <a href="https://arxiv.org/abs/2604.11378">arxiv.org/abs/2604.11378</a></li>
+    <li id="src-31"><span style="color:var(--color-accent);">[31]</span> Hansen, J., Gebhart, T. "Sheaf Neural Networks." 2020. <a href="https://arxiv.org/abs/2012.06333">arxiv.org/abs/2012.06333</a></li>
+    <li id="src-32"><span style="color:var(--color-accent);">[32]</span> Feng, Y. et al. "Hypergraph Neural Networks." AAAI 2019. <a href="https://arxiv.org/abs/1809.09401">arxiv.org/abs/1809.09401</a></li>
+    <li id="src-33"><span style="color:var(--color-accent);">[33]</span> Chien, E. et al. "You are AllSet: A Multiset Function Framework for Hypergraph Neural Networks." ICLR 2022. <a href="https://arxiv.org/abs/2106.13264">arxiv.org/abs/2106.13264</a></li>
+    <li id="src-34"><span style="color:var(--color-accent);">[34]</span> Hajij, M. et al. "TopoX: A Suite of Python Packages for Machine Learning on Topological Domains." 2024. <a href="https://arxiv.org/abs/2402.02441">arxiv.org/abs/2402.02441</a>; TopoBench: <a href="https://arxiv.org/abs/2406.06642">arxiv.org/abs/2406.06642</a></li>
+    <li id="src-35"><span style="color:var(--color-accent);">[35]</span> Spivak, D. I., Kent, R. E. "Ologs: A Categorical Framework for Knowledge Representation." PLoS ONE, 2012. <a href="https://arxiv.org/abs/1102.1889">arxiv.org/abs/1102.1889</a></li>
+    <li id="src-36"><span style="color:var(--color-accent);">[36]</span> "On the Runway Cascade of Transformers." Jan 2026. <a href="https://arxiv.org/abs/2601.14522">arxiv.org/abs/2601.14522</a></li>
+    <li id="src-37"><span style="color:var(--color-accent);">[37]</span> "Transformers Can Learn Connectivity in Some Graphs but Not Others." Sept 2025. <a href="https://arxiv.org/abs/2509.22343">arxiv.org/abs/2509.22343</a></li>
+    <li id="src-38"><span style="color:var(--color-accent);">[38]</span> "World Modeling in Transformers." Sept 2026. <a href="https://arxiv.org/abs/2609.21748">arxiv.org/abs/2609.21748</a></li>
+    <li id="src-39"><span style="color:var(--color-accent);">[39]</span> "Categorical Construction of Logically Verifiable Neural Architectures." Aug 2025. <a href="https://arxiv.org/abs/2508.11647">arxiv.org/abs/2508.11647</a></li>
+    <li id="src-40"><span style="color:var(--color-accent);">[40]</span> Audit of LLM-as-judge in GraphRAG evaluation. June 2025. <a href="https://arxiv.org/abs/2506.06331">arxiv.org/abs/2506.06331</a></li>
+    <li id="src-41"><span style="color:var(--color-accent);">[41]</span> Bronstein, M. et al. "Geometric Deep Learning: Grids, Groups, Graphs, Geodesics, and Gauges." 2021. <a href="https://arxiv.org/abs/2104.13478">arxiv.org/abs/2104.13478</a></li>
+    <li id="src-42"><span style="color:var(--color-accent);">[42]</span> Hoover, B. et al. "Energy Transformer." NeurIPS 2023. <a href="https://arxiv.org/abs/2302.07253">arxiv.org/abs/2302.07253</a></li>
+    <li id="src-43"><span style="color:var(--color-accent);">[43]</span> "Polynomial Neural Sheaf Diffusion: A Spectral Filtering Approach on Cellular Sheaves." Dec 2025. <a href="https://arxiv.org/abs/2512.00242">arxiv.org/abs/2512.00242</a></li>
+    <li id="src-44"><span style="color:var(--color-accent);">[44]</span> "The Shape of Math To Come." Oct 2025. <a href="https://arxiv.org/abs/2510.15924">arxiv.org/abs/2510.15924</a></li>
+    <li id="src-45"><span style="color:var(--color-accent);">[45]</span> "Position: Beyond Euclidean: Foundation Models Should Embrace Non-Euclidean Geometries," <a href="https://arxiv.org/abs/2504.08896">arxiv.org/abs/2504.08896</a>; He, N. et al. "HyperCore." <a href="https://arxiv.org/abs/2504.08912">arxiv.org/abs/2504.08912</a></li>
+    <li id="src-46"><span style="color:var(--color-accent);">[46]</span> Hazineh, D. et al. "Linear Latent World Models in Simple Transformers: A Case Study on Othello-GPT." 2023. <a href="https://arxiv.org/abs/2310.07582">arxiv.org/abs/2310.07582</a></li>
+  </ol>
+</section>
+
+</div>
+</article>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;readingMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;full&quot;,&quot;brief&quot;],&quot;default&quot;:&quot;full&quot;,&quot;tsType&quot;:&quot;'full' | 'brief'&quot;,&quot;section&quot;:&quot;Reading&quot;},&quot;showEquations&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Reading&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const mode = this.props.readingMode ?? 'full';
+    return {
+      isFull: mode === 'full',
+      showEq: this.props.showEquations ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

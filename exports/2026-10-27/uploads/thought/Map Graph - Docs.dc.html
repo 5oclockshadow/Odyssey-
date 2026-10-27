@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; } button, input, select, textarea { font-family: 'Instrument Sans', sans-serif; } button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 2px; } pre { margin: 0; white-space: pre-wrap; }</style>
+</helmet>
+<div data-screen-label="Docs" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.55;">
+  <dc-import name="Map Graph Nav" current="docs" hint-size="100%,64px"></dc-import>
+  <main style="max-width: 1020px; margin: 0 auto; padding: clamp(32px, 6vw, 72px) clamp(16px, 4vw, 40px); display: grid; gap: 52px;">
+    <header style="display: grid; gap: 14px;"><h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(38px, 6vw, 72px); line-height: 0.97; letter-spacing: -0.03em;">Docs</h1><p style="margin: 0; color: #b9c1e0; font-size: 19px; max-width: 640px;">What you can type, what you can click, and every endpoint behind this site.</p></header>
+
+    <section style="display: grid; gap: 16px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 30px;">Atlas gestures</h2>
+      <div style="display: grid; border: 1px solid #252c42; border-radius: 14px; overflow: hidden;"><sc-for list="{{ gestures }}" as="g" hint-placeholder-count="10"><div style="display: grid; grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.6fr); gap: 16px; padding: 10px 18px; border-bottom: 1px solid #252c42; background: #131827;"><span style="font-family: 'DM Mono', monospace; color: #27d3ff; font-size: 14px;">{{ g.k }}</span><span>{{ g.d }}</span></div></sc-for></div></section>
+
+    <section style="display: grid; gap: 16px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 30px;">Sub-maps and routes</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;"><sc-for list="{{ directions }}" as="d" hint-placeholder-count="4"><div style="padding: 16px; border: 1px solid #252c42; border-radius: 12px; background: #131827;"><b style="color: #27d3ff;">{{ d.k }}</b><div>{{ d.d }}</div></div></sc-for></div>
+      <p style="margin: 0; color: #b9c1e0;">Select a node, pick a direction in the inspector, and everything outside it dims. "Add questions to fill in" adds unverified placeholders, or asks Claude when Live AI is on. "Paths to another idea" lists forward and reverse routes, and offers to bridge a missing step.</p></section>
+
+    <section style="display: grid; gap: 16px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 30px;">The shake language (Thoughts)</h2>
+      <div style="display: grid; border: 1px solid #252c42; border-radius: 14px; overflow: hidden;"><sc-for list="{{ words }}" as="w" hint-placeholder-count="6"><div style="display: grid; grid-template-columns: 110px minmax(0, 1.4fr) minmax(0, 1.2fr); gap: 14px; padding: 10px 18px; border-bottom: 1px solid #252c42; background: #131827;"><b>{{ w.k }}</b><span style="font-family: 'DM Mono', monospace; font-size: 13px; color: #27d3ff;">{{ w.say }}</span><span style="color: #b9c1e0;">{{ w.does }}</span></div></sc-for></div>
+      <pre style="padding: 14px 18px; border-radius: 12px; background: #131827; border: 1px solid #252c42; font-family: 'DM Mono', monospace; font-size: 14px; color: #dfe4fa;">14 wild ideas around the weakest facts, tangled with links
+a few objections around the hubs
+fuse across the bridges, 3 links each</pre></section>
+
+    <section style="display: grid; gap: 16px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 30px;">Outline format</h2><p style="margin: 0; color: #b9c1e0;">Indent to nest. Start a line with a kind and a colon to set its type. Write A -verb-> B to link two entities by name.</p>
+      <pre style="padding: 14px 18px; border-radius: 12px; background: #131827; border: 1px solid #252c42; font-family: 'DM Mono', monospace; font-size: 14px; color: #dfe4fa;">network: Northwind
+  site: Rotterdam Hub
+    warehouse: Dock A
+  vehicle: Truck 12
+Truck 12 -runs on-> R1 Rotterdam to Lyon</pre></section>
+
+    <section style="display: grid; gap: 16px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 30px;">API reference</h2>
+      <div style="display: grid; border: 1px solid #252c42; border-radius: 14px; overflow: hidden;"><sc-for list="{{ endpoints }}" as="e" hint-placeholder-count="8"><button type="button" onClick="{{ e.pick }}" style="display: grid; grid-template-columns: 64px minmax(0, 1.1fr) minmax(0, 1.4fr); gap: 14px; width: 100%; padding: 10px 18px; border: 0; border-bottom: 1px solid #252c42; background: #131827; color: #eef1ff; text-align: left; cursor: pointer; font-size: 14px;"><b style="color: #ff3ea5; font-family: 'DM Mono', monospace;">{{ e.method }}</b><span style="font-family: 'DM Mono', monospace; color: #27d3ff;">{{ e.path }}</span><span style="color: #b9c1e0;">{{ e.what }}</span></button></sc-for></div></section>
+
+    <section style="display: grid; gap: 12px; padding: 22px; border: 1px solid #27d3ff; border-radius: 18px; background: #101626;"><div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 26px;">API console</h2><span style="color: #9aa3c4; font-size: 14px;">Running against: <b style="color: #eef1ff;">{{ mode }}</b></span></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;"><select value="{{ method }}" onChange="{{ onMethod }}" aria-label="Method" style="padding: 10px 12px; border-radius: 10px; border: 1px solid #3a4468; background: #131827; color: #eef1ff;"><option value="GET">GET</option><option value="POST">POST</option></select><input value="{{ path }}" onChange="{{ onPath }}" aria-label="Path" style="flex: 1 1 260px; min-width: 0; padding: 10px 14px; border-radius: 10px; border: 1px solid #3a4468; background: #131827; color: #eef1ff; font-family: 'DM Mono', monospace;"><button type="button" onClick="{{ send }}" style="padding: 10px 22px; border: 0; border-radius: 10px; background: #27d3ff; color: #0b0e17; font-weight: 600; cursor: pointer;">Send</button></div>
+      <textarea rows="5" value="{{ body }}" onChange="{{ onBody }}" aria-label="JSON body" style="padding: 12px 14px; border-radius: 10px; border: 1px solid #3a4468; background: #0b0e17; color: #dfe4fa; font-family: 'DM Mono', monospace; font-size: 13px;"></textarea>
+      <div style="font-family: 'DM Mono', monospace; font-size: 13px; color: #ff3ea5;">{{ statusLine }}</div>
+      <pre style="padding: 14px; border-radius: 10px; background: #0b0e17; border: 1px solid #252c42; font-family: 'DM Mono', monospace; font-size: 13px; color: #dfe4fa; min-height: 80px; max-height: 320px; overflow: auto;">{{ response }}</pre></section>
+  </main>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { C: null, mode: 'checking…', method: 'POST', path: '/api/waitlist', body: '{\n  "email": "you@example.com",\n  "interest": "both"\n}', response: 'Pick an endpoint above, then Send.', statusLine: '' };
+  EPS = [['GET', '/api/health', 'Liveness check', ''], ['POST', '/api/waitlist', 'Join the early-access list', '{\n  "email": "you@example.com",\n  "interest": "both"\n}'], ['GET', '/api/waitlist/CODE', 'Position, referrals and tier for a member code', ''], ['POST', '/api/waitlist/CODE/survey', 'Save the second-step survey', '{\n  "useCase": "Mapping suppliers",\n  "teamSize": "2-5",\n  "domains": ["Logistics"]\n}'], ['POST', '/api/upgrade', 'Register founding interest. No payment.', '{\n  "code": "CODE"\n}'], ['POST', '/api/contact', 'Send a message', '{\n  "name": "Ana",\n  "email": "ana@example.com",\n  "message": "Can Atlas import CSV files?"\n}'], ['POST', '/api/events', 'Record a funnel event', '{\n  "type": "cta_click",\n  "page": "docs"\n}'], ['GET', '/api/stats', 'Counts by interest and event (admin token on a live server)', '']];
+  async componentDidMount() { const C = await import('./tandem-core.js'), API = this.API = await import('./tandem-api.js'); this.setState({ C, mode: await API.mode() }); API.track('page_view', 'docs'); const m = API.member.get(); if (m) this.setState(s => ({ path: s.path })); }
+  send = async () => { const s = this.state; let body = {}; if (s.method === 'POST') { try { body = JSON.parse(s.body || '{}'); } catch (e) { this.setState({ statusLine: 'The body is not valid JSON.', response: '' }); return; } } const m = this.API.member.get(), path = s.path.replace('CODE', m ? m.code : 'AAAAAAAA'); if (s.method === 'POST' && body.code === 'CODE') body.code = m ? m.code : 'AAAAAAAA'; const r = await this.API.api(s.method, path, body); this.setState({ statusLine: r.status + ' ' + s.method + ' ' + path, response: JSON.stringify(r.json, null, 2) }); };
+  renderVals() { const C = this.state.C, s = this.state; return { gestures: C ? C.GESTURES.map(([k, d]) => ({ k, d })) : [], directions: C ? C.DIRECTIONS : [], words: C ? C.SHAKE_WORDS.map(([k, say, does]) => ({ k, say, does })) : [], mode: s.mode, method: s.method, path: s.path, body: s.body, response: s.response, statusLine: s.statusLine, onMethod: e => this.setState({ method: e.target.value }), onPath: e => this.setState({ path: e.target.value }), onBody: e => this.setState({ body: e.target.value }), send: this.send, endpoints: this.EPS.map(([method, path, what, body]) => ({ method, path, what, pick: () => this.setState({ method, path, body: body || s.body }) })) }; }
+}
+
+</script>
+</body>
+</html>

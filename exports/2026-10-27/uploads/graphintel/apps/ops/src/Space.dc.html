@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <script src="graph3d.js"></script>
+  <style>body{margin:0;background:#0b0c0a;color:#e9ede0;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:13px}a{color:#c8f43a;text-decoration:none}a:hover{text-decoration:underline}button,input,textarea{font:inherit;color:inherit}::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#2b3024;border-radius:5px}</style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0b0c0a"/><circle cx="30" cy="55" r="9" fill="#c8f43a"/><circle cx="64" cy="35" r="7" fill="#ffb02e"/><circle cx="68" cy="68" r="6" fill="#4cc9f0"/><path d="M30 55L64 35M30 55L68 68" stroke="#98a08a" stroke-width="2"/></svg></template>
+</helmet>
+<div data-screen-label="Agent space" style="height:100vh;display:grid;grid-template-columns:minmax(760px,1fr);grid-template-rows:34px minmax(0,1fr) 24px;background:#0b0c0a;overflow-x:auto;overflow-y:hidden;">
+  <header style="display:flex;align-items:center;gap:14px;padding:0 14px;border-bottom:1px solid #2b3024;">
+    <span style="display:flex;align-items:center;gap:8px;font-weight:600;letter-spacing:0.08em;font-size:12px;"><span style="width:9px;height:9px;background:#c8f43a;display:inline-block;"></span>SEXTANT · AGENT SPACE</span>
+    <span style="color:#98a08a;font-size:12px;">everything the agent holds, nothing greyed</span>
+    <span style="margin-left:auto;display:flex;gap:16px;font-size:12px;align-items:center;white-space:nowrap;"><span style="{{ connStyle }}">{{ conn }}</span><a href="{{ L.terminal }}">Ops console</a><a href="{{ L.site }}">Public view</a></span>
+  </header>
+  <div style="display:grid;grid-template-columns:210px minmax(0,1fr);min-height:0;">
+    <nav style="border-right:1px solid #2b3024;background:#111310;padding:8px 0;display:grid;align-content:start;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="7"><button onClick="{{ t.go }}" style="{{ t.style }}"><span>{{ t.label }}</span><span style="{{ t.badgeStyle }}">{{ t.badge }}</span></button></sc-for>
+    </nav>
+    <main style="min-height:0;overflow:auto;position:relative;">
+      <div style="{{ vGraph }}">
+        <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 16px;border-bottom:1px solid #20241b;">
+          <span style="display:flex;gap:4px;"><sc-for list="{{ hopBtns }}" as="h" hint-placeholder-count="3"><button onClick="{{ h.go }}" style="{{ h.style }}">{{ h.label }}</button></sc-for></span>
+          <button onClick="{{ home }}" style="background:none;border:1px solid #2b3024;padding:3px 10px;cursor:pointer;color:#98a08a;white-space:nowrap;">Reset focus</button>
+          <span style="color:#98a08a;white-space:nowrap;">{{ graphInfo }}</span>
+          <span style="margin-left:auto;display:flex;gap:8px;align-items:center;"><span style="color:#98a08a;">{{ focusLabel }}</span><button onClick="{{ publishFocus }}" style="background:#c8f43a;color:#10140a;border:0;padding:3px 12px;font-weight:600;cursor:pointer;white-space:nowrap;">Publish this node</button></span>
+        </div>
+        <div style="position:relative;"><div ref="{{ box }}" style="position:absolute;inset:0;"></div><sc-if value="{{ offline }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;"><span style="color:#98a08a;max-width:380px;text-align:center;line-height:1.6;">Waiting for the engine and the owner login. The graph appears here, ungreyed, when the engine answers.</span></div></sc-if><div style="position:absolute;left:14px;right:14px;bottom:10px;font-size:11px;color:#98a08a;display:flex;flex-wrap:wrap;gap:4px 16px;"><span style="white-space:nowrap;"><span style="color:#c8f43a;">●</span> approved for the public</span><span style="white-space:nowrap;"><span style="color:#cfd5c2;">●</span> private</span><span style="white-space:nowrap;">fourth axis: distance from the centre = edge weight</span></div></div>
+      </div>
+      <div style="{{ vChat }}">
+        <div style="overflow:auto;padding:16px 20px;display:grid;gap:14px;align-content:start;"><sc-for list="{{ chat }}" as="m" hint-placeholder-count="1"><div style="display:grid;gap:4px;max-width:820px;"><span style="{{ m.whoStyle }}">{{ m.who }}</span><span style="line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;">{{ m.text }}</span><span style="font-size:11px;color:#646b58;font-family:'JetBrains Mono',monospace;">{{ m.meta }}</span></div></sc-for><sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">SEXTANT is working…</span></sc-if></div>
+        <div style="padding:12px 20px;border-top:1px solid #20241b;display:flex;gap:10px;"><textarea value="{{ draft }}" onChange="{{ setDraft }}" onKeyDown="{{ draftKey }}" rows="2" placeholder="Talk to SEXTANT. It sees the whole graph and has its tools." style="flex:1;resize:none;background:#0b0c0a;border:1px solid #2b3024;padding:8px 10px;outline:none;"></textarea><button onClick="{{ send }}" style="background:#c8f43a;color:#10140a;border:0;padding:0 18px;font-weight:600;cursor:pointer;">Send</button></div>
+      </div>
+      <div style="{{ vRecord }}"><div style="padding:14px 20px;display:grid;gap:10px;max-width:980px;"><sc-for list="{{ record }}" as="r" hint-placeholder-count="3"><div style="padding:10px 12px;background:#181b15;border:1px solid #2b3024;display:grid;gap:6px;"><div style="display:flex;gap:12px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#98a08a;"><span style="color:#c8f43a;">{{ r.kind }}</span><span>{{ r.when }}</span><span>{{ r.energy }}</span></div><span style="color:#98a08a;overflow-wrap:anywhere;">{{ r.intake }}</span><sc-if value="{{ r.hasTools }}" hint-placeholder-val="{{ false }}"><pre style="margin:0;font-size:11.5px;color:#98a08a;white-space:pre-wrap;overflow-wrap:anywhere;font-family:'JetBrains Mono',monospace;">{{ r.tools }}</pre></sc-if><span style="line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;">{{ r.answer }}</span></div></sc-for><sc-if value="{{ noRecord }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">No rounds yet.</span></sc-if></div></div>
+      <div style="{{ vPublish }}"><div style="padding:14px 20px;display:grid;gap:10px;max-width:920px;"><span style="color:#98a08a;line-height:1.5;">The agent proposes what the public may see, with its sources. Approve to publish; retract to take it back down. Anything not in a published batch stays greyed on the site.</span><sc-for list="{{ batches }}" as="b" hint-placeholder-count="2"><div style="padding:12px;background:#181b15;border:1px solid #2b3024;display:grid;gap:6px;"><div style="display:flex;justify-content:space-between;gap:12px;"><span style="font-weight:600;">{{ b.title }}</span><span style="{{ b.statusStyle }}">{{ b.status }}</span></div><span style="font-size:12px;color:#98a08a;">{{ b.counts }}</span><span style="white-space:pre-wrap;line-height:1.55;">{{ b.note }}</span><span style="font-size:11px;color:#98a08a;overflow-wrap:anywhere;">{{ b.sources }}</span><div style="display:flex;gap:8px;"><sc-for list="{{ b.actions }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.run }}" style="{{ a.style }}">{{ a.label }}</button></sc-for></div></div></sc-for><sc-if value="{{ noBatches }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">No batches yet. Click a node in the graph and use Publish this node, or wait for the agent to propose one.</span></sc-if></div></div>
+      <div style="{{ vApprove }}"><div style="padding:14px 20px;display:grid;gap:10px;max-width:920px;"><span style="color:#98a08a;line-height:1.5;">Upgrade proposals, incident repairs and post drafts waiting for you. Approving an upgrade or repair tests it in the sandbox and opens a pull request; the agent never edits its own code.</span><sc-for list="{{ approvals }}" as="b" hint-placeholder-count="2"><div style="padding:12px;background:#181b15;border:1px solid #2b3024;display:grid;gap:6px;"><div style="display:flex;justify-content:space-between;gap:12px;"><span style="font-weight:600;overflow-wrap:anywhere;">{{ b.title }}</span><span style="font-size:11px;color:#ffb02e;text-transform:uppercase;letter-spacing:0.08em;">{{ b.kind }}</span></div><span style="line-height:1.55;color:#cfd5c2;overflow-wrap:anywhere;">{{ b.detail }}</span><div style="display:flex;gap:8px;"><sc-for list="{{ b.actions }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.run }}" style="{{ a.style }}">{{ a.label }}</button></sc-for></div></div></sc-for><sc-if value="{{ noApprovals }}" hint-placeholder-val="{{ false }}"><span style="color:#98a08a;">Nothing waiting.</span></sc-if></div></div>
+      <div style="{{ vGate }}"><div style="padding:14px 20px;display:grid;gap:6px;max-width:760px;"><span style="color:#98a08a;line-height:1.5;">The mindful gate every outbound post passes: caps, quiet hours, spacing, duplicates, banned claims, disclosure.</span><sc-for list="{{ gate }}" as="g" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;padding:5px 0;border-bottom:1px solid #20241b;"><span style="color:#98a08a;">{{ g.k }}</span><span style="font-family:'JetBrains Mono',monospace;overflow-wrap:anywhere;">{{ g.v }}</span></div></sc-for></div></div>
+      <div style="{{ vHub }}"><div style="padding:14px 20px;display:grid;gap:12px;max-width:980px;"><div style="display:flex;gap:8px;"><input value="{{ q }}" onChange="{{ setQ }}" onKeyDown="{{ qKey }}" placeholder="search the MCP market for a server" style="flex:1;background:#0b0c0a;border:1px solid #2b3024;padding:6px 10px;outline:none;"><button onClick="{{ search }}" style="background:#c8f43a;color:#10140a;border:0;padding:0 16px;font-weight:600;cursor:pointer;">Search</button></div>
+        <sc-for list="{{ market }}" as="m" hint-placeholder-count="0"><div style="padding:8px 10px;background:#181b15;border:1px solid #2b3024;display:grid;gap:2px;"><span style="font-weight:500;">{{ m.name }} <span style="color:#98a08a;font-weight:400;">{{ m.package }}</span></span><span style="font-size:12px;color:#98a08a;">{{ m.description }}</span><span style="font-size:11px;color:#646b58;">The agent installs servers itself with market_install; you see the result below.</span></div></sc-for>
+        <span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">SERVERS</span>
+        <sc-for list="{{ servers }}" as="s" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:150px 70px minmax(0,1fr);gap:12px;padding:5px 0;border-bottom:1px solid #20241b;"><span style="font-weight:500;">{{ s.name }}</span><span style="color:{{ s.color }};">{{ s.state }}</span><span style="color:#98a08a;overflow-wrap:anywhere;">{{ s.note }}</span></div></sc-for>
+        <span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">AUDIT</span>
+        <sc-for list="{{ audit }}" as="a" hint-placeholder-count="3"><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#98a08a;overflow-wrap:anywhere;">{{ a }}</div></sc-for></div></div>
+    </main>
+  </div>
+  <footer style="display:flex;align-items:center;gap:18px;padding:0 12px;background:#c8f43a;color:#10140a;font-size:11.5px;font-weight:500;"><span>{{ footer }}</span><span style="margin-left:auto;">{{ flash }}</span></footer>
+  <sc-if value="{{ needsLogin }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;inset:0;background:rgba(11,12,10,0.9);display:grid;place-items:center;"><div style="width:320px;padding:24px;background:#181b15;border:1px solid #2b3024;display:grid;gap:12px;"><span style="font-size:11px;letter-spacing:0.1em;color:#c8f43a;">OWNER</span><span style="font-size:18px;font-weight:600;">Sign in to the agent space</span><input type="password" value="{{ pw }}" onChange="{{ setPw }}" onKeyDown="{{ pwKey }}" placeholder="password" style="background:#0b0c0a;border:1px solid #2b3024;padding:8px 10px;outline:none;"><div style="display:flex;gap:12px;align-items:center;"><button onClick="{{ login }}" style="background:#c8f43a;color:#10140a;border:0;padding:6px 16px;font-weight:600;cursor:pointer;">Sign in</button><span style="color:#ff5b4a;font-size:12px;">{{ loginError }}</span></div></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;apiUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;/api&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Services&quot;}}">
+const TABS = [['graph', 'Graph'], ['chat', 'Talk to SEXTANT'], ['record', 'The record'], ['publish', 'Publish queue'], ['approve', 'Upgrades and repairs'], ['gate', 'Drafts and gate'], ['hub', 'MCP hub']];
+const SHOW = { graph: 'display:grid;grid-template-rows:auto minmax(0,1fr);height:100%;', chat: 'display:grid;grid-template-rows:minmax(0,1fr) auto;height:100%;', record: 'display:block;', publish: 'display:block;', approve: 'display:block;', gate: 'display:block;', hub: 'display:block;' };
+const btn = (primary, red) => `border:${primary ? 0 : '1px solid ' + (red ? '#ff5b4a' : '#2b3024')};background:${primary ? '#c8f43a' : 'transparent'};color:${primary ? '#10140a' : red ? '#ff5b4a' : '#e9ede0'};padding:3px 12px;cursor:pointer;white-space:nowrap;font-weight:${primary ? 600 : 400};`;
+const hm = (ts) => { const d = new Date(typeof ts === 'number' ? ts * 1000 : ts); return isNaN(d) ? '' : d.toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }); };
+
+class Component extends DCLogic {
+  constructor(p) { super(p); this.box = React.createRef(); this.state = { tab: 'graph', focus: 'institute', hops: 2, graph: null, chat: [], draft: '', busy: false, record: [], batches: [], day: null, mind: null, hub: null, market: [], q: '', pw: '', loginError: '', needsLogin: false, ok: false, flash: '' }; }
+  async call(path, opts = {}) {
+    const r = await fetch(String(this.props.apiUrl ?? '/api').replace(/\/$/, '') + path, { credentials: 'include', ...opts, headers: { 'content-type': 'application/json' } });
+    if (r.status === 401) { this.setState({ needsLogin: true }); throw new Error('401'); }
+    const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.detail || r.status); this.setState({ ok: true }); return j;
+  }
+  say(t) { this.setState({ flash: t }); clearTimeout(this.ft); this.ft = setTimeout(() => this.setState({ flash: '' }), 5000); }
+  componentDidMount() {
+    const h = (location.hash || '').slice(1); if (TABS.some(t => t[0] === h)) this.setState({ tab: h });
+    this.wait = setInterval(() => { if (window.Graph3D) { clearInterval(this.wait); window.Graph3D.load().then(() => { if (!this.box.current) return; this.g = window.Graph3D.mount(this.box.current, { allLabels: true, onFocus: (id) => this.setState({ focus: id }, () => this.loadGraph()) }); this.loadGraph(); }); } }, 100);
+    this.refresh(); this.poll = setInterval(() => this.refresh(), 8000);
+  }
+  componentWillUnmount() { clearInterval(this.wait); clearInterval(this.poll); this.g && this.g.destroy(); }
+  async loadGraph() { try { const d = await this.call(`/owner/graph?focus=${encodeURIComponent(this.state.focus)}&hops=${this.state.hops}`); this.setState({ graph: d }); this.g && this.g.set({ ...d, nodes: d.nodes.map(n => ({ ...n, type: n.pub ? n.type : 'private' })) }); } catch (e) { if (e.message !== '401') this.setState({ ok: false }); } }
+  async refresh() {
+    const t = (p, k) => this.call(p).then(j => this.setState({ [k]: j })).catch(e => { if (e.message !== '401') this.setState({ ok: false }); });
+    await Promise.all([t('/owner/record?n=30', 'rec'), t('/owner/publish', 'pub'), t('/owner/day', 'day'), t('/owner/mindful', 'mind'), t('/owner/hub', 'hub')]);
+  }
+  async act(id, action) { try { const r = await this.call('/owner/act', { method: 'POST', body: JSON.stringify({ id, action }) }); this.say(r.ok === false ? `${action}: ${r.error || 'refused'}` : `${action}: done`); this.refresh(); this.loadGraph(); } catch (e) { this.say(`${action}: ${e.message}`); } }
+  async publishFocus() {
+    const n = this.state.graph && this.state.graph.nodes.find(x => x.id === this.state.focus); if (!n) return;
+    try { await this.call('/owner/publish', { method: 'POST', body: JSON.stringify({ title: n.label || n.id, node_ids: [n.id], note: '', now: true }) }); this.say(`published ${n.label}`); this.refresh(); this.loadGraph(); } catch (e) { this.say(e.message); }
+  }
+  async send() {
+    const text = this.state.draft.trim(); if (!text || this.state.busy) return;
+    this.setState(s => ({ draft: '', busy: true, chat: [...s.chat, { who: 'you', text }] }));
+    try { const r = await this.call('/owner/chat', { method: 'POST', body: JSON.stringify({ text, kind: 'chat' }) }); this.setState(s => ({ busy: false, chat: [...s.chat, { who: 'sextant', text: r.answer, meta: `+${r.nodes} nodes · +${r.hyperedges} edges${r.minted && r.minted.length ? ' · minted ' + r.minted.join(', ') : ''}` }] })); this.loadGraph(); }
+    catch (e) { this.setState(s => ({ busy: false, chat: [...s.chat, { who: 'sextant', text: `Could not reach the engine: ${e.message}` }] })); }
+  }
+  async search() { try { const r = await this.call('/owner/hub/market?q=' + encodeURIComponent(this.state.q)); this.setState({ market: r.results || [] }); } catch (e) { this.say(e.message); } }
+  async login() {
+    const r = await fetch(String(this.props.apiUrl ?? '/api').replace(/\/$/, '') + '/auth/login', { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: this.state.pw }) });
+    if (r.ok) { this.setState({ pw: '', loginError: '', needsLogin: false }); this.refresh(); this.loadGraph(); } else { const j = await r.json().catch(() => ({})); this.setState({ loginError: j.detail || `failed (${r.status})` }); }
+  }
+  renderVals() { const p = location.pathname, m = /\.dc\.html$/.test(p) ? 0 : /\/(dist|ui)\//.test(p) ? 1 : 2, pick = (a) => a[m]; const L = { terminal: pick(['Console.dc.html', '../../web/dist/terminal.html', '/terminal']), site: pick(['../../web/src/Research.dc.html', '../../web/dist/research.html', '/research'])}; return { L, ...this.rv() }; }
+  rv() {
+    const s = this.state, show = (id) => s.tab === id ? SHOW[id] : 'display:none;', g = s.graph, node = g && g.nodes.find(n => n.id === s.focus);
+    const items = ((s.day && s.day.stream) || []).filter(x => ['upgrade', 'incident', 'post'].includes(x.kind) && x.status !== 'done');
+    const pending = (s.pub && s.pub.batches || []).filter(b => b.status === 'proposed').length, waiting = items.length;
+    const mind = s.mind || {}; const flat = (o, p = '') => Object.entries(o).flatMap(([k, v]) => v && typeof v === 'object' && !Array.isArray(v) ? flat(v, p + k + '.') : [{ k: p + k, v: Array.isArray(v) ? v.join(', ') : String(v) }]);
+    return {
+      box: this.box, conn: s.ok ? 'live' : s.needsLogin ? 'signed out' : 'engine not reachable', connStyle: `color:${s.ok ? '#3fd68f' : '#ff5b4a'};`,
+      tabs: TABS.map(([id, label]) => { const n = id === 'publish' ? pending : id === 'approve' ? waiting : 0; return { label, badge: n || '', go: () => this.setState({ tab: id }), style: `all:unset;box-sizing:border-box;display:flex;justify-content:space-between;padding:8px 14px;gap:8px;white-space:nowrap;cursor:pointer;color:${s.tab === id ? '#e9ede0' : '#98a08a'};border-left:2px solid ${s.tab === id ? '#c8f43a' : 'transparent'};background:${s.tab === id ? '#20241b' : 'transparent'};`, badgeStyle: 'color:#ffb02e;font-family:JetBrains Mono,monospace;' }; }),
+      vGraph: show('graph'), vChat: show('chat'), vRecord: show('record'), vPublish: show('publish'), vApprove: show('approve'), vGate: show('gate'), vHub: show('hub'),
+      hopBtns: [1, 2, 3].map(h => ({ label: `${h} hop${h > 1 ? 's' : ''}`, go: () => this.setState({ hops: h }, () => this.loadGraph()), style: btn(s.hops === h) })), home: () => this.setState({ focus: 'institute' }, () => this.loadGraph()),
+      graphInfo: g ? `${g.nodes.length} shown of ${g.total.nodes} nodes · ${g.total.published} published` : (s.ok ? 'loading…' : 'engine not connected'), offline: !g, focusLabel: node ? `${node.label || node.id}${node.pub ? ' (public)' : ' (private)'}` : '', publishFocus: () => this.publishFocus(),
+      chat: s.chat.map(m => ({ who: m.who === 'you' ? 'YOU' : 'SEXTANT', text: m.text, meta: m.meta || '', whoStyle: `font-size:10.5px;letter-spacing:0.1em;color:${m.who === 'you' ? '#98a08a' : '#c8f43a'};` })), busy: s.busy, draft: s.draft,
+      setDraft: (e) => this.setState({ draft: e.target.value }), draftKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.send(); } }, send: () => this.send(),
+      record: ((s.rec && s.rec.rounds) || []).map(r => ({ kind: r.kind, when: hm(r.ts), energy: r.energy ? `ΔE ${Number(r.energy.delta ?? r.energy).toFixed ? Number(r.energy.delta ?? r.energy).toFixed(2) : ''}` : '', intake: String(r.intake || '').slice(0, 280), answer: String(r.answer || '').slice(0, 900),
+        hasTools: !!(r.tools || r.trajectory), tools: JSON.stringify(r.tools || r.trajectory || '', null, 1).slice(0, 900) })), noRecord: !(s.rec && s.rec.rounds && s.rec.rounds.length),
+      batches: ((s.pub && s.pub.batches) || []).map(b => ({ title: b.title, status: b.status, counts: `${b.nodes.length} nodes · ${b.edges.length} edges · ${hm(b.ts)}`, note: b.note, sources: (b.sources || []).join(' · '), statusStyle: `font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:${b.status === 'published' ? '#3fd68f' : b.status === 'proposed' ? '#ffb02e' : '#98a08a'};`,
+        actions: (b.status === 'proposed' ? [['approve', 'Approve', 1], ['decline', 'Decline']] : b.status === 'published' ? [['retract', 'Retract', 0, 1]] : []).map(([a, l, p, r]) => ({ label: l, style: btn(p, r), run: () => this.act(b.id, a) })) })), noBatches: !(s.pub && s.pub.batches && s.pub.batches.length),
+      approvals: items.map(x => ({ title: x.title, kind: x.kind, detail: x.detail, actions: (x.actions || []).map((a, i) => ({ label: a.label, style: btn(i === 0, /decline|dismiss/i.test(a.id) ? 0 : 0), run: () => this.act(x.id, a.id) })) })), noApprovals: items.length === 0,
+      gate: flat(mind), q: s.q, setQ: (e) => this.setState({ q: e.target.value }), qKey: (e) => { if (e.key === 'Enter') this.search(); }, search: () => this.search(), market: s.market,
+      servers: ((s.hub && s.hub.servers) || []).map(x => ({ name: x.name, state: x.enabled ? 'on' : 'off', color: x.enabled ? '#3fd68f' : '#98a08a', note: `${x.source}${x.missing_env && x.missing_env.length ? ' · missing ' + x.missing_env.join(', ') : ''} ${x.note || ''}` })),
+      audit: ((s.hub && s.hub.audit) || []).slice(-12).reverse().map(a => `${hm(a.ts)} ${a.action} ${a.server || ''} ${a.tool || ''}`),
+      footer: `${g ? g.total.nodes : '–'} nodes · ${g ? g.total.published : '–'} published · ${pending} batches waiting · ${waiting} approvals`, flash: s.flash,
+      needsLogin: s.needsLogin, pw: s.pw, setPw: (e) => this.setState({ pw: e.target.value }), pwKey: (e) => { if (e.key === 'Enter') this.login(); }, login: () => this.login(), loginError: s.loginError,
+    };
+  }
+}
+</script>
+</body>
+</html>

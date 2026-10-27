@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saltline · Impact Assessment Filing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap">
+<style>
+:root{--bg:#eceeec;--chrome:#ffffff;--ink:#17201d;--ink2:#48564f;--mut:#78867e;--line:#e3e8e5;--line2:#d2dad5;--teal:#0f766e;--teal2:#0d9488;--teal-s:#0f766e14;--amber:#b45309;--paper:#fffdf9;--docink:#1b1b19;--docmut:#6b6b63;--rule:#dcd6c8;--sh:0 1px 2px rgba(20,40,34,.05),0 2px 10px rgba(20,40,34,.05)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+/* app chrome */
+.appbar{position:sticky;top:0;z-index:20;background:var(--chrome);border-bottom:1px solid var(--line);box-shadow:var(--sh)}
+.ab-in{max-width:1180px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}.mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:grid;place-items:center}.mark svg{width:18px;height:18px;stroke:#fff}
+.logo b{font-size:16px;font-weight:700;letter-spacing:-.01em}.logo span{display:block;font-size:11.5px;color:var(--mut);font-weight:500}
+.ab-sp{flex:1}
+.btn{border:1px solid var(--line2);background:var(--chrome);color:var(--ink);border-radius:9px;padding:9px 14px;font:600 13px Figtree;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:var(--teal);color:var(--teal)}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}.btn.pri:hover{background:#0b6057;color:#fff}
+.btn.pri:disabled{opacity:.55;cursor:default}
+.btn svg{width:16px;height:16px}
+a.btn{text-decoration:none}
+.prog{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2);min-width:0}
+.pbar{width:150px;height:7px;background:var(--line);border-radius:5px;overflow:hidden}.pbar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--teal2));transition:width .3s}
+.layout{max-width:1180px;margin:0 auto;padding:20px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+/* brief + outline rail */
+.rail{position:sticky;top:78px;display:flex;flex-direction:column;gap:14px}
+@media(max-width:900px){.rail{position:static}}
+.card{background:var(--chrome);border:1px solid var(--line);border-radius:13px;box-shadow:var(--sh)}
+.card h4{margin:0;padding:12px 14px;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.brief{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.brief label{display:block;font-size:11.5px;font-weight:600;color:var(--ink2);margin-bottom:4px}
+.brief input,.brief textarea{width:100%;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font:500 13px Figtree;color:var(--ink);background:#fbfcfc}
+.brief textarea{resize:vertical;min-height:52px;line-height:1.4}
+.outline{padding:8px;display:flex;flex-direction:column;gap:1px;max-height:46vh;overflow:auto}
+.oitem{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;border-radius:8px;border:0;background:transparent;text-align:left;width:100%;color:var(--ink2);font:500 12.5px Figtree;line-height:1.3}
+.oitem:hover{background:#eef1f0}
+.oitem .st{width:16px;height:16px;flex:none;margin-top:1px}
+.oitem .num{font:600 11px 'Figtree';color:var(--mut);flex:none;width:16px}
+.oitem.done{color:var(--ink)}.oitem.active{background:var(--teal-s);color:var(--teal)}
+.dotq{width:10px;height:10px;border:2px solid var(--line2);border-radius:50%;margin:2px}
+.spin{width:14px;height:14px;border:2px solid var(--teal-s);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.chk{color:var(--teal)}
+/* document / paper */
+.docwrap{display:flex;justify-content:center}
+.doc{background:var(--paper);color:var(--docink);width:100%;max-width:820px;box-shadow:0 1px 3px rgba(0,0,0,.08),0 12px 40px rgba(20,30,20,.12);border:1px solid #efe9db;font-family:'Source Serif 4',Georgia,serif;font-size:15.5px;line-height:1.62}
+.doc .pad{padding:56px 64px}
+@media(max-width:560px){.doc .pad{padding:32px 24px}}
+.cover{border-bottom:1px solid var(--rule)}
+.cover .kick{font-family:Figtree;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.cover h1{font-size:30px;line-height:1.18;font-weight:700;margin:16px 0 6px;letter-spacing:-.01em}
+.cover .proj{font-size:19px;color:var(--docink);font-weight:600;margin:0 0 26px}
+.metagrid{display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;font-family:Figtree;font-size:13px;border-top:1px solid var(--rule);padding-top:20px}
+.metagrid div span{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--docmut);font-weight:700;margin-bottom:2px}
+.metagrid div b{font-weight:600;color:var(--docink)}
+.stamp{display:inline-block;margin-top:22px;font-family:Figtree;font-weight:700;font-size:12px;letter-spacing:.12em;color:var(--amber);border:2px solid var(--amber);border-radius:6px;padding:6px 12px;transform:rotate(-1.5deg)}
+.toc{border-bottom:1px solid var(--rule)}
+.toc h2,.sec h2{font-size:12px;font-family:Figtree;letter-spacing:.14em;text-transform:uppercase;color:var(--docmut);font-weight:700;margin:0 0 14px}
+.toc ol{list-style:none;margin:0;padding:0;counter-reset:t}
+.toc li{display:flex;align-items:baseline;gap:8px;padding:5px 0;font-size:15px;color:var(--docink)}
+.toc li .tn{font-weight:600;width:24px;color:var(--teal)}
+.toc li .tl{flex:1}.toc li .td{flex:1;border-bottom:1px dotted var(--rule);margin:0 6px 4px}
+.toc li.pend{color:var(--docmut)}
+.sec{border-top:1px solid var(--rule);padding-top:30px;margin-top:30px}
+.sec:first-child{border-top:0;margin-top:0;padding-top:0}
+.sec .sh{display:flex;gap:12px;align-items:baseline;margin:0 0 12px}
+.sec .sn{font-weight:700;color:var(--teal);font-size:22px;font-feature-settings:'tnum'}
+.sec .st2{font-size:22px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.sec h4{font-family:Figtree;font-size:14px;font-weight:700;color:var(--docink);margin:18px 0 6px}
+.sec p{margin:0 0 11px}
+.sec ul{margin:4px 0 12px;padding-left:20px}.sec li{margin:3px 0}
+.sec .drafting{display:flex;align-items:center;gap:9px;color:var(--docmut);font-family:Figtree;font-size:13.5px;padding:6px 0}
+.hero-empty{text-align:center;color:var(--docmut);font-family:Figtree;padding:30px 0 6px}
+.hero-empty b{color:var(--docink);font-weight:600}
+.err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:8px;padding:9px 12px;font-family:Figtree;font-size:13px;margin:6px 0}
+.foot{font-family:Figtree;font-size:11px;color:var(--docmut);border-top:1px solid var(--rule);margin-top:34px;padding-top:12px;display:flex;justify-content:space-between}
+@media print{
+  .appbar,.rail,.no-print{display:none!important}
+  body{background:#fff}.layout{display:block;padding:0;max-width:none}
+  .doc{box-shadow:none;border:0;max-width:none;font-size:11.5pt}
+  .doc .pad{padding:0}
+  .cover{page-break-after:always;border:0}
+  .sec{page-break-inside:auto}.sec .sh{page-break-after:avoid}.sec h4{page-break-after:avoid}
+  .toc{page-break-after:always;border:0}
+}
+</style>
+
+<script src="suite-launcher.js"></script>
+</head>
+<body>
+<header class="appbar"><div class="ab-in">
+  <div class="logo"><div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></div>
+    <div><b>Impact Assessment</b><span>Environmental &amp; Social Impact Assessment · filing workspace</span></div></div>
+  <div class="ab-sp"></div>
+  <div class="prog" id="prog" style="display:none"><div class="pbar"><i id="pbar"></i></div><span id="progtxt"></span></div>
+  <button class="btn pri" id="genBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.9L19 9.7l-4.2 2.9L16 18l-4-3-4 3 1.2-5.4L5 9.7l5.2-1.8z"/></svg>Generate full report</button>
+  <button class="btn" id="printBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Print / PDF</button>
+  <a class="btn no-print" href="Field Tools.html">All tools</a>
+</div></header>
+
+<div class="layout">
+  <aside class="rail no-print">
+    <section class="card"><h4>Project brief</h4>
+      <div class="brief">
+        <div><label>Project name</label><input id="b-proj" value="Coastal halophyte cultivation &amp; brine-reuse pilot"></div>
+        <div><label>Proponent</label><input id="b-prop" value="Saltline Institute"></div>
+        <div><label>Location</label><input id="b-loc" value="Gulf coast — Site B, Jubail industrial area, Saudi Arabia"></div>
+        <div><label>Activity</label><textarea id="b-act">Irrigating 40 ha of halophyte beds (Salicornia, Atriplex) with desalination reject brine; licensed-pilot drone surveys; intertidal planting trials.</textarea></div>
+        <div><label>Scale &amp; duration</label><input id="b-scale" value="40 ha pilot · 24-month programme"></div>
+        <div><label>Key sensitivities</label><textarea id="b-sens">Intertidal mudflat habitat, migratory shorebirds, nearshore marine water quality, shallow groundwater salinity.</textarea></div>
+      </div>
+    </section>
+    <section class="card"><h4>Report contents</h4><div class="outline" id="outline"></div></section>
+  </aside>
+
+  <main class="docwrap">
+    <article class="doc"><div class="pad" id="doc"></div></article>
+  </main>
+</div>
+
+<script type="module">
+const $=s=>document.querySelector(s), ce=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e;};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const SECTIONS=[
+ ['Non-technical summary','A plain-language overview a non-specialist can read: what is proposed, the main predicted effects, the principal mitigation, and the overall conclusion on acceptability.'],
+ ['Introduction and regulatory framework','Purpose and scope of this ESIA, the consents and permits being sought, and the applicable environmental governance at international, national and local levels (describe the types of framework and competent authorities in general terms; cite no specific statute numbers or dates).'],
+ ['Project description','The activities and components, programme phases (mobilisation, operation, decommissioning/handover), physical footprint, key inputs and outputs (water, brine, energy, materials), and workforce.'],
+ ['Assessment methodology','The significance approach: receptor sensitivity and impact magnitude, the significance matrix, data sources used, consultation undertaken, and assessment limitations and assumptions.'],
+ ['Baseline environment','The existing environment: physical (climate, soils, coastal processes, hydrology and hydrogeology), biological (habitats and notable species), and socio-economic setting. Note data gaps.'],
+ ['Water, hydrology and brine management','Predicted effects of reject-brine irrigation and any discharge on surface water, nearshore marine water quality and shallow groundwater salinity; magnitude, receptor sensitivity and significance before mitigation.'],
+ ['Biodiversity and coastal habitats','Effects on intertidal mudflat habitat, migratory shorebirds and nearshore marine ecology, including disturbance from field and drone operations; significance before mitigation.'],
+ ['Soils, land and salinity','Effects on soil salinisation, land capability and land use, and the potential reclamation benefits of halophyte cover; significance.'],
+ ['Air quality, noise and climate','Emissions, dust, drone-operation noise and disturbance, greenhouse-gas balance and any carbon-sequestration considerations; significance.'],
+ ['Socio-economic, community and cultural heritage','Effects on local employment, community access and amenity, fishers and other users, and cultural or archaeological heritage; significance.'],
+ ['Cumulative and transboundary impacts','Interactions with other projects and regional pressures (industrial, desalination, coastal development) and any transboundary considerations.'],
+ ['Mitigation and environmental management','Mitigation measures by phase and the structure of the Environmental and Social Management Plan (roles, controls, procedures, grievance mechanism).'],
+ ['Environmental monitoring plan','Monitoring parameters, methods (satellite indices, drone surveys, field sampling), frequency, responsibilities, action triggers and reporting.'],
+ ['Conclusions and residual impacts','Summary of residual significance after mitigation, the overall conclusion on environmental and social acceptability, and recommendations and commitments.'],
+];
+
+const brief=()=>({proj:$('#b-proj').value.trim(),prop:$('#b-prop').value.trim(),loc:$('#b-loc').value.trim(),act:$('#b-act').value.trim(),scale:$('#b-scale').value.trim(),sens:$('#b-sens').value.trim()});
+const REF='SLI-ESIA-'+new Date().getFullYear()+'-'+String(Math.floor(1000+Math.random()*9000));
+const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+let busy=false, stop=false, words=0;
+
+function renderShell(generated){
+  const b=brief(), doc=$('#doc'); doc.innerHTML='';
+  // cover
+  const cov=ce('section','cover');
+  cov.innerHTML=`<div class="kick">Environmental &amp; Social Impact Assessment</div>
+    <h1>Environmental and Social Impact Assessment</h1>
+    <p class="proj">${esc(b.proj)}</p>
+    <div class="metagrid">
+      <div><span>Proponent</span><b>${esc(b.prop)}</b></div>
+      <div><span>Location</span><b>${esc(b.loc)}</b></div>
+      <div><span>Programme</span><b>${esc(b.scale)}</b></div>
+      <div><span>Prepared by</span><b>Saltline Institute · Environmental Assessment</b></div>
+      <div><span>Reference</span><b>${REF}</b></div>
+      <div><span>Date · Revision</span><b>${today} · Rev 0.1</b></div>
+    </div>
+    <div class="stamp">DRAFT — FOR REGULATORY REVIEW</div>`;
+  doc.appendChild(cov);
+  // toc
+  const toc=ce('section','toc');
+  let lis=SECTIONS.map((s,i)=>`<li class="${i<generated?'':'pend'}" data-toc="${i}"><span class="tn">${i+1}</span><span class="tl">${esc(s[0])}</span><span class="td"></span><span>${i<generated?'✓':'—'}</span></li>`).join('');
+  toc.innerHTML=`<h2>Contents</h2><ol>${lis}</ol>`;
+  doc.appendChild(toc);
+  toc.querySelectorAll('[data-toc]').forEach(el=>el.onclick=()=>{const t=document.getElementById('sec'+el.dataset.toc);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});
+  // body container
+  const body=ce('div');body.id='secbody';doc.appendChild(body);
+  if(!generated){
+    const he=ce('div','hero-empty');
+    he.innerHTML=`<b>${SECTIONS.length}-section ESIA ready to draft.</b><br>These filings routinely run to tens of pages. Press <b>Generate full report</b> and the platform drafts every section from your brief — you review, then export to PDF.`;
+    body.appendChild(he);
+  }
+  // footer
+  const f=ce('div','foot');f.innerHTML=`<span>${esc(b.prop)} · ${REF}</span><span>Draft ESIA · Rev 0.1 · ${today}</span>`;doc.appendChild(f);
+}
+
+function renderOutline(statuses){
+  const o=$('#outline');o.innerHTML='';
+  SECTIONS.forEach((s,i)=>{
+    const st=statuses[i]||'queued';
+    const b=ce('button','oitem'+(st==='done'?' done':'')+(st==='drafting'?' active':''));
+    const icon=st==='done'?'<svg class="chk st" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>':st==='drafting'?'<span class="spin"></span>':'<span class="dotq"></span>';
+    b.innerHTML=`<span class="st">${icon}</span><span class="num">${i+1}</span><span>${esc(s[0])}</span>`;
+    b.onclick=()=>{const t=document.getElementById('sec'+i);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});};
+    o.appendChild(b);
+  });
+}
+
+function mdToHtml(t){
+  const lines=String(t).split(/\r?\n/);let html='',inUl=false;
+  const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  for(let ln of lines){
+    ln=ln.trim();
+    if(/^#{1,6}\s/.test(ln)){ if(inUl){html+='</ul>';inUl=false;} html+='<h4>'+inline(ln.replace(/^#+\s*/,''))+'</h4>'; continue; }
+    if(/^[-*•]\s+/.test(ln)){ if(!inUl){html+='<ul>';inUl=true;} html+='<li>'+inline(ln.replace(/^[-*•]\s+/,''))+'</li>'; continue; }
+    if(!ln){ if(inUl){html+='</ul>';inUl=false;} continue; }
+    if(inUl){html+='</ul>';inUl=false;}
+    html+='<p>'+inline(ln)+'</p>';
+  }
+  if(inUl)html+='</ul>';
+  return html;
+}
+
+const SYS='You are a chartered environmental and social impact assessment (ESIA) consultant preparing a formal filing for submission to a regulator. Write in a professional ESIA register: measured, specific, structured. Use ONLY the supplied project facts and general professional knowledge. Never invent statute numbers, section references, case names, specific figures, monitoring thresholds, dates or quantitative results; where a value would be needed, write it as an explicit [assumption: …] or [to be confirmed by survey]. Use "##" for subsection headings and "-" for bullet points. Do not restate the section title. 320–470 words. This is drafting support; a competent expert must verify before filing.';
+
+async function draftSection(i){
+  const b=brief(), s=SECTIONS[i];
+  const user=`PROJECT BRIEF\nName: ${b.proj}\nProponent: ${b.prop}\nLocation: ${b.loc}\nActivity: ${b.act}\nScale: ${b.scale}\nKey sensitivities: ${b.sens}\n\nWrite Section ${i+1}: ${s[0]}.\nCover: ${s[1]}`;
+  const out=await window.claude.complete({system:SYS,messages:[{role:'user',content:user}],max_tokens:900});
+  return out;
+}
+
+async function generate(){
+  if(busy){ stop=true; return; }
+  if(!(window.claude&&window.claude.complete)){ renderShell(0); $('#secbody').innerHTML='<div class="err">The assistant runtime isn’t available here, so live drafting can’t run. Calculators and live-data tools still work in All tools.</div>'; return; }
+  busy=true;stop=false;words=0;
+  $('#genBtn').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>Stop';
+  $('#printBtn').disabled=true; $('#prog').style.display='';
+  renderShell(1); $('#secbody').innerHTML='';
+  const statuses=SECTIONS.map(()=>'queued'); renderOutline(statuses);
+  const body=$('#secbody');
+  for(let i=0;i<SECTIONS.length;i++){
+    if(stop)break;
+    statuses[i]='drafting';renderOutline(statuses);
+    $('#pbar').style.width=(i/SECTIONS.length*100)+'%';
+    $('#progtxt').textContent=`Drafting ${i+1} of ${SECTIONS.length} · ${SECTIONS[i][0]}`;
+    const sec=ce('section','sec');sec.id='sec'+i;
+    sec.innerHTML=`<div class="sh"><span class="sn">${i+1}</span><span class="st2">${esc(SECTIONS[i][0])}</span></div><div class="drafting"><span class="spin"></span> Drafting this section…</div>`;
+    body.appendChild(sec);
+    sec.scrollIntoView({behavior:'smooth',block:'center'});
+    try{
+      const txt=await draftSection(i);
+      words+=txt.split(/\s+/).filter(Boolean).length;
+      sec.querySelector('.drafting').outerHTML=`<div class="body">${mdToHtml(txt)}</div>`;
+      statuses[i]='done';
+    }catch(e){
+      sec.querySelector('.drafting').outerHTML=`<div class="err">Could not draft this section: ${esc(e.message)}. You can regenerate.</div>`;
+      statuses[i]='error';
+    }
+    renderOutline(statuses);
+    // refresh toc ticks
+    document.querySelectorAll('[data-toc]').forEach((el,k)=>{ if(statuses[k]==='done'){el.classList.remove('pend');el.lastElementChild.textContent='✓';} });
+    const done=statuses.filter(x=>x==='done').length;
+    $('#pbar').style.width=(done/SECTIONS.length*100)+'%';
+    $('#progtxt').textContent=`${done} of ${SECTIONS.length} drafted · ~${words.toLocaleString()} words`;
+    await new Promise(r=>setTimeout(r,120));
+  }
+  busy=false;
+  $('#genBtn').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg>Regenerate';
+  const done=statuses.filter(x=>x==='done').length;
+  $('#progtxt').textContent=stop?`Stopped · ${done} of ${SECTIONS.length} drafted`:`Complete · ${done} sections · ~${words.toLocaleString()} words`;
+  if(done)$('#printBtn').disabled=false;
+}
+
+$('#genBtn').onclick=generate;
+$('#printBtn').onclick=()=>window.print();
+renderShell(0); renderOutline(SECTIONS.map(()=>'queued'));
+</script>
+</body>
+</html>

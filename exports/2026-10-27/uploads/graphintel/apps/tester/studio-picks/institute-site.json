@@ -1,0 +1,217 @@
+{
+ "generated": "2026-10-23T13:05:16.486Z",
+ "by": "TESTER generated and contrast-checked the candidates; Claude set the rubric and made the call",
+ "brief": "The Threshold Institute: a research institute whose seeded graph brain (Bridago) carries the intelligence while the model is only the substrate. Public research with falsifiers, a live graph, one hundred open repos, a metered API with tiers, docs, a sandbox and an account portal.",
+ "studio": {
+  "site": "marketing/studio-kit.js (SiteKit.plan, 36 candidates)",
+  "console": "apps/tester/console-kit.js (ConsoleKit.PAL, Nocturne family)"
+ },
+ "rubric": {
+  "ground": "dark +2 (graph visuals)",
+  "text": ">=7:1 +2, >=4.5:1 +1",
+  "accent": ">=3:1 +1",
+  "arch": {
+   "Docs wiki": 3,
+   "Tabbed tool": 2,
+   "Bento grid": 2,
+   "Editorial scroll": 2,
+   "Split screen": 1,
+   "Terminal": 1,
+   "Command palette": 1,
+   "Magazine": 1,
+   "Card stack": 0,
+   "Slide deck": -1,
+   "Horizontal scroll": -2,
+   "Kinetic poster": -2
+  },
+  "look": {
+   "Clean": 2,
+   "Swiss": 2,
+   "Outline": 2,
+   "Soft": 0,
+   "Glass": -1,
+   "Brutalist": -1,
+   "Retro CRT": -2,
+   "Playful": -2
+  }
+ },
+ "site": {
+  "winner": {
+   "i": 1,
+   "arch": "Docs wiki",
+   "look": "Clean",
+   "palette": "Ocean",
+   "font": "Space Grotesk",
+   "bg": "#06222f",
+   "fg": "#e7f6fb",
+   "accent": "#38bdf8",
+   "score": 10,
+   "why": [
+    "dark ground keeps the live graph legible",
+    "text 14.9:1",
+    "accent 7.7:1",
+    "Docs wiki +3",
+    "Clean +2"
+   ]
+  },
+  "runnersUp": [
+   {
+    "i": 25,
+    "arch": "Docs wiki",
+    "look": "Clean",
+    "palette": "Lime",
+    "font": "Sora",
+    "bg": "#12140a",
+    "fg": "#eef3dc",
+    "accent": "#a3e635",
+    "score": 10,
+    "why": [
+     "dark ground keeps the live graph legible",
+     "text 16.4:1",
+     "accent 12.3:1",
+     "Docs wiki +3",
+     "Clean +2"
+    ]
+   },
+   {
+    "i": 2,
+    "arch": "Command palette",
+    "look": "Swiss",
+    "palette": "Acid",
+    "font": "Instrument Serif",
+    "bg": "#0c0c0c",
+    "fg": "#f2f2ee",
+    "accent": "#d4ff3a",
+    "score": 8,
+    "why": [
+     "dark ground keeps the live graph legible",
+     "text 17.4:1",
+     "accent 16.9:1",
+     "Command palette +1",
+     "Swiss +2"
+    ]
+   },
+   {
+    "i": 8,
+    "arch": "Terminal",
+    "look": "Outline",
+    "palette": "Blueprint",
+    "font": "Outfit",
+    "bg": "#0b1e2d",
+    "fg": "#e6f1f5",
+    "accent": "#5eead4",
+    "score": 8,
+    "why": [
+     "dark ground keeps the live graph legible",
+     "text 14.8:1",
+     "accent 11.5:1",
+     "Terminal +1",
+     "Outline +2"
+    ]
+   },
+   {
+    "i": 13,
+    "arch": "Docs wiki",
+    "look": "Soft",
+    "palette": "Plum",
+    "font": "Archivo",
+    "bg": "#1a1033",
+    "fg": "#efe9ff",
+    "accent": "#a78bfa",
+    "score": 8,
+    "why": [
+     "dark ground keeps the live graph legible",
+     "text 15.2:1",
+     "accent 6.6:1",
+     "Docs wiki +3",
+     "Soft +0"
+    ]
+   },
+   {
+    "i": 16,
+    "arch": "Split screen",
+    "look": "Outline",
+    "palette": "Acid",
+    "font": "Playfair Display",
+    "bg": "#0c0c0c",
+    "fg": "#f2f2ee",
+    "accent": "#d4ff3a",
+    "score": 8,
+    "why": [
+     "dark ground keeps the live graph legible",
+     "text 17.4:1",
+     "accent 16.9:1",
+     "Split screen +1",
+     "Outline +2"
+    ]
+   }
+  ]
+ },
+ "console": {
+  "winner": {
+   "palette": "Midnight",
+   "bg": "#12131d",
+   "text": "#e9e9ed",
+   "muted": "#8a8fa6",
+   "accent": "#9184d9",
+   "contrast": {
+    "text": 15.26,
+    "muted": 5.77,
+    "accent": 5.72,
+    "accentOnSurface": 5.23
+   },
+   "score": 6
+  },
+  "runnersUp": [
+   {
+    "palette": "Graphite",
+    "bg": "#0f1016",
+    "text": "#e8eaf0",
+    "muted": "#878ca0",
+    "accent": "#9184d9",
+    "contrast": {
+     "text": 15.79,
+     "muted": 5.69,
+     "accent": 5.88,
+     "accentOnSurface": 5.43
+    },
+    "score": 6
+   },
+   {
+    "palette": "Slate",
+    "bg": "#10131c",
+    "text": "#e6edf6",
+    "muted": "#7e8ca3",
+    "accent": "#9690e0",
+    "contrast": {
+     "text": 15.73,
+     "muted": 5.45,
+     "accent": 6.5,
+     "accentOnSurface": 5.9
+    },
+    "score": 6
+   },
+   {
+    "palette": "Nocturne",
+    "bg": "#161826",
+    "text": "#e9e9ed",
+    "muted": "#9397ab",
+    "accent": "#9184d9",
+    "contrast": {
+     "text": 14.54,
+     "muted": 6.08,
+     "accent": 5.45,
+     "accentOnSurface": 4.71
+    },
+    "score": 6
+   }
+  ]
+ },
+ "applied": {
+  "tokens": "_ds/nocturne-…/styles.css (binding design system: colour, type, spacing come from it)",
+  "structure": "Docs wiki",
+  "look": "Clean",
+  "note": "The studio picks the structure and the look. Nocturne supplies every colour and font, so the palette winner only confirms the ground: dark, desaturated, one blurple accent."
+ },
+ "target": "apps/web/src/Platform.dc.html"
+}

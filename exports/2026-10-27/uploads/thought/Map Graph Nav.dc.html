@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+</helmet>
+<header style="position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; padding: 14px clamp(16px, 4vw, 48px); background: rgba(11,14,23,0.92); border-bottom: 1px solid #252c42; font-family: 'Instrument Sans', sans-serif;">
+  <a href="Map%20Graph%20-%20Home.dc.html" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: #eef1ff; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.02em;">
+    <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="#27d3ff" stroke-width="2.5"></circle><circle cx="23" cy="11" r="9" fill="none" stroke="#ff3ea5" stroke-width="2.5"></circle></svg>Map Graph
+  </a>
+  <nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 4px 6px; margin-left: 8px;">
+    <sc-for list="{{ links }}" as="l" hint-placeholder-count="6"><a href="{{ l.href }}" style="{{ l.style }}">{{ l.label }}</a></sc-for>
+  </nav>
+  <a href="Map%20Graph%20-%20Home.dc.html#join" style="margin-left: auto; padding: 9px 18px; background: #27d3ff; color: #0b0e17; font-weight: 600; text-decoration: none; border-radius: 999px; font-size: 14px; white-space: nowrap;">Join the waitlist</a>
+</header>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;current&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const cur = this.props.current || '';
+    const items = [['Map%20Graph%20-%20Product.dc.html', 'Product', 'product'], ['Map%20Graph%20-%20Early%20Access.dc.html', 'Early access', 'access'], ['Map%20Graph%20-%20Docs.dc.html', 'Docs', 'docs'], ['Map%20Graph%20-%20About.dc.html', 'About', 'about'], ['Map%20Graph%20-%20Contact.dc.html', 'Contact', 'contact']];
+    return { links: items.map(([href, label, id]) => ({ href, label, style: { padding: '6px 12px', borderRadius: 999, textDecoration: 'none', fontSize: 14, fontWeight: 500, color: id === cur ? '#0b0e17' : '#c9d0ee', background: id === cur ? '#eef1ff' : 'transparent' } })) };
+  }
+}
+
+</script>
+</body>
+</html>

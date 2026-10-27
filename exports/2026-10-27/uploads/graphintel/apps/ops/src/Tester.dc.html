@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <script src="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <script src="connectome.js"></script>
+  <script src="livesim.js"></script>
+  <style>
+    html, body { margin: 0; background: #161826; }
+    a { color: #9184d9; }
+    a:hover { color: #d2cefd; }
+  </style>
+</helmet>
+<div data-screen-label="Tester" style="display:flex;flex-direction:column;min-height:100vh;{{ rootSt }}background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:14px;">
+  <header class="nav" style="flex-wrap:wrap;gap:8px 14px;padding:10px 14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0;flex-wrap:wrap;">
+      <span class="nav-brand" style="margin-right:0;">Bridago</span>
+      <span class="tag tag-accent">Tester</span>
+      <span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 58%,transparent);">{{ seatLine }}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;min-width:0;max-width:100%;">
+      <span style="width:7px;height:7px;border-radius:50%;flex:none;background:{{ liveDot }};"></span>
+      <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 76%,transparent);overflow-wrap:anywhere;">{{ connLine }}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <sc-if value="{{ isSim }}" hint-placeholder-val="{{ true }}">
+        <button type="button" class="btn btn-secondary" onClick="{{ togglePause }}"><i class="{{ pauseIcon }}" aria-hidden="true"></i>{{ pauseLabel }}</button>
+        <button type="button" class="btn btn-secondary" onClick="{{ turnNow }}"><i class="ph ph-play" aria-hidden="true"></i>Turn</button>
+      </sc-if>
+      <button type="button" class="btn btn-secondary btn-icon" aria-label="Settings" title="Settings" onClick="{{ openSettings }}"><i class="ph ph-gear-six" style="font-size:18px;" aria-hidden="true"></i></button>
+    </div>
+  </header>
+
+  <main style="flex:1 1 auto;min-height:0;display:flex;flex-wrap:wrap;gap:12px;padding:0 12px 12px;">
+    <section aria-label="The brain" style="position:relative;flex:999 1 560px;min-width:0;min-height:340px;{{ brainSt }}border-radius:var(--radius-lg);overflow:hidden;background:var(--color-bg);box-shadow:var(--shadow-sm);">
+      <div ref="{{ cRef }}" style="position:absolute;inset:0;"></div>
+      <div ref="{{ topRef }}" style="position:absolute;left:14px;right:14px;top:12px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;pointer-events:none;">
+        <div style="display:grid;gap:3px;min-width:0;max-width:min(560px,100%);">
+          <span class="card-kicker" style="color:var(--color-accent-300);">{{ brainKicker }}</span>
+          <h1 style="margin:0;font-size:22px;line-height:1.15;">{{ brainTitle }}</h1>
+          <span style="font-size:12.5px;line-height:1.45;color:color-mix(in srgb,var(--color-text) 72%,transparent);text-wrap:pretty;">{{ brainSub }}</span>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="View" style="margin-left:auto;pointer-events:auto;background:color-mix(in srgb,var(--color-bg) 82%,transparent);">
+          <label class="seg-opt"><input type="radio" name="tester-view" checked="{{ isBrain }}" onChange="{{ viewBrain }}">Brain</label>
+          <label class="seg-opt"><input type="radio" name="tester-view" checked="{{ isGraph }}" onChange="{{ viewGraph }}">Institute graph</label>
+        </div>
+      </div>
+      <div ref="{{ botRef }}" style="position:absolute;left:14px;right:14px;bottom:12px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 16px;pointer-events:none;">
+        <div style="display:flex;flex-wrap:wrap;gap:4px 12px;max-width:min(600px,100%);">
+          <sc-for list="{{ legend }}" as="l" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:color-mix(in srgb,var(--color-text) 74%,transparent);"><span style="{{ l.dot }}"></span>{{ l.label }}</span></sc-for>
+        </div>
+        <span style="margin-left:auto;font-size:11.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ motionLine }}</span>
+      </div>
+      <sc-if value="{{ hasBrainMsg }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;inset:0;display:grid;place-items:center;padding:24px;pointer-events:none;"><span style="max-width:360px;text-align:center;font-size:13px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 70%,transparent);">{{ brainMsg }}</span></div>
+      </sc-if>
+      <sc-if value="{{ hasHov }}" hint-placeholder-val="{{ false }}">
+        <div role="dialog" aria-label="{{ hov.title }}" onMouseEnter="{{ cardEnter }}" onMouseLeave="{{ cardLeave }}" style="position:absolute;z-index:6;width:min(340px,calc(100% - 16px));{{ hov.pos }}overflow:auto;display:grid;gap:10px;align-content:start;padding:12px 14px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-md);">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="{{ hov.dot }}"></span>
+            <span class="card-kicker" style="color:var(--color-accent-300);">{{ hov.kind }}</span>
+            <span style="margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;"><sc-for list="{{ hov.tags }}" as="t" hint-placeholder-count="0"><span class="tag tag-neutral">{{ t }}</span></sc-for></span>
+          </div>
+          <div class="card-title" style="font-size:15px;line-height:1.35;text-wrap:pretty;overflow-wrap:anywhere;">{{ hov.title }}</div>
+          <sc-if value="{{ hov.body }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:13px;line-height:1.55;color:color-mix(in srgb,var(--color-text) 82%,transparent);white-space:pre-wrap;overflow-wrap:anywhere;">{{ hov.body }}</p></sc-if>
+          <sc-if value="{{ hov.hasRows }}" hint-placeholder-val="{{ false }}">
+            <dl style="margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;font-size:12.5px;line-height:1.45;">
+              <sc-for list="{{ hov.rows }}" as="r" hint-placeholder-count="0"><dt style="color:color-mix(in srgb,var(--color-text) 56%,transparent);">{{ r.k }}</dt><dd style="margin:0;overflow-wrap:anywhere;">{{ r.v }}</dd></sc-for>
+            </dl>
+          </sc-if>
+          <sc-if value="{{ hov.hasLinks }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;gap:4px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 56%,transparent);">{{ hov.linkHead }}</span>
+              <sc-for list="{{ hov.links }}" as="l" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:baseline;gap:6px;font-size:12.5px;line-height:1.4;"><span style="{{ l.dot }}"></span><span style="color:color-mix(in srgb,var(--color-text) 56%,transparent);white-space:nowrap;">{{ l.rel }}</span><span style="overflow-wrap:anywhere;">{{ l.label }}</span></div></sc-for>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <button type="button" class="btn btn-primary" onClick="{{ hov.chat }}"><i class="ph ph-chat-circle-text" aria-hidden="true"></i>Chat with it</button>
+            <button type="button" class="btn btn-ghost" onClick="{{ hov.light }}">Light its links</button>
+          </div>
+        </div>
+      </sc-if>
+    </section>
+
+    <aside ref="{{ asideRef }}" aria-label="Live and chat" style="flex:1 1 330px;min-width:0;display:flex;flex-direction:column;gap:10px;">
+      <div class="seg" role="radiogroup" aria-label="Panel" style="align-self:flex-start;">
+        <label class="seg-opt"><input type="radio" name="tester-tab" checked="{{ isLive }}" onChange="{{ tabLive }}"><i class="ph ph-pulse" aria-hidden="true"></i>Live</label>
+        <label class="seg-opt"><input type="radio" name="tester-tab" checked="{{ isChat }}" onChange="{{ tabChat }}"><i class="ph ph-chat-circle-text" aria-hidden="true"></i>Chat</label>
+      </div>
+      <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;">
+        <sc-if value="{{ isLive }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1 1 auto;min-height:0;{{ liveSt }}display:grid;align-content:start;gap:12px;padding-right:2px;">
+            <sc-if value="{{ showSignIn }}" hint-placeholder-val="{{ false }}">
+              <div class="card elev-sm" style="gap:8px;">
+                <span class="card-kicker">Tester seat</span>
+                <span style="font-size:13px;line-height:1.5;">{{ why }}</span>
+                <button type="button" class="btn btn-primary" style="align-self:flex-start;" onClick="{{ openSettings }}">Sign in</button>
+              </div>
+            </sc-if>
+            <div class="card elev-sm" style="gap:6px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span class="card-kicker">Now</span><span style="margin-left:auto;font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ nowWhen }}</span></div>
+              <span class="card-title" style="font-size:16px;">{{ nowTitle }}</span>
+              <sc-if value="{{ nowDetail }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 76%,transparent);text-wrap:pretty;overflow-wrap:anywhere;">{{ nowDetail }}</span></sc-if>
+              <span class="card-meta" style="flex-wrap:wrap;">{{ nowMeta }}</span>
+            </div>
+            <sc-if value="{{ hasThought }}" hint-placeholder-val="{{ false }}">
+              <button type="button" class="card" onClick="{{ thought.chat }}" onMouseEnter="{{ thought.peek }}" onMouseLeave="{{ unpeek }}" onFocus="{{ thought.peek }}" onBlur="{{ unpeek }}" style="border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;" style-hover="box-shadow:var(--shadow-sm);">
+                <span class="card-kicker">Its last thought</span>
+                <span style="font-size:13px;line-height:1.5;overflow-wrap:anywhere;">{{ thought.text }}</span>
+                <span class="card-meta">{{ thought.when }}</span>
+              </button>
+            </sc-if>
+            <div style="display:grid;gap:2px;">
+              <div style="display:flex;align-items:baseline;gap:8px;padding:0 6px 4px;"><h2 style="margin:0;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 60%,transparent);">Work</h2><span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ workCount }}</span></div>
+              <sc-for list="{{ work }}" as="w" hint-placeholder-count="6">
+                <button type="button" onClick="{{ w.chat }}" onMouseEnter="{{ w.peek }}" onMouseLeave="{{ unpeek }}" onFocus="{{ w.peek }}" onBlur="{{ unpeek }}" style="display:grid;grid-template-columns:62px minmax(0,1fr);gap:3px 10px;align-items:baseline;width:100%;padding:8px 6px;border:0;border-radius:var(--radius-md);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);">
+                  <span class="{{ w.tagCls }}" style="justify-content:center;">{{ w.state }}</span>
+                  <span style="font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;">{{ w.title }}</span>
+                  <span></span>
+                  <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);overflow-wrap:anywhere;">{{ w.meta }}</span>
+                </button>
+              </sc-for>
+              <sc-if value="{{ noWork }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;padding:4px 6px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">No work yet. The first turn starts a few seconds after the page opens.</span></sc-if>
+            </div>
+            <div style="display:grid;gap:2px;">
+              <div style="display:flex;align-items:baseline;gap:8px;padding:0 6px 4px;"><h2 style="margin:0;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 60%,transparent);">Agents</h2><span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ agentCount }}</span></div>
+              <sc-for list="{{ agents }}" as="a" hint-placeholder-count="2">
+                <button type="button" onClick="{{ a.chat }}" onMouseEnter="{{ a.peek }}" onMouseLeave="{{ unpeek }}" onFocus="{{ a.peek }}" onBlur="{{ unpeek }}" style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;padding:8px 6px;border:0;border-radius:var(--radius-md);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);">
+                  <span style="{{ a.dot }}"></span>
+                  <span style="display:grid;gap:1px;min-width:0;"><span style="font-size:13px;overflow-wrap:anywhere;">{{ a.name }}</span><span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);overflow-wrap:anywhere;">{{ a.role }}</span></span>
+                  <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ a.status }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasInputs }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;gap:6px;padding:0 6px;">
+                <h2 style="margin:0;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 60%,transparent);">Inputs</h2>
+                <sc-for list="{{ inputs }}" as="i" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:baseline;font-size:12.5px;"><span style="{{ i.dot }}"></span><span style="overflow-wrap:anywhere;">{{ i.label }} <span style="color:color-mix(in srgb,var(--color-text) 55%,transparent);">· {{ i.line }}</span></span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isChat }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:10px;">
+            <div class="card elev-sm" style="gap:6px;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="{{ tgt.dot }}"></span>
+                <span class="card-kicker" style="color:var(--color-accent-300);">{{ tgt.kind }}</span>
+                <span style="margin-left:auto;display:flex;gap:2px;">
+                  <button type="button" class="btn btn-ghost" aria-expanded="{{ tgtInfo }}" onClick="{{ toggleTgtInfo }}">{{ tgtInfoLabel }}</button>
+                  <sc-if value="{{ notSextant }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-ghost" onClick="{{ toSextant }}">Talk to SEXTANT</button></sc-if>
+                </span>
+              </div>
+              <span class="card-title" style="font-size:15px;line-height:1.35;text-wrap:pretty;overflow-wrap:anywhere;">{{ tgt.title }}</span>
+              <sc-if value="{{ tgtInfo }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid;gap:10px;padding-top:4px;max-height:42vh;overflow:auto;">
+                  <sc-if value="{{ tgt.hasTags }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:4px;flex-wrap:wrap;"><sc-for list="{{ tgt.tags }}" as="t" hint-placeholder-count="0"><span class="tag tag-neutral">{{ t }}</span></sc-for></div></sc-if>
+                  <sc-if value="{{ tgt.body }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;color:color-mix(in srgb,var(--color-text) 82%,transparent);">{{ tgt.body }}</p></sc-if>
+                  <sc-if value="{{ tgt.hasRows }}" hint-placeholder-val="{{ false }}"><dl style="margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;font-size:12.5px;line-height:1.45;"><sc-for list="{{ tgt.rows }}" as="r" hint-placeholder-count="0"><dt style="color:color-mix(in srgb,var(--color-text) 56%,transparent);">{{ r.k }}</dt><dd style="margin:0;overflow-wrap:anywhere;">{{ r.v }}</dd></sc-for></dl></sc-if>
+                  <sc-if value="{{ tgt.hasLinks }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:4px;"><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 56%,transparent);">{{ tgt.linkHead }}</span><sc-for list="{{ tgt.links }}" as="l" hint-placeholder-count="0"><button type="button" onClick="{{ l.go }}" style="display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:baseline;gap:6px;padding:3px 4px;border:0;border-radius:var(--radius-sm);background:transparent;color:inherit;font:inherit;font-size:12.5px;line-height:1.4;text-align:left;cursor:pointer;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><span style="{{ l.dot }}"></span><span style="color:color-mix(in srgb,var(--color-text) 56%,transparent);white-space:nowrap;">{{ l.rel }}</span><span style="overflow-wrap:anywhere;">{{ l.label }}</span></button></sc-for></div></sc-if>
+                </div>
+              </sc-if>
+            </div>
+            <div ref="{{ msgRef }}" role="log" aria-live="polite" style="flex:1 1 auto;min-height:150px;{{ msgSt }}overflow:auto;display:flex;flex-direction:column;gap:8px;padding:2px;">
+              <sc-if value="{{ noMsgs }}" hint-placeholder-val="{{ true }}">
+                <div style="display:grid;gap:10px;padding:4px 2px;">
+                  <span style="font-size:13px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 72%,transparent);text-wrap:pretty;">{{ emptyLine }}</span>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ prompts }}" as="p" hint-placeholder-count="3"><button type="button" class="btn btn-secondary" style="font-size:13px;text-align:left;" onClick="{{ p.ask }}">{{ p.text }}</button></sc-for></div>
+                </div>
+              </sc-if>
+              <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="0"><div style="{{ m.st }}"><span style="font-size:11px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ m.who }}</span><span style="font-size:13.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;">{{ m.t }}</span></div></sc-for>
+              <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;padding:2px 4px;color:color-mix(in srgb,var(--color-text) 62%,transparent);">{{ busyLine }}</span></sc-if>
+            </div>
+            <form onSubmit="{{ send }}" style="display:flex;gap:6px;">
+              <input class="input" aria-label="Message" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="{{ placeholder }}">
+              <button type="submit" class="btn btn-primary" disabled="{{ cantSend }}">Send</button>
+            </form>
+            <span style="font-size:11.5px;line-height:1.45;color:color-mix(in srgb,var(--color-text) 56%,transparent);text-wrap:pretty;">{{ chatNote }}</span>
+          </div>
+        </sc-if>
+      </div>
+    </aside>
+  </main>
+
+  <sc-if value="{{ setOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSettings }}" style="position:fixed;inset:0;z-index:30;display:flex;justify-content:flex-end;background:color-mix(in srgb,var(--color-neutral-900) 55%,transparent);">
+      <div role="dialog" aria-modal="true" aria-label="Settings" onClick="{{ stop }}" style="width:min(420px,100%);height:100%;overflow:auto;display:grid;align-content:start;gap:20px;padding:16px 18px 28px;background:var(--color-surface);box-shadow:var(--shadow-lg);">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <h2 style="margin:0;font-size:20px;">Settings</h2>
+          <button type="button" class="btn btn-secondary btn-icon" style="margin-left:auto;" aria-label="Close settings" onClick="{{ closeSettings }}"><i class="ph ph-x" aria-hidden="true"></i></button>
+        </div>
+        <div style="display:grid;gap:10px;">
+          <h6 style="margin:0;color:color-mix(in srgb,var(--color-text) 60%,transparent);">Brain theme</h6>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;">
+            <sc-for list="{{ themes }}" as="t" hint-placeholder-count="5">
+              <button type="button" aria-pressed="{{ t.on }}" onClick="{{ t.pick }}" style="{{ t.st }}">
+                <span style="display:flex;gap:4px;"><sc-for list="{{ t.dots }}" as="d" hint-placeholder-count="5"><span style="{{ d }}"></span></sc-for></span>
+                <span style="font-size:13px;">{{ t.name }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="4">
+          <div style="display:grid;gap:12px;">
+            <h6 style="margin:0;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ sec.title }}</h6>
+            <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;">
+                <div style="display:grid;gap:1px;min-width:0;"><span style="font-size:13.5px;">{{ it.label }}</span><sc-if value="{{ it.sub }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;line-height:1.4;color:color-mix(in srgb,var(--color-text) 56%,transparent);">{{ it.sub }}</span></sc-if></div>
+                <sc-if value="{{ it.isToggle }}" hint-placeholder-val="{{ false }}"><button type="button" role="switch" aria-checked="{{ it.on }}" aria-label="{{ it.label }}" onClick="{{ it.flip }}" style="{{ it.sw }}"><span style="{{ it.knob }}"></span></button></sc-if>
+                <sc-if value="{{ it.isRange }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;"><input type="range" aria-label="{{ it.label }}" min="{{ it.min }}" max="{{ it.max }}" step="{{ it.step }}" value="{{ it.value }}" onChange="{{ it.set }}" style="width:118px;accent-color:var(--color-accent);"><span style="min-width:40px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:color-mix(in srgb,var(--color-text) 70%,transparent);">{{ it.out }}</span></div></sc-if>
+                <sc-if value="{{ it.isSeg }}" hint-placeholder-val="{{ false }}"><div class="seg" role="radiogroup" aria-label="{{ it.label }}"><sc-for list="{{ it.opts }}" as="o" hint-placeholder-count="3"><label class="seg-opt" style="padding:6px 10px;font-size:12.5px;"><input type="radio" name="{{ it.name }}" checked="{{ o.on }}" onChange="{{ o.pick }}">{{ o.label }}</label></sc-for></div></sc-if>
+                <sc-if value="{{ it.isBtn }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-secondary" onClick="{{ it.run }}">{{ it.btn }}</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+        <div style="display:grid;gap:12px;">
+          <h6 style="margin:0;color:color-mix(in srgb,var(--color-text) 60%,transparent);">Connection</h6>
+          <span style="font-size:12.5px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 72%,transparent);">{{ connDetail }}</span>
+          <div class="field"><label for="tester-api">Engine address</label><input id="tester-api" class="input" value="{{ apiDraft }}" onChange="{{ onApi }}" placeholder="/api"></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
+            <div class="field"><label for="tester-seat">Seat</label><input id="tester-seat" class="input" value="{{ seatDraft }}" onChange="{{ onSeat }}" placeholder="tester01" autocomplete="username"></div>
+            <div class="field"><label for="tester-code">Code</label><input id="tester-code" type="password" class="input" value="{{ codeDraft }}" onChange="{{ onCode }}" autocomplete="current-password"></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" onClick="{{ connect }}">Connect</button>
+            <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-secondary" onClick="{{ signOut }}">Sign out</button></sc-if>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" onClick="{{ restore }}">Restore defaults</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:40;max-width:min(90vw,520px);padding:9px 16px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-md);font-size:13px;">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;brainTheme&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;nocturne&quot;, &quot;classic&quot;, &quot;synapse&quot;, &quot;abyss&quot;, &quot;blueprint&quot;], &quot;default&quot;: &quot;nocturne&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;startView&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;brain&quot;, &quot;graph&quot;], &quot;default&quot;: &quot;brain&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+const THEMES = {
+  nocturne: { name: 'Nocturne', bg: '#161826', fog: 0.035, shell: '#5d5294', shellOpacity: 0.08, halo: 0.07, haloSize: 2, flow: '#d2cefd', spark: '#f5f4ff', labelBg: 'rgba(35,37,50,.88)', labelInk: '#cfd3e5', labelSel: '#f3f5fe', labelLine: '#3f424d', lanes: { agent: '#e9e9ed', work: '#9184d9', question: '#e0a07e', claim: '#c9a6e8', source: '#8fcfb0', tool: '#e3c27a', module: '#94a6c9', thought: '#f0e2c0' } },
+  classic: { name: 'Institute', bg: '#06070b', fog: 0.04, shell: '#33406a', shellOpacity: 0.07, halo: 0.12, haloSize: 2.6, flow: '#f2f2f2', spark: '#fff1c9', labelBg: 'rgba(8,10,16,.74)', labelInk: '#cfd6e6', labelSel: '#f7f7f7', labelLine: 'rgba(255,255,255,.2)', lanes: { agent: '#f6efe0', work: '#7b93ff', question: '#ff7a59', claim: '#c29bff', source: '#6fe3a2', tool: '#ffc857', module: '#8fb0d6', thought: '#fff1c9' } },
+  synapse: { name: 'Synapse', bg: '#15100e', fog: 0.045, shell: '#6a3a2a', shellOpacity: 0.08, halo: 0.1, haloSize: 2.4, flow: '#ffd9b0', spark: '#fff1c9', labelBg: 'rgba(24,16,12,.84)', labelInk: '#f1d9c6', labelSel: '#fff6ec', labelLine: 'rgba(255,190,150,.25)', lanes: { agent: '#fbeee0', work: '#ff9a5a', question: '#ff6b5a', claim: '#ffc06b', source: '#b9d77a', tool: '#ffd98a', module: '#c9a58a', thought: '#fff1c9' } },
+  abyss: { name: 'Abyss', bg: '#07141a', fog: 0.05, shell: '#1f5a66', shellOpacity: 0.09, halo: 0.12, haloSize: 3, flow: '#9ff6ff', spark: '#e6fbff', labelBg: 'rgba(6,22,28,.84)', labelInk: '#bfeef2', labelSel: '#effdff', labelLine: 'rgba(120,230,240,.25)', lanes: { agent: '#e6fbff', work: '#3fd0e0', question: '#7cf2c8', claim: '#6aa8ff', source: '#39e39a', tool: '#b6f36b', module: '#5f8fa8', thought: '#d9fff6' } },
+  blueprint: { name: 'Blueprint', bg: '#0e1726', fog: 0.02, shell: '#5f86c4', shellOpacity: 0.16, halo: 0.04, haloSize: 1.6, flow: '#cfe0ff', spark: '#eef4ff', labelBg: 'rgba(14,23,38,.9)', labelInk: '#c6d8f5', labelSel: '#eef4ff', labelLine: 'rgba(160,190,240,.35)', lanes: { agent: '#eef4ff', work: '#8fb8ff', question: '#c6dcff', claim: '#a7c4f2', source: '#7fa6d9', tool: '#d9e7ff', module: '#6f8fbf', thought: '#e6efff' } }
+};
+const ORDER = ['nocturne', 'classic', 'synapse', 'abyss', 'blueprint'];
+const DEF = { theme: 'nocturne', halo: true, shell: true, labels: 'agents', edges: 1, auto: true, spin: 1, breathe: 1, hoverPause: true, idle: 8, flow: 1, density: 1, sparks: true, cadence: 2.4, thoughts: true, code: true, works: 80 };
+const SKEY = 'tester_settings_v1', TKEY = 'tester_threads_v1';
+const LANES = ['agent', 'work', 'question', 'claim', 'source', 'tool', 'module', 'thought'];
+const LN = { agent: 'Agents', work: 'Work', question: 'Questions', claim: 'Claims', source: 'Sources', tool: 'Its tools', module: 'Its own code', thought: 'Its thoughts' };
+const KIND = { agent: 'Agent', work: 'Work', question: 'Question', claim: 'Claim', source: 'Source', tool: 'Tool', module: 'Its own code', thought: 'Thought' };
+const PHASE = { round: 'Reading', world: 'Reading the world', reprice: 'Repricing', propose: 'Proposing work', limits: 'Working on its limits', staff: 'Staffing', idle: 'Between turns' };
+const FIELD = { falsifier: 'Would be wrong if', q: 'Asks', link: 'Link', as_of: 'As of', basis: 'Basis', source: 'Source', conf: 'Confidence', confidence: 'Confidence', summary: 'Summary', why: 'Why', status: 'Status', area: 'Area' };
+const HIDE = new Set(['id', 'type', 'label', 'pub', 'sim', 'core', 'tel', 'members']);
+const REL = { did: ['did', 'done by'], 'asked for': ['asked for', 'asked for by'], touched: ['touched', 'touched by'], watches: ['watches', 'watched by'], uses: ['uses', 'used by'], thought: ['thought', 'thought by'], about: ['about', 'subject of'], used: ['used', 'used by'], imports: ['imports', 'imported by'], 'defined in': ['defined in', 'defines'] };
+const PROMPTS = {
+  sextant: ['What are you thinking about right now?', 'What do you not know yet?', 'Which question matters most today?'],
+  agent: ['What are you working on?', 'What have you found so far?', 'What would you do next, and why?'],
+  question: ['What do we know so far?', 'Which claims disagree?', 'What evidence would settle you?'],
+  claim: ['What supports you?', 'What would prove you wrong?', 'How sure should I be?'],
+  source: ['What did you add to the brain?', 'How far should I trust you?', 'Which claims rest on you?'],
+  work: ['What did this task do?', 'What came out of it?', 'What would you do differently?'],
+  thought: ['What were you thinking?', 'What led to this?', 'What happens next?'],
+  tool: ['What do you do?', 'When does SEXTANT reach for you?', 'What breaks if you fail?'],
+  module: ['What do you do?', 'What depends on you?', 'What breaks if you fail?']
+};
+const MUT = 'color-mix(in srgb,var(--color-text) 55%,transparent)';
+const clip = (s, n) => { s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+const cap = s => s ? String(s)[0].toUpperCase() + String(s).slice(1) : '';
+const dotSt = (c, d) => 'width:' + (d || 8) + 'px;height:' + (d || 8) + 'px;border-radius:50%;flex:none;display:inline-block;background:' + c + ';';
+const fmtDur = s => s == null || isNaN(s) || !s ? '' : s < 90 ? Math.round(s) + 's' : s < 5400 ? Math.round(s / 60) + 'm' : (s / 3600).toFixed(1) + 'h';
+const fmtT = t => t ? new Date(t * 1000).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+const ago = t => { const x = Math.max(0, Date.now() / 1000 - t); return x < 90 ? Math.round(x) + 's ago' : x < 5400 ? Math.round(x / 60) + 'm ago' : (x / 3600).toFixed(1) + 'h ago'; };
+const lane = t => (['question', 'hypothesis', 'goal'].includes(String(t || '').toLowerCase()) ? 'question' : ['source', 'paper', 'document', 'feed', 'item', 'dataset', 'url'].includes(String(t || '').toLowerCase()) ? 'source' : 'claim');
+const split = key => { const i = key.indexOf(':'); return [key.slice(0, i), key.slice(i + 1)]; };
+const relWord = (r, out) => REL[r] ? REL[r][out ? 0 : 1] : out ? r + ' →' : '← ' + r;
+const swSt = on => 'position:relative;flex:none;width:46px;height:28px;border-radius:999px;cursor:pointer;padding:0;border:1px solid ' + (on ? 'var(--color-accent)' : 'var(--color-neutral-700)') + ';background:' + (on ? 'color-mix(in srgb,var(--color-accent) 16%,transparent)' : 'transparent') + ';';
+const knobSt = on => 'position:absolute;top:4px;left:' + (on ? '22px' : '4px') + ';width:18px;height:18px;border-radius:50%;background:' + (on ? 'var(--color-accent)' : 'var(--color-neutral-500)') + ';transition:left .15s;';
+const alt = list => { const out = []; list.forEach(m => { const role = m.r === 'u' ? 'user' : 'assistant'; if (out.length && out[out.length - 1].role === role) out[out.length - 1].content += '\n\n' + m.t; else out.push({ role, content: m.t }); }); while (out.length && out[0].role !== 'user') out.shift(); return out; };
+
+// Same shape as apps/engine/provenance.py, so the simulation and the engine feed one view.
+function build(nodes, edges, agents, tasks, pub) {
+  const isPub = i => !!(nodes[i] && nodes[i].pub);
+  const roster = [{ id: 'sextant', num: 0, name: 'SEXTANT', role: 'the brain', status: 'running', where: 'agent', from_node: '' }];
+  [...agents].sort((a, b) => (a.created || 0) - (b.created || 0) || (a.id < b.id ? -1 : 1)).forEach((a, i) => { const fn = a.from_node || ''; roster.push({ id: a.id, num: i + 1, name: pub ? 'agent #' + (i + 1) : a.id, role: a.role || '', status: a.status || (a.enabled === false ? 'off' : 'on'), where: a.where || '', from_node: !pub || isPub(fn) ? fn : '', items: a.items || 0, errors: a.errors || 0 }); });
+  const known = new Set(roster.map(a => a.id)), works = [], used = {}; let hidden = 0;
+  tasks.forEach(t => {
+    let who = String(t.who || 'sextant').replace(/^sub:/, ''); if (!known.has(who)) who = 'sextant';
+    let ids = (t.node_ids || []).filter(i => nodes[i] && !nodes[i].tel);
+    if (pub) { hidden += ids.filter(i => !isPub(i)).length; ids = ids.filter(isPub); if (!ids.length) return; }
+    const start = t.started || t.ts, end = t.ts, origin = String(t.origin || '').replace(/^sub:/, '');
+    const w = { id: t.id, agent: who, origin: known.has(origin) && origin !== who ? origin : '', kind: t.kind || '', title: t.title || '', state: t.state || '', started: t.state === 'planned' ? null : start, ts: end, dur: (t.state === 'done' || t.state === 'failed') && start && end ? Math.round((end - start) * 10) / 10 : null, energy: t.energy, nodes: ids.slice(0, 60), sim: !!t.sim };
+    if (!pub) w.note = String(t.note || '').slice(0, 1200);
+    works.push(w); ids.forEach(i => { used[i] = (used[i] || 0) + 1; });
+  });
+  roster.forEach(a => { if (nodes[a.from_node] && !nodes[a.from_node].tel && !(a.from_node in used)) used[a.from_node] = 0; });
+  const keep = Object.keys(used).sort((a, b) => used[b] - used[a]).slice(0, 400), ks = new Set(keep), outE = [], seen = new Set();
+  Object.values(edges).forEach(e => { if (e.tel) return; const m = (e.members || []).filter(x => ks.has(x)); for (let i = 0; i + 1 < m.length; i++) { const k = m[i] + '|' + m[i + 1] + '|' + (e.relation || ''); if (!seen.has(k)) { seen.add(k); outE.push({ a: m[i], b: m[i + 1], rel: e.relation || '', w: e.w || 0 }); } } });
+  return { agents: roster, works, nodes: keep.map(i => ({ id: i, label: nodes[i].label || i, type: nodes[i].type || '', lane: lane(nodes[i].type), pub: isPub(i), refs: used[i], sim: !!nodes[i].sim })), edges: outE, hidden, public: pub, ts: Date.now() / 1000 };
+}
+function index(d) {
+  const A = {}, W = {}, N = {}, first = {};
+  (d.agents || []).forEach(a => { A[a.id] = { ...a, works: [] }; });
+  if (!A.sextant) A.sextant = { id: 'sextant', num: 0, name: 'SEXTANT', role: 'the brain', status: 'running', from_node: '', works: [] };
+  (d.nodes || []).forEach(n => { N[n.id] = { ...n, works: [] }; });
+  (d.works || []).forEach(w => { W[w.id] = w; (A[w.agent] || A.sextant).works.push(w.id); if (w.origin && A[w.origin]) A[w.origin].works.push(w.id); const t = w.started || w.ts; (w.nodes || []).forEach(i => { if (N[i]) N[i].works.push(w.id); if (t) first[i] = Math.min(first[i] || Infinity, t); }); });
+  const starts = (d.works || []).map(w => w.started || w.ts).filter(Boolean), tmin = starts.length ? Math.min(...starts) : Date.now() / 1000 - 3600;
+  Object.values(N).forEach(n => { n.t = first[n.id] || tmin; });
+  Object.values(A).forEach(a => { const ts = a.works.map(id => W[id].started || W[id].ts).filter(Boolean); a.t = a.id === 'sextant' || !ts.length ? tmin : Math.min(...ts); const set = l => [...new Set(a.works.flatMap(id => W[id].nodes || []).concat(a.from_node ? [a.from_node] : []).filter(i => N[i] && N[i].lane === l))]; a.qs = set('question'); a.ss = set('source'); a.cs = set('claim'); a.total = a.works.reduce((s, id) => s + (W[id].agent === a.id && W[id].dur ? W[id].dur : 0), 0); });
+  return { agents: d.agents && d.agents.length ? d.agents : [A.sextant], works: d.works || [], nodes: d.nodes || [], edges: d.edges || [], self: d.self || { nodes: [], edges: [] }, A, W, N, tmin };
+}
+const DFILES = ['round.py', 'main.py', 'serve.py', 'tools.py', 'fleet.py', 'labs.py', 'ledger.py', 'provenance.py', 'signals.py', 'heal.py', 'reflect.py', 'selfmodel.py'];
+const DIMPORTS = [['main.py', 'round.py'], ['main.py', 'fleet.py'], ['main.py', 'ledger.py'], ['main.py', 'labs.py'], ['main.py', 'heal.py'], ['main.py', 'reflect.py'], ['serve.py', 'main.py'], ['serve.py', 'provenance.py'], ['round.py', 'tools.py'], ['tools.py', 'fleet.py'], ['tools.py', 'labs.py'], ['fleet.py', 'signals.py'], ['main.py', 'selfmodel.py']];
+const DTOOLS = { web_search: 'research', fetch_url: 'research', graph_query: 'reexamine', read_source: 'ingest', sandbox_run: 'lab', lab_run: 'lab', lab_record: 'lab', fleet_create: 'staff', source_add: 'staff', propose_publish: 'chat', plan_upgrade: 'drive', ship_app: 'drive' };
+function selfModel(b) {
+  const nodes = DFILES.map(f => ({ id: 'file:' + f, label: f, type: 'file', lane: 'module' })).concat(Object.keys(DTOOLS).map(t => ({ id: 'code:tools.' + t, label: t, type: 'tool', lane: 'tool' })));
+  const edges = DIMPORTS.map(([a, c]) => ({ a: 's:file:' + a, b: 's:file:' + c, rel: 'imports' })).concat(Object.keys(DTOOLS).map(t => ({ a: 's:code:tools.' + t, b: 's:file:tools.py', rel: 'defined_in' })));
+  b.works.filter(w => w.state === 'done' && w.agent === 'sextant').slice(-18).forEach(w => { const id = 'thought:' + w.id; nodes.push({ id, label: w.title + (w.note ? ' — ' + w.note : ''), type: 'thought', lane: 'thought', ts: w.ts }); edges.push({ a: 's:' + id, b: 'w:' + w.id, rel: 'about' }); Object.entries(DTOOLS).forEach(([t, k]) => { if (k === w.kind) edges.push({ a: 's:' + id, b: 's:code:tools.' + t, rel: 'used' }); }); });
+  return { nodes, edges };
+}
+
+class Component extends DCLogic {
+  cRef = React.createRef();
+  msgRef = React.createRef();
+  asideRef = React.createRef();
+  topRef = React.createRef();
+  botRef = React.createRef();
+  adj = {};
+  map = {};
+  state = { w: 1280, h: 900, mode: 'boot', D: null, raw: {}, st: null, health: null, why: '', view: 'brain', tab: 'live', sel: '', target: 'a:sextant', hov: null, set: DEF, setOpen: false, threads: {}, draft: '', busy: false, tgtInfo: false, pulse: '', api: '/api', token: '', seat: '', apiDraft: '/api', seatDraft: '', codeDraft: '', toast: '', resetArm: false, worldMode: 'auto' };
+
+  componentDidMount() {
+    this.onR = () => this.setState({ w: window.innerWidth, h: window.innerHeight }); this.onR(); window.addEventListener('resize', this.onR);
+    if (!window.THREE && !window.__threeLoading) { window.__threeLoading = true; const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js'; sc.onload = () => this.forceUpdate(); document.head.appendChild(sc); }
+    try { document.title = 'Tester · Bridago'; document.documentElement.lang = 'en'; } catch (e) {}
+    this.onKey = e => { if (e.key === 'Escape') { if (this.state.setOpen) this.setState({ setOpen: false }); else if (this.state.hov) this.dropCard(); } };
+    window.addEventListener('keydown', this.onKey);
+    let set = { ...DEF, ...this.propSet() }, threads = {}, api = '/api', token = '', seat = '', worldMode = 'auto';
+    try { set = { ...set, ...JSON.parse(localStorage.getItem(SKEY) || '{}') }; if (!THEMES[set.theme]) set.theme = DEF.theme; } catch (e) {}
+    try { threads = JSON.parse(localStorage.getItem(TKEY) || '{}') || {}; } catch (e) {}
+    try { api = localStorage.getItem('oc_api') || '/api'; token = sessionStorage.getItem('tester_token') || ''; seat = sessionStorage.getItem('tester_seat') || ''; worldMode = localStorage.getItem('ex_world') || 'auto'; const q = new URLSearchParams(location.search); api = q.get('api') || api; } catch (e) {}
+    this._pTheme = this.props.brainTheme; this._pView = this.props.startView;
+    this.setState({ set, threads, api, apiDraft: api, token, seat, seatDraft: seat, worldMode, view: this.props.startView === 'graph' ? 'graph' : 'brain' }, () => this.load());
+    this.iv = setInterval(() => { if (this.state.mode === 'engine') this.load(true); }, 20000);
+    this.sv = setInterval(() => { if (this.sim && this.state.mode === 'sim') this.setState({ st: this.sim.status() }); }, 2000);
+    window.__testerDash = this;
+  }
+  componentWillUnmount() {
+    [this.iv, this.sv, this.fv].forEach(clearInterval); [this.tt, this._wait, this._lw, this._hideT, this._arm].forEach(clearTimeout);
+    window.removeEventListener('resize', this.onR); window.removeEventListener('keydown', this.onKey);
+    if (this.sim) this.sim.stop(); if (this.ctl) this.ctl.dispose(); if (window.__testerDash === this) delete window.__testerDash;
+  }
+  componentDidUpdate() {
+    const p = this.props || {};
+    if (this._pTheme !== p.brainTheme) { this._pTheme = p.brainTheme; if (THEMES[p.brainTheme]) this.patch({ theme: p.brainTheme }); }
+    if (this._pView !== p.startView) { this._pView = p.startView; if (p.startView) this.setState({ view: p.startView === 'graph' ? 'graph' : 'brain' }); }
+    if (this._cad !== this.state.set.cadence) { this._cad = this.state.set.cadence; this.armFire(); }
+    this.sync();
+    const m = this.msgRef.current, s = this.state, mk = s.tab + s.target + (s.threads[s.target] || []).length + s.busy;
+    if (m && this._mk !== mk) { this._mk = mk; m.scrollTop = m.scrollHeight; }
+  }
+  propSet() { return THEMES[this.props.brainTheme] ? { theme: this.props.brainTheme } : {}; }
+  say(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: '' }), 3600); }
+  base() { return String(this.state.api || '/api').replace(/\/$/, ''); }
+
+  async load(quiet) {
+    const s = this.state, base = this.base();
+    let up = false;
+    try { const c = new AbortController(), t = setTimeout(() => c.abort(), 3000); const r = await fetch(base + '/health', { signal: c.signal }); clearTimeout(t); const j = await r.json(); up = !!(r.ok && j && j.ok); if (up) this._health = j; } catch (e) {}
+    if (!up) { if (quiet && this.state.mode === 'engine') return; return this.startSim('No engine answered at ' + s.api + ', so this page runs the institute in your browser.'); }
+    if (this.sim) this.sim.stop();
+    if (!this.state.token) return this.setState({ mode: 'engine', D: null, health: this._health, why: 'The engine is up. Sign in with your tester seat to see the brain.' });
+    try {
+      const r = await fetch(base + '/tester/brain?n=300', { headers: { authorization: 'Bearer ' + this.state.token } });
+      if (r.status === 401) { try { sessionStorage.removeItem('tester_token'); } catch (e) {} return this.setState({ mode: 'engine', token: '', D: null, why: 'Your seat session has ended. Sign in again.' }); }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json(); if (!d || !Array.isArray(d.agents)) throw new Error('that address is not the engine');
+      this.setState({ mode: 'engine', D: index(d), raw: {}, why: '', health: this._health });
+    } catch (e) { if (!(quiet && this.state.D)) this.setState({ mode: 'engine', why: String(e.message || e) }); }
+  }
+  startSim(why) {
+    if (!window.LiveSim) { clearTimeout(this._lw); this._lw = setTimeout(() => this.load(), 300); return; }
+    if (!this.sim) this.sim = window.LiveSim.create({ onChange: e => this.simChanged(e) });
+    this.sim.setMode(this.state.worldMode === 'live' ? 'live' : 'sim'); this.sim.start();
+    this.setState({ mode: 'sim', why: why || '', st: this.sim.status(), ...this.simD() });
+  }
+  simD() { const snap = this.sim.snapshot(), b = build(snap.nodes, snap.edges, snap.agents, snap.tasks, false); b.self = selfModel(b); return { D: index(b), raw: snap.nodes }; }
+  simChanged(evt) {
+    if (!this.sim || this.state.mode !== 'sim') return;
+    const t = evt && evt.type;
+    if (!['start', 'done', 'failed', 'cycle', 'hire', 'pub', 'reset', 'limit', 'mode'].includes(t)) return this.setState({ st: this.sim.status() });
+    if (t === 'done' && evt.ids && evt.ids.length) this._flash = { keys: evt.ids.map(i => 'n:' + i).concat(evt.task ? ['w:' + evt.task.id] : []), from: 'a:sextant' };
+    this.setState({ st: this.sim.status(), ...this.simD() });
+  }
+
+  bh(x) { return { autoRotate: x.auto, rotateSpeed: x.spin, breathe: x.breathe, flowSpeed: x.flow, flowDensity: x.density, sparks: x.sparks, hoverPause: x.hoverPause, idleResume: x.idle, labels: x.labels, shell: x.shell, halo: x.halo, edges: x.edges }; }
+  sync() {
+    const s = this.state, el = this.cRef.current;
+    if (!el || !s.D) return;
+    if (!this.ctl) {
+      if (!window.Connectome || !window.THREE) { if (!this._wait) this._wait = setTimeout(() => { this._wait = null; this.forceUpdate(); }, 250); return; }
+      this.ctl = window.Connectome.mount(el, { onPick: k => this.pick(k), onHover: (k, p) => this.hover(k, p), theme: THEMES[s.set.theme], behaviour: this.bh(s.set), font: '500 11px Inter, system-ui, sans-serif' });
+      if (!this.ctl) return;
+      this._d = this._key = this._sel = undefined; this._look = JSON.stringify(s.set);
+    }
+    const it = this.topRef.current ? this.topRef.current.offsetHeight + 16 : 0, ib = this.botRef.current ? this.botRef.current.offsetHeight + 16 : 0;
+    if (it !== this._it || ib !== this._ib) { this._it = it; this._ib = ib; this.ctl.setInset(it, ib); }
+    const key = s.view + '|' + s.set.thoughts + '|' + s.set.code + '|' + s.set.works;
+    if ((this._d !== s.D || this._key !== key) && !s.hov) { const cd = this.cdata(s.D, s.view, s.set); this.ctl.setData(cd); this._d = s.D; this._key = key; this._sel = undefined; if (this._lanes !== cd.lanes) { this._lanes = cd.lanes; this.forceUpdate(); } }
+    const look = JSON.stringify(s.set);
+    if (this._look !== look) { const prev = JSON.parse(this._look || '{}'); this._look = look; if (prev.theme !== s.set.theme) this.ctl.setTheme(THEMES[s.set.theme]); this.ctl.setBehaviour(this.bh(s.set)); }
+    if (this._sel !== s.sel) { this._sel = s.sel; this.ctl.select(s.sel, s.sel ? this.related(s.sel) : null); }
+    if (this._flash && this.ctl.fire) { const f = this._flash; this._flash = null; this.ctl.fire(f.keys, f.from); }
+  }
+  cdata(D, view, set) {
+    const nodes = [], edges = [], inst = view === 'graph', skip = id => inst && id === 'sextant';
+    D.agents.forEach(a => { if (!skip(a.id)) nodes.push({ key: 'a:' + a.id, lane: 'agent', label: a.id === 'sextant' ? 'SEXTANT' : a.name || a.id, t: (D.A[a.id] || {}).t, size: a.id === 'sextant' ? 1.7 : 1 }); });
+    const lim = set.works >= 220 ? Infinity : set.works || 80, recent = D.works.slice().sort((x, y) => (y.started || y.ts || 0) - (x.started || x.ts || 0)).filter((w, i) => i < lim || w.state === 'ongoing');
+    recent.forEach(w => { const t = w.started || w.ts; nodes.push({ key: 'w:' + w.id, lane: 'work', label: w.title, t, size: w.state === 'ongoing' ? 1.6 : 1, hot: w.state === 'ongoing' }); if (!skip(w.agent)) edges.push({ a: 'a:' + w.agent, b: 'w:' + w.id, t, w: 0.7, rel: 'did' }); if (w.origin) edges.push({ a: 'a:' + w.origin, b: 'w:' + w.id, t, rel: 'asked for' }); (w.nodes || []).forEach(i => edges.push({ a: 'w:' + w.id, b: 'n:' + i, t, w: 0.45, rel: 'touched' })); });
+    D.nodes.forEach(n => nodes.push({ key: 'n:' + n.id, lane: n.lane, label: n.label, t: D.N[n.id].t, size: 1 + Math.min(1.2, (n.refs || 0) * 0.15) }));
+    D.edges.forEach(e => { if (D.N[e.a] && D.N[e.b]) edges.push({ a: 'n:' + e.a, b: 'n:' + e.b, t: Math.max(D.N[e.a].t, D.N[e.b].t), w: e.w, rel: String(e.rel || 'linked').replace(/_/g, ' ') }); });
+    D.agents.forEach(a => { if (!skip(a.id) && a.from_node && D.N[a.from_node]) edges.push({ a: 'a:' + a.id, b: 'n:' + a.from_node, t: (D.A[a.id] || {}).t, rel: 'watches' }); });
+    if (!inst) {
+      const ok = new Set();
+      (D.self.nodes || []).forEach(n => { if (n.lane === 'thought' ? !set.thoughts : !set.code) return; ok.add('s:' + n.id); nodes.push({ key: 's:' + n.id, lane: n.lane, label: n.lane === 'thought' ? clip(n.label, 60) : n.label, t: n.ts || D.tmin, size: n.lane === 'thought' ? 0.9 : 1 }); if (n.lane !== 'module') edges.push({ a: 'a:sextant', b: 's:' + n.id, t: n.ts || D.tmin, rel: n.lane === 'thought' ? 'thought' : 'uses' }); });
+      (D.self.edges || []).forEach(e => { if ((!e.a.startsWith('s:') || ok.has(e.a)) && (!e.b.startsWith('s:') || ok.has(e.b))) edges.push({ a: e.a, b: e.b, t: D.tmin, rel: String(e.rel || 'linked').replace(/_/g, ' ') }); });
+    }
+    const adj = {}, map = {};
+    nodes.forEach(n => { map[n.key] = n; adj[n.key] = []; });
+    edges.forEach(e => { if (map[e.a] && map[e.b] && e.a !== e.b) { adj[e.a].push({ key: e.b, rel: e.rel || 'linked', out: true }); adj[e.b].push({ key: e.a, rel: e.rel || 'linked', out: false }); } });
+    this.adj = adj; this.map = map;
+    return { nodes, edges, lanes: LANES.filter(l => nodes.some(n => n.lane === l)).join(',') };
+  }
+  related(k) { return new Set([k].concat((this.adj[k] || []).map(x => x.key))); }
+
+  describe(key) {
+    const s = this.state, D = s.D, th = THEMES[s.set.theme] || THEMES.nocturne; if (!D || !key) return null;
+    const g = this.map[key], [p, id] = split(key), col = l => th.lanes[l] || '#9397ab';
+    let ln = g ? g.lane : p === 'a' ? 'agent' : p === 'w' ? 'work' : D.N[id] ? D.N[id].lane : 'claim', kind = KIND[ln] || 'Element', title = g ? g.label : id, body = '', rows = [], tags = [];
+    if (p === 'a') {
+      const a = D.A[id]; if (!a) return null; const me = a.id === 'sextant';
+      title = me ? 'SEXTANT' : a.name || a.id; kind = me ? 'The agent at the centre' : 'Sub-agent';
+      rows = [['Role', a.role], ['Status', a.status], ['Watches', a.from_node && D.N[a.from_node] ? D.N[a.from_node].label : ''], ['Work', a.works.length + ' items'], ['Time working', fmtDur(a.total)], ['Items found', !me && a.items ? String(a.items) : ''], ['Errors', a.errors ? String(a.errors) : ''], ['Joined', me ? '' : fmtT(a.t)], ['Questions touched', String(a.qs.length)], ['Claims touched', String(a.cs.length)], ['Sources read', String(a.ss.length)]];
+    } else if (p === 'w') {
+      const w = D.W[id]; if (!w) return null;
+      title = w.title; kind = 'Work · ' + (w.kind || 'task'); body = w.note || ''; tags = [w.state, w.sim ? 'simulated input' : ''].filter(Boolean);
+      rows = [['By', w.agent === 'sextant' ? 'SEXTANT' : w.agent], ['Asked by', w.origin], ['Started', w.started ? fmtT(w.started) : 'not yet'], ['Took', w.dur != null ? fmtDur(w.dur) : ''], ['Energy', w.energy != null ? (w.energy > 0 ? '+' : '') + w.energy : ''], ['Touched', (w.nodes || []).length + ' nodes']];
+    } else if (p === 'n') {
+      const n = D.N[id]; if (!n) return null; const raw = s.raw[id] || {};
+      title = n.label; kind = cap(n.type || KIND[n.lane]); tags = [n.pub ? 'published' : 'private', n.sim ? 'simulated' : raw.basis === 'real' ? 'real input' : ''].filter(Boolean);
+      rows = [['Id', id], ['Read', (n.refs || 0) + ' times'], ['First seen', fmtT(n.t)], ['In work', n.works.length + ' items']];
+      Object.keys(raw).forEach(k => { const v = raw[k]; if (HIDE.has(k) || v == null || v === '' || typeof v === 'object') return; rows.push([FIELD[k] || cap(k.replace(/_/g, ' ')), String(v)]); });
+    } else if (p === 's') {
+      const sn = (D.self.nodes || []).find(x => 's:' + x.id === key); if (!sn) return null;
+      ln = sn.lane; kind = KIND[sn.lane] || 'Element'; title = sn.lane === 'thought' ? 'A thought' : sn.label; body = sn.lane === 'thought' ? sn.label : '';
+      rows = sn.lane === 'thought' ? [['When', fmtT(sn.ts)]] : sn.lane === 'tool' ? [['Used for', DTOOLS[sn.label] || ''], ['Defined in', 'tools.py']] : [['File', sn.label]];
+    }
+    const links = (this.adj[key] || []).map(x => { const m = this.map[x.key]; return m ? { key: x.key, label: m.label, lane: m.lane, rel: relWord(x.rel, x.out), dot: dotSt(col(m.lane), 7) } : null; }).filter(Boolean);
+    return { key, lane: ln, kind, title, body, tags, color: col(ln), rows: rows.filter(r => r[1] != null && r[1] !== '').map(r => ({ k: r[0], v: String(r[1]) })), links };
+  }
+  card(d, extra) {
+    const links = d.links.slice(0, 120);
+    return { ...d, dot: dotSt(d.color, 9), hasTags: d.tags.length > 0, hasRows: d.rows.length > 0, hasLinks: d.links.length > 0, links, linkHead: 'Connected to ' + d.links.length + (d.links.length > 120 ? ' · first 120 shown' : ''), ...extra };
+  }
+  hover(k, p) {
+    clearTimeout(this._hideT);
+    if (!k) { this._hideT = setTimeout(() => { if (!this._onCard) this.setState({ hov: null }); }, 280); return; }
+    this.setState({ hov: { key: k, x: p.x, y: p.y, w: p.w, h: p.h } });
+  }
+  dropCard() { this._onCard = false; clearTimeout(this._hideT); if (this.ctl) { this.ctl.hold(false); this.ctl.peek(''); } this.setState({ hov: null }); }
+  peek(k) { if (this.ctl && this.ctl.peek) this.ctl.peek(k); }
+  pick(k) {
+    if (!k) return this.setState({ sel: '' });
+    const touch = !(window.matchMedia && window.matchMedia('(hover: hover)').matches);
+    this.setState(st => ({ sel: k, target: k, tab: 'chat', tgtInfo: touch ? true : st.tgtInfo }), () => {
+      const a = this.asideRef.current; if (a && this.state.w < 1000) window.scrollTo({ top: a.getBoundingClientRect().top + window.scrollY - 8, behavior: 'smooth' });
+    });
+  }
+  persona(d) {
+    const facts = { element: d.key, kind: d.kind, label: d.title, text: d.body || undefined, tags: d.tags, details: Object.fromEntries(d.rows.map(r => [r.k, r.v])), links: d.links.slice(0, 30).map(l => l.rel + ' [' + l.key + '] ' + clip(l.label, 140)) };
+    const me = d.key === 'a:sextant' ? 'You are SEXTANT, the agent at the centre of Bridago, the seeded brain the institute runs on.' : 'You are one element of Bridago, the seeded brain the institute runs on. You are a ' + String(d.kind).toLowerCase() + ': "' + clip(d.title, 160) + '".';
+    return me + ' A tester is talking to you to judge how intelligent the brain is. Answer in the first person as this element, in under 110 words. Use only the FACTS below; when they do not cover the question, say so plainly and name the linked element that would know. Cite linked elements by their [key]. Write plain sentences: no markdown, no headings, no bullet lists. If you rest on simulated input, say so when it matters. Give no personalised financial advice.\n\nFACTS\n' + JSON.stringify(facts);
+  }
+  saveThreads(threads) {
+    const keys = Object.keys(threads).sort((a, b) => ((threads[b].slice(-1)[0] || {}).ts || 0) - ((threads[a].slice(-1)[0] || {}).ts || 0)).slice(0, 40), out = {};
+    keys.forEach(k => { out[k] = threads[k].slice(-40); });
+    this.setState({ threads: out }); try { localStorage.setItem(TKEY, JSON.stringify(out)); } catch (e) {}
+  }
+  async ask(text) {
+    const s = this.state, key = s.target || 'a:sextant', t = String(text || '').trim(); if (!t || s.busy) return;
+    const d = this.describe(key) || { key, kind: 'Element', title: key, body: '', tags: [], rows: [], links: [] };
+    const thread = (s.threads[key] || []).concat([{ r: 'u', t, ts: Date.now() }]);
+    this.saveThreads({ ...s.threads, [key]: thread }); this.setState({ draft: '', busy: true });
+    let ans = '';
+    try {
+      if (s.mode === 'engine' && s.token) {
+        const r = await fetch(this.base() + '/tester/ask', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + s.token }, body: JSON.stringify({ text: t, key }) });
+        if (!r.ok) throw new Error(r.status === 429 ? 'too many questions this minute' : r.status === 401 ? 'your seat session has ended' : 'HTTP ' + r.status);
+        ans = String((await r.json()).answer || '');
+      } else if (window.claude && typeof window.claude.complete === 'function') {
+        ans = String(await window.claude.complete({ system: this.persona(d), messages: alt(thread.slice(-12)), max_tokens: 450 }));
+      } else throw new Error('there is no engine and no model in this page');
+    } catch (e) { this.say('No answer: ' + (e.message || e)); }
+    if (ans.trim()) { this.saveThreads({ ...this.state.threads, [key]: (this.state.threads[key] || thread).concat([{ r: 'a', t: ans.trim(), ts: Date.now() }]) }); if (this.ctl) this.ctl.fire((this.adj[key] || []).slice(0, 10).map(x => x.key), key); }
+    this.setState({ busy: false });
+  }
+  patch(p) { const set = { ...this.state.set, ...p }; this.setState({ set }); try { localStorage.setItem(SKEY, JSON.stringify(set)); } catch (e) {} }
+  armFire() { clearInterval(this.fv); this.fv = setInterval(() => this.fireNext(), Math.max(800, (this.state.set.cadence || 2.4) * 1000)); }
+  fireNext() {
+    const s = this.state, D = s.D; if (!this.ctl || !D || document.hidden) return;
+    const pool = D.works.filter(w => w.state === 'ongoing').concat(D.works.filter(w => w.state === 'done').sort((x, y) => (y.ts || 0) - (x.ts || 0)).slice(0, 10)); if (!pool.length) return;
+    this._fi = ((this._fi || 0) + 1) % pool.length; const w = pool[this._fi];
+    const from = s.view === 'brain' ? 'a:sextant' : w.origin ? 'a:' + w.origin : w.agent !== 'sextant' ? 'a:' + w.agent : '';
+    this.ctl.fire(['w:' + w.id].concat((w.nodes || []).map(n => 'n:' + n)), from);
+    if (s.pulse !== w.title) this.setState({ pulse: w.title });
+  }
+  async connect() {
+    const s = this.state, api = (s.apiDraft || '/api').trim() || '/api';
+    try { localStorage.setItem('oc_api', api); } catch (e) {}
+    await new Promise(r => this.setState({ api }, r));
+    if (s.seatDraft.trim() && s.codeDraft) {
+      try {
+        const r = await fetch(this.base() + '/tester/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ user: s.seatDraft.trim(), code: s.codeDraft }) });
+        if (!r.ok) throw new Error(r.status === 401 ? 'seat or code not recognised' : r.status === 429 ? 'too many attempts; wait ten minutes' : r.status === 404 || r.status === 405 ? 'no engine at ' + api : 'HTTP ' + r.status);
+        const j = await r.json(); try { sessionStorage.setItem('tester_token', j.token); sessionStorage.setItem('tester_seat', j.seat); } catch (e) {}
+        this.setState({ token: j.token, seat: j.seat, codeDraft: '' }, () => this.load()); this.say('Signed in as ' + j.seat + '.');
+      } catch (e) { this.say('Sign-in failed: ' + (e.message || e)); }
+    } else this.load();
+  }
+
+  renderVals() {
+    const s = this.state, set = s.set, th = THEMES[set.theme] || THEMES.nocturne, D = s.D, wide = s.w >= 1000, st = s.st || {}, sim = s.mode === 'sim', eng = s.mode === 'engine';
+    const hd = s.hov && this.describe(s.hov.key);
+    let hov = { title: '', kind: '', dot: '', tags: [], body: '', rows: [], links: [], hasRows: false, hasLinks: false, linkHead: '', pos: '', chat: () => {}, light: () => {} };
+    if (hd) {
+      const W = s.hov.w || 600, H = s.hov.h || 420, cw = Math.min(340, W - 16); let pos = '';
+      if (W < 480) pos += 'left:8px;right:8px;width:auto;'; else pos += s.hov.x + 18 + cw <= W - 8 ? 'left:' + (s.hov.x + 18) + 'px;' : 'left:' + Math.max(8, s.hov.x - 18 - cw) + 'px;';
+      if (s.hov.y < H / 2) { const top = Math.max(8, s.hov.y - 14); pos += 'top:' + top + 'px;max-height:' + Math.max(160, H - top - 8) + 'px;'; } else { const bot = Math.max(8, H - s.hov.y - 14); pos += 'bottom:' + bot + 'px;max-height:' + Math.max(160, H - bot - 8) + 'px;'; }
+      hov = this.card(hd, { pos, chat: () => { const k = hd.key; this.dropCard(); this.pick(k); }, light: () => this.setState({ sel: hd.key }) });
+    }
+    const td = this.describe(s.target) || this.describe('a:sextant') || { key: 'a:sextant', lane: 'agent', kind: 'The agent at the centre', title: 'SEXTANT', body: '', tags: [], rows: [], links: [], color: th.lanes.agent };
+    const tgt = this.card(td, { links: td.links.slice(0, 120).map(l => ({ ...l, go: () => this.pick(l.key) })) });
+    const short = clip(td.title, 40), thread = s.threads[td.key] || [];
+    const lanesNow = (this._lanes || 'agent,work,question,claim,source').split(',').filter(Boolean);
+    const works = D ? D.works.slice().sort((x, y) => (y.started || y.ts || 0) - (x.started || x.ts || 0)).slice(0, 12) : [];
+    const thoughts = D && s.view === 'brain' && set.thoughts ? (D.self.nodes || []).filter(n => n.lane === 'thought').sort((a, b) => (b.ts || 0) - (a.ts || 0)) : [];
+    const lt = thoughts[0];
+    let nowTitle = 'Starting', nowDetail = '', nowMeta = '', nowWhen = '';
+    if (sim) {
+      if (!st.ready) { nowTitle = 'Waiting for a model'; nowDetail = 'The simulation thinks through the model in this page, and none is available here.'; }
+      else if (st.paused) { nowTitle = 'Paused'; nowDetail = 'Resume from the header or from settings.'; }
+      else if (st.phase && st.phase !== 'idle') { nowTitle = PHASE[st.phase] || cap(st.phase); nowDetail = st.detail || ''; nowWhen = st.since ? 'started ' + ago(st.since) : ''; }
+      else { nowTitle = 'Between turns'; nowDetail = st.nextIn != null ? 'Next turn in ' + st.nextIn + 's.' : ''; }
+      nowMeta = [(st.cycles || 0) + ' turns', (st.items || 0) + ' items read' + (st.items ? ' (' + (st.real || 0) + ' real)' : ''), (st.calls || 0) + ' model calls', (st.errors || 0) + ' errors'].join(' · ');
+    } else if (eng) {
+      const h = s.health || {}; nowTitle = s.token ? 'Engine running' : 'Engine up'; nowDetail = s.token ? (h.pending || 0) + ' rounds queued' + (h.model ? ' · model ' + h.model : '') : s.why;
+      nowMeta = D ? D.works.length + ' work items · ' + D.nodes.length + ' nodes · ' + D.agents.length + ' agents' : '';
+    }
+    const tg = (label, k, sub) => ({ isToggle: true, label, sub: sub || '', on: !!set[k], flip: () => this.patch({ [k]: !set[k] }), sw: swSt(!!set[k]), knob: knobSt(!!set[k]) });
+    const tgx = (label, on, flip, sub) => ({ isToggle: true, label, sub: sub || '', on, flip, sw: swSt(on), knob: knobSt(on) });
+    const rg = (label, k, min, max, step, fmt, sub) => ({ isRange: true, label, sub: sub || '', min, max, step, value: set[k], set: e => this.patch({ [k]: Number(e.target.value) }), out: fmt(set[k]) });
+    const sg = (label, name, opts, cur, pick, sub) => ({ isSeg: true, label, sub: sub || '', name: 'tester-' + name, opts: opts.map(([v, l]) => ({ label: l, on: cur === v, pick: () => pick(v) })) });
+    const bt = (label, btn, run, sub) => ({ isBtn: true, label, btn, run, sub: sub || '' });
+    const x1 = v => Number(v).toFixed(1) + '×';
+    const sections = [
+      { title: 'Look', items: [tg('Halo', 'halo', 'A soft glow around every element'), tg('Brain shell', 'shell'), sg('Labels', 'labels', [['agents', 'Agents'], ['selected', 'Selected'], ['none', 'None']], set.labels, v => this.patch({ labels: v })), rg('Edge brightness', 'edges', 0.2, 2, 0.1, x1)] },
+      { title: 'Motion', items: [tg('Rotate on its own', 'auto'), rg('Rotation speed', 'spin', 0, 3, 0.1, x1), rg('Breathing', 'breathe', 0, 3, 0.1, x1), tg('Hold still while I hover', 'hoverPause', 'Rotation and breathing stop; signals keep moving'), rg('Resume rotation after', 'idle', 2, 30, 1, v => v + 's', 'Idle time after you drag or click')] },
+      { title: 'Signals', items: [rg('Flow speed', 'flow', 0, 3, 0.1, x1), rg('Flow density', 'density', 0, 2, 0.1, x1), tg('Sparks when work lands', 'sparks'), rg('Fire a work item every', 'cadence', 1, 8, 0.2, v => Number(v).toFixed(1) + 's')] },
+      { title: 'What the brain shows', items: [rg('Work items shown', 'works', 20, 220, 10, v => v >= 220 ? 'all' : String(v), 'The most recent first; running work always shows'), tg('Its thoughts', 'thoughts', 'What SEXTANT noted after each finished task'), tg('Its own code and tools', 'code')] }
+    ];
+    if (sim && this.sim) sections.push({ title: 'Simulation', items: [
+      sg('Pace', 'pace', [['calm', 'Calm'], ['normal', 'Normal'], ['fast', 'Fast']], st.pace, v => { this.sim.setPace(v); this.setState({ st: this.sim.status() }); }, 'How often a turn starts'),
+      sg('World input', 'world', [['auto', 'Real + simulated'], ['live', 'Real only']], s.worldMode === 'live' ? 'live' : 'auto', v => { try { localStorage.setItem('ex_world', v); } catch (e) {} this.sim.setMode(v === 'live' ? 'live' : 'sim'); this.setState({ worldMode: v }); }),
+      tgx('Running', !st.paused, () => { if (st.paused) this.sim.resume(); else this.sim.pause(); this.setState({ st: this.sim.status() }); }),
+      bt('Run a turn now', 'Run', () => this.sim.turnNow()),
+      bt('Start over', s.resetArm ? 'Confirm' : 'Reset', () => { if (!s.resetArm) { this.setState({ resetArm: true }); clearTimeout(this._arm); this._arm = setTimeout(() => this.setState({ resetArm: false }), 4000); return; } this.setState({ resetArm: false, sel: '', target: 'a:sextant' }); this.sim.reset(); this.say('The simulation started over.'); }, 'Clears this browser’s graph, work and agents')
+    ] });
+    const prompts = (td.key === 'a:sextant' ? PROMPTS.sextant : PROMPTS[td.lane] || PROMPTS.claim).map(t => ({ text: t, ask: () => this.ask(t) }));
+    const canModel = !!(window.claude && typeof window.claude.complete === 'function');
+    return {
+      cRef: this.cRef, msgRef: this.msgRef, asideRef: this.asideRef, topRef: this.topRef, botRef: this.botRef,
+      rootSt: wide ? 'height:100vh;' : '', brainSt: wide ? '' : 'height:' + Math.round(Math.max(340, s.h * 0.62)) + 'px;', liveSt: wide ? 'overflow:auto;' : '', msgSt: wide ? '' : 'max-height:56vh;',
+      seatLine: eng && s.seat ? 'seat ' + s.seat : sim ? 'browser simulation · nothing here is published' : '',
+      liveDot: sim ? (st.paused ? 'var(--color-neutral-600)' : 'var(--color-accent)') : eng && s.token ? 'var(--color-accent-300)' : 'var(--color-neutral-600)',
+      connLine: sim ? 'Simulation · ' + (st.paused ? 'paused' : (PHASE[st.phase] || 'starting').toLowerCase()) : eng ? (s.token ? 'Engine · ' + s.api + ' · live' : 'Engine up · sign in') : 'Connecting…',
+      isSim: sim, pauseLabel: st.paused ? 'Resume' : 'Pause', pauseIcon: st.paused ? 'ph ph-play-circle' : 'ph ph-pause',
+      togglePause: () => { if (!this.sim) return; if (st.paused) this.sim.resume(); else this.sim.pause(); this.setState({ st: this.sim.status() }); },
+      turnNow: () => { if (this.sim) { this.sim.turnNow(); this.say('A turn is starting.'); } },
+      openSettings: () => this.setState({ setOpen: true }), closeSettings: () => this.setState({ setOpen: false }), stop: e => e.stopPropagation(),
+      brainKicker: s.view === 'brain' ? 'Bridago · live' : 'Without the agent', brainTitle: s.view === 'brain' ? 'The brain' : 'The institute graph',
+      brainSub: s.pulse ? 'Thinking about: ' + clip(s.pulse, 120) : 'Every element can talk. Hover for its details, click to chat with it.',
+      isBrain: s.view === 'brain', isGraph: s.view === 'graph', viewBrain: () => this.setState({ view: 'brain' }), viewGraph: () => this.setState({ view: 'graph' }),
+      legend: lanesNow.map(l => ({ label: LN[l], dot: dotSt(th.lanes[l], 8) })),
+      motionLine: s.hov ? (set.hoverPause ? 'Held still while you look · signals keep flowing' : 'Hover hold is off in settings') : set.auto ? 'Drag to turn · scroll to zoom · hover to inspect' : 'Rotation off · drag to turn',
+      hasBrainMsg: !D, brainMsg: !D ? (s.mode === 'boot' ? 'Starting the brain…' : s.why || 'Loading…') : '',
+      hasHov: !!hd, hov, cardEnter: () => { this._onCard = true; clearTimeout(this._hideT); if (this.ctl) this.ctl.hold(true); }, cardLeave: () => this.dropCard(),
+      isLive: s.tab === 'live', isChat: s.tab === 'chat', tabLive: () => this.setState({ tab: 'live' }), tabChat: () => this.setState({ tab: 'chat' }),
+      showSignIn: eng && !s.token, why: s.why,
+      nowTitle, nowDetail, nowMeta, nowWhen,
+      hasThought: !!lt, thought: lt ? { text: clip(lt.label, 260), when: fmtT(lt.ts), chat: () => this.pick('s:' + lt.id), peek: () => this.peek('s:' + lt.id) } : { text: '', when: '', chat: () => {}, peek: () => {} },
+      unpeek: () => this.peek(''),
+      workCount: D ? D.works.length + ' total' : '', noWork: !!D && !works.length,
+      work: works.map(w => ({ title: w.title, state: w.state === 'ongoing' ? 'running' : w.state || 'logged', tagCls: w.state === 'ongoing' ? 'tag tag-accent' : w.state === 'failed' ? 'tag tag-outline' : 'tag tag-neutral', meta: [w.agent === 'sextant' ? 'SEXTANT' : w.agent, w.kind, w.ts ? ago(w.ts) : '', w.sim ? 'simulated input' : ''].filter(Boolean).join(' · '), chat: () => this.pick('w:' + w.id), peek: () => this.peek('w:' + w.id) })),
+      agentCount: D ? String(D.agents.length) : '',
+      agents: D ? D.agents.slice(0, 10).map(a => ({ name: a.id === 'sextant' ? 'SEXTANT' : a.name || a.id, role: a.role || '', status: a.status || '', dot: dotSt(th.lanes.agent, 8), chat: () => this.pick('a:' + a.id), peek: () => this.peek('a:' + a.id) })) : [],
+      hasInputs: sim && !!st.src && Object.keys(st.src).length > 0,
+      inputs: sim && st.src ? Object.values(st.src).map(x => ({ label: x.label, line: x.ok === true ? x.n + ' reads' : x.ok === false ? 'not reachable' + (x.err ? ' · ' + clip(x.err, 70) : '') : 'not tried yet', dot: dotSt(x.ok === true ? 'var(--color-accent-400)' : 'var(--color-neutral-600)', 7) })) : [],
+      tgt, tgtInfo: s.tgtInfo, tgtInfoLabel: s.tgtInfo ? 'Hide details' : 'Details', toggleTgtInfo: () => this.setState({ tgtInfo: !s.tgtInfo }),
+      notSextant: td.key !== 'a:sextant', toSextant: () => this.setState({ target: 'a:sextant', sel: 'a:sextant' }),
+      noMsgs: !thread.length, emptyLine: 'Ask ' + short + ' anything. It answers from its own details and the elements it links to.', prompts,
+      msgs: thread.map(m => ({ t: m.r === 'u' ? m.t : m.t.replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#+\s*/gm, ''), who: m.r === 'u' ? 'You' : short, st: m.r === 'u' ? 'align-self:flex-end;max-width:88%;display:grid;gap:2px;padding:8px 11px;border-radius:var(--radius-md);border:1px solid var(--color-accent-700);background:color-mix(in srgb,var(--color-accent) 8%,transparent);' : 'align-self:flex-start;max-width:94%;display:grid;gap:2px;padding:8px 11px;border-radius:var(--radius-md);background:var(--color-surface);' })),
+      busy: s.busy, busyLine: short + ' is thinking…',
+      draft: s.draft, onDraft: e => this.setState({ draft: e.target.value }), placeholder: td.key === 'a:sextant' ? 'Ask SEXTANT' : 'Ask this ' + ({ work: 'task', module: 'module' }[td.lane] || td.lane || 'element'), cantSend: s.busy || !s.draft.trim(),
+      send: e => { e.preventDefault(); this.ask(this.state.draft); },
+      chatNote: eng && s.token ? 'Answers come from the engine. What you say is recorded against this element, so bug reports land in the graph.' : canModel ? 'Answers come from this element’s details and links, through the model in this page. Nothing here is published.' : 'There is no engine and no model in this page, so elements cannot answer yet.',
+      setOpen: s.setOpen,
+      themes: ORDER.map(k => { const t = THEMES[k], on = set.theme === k; return { name: t.name, on, pick: () => this.patch({ theme: k }), st: 'display:grid;gap:8px;justify-items:start;padding:10px;border-radius:var(--radius-md);cursor:pointer;text-align:left;color:var(--color-text);font:inherit;background:' + t.bg + ';border:1px solid ' + (on ? 'var(--color-accent)' : 'var(--color-neutral-800)') + ';box-shadow:' + (on ? '0 0 0 1px var(--color-accent)' : 'none') + ';', dots: ['agent', 'work', 'question', 'claim', 'source'].map(l => dotSt(t.lanes[l], 10)) }; }),
+      sections,
+      connDetail: sim ? 'No engine answered at ' + s.api + '. The page runs the institute in this browser until one does.' : eng ? (s.token ? 'Signed in to the engine at ' + s.api + ' as ' + s.seat + '.' : 'The engine at ' + s.api + ' is up. Sign in with the seat and code the owner gave you.') : 'Looking for the engine…',
+      apiDraft: s.apiDraft, onApi: e => this.setState({ apiDraft: e.target.value }), seatDraft: s.seatDraft, onSeat: e => this.setState({ seatDraft: e.target.value }), codeDraft: s.codeDraft, onCode: e => this.setState({ codeDraft: e.target.value }),
+      connect: () => this.connect(), signedIn: !!s.token,
+      signOut: () => { try { sessionStorage.removeItem('tester_token'); sessionStorage.removeItem('tester_seat'); } catch (e) {} this.setState({ token: '', seat: '', D: null }, () => this.load()); },
+      restore: () => { this.patch({ ...DEF, ...this.propSet() }); this.say('Settings restored.'); },
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

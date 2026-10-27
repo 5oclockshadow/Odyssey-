@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools==75.6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anima-lstm-substrate"
+version = "0.1.0"
+description = "An LSTM that plugs into Bridago as a substrate, CPU only."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["numpy==2.0.2"]
+
+[tool.setuptools]
+packages = ["lstm_substrate"]

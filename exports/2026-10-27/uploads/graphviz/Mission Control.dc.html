@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<script src="atlas-corpus.js"></script>
+<script src="gi-domains.js"></script>
+<script src="lab-engine.js"></script>
+<script src="gi-strategies.js"></script>
+<script src="gi-github.js"></script>
+<script src="gi-stack.js"></script>
+<script src="gi-arena.js"></script>
+<script src="gi-history.js"></script>
+<script src="gi-core.js"></script>
+<style>
+html, body { margin: 0; height: 100%; overflow: hidden; background: #040509; color: rgb(214,236,255); font-family: "Sora", system-ui, sans-serif; }
+a { color: rgb(255,190,110); } a:hover { color: rgb(255,106,26); }
+::selection { background: rgba(255,106,26,0.35); }
+*:focus-visible { outline: 1px solid rgb(255,106,26); outline-offset: 2px; }
+input::placeholder { color: rgba(214,236,255,0.32); }
+@keyframes mc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@keyframes mc-in { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-thumb { background: rgba(214,236,255,0.12); } ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</helmet>
+<div style="height: 100vh; display: flex; flex-direction: column; gap: 8px; padding: 8px 10px; box-sizing: border-box; overflow: hidden; color: rgb(214,236,255); font-size: 13px; line-height: 1.45; background: radial-gradient(80% 55% at 50% 0%, rgba(255,106,26,0.06), transparent 60%), repeating-linear-gradient(0deg, rgba(214,236,255,0.018) 0 1px, transparent 1px 4px), #040509;">
+
+  <sc-if value="{{ bootError }}"><div style="flex: none; padding: 8px 12px; border: 1px solid rgb(255,110,95); background: rgba(255,110,95,0.08); font-family: 'Geist Mono', monospace; font-size: 11px; color: rgb(255,180,170);">BOOT ERROR · {{ bootErrorText }}</div></sc-if>
+
+  <sc-if value="{{ hasToast }}">
+    <div style="position: fixed; top: 64px; left: 50%; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 14px; padding: 12px 16px; max-width: min(760px, 92vw); background: rgba(9,11,18,0.97); border: 1px solid rgb(255,106,26); box-shadow: 0 0 44px rgba(255,106,26,0.4); animation: mc-in 0.3s ease;">
+      <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgb(255,106,26); white-space: nowrap;">● NEW ABILITY</span>
+      <span style="font-weight: 600; font-size: 14px; white-space: nowrap;">{{ toast.label }}</span>
+      <span style="font-size: 12px; color: rgba(214,236,255,0.7); text-wrap: pretty;">{{ toast.note }}</span>
+      <button onClick="{{ toast.go }}" style="flex: none; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 6px 12px; background: rgba(255,106,26,0.18); color: rgb(255,190,110); border: 1px solid rgb(255,106,26); cursor: pointer;">USE IT →</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ paletteOpen }}">
+    <div onClick="{{ closePalette }}" style="position: fixed; inset: 0; z-index: 60; background: rgba(2,3,6,0.66); display: flex; align-items: flex-start; justify-content: center; padding: 9vh 16px 0;">
+      <div onClick="{{ stop }}" style="width: min(800px, 100%); max-height: 74vh; display: flex; flex-direction: column; background: rgba(9,11,18,0.98); border: 1px solid rgb(255,106,26); box-shadow: 0 30px 90px rgba(0,0,0,0.6), 0 0 44px rgba(255,106,26,0.16);">
+        <div style="flex: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid rgba(214,236,255,0.1);">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 14px; color: rgb(255,106,26);">⌘</span>
+          <input ref="{{ palRef }}" value="{{ pq }}" onChange="{{ onPq }}" onKeyDown="{{ onPalKey }}" placeholder="search or tell the agents — add gitnexus repo · matrix · mind map · 3d strata · path · raptor" spellcheck="false" style="flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: rgb(214,236,255); font: 14px 'Geist Mono', monospace; caret-color: rgb(255,106,26);">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.4); white-space: nowrap;">{{ paletteCount }}</span>
+        </div>
+        <div style="flex: none; display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 14px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+          <sc-for list="{{ palCats }}" as="cc" hint-placeholder-count="7"><button onClick="{{ cc.go }}" style="font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.1em; padding: 5px 10px; background: {{ cc.bg }}; border: 1px solid {{ cc.bd }}; color: {{ cc.fg }}; cursor: pointer;">{{ cc.label }}</button></sc-for>
+        </div>
+        <div ref="{{ listRef }}" style="position: relative; flex: 1; min-height: 0; overflow: auto;">
+          <sc-for list="{{ paletteList }}" as="cmd" hint-placeholder-count="10">
+            <button data-pi="{{ cmd.pi }}" onClick="{{ cmd.go }}" onMouseEnter="{{ cmd.hover }}" style="display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 9px 14px; background: {{ cmd.bg }}; box-shadow: {{ cmd.mark }}; border: 0; border-bottom: 1px solid rgba(214,236,255,0.04); color: rgb(214,236,255); cursor: pointer;">
+              <span style="font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.1em; color: {{ cmd.catFg }};">{{ cmd.cat }}</span>
+              <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+                <span style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ cmd.label }}</span>
+                <span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ cmd.desc }}</span>
+              </span>
+              <sc-if value="{{ cmd.hasTag }}"><span style="font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.08em; padding: 2px 7px; border: 1px solid {{ cmd.tagBd }}; color: {{ cmd.tagFg }}; white-space: nowrap;">{{ cmd.tag }}</span></sc-if>
+            </button>
+          </sc-for>
+          <sc-if value="{{ paletteEmpty }}"><div style="padding: 22px; text-align: center; color: rgba(214,236,255,0.4); font-size: 12px;">No commands match. Press enter to ask the agents.</div></sc-if>
+        </div>
+        <div style="flex: none; white-space: nowrap; display: flex; gap: 16px; padding: 7px 14px; border-top: 1px solid rgba(214,236,255,0.06); font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.4);"><span>↑ ↓ navigate</span><span>↵ run</span><span>esc close</span></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <header style="height: 48px; flex: none; display: flex; align-items: center; gap: 18px; padding: 0 10px 0 14px; border: 1px solid rgba(214,236,255,0.08); background: rgba(9,11,18,0.8); min-width: 0;">
+    <div style="display: flex; align-items: baseline; gap: 10px; flex: none;">
+      <span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.3em;">GRAPH/LAB</span>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}"><span style="font-weight: 600; font-size: 16px; letter-spacing: -0.01em; white-space: nowrap;">Mission control</span></sc-if>
+    </div>
+    <div style="display: flex; flex: none; border: 1px solid rgba(214,236,255,0.12);">
+      <sc-for list="{{ modes }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.go }}" title="{{ m.hint }}" style="display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border: 0; background: {{ m.bg }}; box-shadow: {{ m.line }}; color: {{ m.fg }}; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.12em; cursor: pointer;" style-hover="color: rgb(255,190,110);">{{ m.label }}<span style="font-size: 9px; color: rgba(214,236,255,0.32);">{{ m.key }}</span></button></sc-for>
+    </div>
+    <div style="flex: 1; min-width: 0; height: 36px; overflow: hidden; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: flex-end; column-gap: 20px; row-gap: 40px;">
+      <sc-for list="{{ metrics }}" as="k" hint-placeholder-count="4"><button onClick="{{ k.go }}" title="{{ k.tip }}" style="flex: none; height: 36px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1px; padding: 0; background: transparent; border: 0; color: rgb(214,236,255); cursor: pointer; font-family: 'Geist Mono', monospace;" style-hover="opacity: 0.75;"><span style="font-size: 9px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">{{ k.k }}</span><span style="font-size: 17px; line-height: 1.1; font-variant-numeric: tabular-nums; color: {{ k.c }}; white-space: nowrap;">{{ k.v }} <span style="font-size: 10px; color: {{ k.dc }};">{{ k.d }}</span></span></button></sc-for>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px; flex: none;">
+      <button onClick="{{ toggleAuto }}" title="Autopilot runs the research loop with no human in the loop" style="display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.1em; background: {{ autoBg }}; color: {{ autoFg }}; border: 1px solid rgb(255,106,26); cursor: pointer;">{{ autoDot }}{{ autoLabel }}</button>
+      <button onClick="{{ think }}" title="One ReAct step: read insights, pick a tool, act" style="height: 30px; padding: 0 12px; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.1em; background: rgba(255,106,26,0.12); color: rgb(255,190,110); border: 1px solid rgb(255,106,26); cursor: pointer;" style-hover="background: rgba(255,106,26,0.24);">THINK ⟳</button>
+      <button onClick="{{ openPalette }}" title="Command palette (⌘K or /)" style="height: 30px; padding: 0 12px; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.1em; background: rgba(255,106,26,0.16); color: rgb(255,190,110); border: 1px solid rgb(255,106,26); cursor: pointer;" style-hover="background: rgba(255,106,26,0.28);">⌘K</button>
+      <button onClick="{{ toggleLeft }}" title="Mission rail ( [ )" style="width: 30px; height: 30px; padding: 0; background: transparent; border: 1px solid rgba(214,236,255,0.14); color: {{ leftFg }}; font-size: 14px; cursor: pointer;" style-hover="border-color: rgb(255,106,26);">◧</button>
+      <button onClick="{{ toggleRight }}" title="Inspector ( ] )" style="width: 30px; height: 30px; padding: 0; background: transparent; border: 1px solid rgba(214,236,255,0.14); color: {{ rightFg }}; font-size: 14px; cursor: pointer;" style-hover="border-color: rgb(255,106,26);">◨</button>
+    </div>
+  </header>
+
+  <div style="flex: 1; min-height: 0; display: flex; gap: 8px;">
+
+    <sc-if value="{{ leftOpen }}" hint-placeholder-val="{{ true }}">
+      <aside style="width: 264px; flex: none; min-height: 0; display: flex; flex-direction: column; border: 1px solid rgba(214,236,255,0.08); background: rgba(9,11,18,0.78);">
+        <div style="height: 34px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-bottom: 1px solid rgba(214,236,255,0.07);">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);"><span style="color: rgb(255,106,26);">▍</span>MISSION</span>
+          <span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.45);">ROUND {{ round }}</span>
+        </div>
+        <div style="flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column;">
+          <section style="padding: 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+            <div style="display: flex; align-items: center; gap: 9px;">{{ stateDot }}<span style="font-family: 'Geist Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: rgb(255,190,110);">{{ autoWord }}</span></div>
+            <span style="font-size: 12px; line-height: 1.45; color: rgba(214,236,255,0.82); text-wrap: pretty;">{{ hypothesis }}</span>
+            <sc-if value="{{ hasObservation }}"><span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; line-height: 1.5; color: rgb(255,190,110); word-break: break-word;">⤷ {{ observation }}</span></sc-if>
+          </section>
+          <section style="padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45); margin-bottom: 4px;">RESEARCH LOOP · CLICK TO STEP</span>
+            <sc-for list="{{ loop }}" as="s" hint-placeholder-count="7">
+              <button onClick="{{ s.go }}" title="Advance the research loop one stage" style="display: flex; align-items: center; gap: 10px; height: 24px; padding: 0 8px; border: 0; background: {{ s.bg }}; color: {{ s.fg }}; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.1em; text-align: left; cursor: pointer;" style-hover="background: rgba(255,106,26,0.08);">
+                <span style="width: 18px; font-size: 10px; color: {{ s.numFg }};">{{ s.num }}</span><span>{{ s.label }}</span>
+                <sc-if value="{{ s.on }}"><span style="margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background: rgb(255,106,26); box-shadow: 0 0 8px rgb(255,106,26);"></span></sc-if>
+              </button>
+            </sc-for>
+          </section>
+          <section style="padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">AGENTS</span>
+            <sc-for list="{{ agents }}" as="a" hint-placeholder-count="2">
+              <button onClick="{{ a.go }}" title="Open the ReAct trace" style="display: flex; align-items: center; gap: 8px; padding: 2px 0; background: transparent; border: 0; color: rgb(214,236,255); font-size: 12px; cursor: pointer; text-align: left;" style-hover="color: rgb(255,190,110);"><span style="width: 7px; height: 7px; border-radius: 50%; background: {{ a.dot }}; box-shadow: {{ a.glow }};"></span><span>{{ a.name }}</span><span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 10px; color: {{ a.fg }};">{{ a.state }}</span></button>
+            </sc-for>
+            <div style="padding: 8px 9px; border: 1px solid rgba(255,106,26,0.25); background: rgba(255,106,26,0.04);"><span style="font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.14em; color: rgb(255,106,26);">CURRENT THOUGHT</span><div style="font-size: 11.5px; line-height: 1.45; color: rgba(214,236,255,0.82); margin-top: 4px; text-wrap: pretty;">{{ thought }}</div></div>
+          </section>
+          <section style="padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+            <button onClick="{{ openHistory }}" title="Open the testbench history (H)" style="display: flex; align-items: center; gap: 6px; padding: 0; background: transparent; border: 0; cursor: pointer; font: 10px 'Geist Mono', monospace; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">IQ <span style="color: rgb(255,106,26);">━</span> / DEV ┄<span style="margin-left: auto; color: rgb(255,190,110);">HISTORY ↗</span></button>
+            <svg onClick="{{ openHistory }}" viewBox="0 0 232 56" preserveAspectRatio="none" style="width: 100%; height: 54px; display: block; cursor: pointer;"><polyline points="{{ devPts }}" fill="none" stroke="rgba(214,236,255,0.35)" stroke-width="1" stroke-dasharray="3 3"></polyline><polyline points="{{ iqPts }}" fill="none" stroke="rgb(255,106,26)" stroke-width="1.5"></polyline></svg>
+          </section>
+          <section style="display: flex; flex-direction: column;">
+            <div style="padding: 10px 12px 6px; display: flex; align-items: center; gap: 8px;"><span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">INSIGHTS · {{ insightCount }}</span><button onClick="{{ remine }}" title="Re-mine bridges, fragility, missing links and analogies" style="margin-left: auto; font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 3px 8px; background: transparent; color: rgb(255,190,110); border: 1px solid rgba(255,106,26,0.5); cursor: pointer;" style-hover="background: rgba(255,106,26,0.14);">MINE ⟳</button></div>
+            <sc-for list="{{ insights }}" as="x" hint-placeholder-count="5">
+              <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 8px 12px; background: {{ x.bg }}; border-top: 1px solid rgba(214,236,255,0.05);">
+                <button onClick="{{ x.focus }}" title="Focus this insight on the canvas" style="display: flex; flex-direction: column; gap: 3px; min-width: 0; text-align: left; padding: 0; background: transparent; border: 0; color: rgb(214,236,255); cursor: pointer;" style-hover="color: rgb(255,190,110);">
+                  <span style="font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.14em; color: rgb(255,106,26);">{{ x.kind }}</span>
+                  <span style="font-size: 12px; font-weight: 500; line-height: 1.3; text-wrap: pretty;">{{ x.title }}</span>
+                </button>
+                <button onClick="{{ x.act }}" title="{{ x.actTip }}" style="font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 3px 8px; background: transparent; color: rgb(255,190,110); border: 1px solid rgba(255,106,26,0.5); cursor: pointer; white-space: nowrap;" style-hover="background: rgba(255,106,26,0.14);">{{ x.actLabel }}</button>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+      </aside>
+    </sc-if>
+
+    <main style="flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px;">
+      <section style="flex: 1; min-height: 0; position: relative; display: {{ stageDisplay }}; border: 1px solid rgba(214,236,255,0.08); overflow: hidden; background: radial-gradient(60% 55% at 50% 50%, rgba(255,106,26,0.05), transparent 70%), rgba(6,7,12,0.6);">
+        <div ref="{{ stageRef }}" style="position: absolute; inset: 0;"></div>
+        <span style="position: absolute; left: 5px; top: 5px; width: 14px; height: 14px; border-left: 1px solid rgba(255,106,26,0.6); border-top: 1px solid rgba(255,106,26,0.6); pointer-events: none;"></span>
+        <span style="position: absolute; right: 5px; top: 5px; width: 14px; height: 14px; border-right: 1px solid rgba(255,106,26,0.6); border-top: 1px solid rgba(255,106,26,0.6); pointer-events: none;"></span>
+        <span style="position: absolute; left: 5px; bottom: 5px; width: 14px; height: 14px; border-left: 1px solid rgba(255,106,26,0.6); border-bottom: 1px solid rgba(255,106,26,0.6); pointer-events: none;"></span>
+        <span style="position: absolute; right: 5px; bottom: 5px; width: 14px; height: 14px; border-right: 1px solid rgba(255,106,26,0.6); border-bottom: 1px solid rgba(255,106,26,0.6); pointer-events: none;"></span>
+        <div style="position: absolute; top: 12px; left: 16px; right: 14px; display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 14px; row-gap: 8px; pointer-events: none;">
+          <div style="flex: 1 1 240px; min-width: 0; max-width: 520px; display: flex; flex-direction: column; gap: 3px;">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);"><span style="color: rgb(255,106,26);">▍</span>CONNECTOME · {{ nodeCount }} CONCEPTS</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: rgb(255,190,110);">{{ viewTitle }}</span>
+            <span style="font-size: 11.5px; color: rgba(214,236,255,0.6); line-height: 1.5; text-wrap: pretty;">{{ viewLegend }}</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; pointer-events: auto;">
+            <div style="display: flex; border: 1px solid rgba(214,236,255,0.12); background: rgba(9,11,18,0.72);">
+              <sc-for list="{{ views }}" as="v" hint-placeholder-count="3"><button onClick="{{ v.go }}" title="{{ v.tip }}" style="height: 26px; padding: 0 10px; border: 0; background: {{ v.bg }}; box-shadow: {{ v.line }}; color: {{ v.fg }}; font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.12em; cursor: pointer; white-space: nowrap;" style-hover="color: rgb(255,190,110);">{{ v.label }}</button></sc-for>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 3px;">
+              <sc-for list="{{ colorModes }}" as="m" hint-placeholder-count="4"><button onClick="{{ m.go }}" style="font: 500 10px 'Geist Mono', monospace; padding: 4px 8px; background: {{ m.bg }}; border: 1px solid {{ m.bd }}; color: {{ m.fg }}; cursor: pointer;">{{ m.label }}</button></sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="position: absolute; left: 14px; right: 14px; bottom: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; pointer-events: none;">
+          <sc-if value="{{ is3d }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px; pointer-events: auto;">
+              <span style="width: 50px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.14em; color: rgba(214,236,255,0.4);">LAYOUT</span>
+              <sc-for list="{{ layouts }}" as="x" hint-placeholder-count="6"><button onClick="{{ x.go }}" title="{{ x.tip }}" style="font: 500 10px 'Geist Mono', monospace; padding: 4px 8px; background: {{ x.bg }}; border: 1px solid {{ x.bd }}; color: {{ x.fg }}; cursor: pointer;" style-hover="border-color: rgb(255,106,26);">{{ x.label }}</button></sc-for>
+            </div>
+          </sc-if>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px; pointer-events: auto;">
+            <span style="width: 50px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.14em; color: rgba(214,236,255,0.4);">LENS</span>
+            <sc-for list="{{ lenses }}" as="x" hint-placeholder-count="4"><button onClick="{{ x.go }}" title="{{ x.tip }}" style="font: 500 10px 'Geist Mono', monospace; padding: 4px 8px; background: {{ x.bg }}; border: 1px solid {{ x.bd }}; color: {{ x.fg }}; cursor: pointer;" style-hover="border-color: rgb(255,106,26);">{{ x.label }}</button></sc-for>
+          </div>
+        </div>
+        <sc-if value="{{ is2d }}"><span style="position: absolute; right: 16px; bottom: 14px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.12em; color: rgba(214,236,255,0.4); pointer-events: none;">DRAG PAN · SCROLL ZOOM · DOUBLE-CLICK RESET</span></sc-if>
+      </section>
+
+      <sc-if value="{{ isBench }}">
+        <section style="flex: 1; min-height: 0; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);">
+          <dc-import name="GI Testbench (Mission Control)" core="{{ core }}" mode="agent" start-tab="{{ tbTab }}" tab-req="{{ tbReq }}" hint-size="100%,100%" style="min-width: 0; min-height: 0; height: 100%;"></dc-import>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ isAtlas }}">
+        <section style="flex: 1; min-height: 0; position: relative; border: 1px solid rgba(214,236,255,0.08); overflow: hidden; background: #040509;">
+          <iframe src="Graph Atlas.dc.html" title="Graph Atlas" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"></iframe>
+        </section>
+      </sc-if>
+
+      <section style="flex: none; display: flex; flex-direction: column; border: 1px solid rgba(214,236,255,0.08); background: rgba(4,5,9,0.92);">
+        <div style="height: 34px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 8px 0 12px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+          <sc-for list="{{ dockTabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 2px; background: transparent; border: 0; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.1em; color: {{ t.fg }}; box-shadow: {{ t.line }}; cursor: pointer;" style-hover="color: rgb(255,190,110);">{{ t.label }}<span style="font-size: 10px; color: rgba(214,236,255,0.35);">{{ t.n }}</span></button></sc-for>
+          <span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.4); white-space: nowrap;">{{ chatHint }}</span>
+          <button onClick="{{ toggleDock }}" title="{{ dockTip }}" style="width: 26px; height: 24px; padding: 0; background: transparent; border: 1px solid rgba(214,236,255,0.14); color: rgba(214,236,255,0.7); font-size: 11px; cursor: pointer;" style-hover="border-color: rgb(255,106,26);">{{ dockGlyph }}</button>
+        </div>
+        <sc-if value="{{ dockOpen }}" hint-placeholder-val="{{ true }}">
+          <div style="height: min(224px, 30vh); display: flex; flex-direction: column; min-height: 0;">
+            <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
+              <div ref="{{ chatRef }}" style="flex: 1; min-height: 0; overflow: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 10px;">
+                <sc-for list="{{ messages }}" as="m" hint-placeholder-count="1">
+                  <div style="display: flex; flex-direction: column; gap: 3px; align-items: {{ m.align }};">
+                    <span style="font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.12em; color: {{ m.fg }};">{{ m.who }}</span>
+                    <div style="max-width: 86%; display: flex; flex-direction: column; gap: 5px; padding: 8px 12px; background: {{ m.bg }}; border: 1px solid {{ m.bd }};">
+                      <sc-if value="{{ m.hasTool }}">
+                        <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-family: 'Geist Mono', monospace; font-size: 11px;">
+                          <span style="color: rgb(255,190,110);">{{ m.tool }}</span>
+                          <span style="color: rgba(214,236,255,0.5); word-break: break-all;">{{ m.args }}</span>
+                          <span style="margin-left: auto; font-size: 9px; letter-spacing: 0.12em; padding: 1px 6px; border: 1px solid {{ m.statusFg }}; color: {{ m.statusFg }};">{{ m.status }}</span>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ m.hasText }}"><span style="font-size: 13px; line-height: 1.5; white-space: pre-wrap; text-wrap: pretty;">{{ m.text }}</span></sc-if>
+                      <sc-if value="{{ m.hasObs }}"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 1.5; color: rgba(214,236,255,0.72); white-space: pre-wrap; word-break: break-word;">{{ m.obs }}</span></sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ chatEmpty }}">
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12px; color: rgba(214,236,255,0.45); line-height: 1.6; max-width: 640px;">Ask the graph anything, or tell the agents what to do. Requests run through the same tools the agents use and land in the trace.</span>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px;"><sc-for list="{{ prompts }}" as="p" hint-placeholder-count="5"><button onClick="{{ p.go }}" style="font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.06em; padding: 4px 9px; background: transparent; color: rgb(255,190,110); border: 1px solid rgba(255,106,26,0.45); cursor: pointer;" style-hover="background: rgba(255,106,26,0.14);">{{ p.label }}</button></sc-for></div>
+                  </div>
+                </sc-if>
+              </div>
+              <form onSubmit="{{ send }}" style="flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-top: 1px solid rgba(214,236,255,0.06);">
+                <span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: rgb(255,106,26);">&gt;_</span>
+                <input value="{{ chatInput }}" onChange="{{ onInput }}" placeholder="message the agents — add a repo, switch the view, trace a path, or ask" spellcheck="false" style="flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: rgb(214,236,255); font: 13px 'Geist Mono', monospace; caret-color: rgb(255,106,26);">
+                <button type="submit" style="font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 6px 12px; background: rgba(255,106,26,0.14); color: rgb(255,190,110); border: 1px solid rgb(255,106,26); cursor: pointer;">SEND</button>
+              </form>
+            </sc-if>
+            <sc-if value="{{ isTrace }}">
+              <div style="flex: 1; min-height: 0; overflow: auto; padding: 4px 12px; font-family: 'Geist Mono', monospace;">
+                <sc-for list="{{ thoughts }}" as="t" hint-placeholder-count="3">
+                  <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; padding: 7px 0; border-bottom: 1px solid rgba(214,236,255,0.05);">
+                    <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+                      <span style="font-size: 9px; letter-spacing: 0.12em; color: {{ t.byFg }};">{{ t.by }}</span>
+                      <span style="font-size: 11px; color: rgb(255,190,110);">→ {{ t.tool }}</span>
+                      <span style="font-size: 10px; color: rgba(214,236,255,0.4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.args }}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                      <span style="font-family: 'Sora', system-ui, sans-serif; font-size: 12px; line-height: 1.45; text-wrap: pretty;">{{ t.thought }}</span>
+                      <span style="font-size: 11px; color: rgba(214,236,255,0.62); line-height: 1.45; word-break: break-word;">{{ t.obs }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ noThoughts }}"><div style="padding: 8px 0; font-size: 11px; color: rgba(214,236,255,0.4);">Press THINK, or turn on autopilot, to let the agent act on an insight.</div></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ isIngest }}">
+              <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 16px; padding: 8px 12px;">
+                <div style="min-height: 0; display: flex; flex-direction: column; gap: 6px;">
+                  <form onSubmit="{{ addRepo }}" style="flex: none; display: flex; gap: 6px;">
+                    <input value="{{ repoIn }}" onChange="{{ onRepoIn }}" placeholder="add a repo — owner/name, URL or a name to search" spellcheck="false" style="flex: 1; min-width: 0; height: 28px; padding: 0 8px; background: rgba(214,236,255,0.04); border: 1px solid rgba(214,236,255,0.14); outline: none; color: rgb(214,236,255); font: 12px 'Geist Mono', monospace; caret-color: rgb(255,106,26);">
+                    <button type="submit" style="font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.1em; padding: 0 10px; background: rgba(255,106,26,0.14); color: rgb(255,190,110); border: 1px solid rgb(255,106,26); cursor: pointer;">+ ADD</button>
+                  </form>
+                  <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">REPOSITORIES · {{ ingestMeta }}</span>
+                  <div style="flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column;">
+                    <sc-for list="{{ repoProgress }}" as="r" hint-placeholder-count="5">
+                      <div title="{{ r.topic }}" style="display: grid; grid-template-columns: 8px minmax(0, 1fr) auto 20px 20px; gap: 7px; align-items: center; padding: 3px 0; font-family: 'Geist Mono', monospace; font-size: 11px;">
+                        <span style="color: {{ r.dot }}; font-size: 8px;">●</span>
+                        <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgba(214,236,255,0.88);">{{ r.slug }}</span>
+                        <span style="font-size: 10px; color: rgb(255,190,110);">{{ r.stat }}</span>
+                        <button onClick="{{ r.prioritize }}" title="{{ r.priTip }}" style="width: 20px; height: 20px; padding: 0; background: transparent; border: 1px solid rgba(214,236,255,0.12); color: {{ r.priFg }}; font-size: 9px; cursor: pointer;" style-hover="border-color: rgb(255,106,26);">▲</button>
+                        <button onClick="{{ r.remove }}" title="Remove from the research queue" style="width: 20px; height: 20px; padding: 0; background: transparent; border: 1px solid rgba(214,236,255,0.12); color: rgba(214,236,255,0.5); font-size: 10px; cursor: pointer;" style-hover="color: rgb(255,110,95); border-color: rgb(255,110,95);">✕</button>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 3px; font-family: 'Geist Mono', monospace;">
+                  <span style="font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">LIVE FEED</span>
+                  <sc-for list="{{ ingestFeed }}" as="e" hint-placeholder-count="6">
+                    <div style="display: grid; grid-template-columns: 54px 76px minmax(0, 1fr); gap: 7px; font-size: 10.5px; align-items: baseline;"><span style="color: rgba(214,236,255,0.3);">{{ e.t }}</span><span style="color: {{ e.kc }};">{{ e.kind }}</span><span style="color: rgba(214,236,255,0.78); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ e.text }}</span></div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </section>
+    </main>
+
+    <sc-if value="{{ rightOpen }}" hint-placeholder-val="{{ true }}">
+      <aside style="width: 344px; flex: none; min-height: 0; display: flex; flex-direction: column; border: 1px solid rgba(214,236,255,0.08); background: rgba(9,11,18,0.78);">
+        <div style="height: 34px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 12px; border-bottom: 1px solid rgba(214,236,255,0.07);">
+          <sc-for list="{{ itabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.go }}" style="height: 34px; display: inline-flex; align-items: center; gap: 5px; padding: 0 1px; background: transparent; border: 0; font: 500 10.5px 'Geist Mono', monospace; letter-spacing: 0.1em; color: {{ t.fg }}; box-shadow: {{ t.line }}; cursor: pointer;" style-hover="color: rgb(255,190,110);">{{ t.label }}<span style="font-size: 10px; color: rgba(214,236,255,0.35);">{{ t.n }}</span></button></sc-for>
+        </div>
+        <div style="flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column;">
+
+          <sc-if value="{{ isNode }}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{ hasSel }}">
+              <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+                <div style="display: flex; align-items: center; gap: 8px;"><span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: rgb(255,106,26);">{{ sel.comm }}</span><button onClick="{{ clearSel }}" title="Clear selection" style="margin-left: auto; background: none; border: 0; color: rgba(214,236,255,0.5); cursor: pointer; font-size: 12px;">✕</button></div>
+                <span style="font-weight: 600; font-size: 18px; letter-spacing: -0.01em; line-height: 1.2;">{{ sel.name }}</span>
+                <span style="font-size: 12px; line-height: 1.5; color: rgba(214,236,255,0.75); text-wrap: pretty;">{{ sel.def }}</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 4px; background: rgba(214,236,255,0.06);">
+                  <sc-for list="{{ sel.stats }}" as="s" hint-placeholder-count="4"><div style="padding: 6px 8px; background: rgba(9,11,18,0.95); font-family: 'Geist Mono', monospace;"><div style="font-size: 9px; letter-spacing: 0.12em; color: rgba(214,236,255,0.45);">{{ s.k }}</div><div style="font-size: 14px; color: rgb(255,190,110); font-variant-numeric: tabular-nums;">{{ s.v }} <span style="font-size: 10px; color: rgba(214,236,255,0.45);">{{ s.sub }}</span></div></div></sc-for>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px;">
+                  <button onClick="{{ askSel }}" style="font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 5px 9px; background: rgba(255,106,26,0.14); color: rgb(255,190,110); border: 1px solid rgb(255,106,26); cursor: pointer;">ASK AGENTS →</button>
+                  <button onClick="{{ probeSel }}" title="Run a retrieval probe from this concept" style="font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 5px 9px; background: transparent; color: rgba(214,236,255,0.8); border: 1px solid rgba(214,236,255,0.2); cursor: pointer;" style-hover="border-color: rgb(255,106,26); color: rgb(255,190,110);">PROBE</button>
+                  <button onClick="{{ inspectSel }}" title="Run the inspect tool and log it to the trace" style="font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 5px 9px; background: transparent; color: rgba(214,236,255,0.8); border: 1px solid rgba(214,236,255,0.2); cursor: pointer;" style-hover="border-color: rgb(255,106,26); color: rgb(255,190,110);">INSPECT</button>
+                </div>
+              </div>
+              <div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+                <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45); margin-bottom: 4px;">NEIGHBOURS · {{ nbCount }}</span>
+                <sc-for list="{{ neighbours }}" as="n" hint-placeholder-count="5">
+                  <button onClick="{{ n.go }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 64px 40px; gap: 8px; align-items: center; width: 100%; padding: 4px 0; background: transparent; border: 0; color: rgb(214,236,255); cursor: pointer; text-align: left;" style-hover="color: rgb(255,190,110);">
+                    <span style="font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ n.name }}</span>
+                    <span style="font-family: 'Geist Mono', monospace; font-size: 9px; color: {{ n.relFg }}; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ n.rel }}</span>
+                    <span style="position: relative; height: 4px; background: rgba(214,236,255,0.08);"><span style="position: absolute; inset: 0 auto 0 0; width: {{ n.wPct }}; background: rgb(255,106,26);"></span></span>
+                  </button>
+                </sc-for>
+              </div>
+              <div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+                <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45); margin-bottom: 3px;">LIKELY MISSING LINKS · ADAMIC–ADAR</span>
+                <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3">
+                  <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 2px 0;">
+                    <button onClick="{{ s.go }}" style="min-width: 0; text-align: left; padding: 0; background: transparent; border: 0; color: rgb(214,236,255); font-size: 12px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" style-hover="color: rgb(255,190,110);">{{ s.name }}</button>
+                    <span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.5);">{{ s.score }}</span>
+                    <button onClick="{{ s.propose }}" title="Propose this edge; the tester keeps it only if dev recall holds" style="font: 500 9px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 3px 7px; background: transparent; color: rgb(255,190,110); border: 1px solid rgba(255,106,26,0.5); cursor: pointer;" style-hover="background: rgba(255,106,26,0.14);">PROPOSE</button>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ noSuggestions }}"><span style="font-size: 11px; color: rgba(214,236,255,0.4);">No 2-hop candidates.</span></sc-if>
+              </div>
+              <div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+                <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">SHORTEST PATH TO</span>
+                <form onSubmit="{{ tracePath }}" style="display: flex; gap: 6px;">
+                  <input list="mc-nodes" value="{{ pathQ }}" onChange="{{ onPathQ }}" placeholder="another concept" spellcheck="false" style="flex: 1; min-width: 0; height: 26px; padding: 0 8px; background: rgba(214,236,255,0.04); border: 1px solid rgba(214,236,255,0.14); outline: none; color: rgb(214,236,255); font: 12px 'Geist Mono', monospace; caret-color: rgb(255,106,26);">
+                  <button type="submit" style="font: 500 10px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 0 10px; background: rgba(255,106,26,0.14); color: rgb(255,190,110); border: 1px solid rgb(255,106,26); cursor: pointer;">TRACE</button>
+                </form>
+                <datalist id="mc-nodes"><sc-for list="{{ nodeNames }}" as="nn" hint-placeholder-count="0"><option value="{{ nn }}"></option></sc-for></datalist>
+                <sc-if value="{{ hasPath }}">
+                  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px;">
+                    <sc-for list="{{ pathHops }}" as="h" hint-placeholder-count="3"><button onClick="{{ h.go }}" style="font: 500 10px 'Geist Mono', monospace; padding: 3px 7px; background: rgba(255,190,110,0.08); border: 1px solid rgba(255,190,110,0.5); color: rgb(255,190,110); cursor: pointer;">{{ h.name }}</button><sc-if value="{{ h.more }}"><span style="color: rgb(255,106,26); font-size: 10px;">→</span></sc-if></sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ hasPathMeta }}"><div style="display: flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.5);"><span>{{ pathMeta }}</span><button onClick="{{ clearPath }}" style="margin-left: auto; font: 500 9px 'Geist Mono', monospace; padding: 2px 7px; background: transparent; color: rgba(214,236,255,0.6); border: 1px solid rgba(214,236,255,0.2); cursor: pointer;">CLEAR</button></div></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ noSel }}">
+              <div style="padding: 12px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+                <span style="font-size: 12px; color: rgba(214,236,255,0.55); margin-bottom: 6px; text-wrap: pretty;">Click a concept in the connectome, matrix or mind map to inspect it.</span>
+                <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45); margin-bottom: 2px;">TOP HUBS · PAGERANK</span>
+                <sc-for list="{{ hubs }}" as="h" hint-placeholder-count="6"><button onClick="{{ h.go }}" style="display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: baseline; padding: 4px 0; background: transparent; border: 0; color: rgb(214,236,255); cursor: pointer; text-align: left;" style-hover="color: rgb(255,190,110);"><span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgb(255,106,26);">{{ h.rank }}</span><span style="font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ h.name }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.5);">{{ h.v }}</span></button></sc-for>
+              </div>
+            </sc-if>
+            <div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45); margin-bottom: 2px;">ACTIVATION · LAST PROBE</span>
+              <sc-for list="{{ spectrum }}" as="n" hint-placeholder-count="6">
+                <button onClick="{{ n.go }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 40px; gap: 6px; align-items: center; padding: 0; background: transparent; border: 0; cursor: pointer;"><div style="position: relative; height: 16px; background: rgba(214,236,255,0.05); overflow: hidden;"><div style="position: absolute; inset: 0 auto 0 0; width: {{ n.w }}; background: linear-gradient(90deg, rgba(255,106,26,0.45), rgb(255,106,26));"></div><span style="position: absolute; left: 6px; top: 2px; font-family: 'Geist Mono', monospace; font-size: 9.5px; color: rgb(214,236,255); white-space: nowrap;">{{ n.name }}</span></div><span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgb(255,190,110); text-align: right;">{{ n.v }}</span></button>
+              </sc-for>
+              <sc-if value="{{ spectrumEmpty }}"><span style="font-size: 11px; color: rgba(214,236,255,0.4);">No probe yet. Press THINK.</span></sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isAgentTab }}">
+            <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+              <sc-for list="{{ agents }}" as="a" hint-placeholder-count="2">
+                <button onClick="{{ a.go }}" style="display: flex; flex-direction: column; gap: 4px; padding: 10px; background: rgba(214,236,255,0.03); border: 1px solid rgba(214,236,255,0.08); color: rgb(214,236,255); cursor: pointer; text-align: left;" style-hover="border-color: rgba(255,106,26,0.5);">
+                  <div style="display: flex; align-items: center; gap: 8px; width: 100%;"><span style="width: 7px; height: 7px; border-radius: 50%; background: {{ a.dot }}; box-shadow: {{ a.glow }};"></span><span style="font-size: 13px; font-weight: 500;">{{ a.name }}</span><span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 10px; color: {{ a.fg }};">{{ a.state }}</span></div>
+                  <span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.5); line-height: 1.5;">{{ a.sig }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+              <div style="display: flex; align-items: center;"><span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">REQUIREMENTS · TESTER GATES</span><button onClick="{{ runGates }}" title="Score every retriever on every probe and open the arena" style="margin-left: auto; font: 500 9px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 3px 7px; background: transparent; color: rgb(255,190,110); border: 1px solid rgba(255,106,26,0.5); cursor: pointer;" style-hover="background: rgba(255,106,26,0.14);">RUN GATES</button></div>
+              <sc-for list="{{ requirements }}" as="r" hint-placeholder-count="5">
+                <div style="display: flex; gap: 8px; align-items: baseline; font-family: 'Geist Mono', monospace; font-size: 11px;"><span style="color: {{ r.fg }}; white-space: nowrap;">{{ r.mark }}</span><span style="color: rgba(214,236,255,0.8);">{{ r.label }}</span></div>
+              </sc-for>
+            </div>
+            <div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 3px;">
+              <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45); margin-bottom: 3px;">RECENT PATCHES · CLICK FOR DIFFS</span>
+              <sc-for list="{{ proposals }}" as="p" hint-placeholder-count="5">
+                <button onClick="{{ p.go }}" style="display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; padding: 2px 0; background: transparent; border: 0; font-family: 'Geist Mono', monospace; font-size: 11px; text-align: left; cursor: pointer;" style-hover="opacity: 0.75;"><span style="color: {{ p.color }};">{{ p.status }}</span><span style="color: rgba(214,236,255,0.75); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ p.text }}</span></button>
+              </sc-for>
+              <sc-if value="{{ noProposals }}"><span style="font-size: 11px; color: rgba(214,236,255,0.4);">No patches proposed yet.</span></sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isAbilities }}">
+            <div style="padding: 12px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+              <span style="font-family: 'Geist Mono', monospace; font-size: 22px; font-variant-numeric: tabular-nums; color: rgb(255,190,110); line-height: 1.1;">{{ abLive }} <span style="font-size: 11px; color: rgba(214,236,255,0.5);">{{ abOf }}</span></span>
+              <span style="font-size: 11.5px; color: rgba(214,236,255,0.6); text-wrap: pretty;">Live means usable now: a layout, view or lens on the canvas, or a retriever competing in the arena. Latent ones ship and apply in one click.</span>
+            </div>
+            <sc-for list="{{ abGroups }}" as="g" hint-placeholder-count="4">
+              <div style="padding: 10px 12px; display: flex; flex-direction: column; border-bottom: 1px solid rgba(214,236,255,0.06);">
+                <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45); margin-bottom: 4px;">{{ g.title }}</span>
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                  <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(214,236,255,0.04);">
+                    <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+                      <div style="display: flex; align-items: center; gap: 7px; min-width: 0;"><span style="font-size: 12px; color: {{ r.fg }}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ r.label }}</span><span style="flex: none; font-family: 'Geist Mono', monospace; font-size: 8.5px; letter-spacing: 0.1em; padding: 1px 5px; border: 1px solid {{ r.tagBd }}; color: {{ r.tagFg }};">{{ r.tag }}</span></div>
+                      <span style="font-size: 10.5px; color: rgba(214,236,255,0.45); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ r.note }}</span>
+                    </div>
+                    <sc-if value="{{ r.hasAct }}"><button onClick="{{ r.go }}" style="font: 500 9px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 4px 8px; background: transparent; color: rgb(255,190,110); border: 1px solid rgba(255,106,26,0.5); cursor: pointer; white-space: nowrap;" style-hover="background: rgba(255,106,26,0.14);">{{ r.act }}</button></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ isStack }}">
+            <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+              <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">MCP SERVERS · {{ mcpCount }}</span>
+              <sc-for list="{{ mcp }}" as="s" hint-placeholder-count="6">
+                <div style="display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 12px;">
+                  <span style="font-family: 'Geist Mono', monospace; color: {{ s.dot }};">●</span>
+                  <div style="display: flex; flex-direction: column; min-width: 0;"><span style="font-weight: 500;">{{ s.name }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.45); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ s.tools }}</span></div>
+                  <sc-if value="{{ s.latent }}"><button onClick="{{ s.connect }}" style="font: 500 9px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 3px 7px; background: transparent; color: rgb(255,190,110); border: 1px solid rgba(255,106,26,0.5); cursor: pointer;" style-hover="background: rgba(255,106,26,0.14);">CONNECT</button></sc-if>
+                  <sc-if value="{{ s.connected }}"><span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgb(120,220,140);">connected</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(214,236,255,0.06);">
+              <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">SKILLS · {{ skillCount }}</span>
+              <sc-for list="{{ skills }}" as="s" hint-placeholder-count="6">
+                <div style="display: flex; flex-direction: column; gap: 1px;"><div style="display: flex; gap: 8px; align-items: baseline;"><span style="font-size: 12px; font-weight: 500;">{{ s.name }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 9px; padding: 1px 6px; border: 1px solid {{ s.tagBd }}; color: {{ s.tagFg }};">{{ s.tag }}</span></div><span style="font-size: 11px; color: rgba(214,236,255,0.6); line-height: 1.45; text-wrap: pretty;">{{ s.desc }}</span></div>
+              </sc-for>
+            </div>
+            <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; align-items: center;"><span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">ARCHITECT · SYSTEMS DESIGN</span><button onClick="{{ regen }}" title="Rebuild the signature, Pydantic models and config from the graph" style="margin-left: auto; font: 500 9px 'Geist Mono', monospace; letter-spacing: 0.08em; padding: 3px 7px; background: transparent; color: rgb(255,190,110); border: 1px solid rgba(255,106,26,0.5); cursor: pointer;" style-hover="background: rgba(255,106,26,0.14);">REGENERATE</button></div>
+              <span style="font-size: 12px; line-height: 1.55; color: rgba(214,236,255,0.78); text-wrap: pretty;">{{ archSummary }}</span>
+              <div style="display: flex; flex-wrap: wrap; gap: 5px;"><sc-for list="{{ archFiles }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.open }}" style="font: 11px 'Geist Mono', monospace; padding: 4px 9px; border: 1px solid rgba(214,236,255,0.16); background: transparent; color: rgba(214,236,255,0.75); cursor: pointer;" style-hover="border-color: rgb(255,106,26); color: rgb(255,190,110);">{{ f.name }}</button></sc-for></div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFiles }}">
+            <div style="flex: none; max-height: 220px; overflow: auto; padding: 6px 0; border-bottom: 1px solid rgba(214,236,255,0.06);">
+              <sc-for list="{{ files }}" as="f" hint-placeholder-count="10">
+                <sc-if value="{{ f.head }}"><div style="padding: 8px 12px 3px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.14em; color: rgba(214,236,255,0.35);">{{ f.dir }}/</div></sc-if>
+                <button onClick="{{ f.open }}" style="display: flex; gap: 6px; width: 100%; text-align: left; padding: 4px 12px 4px 18px; background: {{ f.bg }}; border: 0; color: {{ f.fg }}; font: 11px 'Geist Mono', monospace; cursor: pointer;"><span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ f.name }}</span><sc-if value="{{ f.live }}"><span style="font-size: 8px; color: rgb(255,106,26);">●</span></sc-if></button>
+              </sc-for>
+            </div>
+            <pre style="flex: 1; min-height: 240px; margin: 0; overflow: auto; padding: 12px; font: 11px/1.55 'Geist Mono', monospace; color: rgba(214,236,255,0.85); white-space: pre; tab-size: 2;">{{ fileText }}</pre>
+          </sc-if>
+
+        </div>
+      </aside>
+    </sc-if>
+  </div>
+
+  <footer style="height: 26px; flex: none; display: flex; flex-wrap: wrap; align-items: center; align-content: flex-start; column-gap: 16px; row-gap: 40px; padding: 0 12px; overflow: hidden; border: 1px solid rgba(214,236,255,0.08); background: rgba(9,11,18,0.8); font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.5); white-space: nowrap;">
+    <button onClick="{{ goHealth }}" title="Open the arena" style="height: 24px; display: inline-flex; align-items: center; gap: 7px; padding: 0; background: transparent; border: 0; color: {{ healthFg }}; font: inherit; letter-spacing: 0.1em; cursor: pointer;">{{ healthDot }}{{ healthLabel }}</button>
+    <button onClick="{{ goStrat }}" title="Retrievers in the abilities tab" style="height: 24px; padding: 0; background: transparent; border: 0; color: inherit; font: inherit; cursor: pointer;" style-hover="color: rgb(255,190,110);">retrieval <span style="color: rgb(255,190,110);">{{ stratName }}</span></button>
+    <span style="height: 24px; line-height: 24px;">LM <span style="color: {{ lmFg }};">{{ lmState }}</span></span>
+    <sc-for list="{{ ghStats }}" as="g" hint-placeholder-count="4"><button onClick="{{ g.go }}" style="height: 24px; padding: 0; background: transparent; border: 0; color: inherit; font: inherit; cursor: pointer;" style-hover="color: rgb(255,190,110);">{{ g.k }} <span style="color: rgb(255,190,110);">{{ g.v }}</span></button></sc-for>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 16px;">
+      <sc-for list="{{ telemetry }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.go }}" title="{{ t.tip }}" style="height: 24px; padding: 0; background: transparent; border: 0; color: inherit; font: inherit; cursor: pointer;" style-hover="color: rgb(255,190,110);">{{ t.k }} <span style="color: {{ t.c }};">{{ t.v }}</span></button></sc-for>
+    </div>
+    <span style="height: 24px; line-height: 24px; color: rgba(214,236,255,0.3);">⌘K commands · 1–3 modes · [ ] panels</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;autopilot&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}, &quot;cycleMs&quot;: {&quot;editor&quot;: &quot;range&quot;, &quot;min&quot;: 800, &quot;max&quot;: 4000, &quot;step&quot;: 100, &quot;unit&quot;: &quot;ms&quot;, &quot;default&quot;: 2000, &quot;tsType&quot;: &quot;number&quot;}, &quot;labels&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = Object.assign({ wide: window.innerWidth >= 1180, ready: false, tick: 0, bootError: false, bootErrorText: '', mode: 'intel', left: true, right: true, dockBy: { intel: true, bench: false, atlas: false }, itab: 'node', dtab: 'chat', tbTab: 'arena', tbReq: 0, color: 'heat', file: 'skills.md', msgs: [], input: '', focusIdx: -1, toastDismiss: 0, palette: false, pq: '', pcat: 'all', pi: 0, repoIn: '', pathQ: '' }, this.loadUI());
+  stageRef = React.createRef();
+  chatRef = React.createRef();
+  palRef = React.createRef();
+  listRef = React.createRef();
+
+  loadUI() { try { const u = JSON.parse(localStorage.getItem('mc.ui.v2') || '{}'), o = {}; ['mode', 'left', 'right', 'dockBy', 'itab', 'dtab', 'color'].forEach(k => { if (u[k] != null) o[k] = u[k]; }); if (o.color === 'insight') o.color = 'heat'; this._savedView = u.vs || null; return o; } catch (e) { return {}; } }
+  saveUI() { try { const S = this.state, vs = this.view ? this.view.getState() : null; localStorage.setItem('mc.ui.v2', JSON.stringify({ mode: S.mode, left: S.left, right: S.right, dockBy: S.dockBy, itab: S.itab, dtab: S.dtab, color: S.color, vs: vs ? { layout: vs.layout, view: vs.view, lens: vs.lens } : this._savedView })); } catch (e) {} }
+  restoreView() { const c = this.core, v = this._savedView; if (!c || !v || !this.view) return; const live = id => id === 'force' || id === 'graph' || ((c.capability && c.capability(id)) || {}).status === 'shipped'; try { if (v.layout && live(v.layout)) this.view.setLayout(v.layout); if (v.view && live(v.view)) this.view.setView(v.view); Object.keys(v.lens || {}).forEach(k => { if (v.lens[k] && live(k)) this.view.setLens(k, true); }); } catch (e) {} this.bump(); }
+
+  componentDidMount() {
+    this._key = e => this.onKey(e); window.addEventListener('keydown', this._key);
+    this._rs = () => this.fit(); window.addEventListener('resize', this._rs); this.fit();
+    let tries = 0;
+    const boot = () => {
+      if (!window.GI || !window.LabEngine || !window.AtlasCorpus || !this.stageRef.current) { if (++tries > 300) return this.setState({ bootError: true, bootErrorText: 'engine scripts did not load' }); return setTimeout(boot, 60); }
+      try {
+        if (GI.theme) GI.theme({ ice: [214, 236, 255], molt: [255, 106, 26], gold: [255, 190, 110], blue: [90, 140, 220], hot: [255, 150, 80], llm: [255, 255, 255], hit: [120, 220, 140], miss: [255, 100, 90], sub: [120, 200, 255], frag: [255, 80, 70], font: '"Geist Mono", ui-monospace, monospace', labelBg: 'rgba(4,5,9,0.74)' });
+        this.core = GI.create(AtlasCorpus);
+        this.view = GI.View(this.stageRef.current, this.core, { onSelect: i => this.setState(s => Object.assign({ tick: s.tick + 1, pathQ: '' }, i >= 0 ? { itab: 'node', right: true } : {})) });
+        this.view.setLabels(this.props.labels ?? true);
+        if (this.state.color !== 'heat') this.view.setMode(this.state.color);
+        let pend = false;
+        this.unsub = this.core.on(() => { if (pend) return; pend = true; setTimeout(() => { pend = false; if (!document.hidden) this.setState(s => ({ tick: s.tick + 1 })); }, 400); });
+        if (this.props.autopilot ?? true) this.core.setAutopilot(true, this.props.cycleMs ?? 2000);
+        this.anim = setInterval(() => { const S = this.state; if (document.hidden || S.palette || S.mode !== 'intel' || !S.right || S.itab !== 'node') return; if (this.core.viz && performance.now() - this.core.viz.t0 < 2600) this.setState(s => ({ tick: s.tick + 1 })); }, 300);
+        setTimeout(() => this.restoreView(), 800);
+        this.setState({ ready: true });
+      } catch (e) { this.setState({ bootError: true, bootErrorText: String((e && e.message) || e) }); }
+    };
+    boot();
+  }
+  componentDidUpdate() {
+    const S = this.state, ps = this._prev || {}; this._prev = { ...S };
+    if (S.left && S.right && this.room(true, true) < 480) { this.setState(ps.left === false ? { right: false } : { left: false }); return; }
+    if (ps.msgs !== S.msgs || ps.dtab !== S.dtab || ps.dockBy !== S.dockBy || ps.mode !== S.mode) { const el = this.chatRef.current; if (el) el.scrollTop = el.scrollHeight; }
+    const g = this.core && this.core.gh, ev = g && g.lastEvt;
+    if (ev && this.view && ev.src && ev.src.nodes && ev.src.nodes.length && (ev.kind === 'ingest' || ev.kind === 'learn')) { const key = ev.t + ev.path + ev.kind; if (key !== this._ghLit) { this._ghLit = key; const ns = ev.src.nodes; this.view.showRetrieval({ seeds: ns.slice(0, 2), sub: ns, hit: ns.slice(0, Math.min(4, ns.length)), miss: [] }); } }
+    if (S.palette && !ps.palette) setTimeout(() => { const pe = this.palRef.current; if (pe) pe.focus(); }, 0);
+    if (S.palette && ps.pq !== S.pq) { const L = this.listRef.current; if (L) L.scrollTop = 0; }
+    if (S.palette && ps.pi !== S.pi && !this._hov) { const L = this.listRef.current, el = L && L.querySelector('[data-pi="' + S.pi + '"]'); if (el) { const t = el.offsetTop, b = t + el.offsetHeight; if (t < L.scrollTop) L.scrollTop = t; else if (b > L.scrollTop + L.clientHeight) L.scrollTop = b - L.clientHeight; } }
+    this._hov = false;
+    if (['mode', 'left', 'right', 'dockBy', 'itab', 'dtab', 'color'].some(k => ps[k] !== S[k])) this.saveUI();
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this._key); window.removeEventListener('resize', this._rs); const c = this.core; if (c) { c.setAutopilot(false); if (c.gh && c.gh.stop) c.gh.stop(); } this.unsub && this.unsub(); this.view && this.view.destroy(); clearInterval(this.anim); }
+
+  room(l, r) { return window.innerWidth - 20 - (l ? 272 : 0) - (r ? 352 : 0); }
+  fit() { const wide = window.innerWidth >= 1180; if (wide !== this.state.wide) this.setState({ wide }); const S = this.state, MIN = 480; if (S.left && S.right && this.room(true, true) < MIN) this.setState({ left: false }); else if (S.right && !S.left && this.room(false, true) < MIN) this.setState({ right: false }); else if (S.left && !S.right && this.room(true, false) < MIN) this.setState({ left: false }); }
+  onKey(e) {
+    const typing = /^(input|textarea|select)$/i.test((e.target && e.target.tagName) || '');
+    if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); this.togglePalette(); return; }
+    if (e.key === 'Escape') { if (this.state.palette) this.setState({ palette: false }); return; }
+    if (typing || e.metaKey || e.ctrlKey || e.altKey || this.state.palette) return;
+    if (e.key === '/') { e.preventDefault(); this.togglePalette(); }
+    else if (e.key === '1') this.setMode('intel'); else if (e.key === '2') this.setMode('bench'); else if (e.key === '3') this.setMode('atlas');
+    else if (e.key === '[') this.setState(s => ({ left: !s.left })); else if (e.key === ']') this.setState(s => ({ right: !s.right }));
+    else if (e.key === 'h' || e.key === 'H') this.openBench('history');
+  }
+  bump() { this.setState(s => ({ tick: s.tick + 1 })); }
+  togglePalette() { this.setState(s => ({ palette: !s.palette, pq: '', pi: 0 })); }
+  setMode(m) { this.setState({ mode: m, palette: false }); }
+  openBench(tab) { this.setState(s => ({ mode: 'bench', tbTab: tab || s.tbTab, tbReq: s.tbReq + 1, palette: false })); }
+  openDock(tab) { this.setState(s => ({ dtab: tab, dockBy: { ...(s.dockBy || {}), [s.mode]: true }, palette: false })); }
+  selectNode(i) { if (!this.view) return; this.view.select(i); this.setState(s => Object.assign({ tick: s.tick + 1, mode: 'intel' }, i >= 0 ? { itab: 'node', right: true } : {})); }
+  setColor(m) { this.view && this.view.setMode(m); this.setState({ color: m }); }
+  toggleLens(id) { if (!this.view) return; const on = !this.view.getState().lens[id]; this.view.setLens(id, on); this.bump(); this.saveUI(); }
+  useAbility(id) { const c = this.core; if (!c) return ''; let r = ''; try { r = c.useAbility ? c.useAbility(id) : ''; } catch (e) { r = 'error'; } this.bump(); this.saveUI(); return r; }
+  tryCapability(cc) { this.setState({ toastDismiss: performance.now() }); if (cc.kind === 'strategy') this.setState({ itab: 'abilities', right: true }); else if (cc.kind === 'archetype' || cc.kind === 'lens' || cc.kind === 'view') this.setMode('intel'); this.useAbility(cc.id); }
+  pushMsg(who, text, extra) { const id = (this._mid = (this._mid || 0) + 1); this.setState(s => ({ msgs: [...s.msgs, Object.assign({ id, who, text }, extra || {})] })); return id; }
+  patchMsg(id, patch) { this.setState(s => ({ msgs: s.msgs.map(m => m.id === id ? Object.assign({}, m, patch) : m) })); }
+  dropMsg(id) { this.setState(s => ({ msgs: s.msgs.filter(m => m.id !== id) })); }
+  navIntent(low) {
+    if (/\b(open|show|go to)\b.*\btestbench\b/.test(low) || /^(open|show) (the )?(arena|history|log|diffs?|math|q-?policy|dspy stack)\b/.test(low)) { const m = low.match(/\b(arena|matrix|history|log|diffs?|math|dspy stack|q-?policy)\b/), raw = m ? m[1] : 'arena', tab = ({ diff: 'diffs', 'dspy stack': 'stack', 'q-policy': 'policy', qpolicy: 'policy' })[raw] || raw; return { go: () => this.openBench(tab), say: 'Opened the testbench on ' + tab + '.' }; }
+    if (/\b(open|show|go to)\b.*\batlas\b/.test(low)) return { go: () => this.setMode('atlas'), say: 'Opened the atlas.' };
+    return null;
+  }
+  async execIntent(it, text, opts) {
+    const core = this.core; if (!core || !it) return;
+    if (!(opts && opts.stay)) this.openDock('chat');
+    if (it.clarify) { this.pushMsg('research', it.clarify); return; }
+    if (it.special === 'think') {
+      const id = this.pushMsg('research', 'Reading the insights and picking a tool…', { tool: 'think', args: {}, status: 'running' });
+      try { await core.think(); } catch (e) {}
+      const t = core.thoughts && core.thoughts[0]; let args = {}; try { args = t && t.args ? JSON.parse(t.args) : {}; } catch (e) {}
+      this.patchMsg(id, { text: (t && t.thought) || 'Done.', tool: t ? t.tool : 'think', args, status: 'done', obs: t ? t.obs : '' }); return;
+    }
+    if (!core.runTool) { this.pushMsg('research', 'Tools are not ready yet.'); return; }
+    const id = this.pushMsg('research', it.say || '', { tool: it.tool, args: it.args || {}, status: 'running' });
+    const res = await core.runTool(it.tool, it.args || {}, 'user', text ? 'You: ' + text : '');
+    this.patchMsg(id, { status: res.ok ? 'done' : 'failed', obs: res.obs });
+    this.bump(); this.saveUI();
+  }
+  async send(text) {
+    const core = this.core; if (!core) return;
+    text = (text ?? this.state.input).trim(); if (!text) return;
+    this.setState({ input: '' }); this.openDock('chat'); this.pushMsg('user', text);
+    const low = text.toLowerCase();
+    const nav = this.navIntent(low); if (nav) { nav.go(); this.pushMsg('system', nav.say); return; }
+    const SL = { '/think': { special: 'think' }, '/shake': { tool: 'shake' }, '/compile': { tool: 'compile' }, '/bench': { tool: 'benchmark' }, '/abilities': { tool: 'list_abilities' }, '/repos': { tool: 'list_repos' } };
+    const w0 = low.split(/\s+/)[0];
+    let it = SL[w0] || null;
+    if (!it && (w0 === '/add' || w0 === '/repo')) it = { tool: 'add_repo', args: { repo: text.split(/\s+/).slice(1).join(' ') }, say: 'Adding to the research queue' };
+    if (!it && core.intent) { try { it = core.intent(text); } catch (e) { it = null; } }
+    if (it) return this.execIntent(it, text, { stay: true });
+    const r = core.ask(text), names = r.sub.slice(0, 8).map(i => core.N[i].name);
+    if (window.claude && window.claude.complete) {
+      const id = this.pushMsg('graph', '…');
+      const ctx = r.sub.slice(0, 10).map((i, k) => `[${k + 1}] ${core.N[i].name}: ${core.N[i].def}`).join('\n');
+      const tools = (core.tools || []).map(t => `- ${t.name}(${t.sig}) — ${t.desc}`).join('\n');
+      const prompt = `You are the agent inside Graph Lab, a self-improving knowledge graph that acts through tools.\nUser message: ${JSON.stringify(text)}\n\nTools:\n${tools}\n\nGraph nodes relevant to the message:\n${ctx}\n\nIf the user is asking you to do something (add or ingest a repo, use or ship a layout, view or lens, connect a source, trace a path, run a test), call exactly one tool. Otherwise answer from the nodes.\nReturn ONLY JSON, one of:\n{"tool":"name","args":{},"say":"one short sentence on what you are doing"}\n{"answer":"2-3 sentences, each ending with citations like [2]. If the nodes do not cover it, say so in one sentence and name the tool that would help."}`;
+      try {
+        const out = await window.claude.complete(prompt), m = out.match(/\{[\s\S]*\}/), j = JSON.parse(m ? m[0] : out);
+        if (j.tool && (core.tools || []).some(t => t.name === j.tool)) { this.dropMsg(id); return this.execIntent({ tool: j.tool, args: j.args || {}, say: j.say || '' }, text, { stay: true }); }
+        this.patchMsg(id, { text: String(j.answer || out).trim() + '\n\n— lifted: ' + names.slice(0, 5).join(', ') });
+      } catch (e) { this.patchMsg(id, { text: 'From the subgraph: ' + names.slice(0, 4).join(', ') }); }
+    } else this.pushMsg('graph', r.sub.slice(0, 3).map(i => core.N[i].name + ' — ' + core.N[i].def).join('\n'));
+  }
+
+  renderVals() {
+    const S = this.state, c = this.core;
+    const ICE = 'rgb(214,236,255)', MU = 'rgba(214,236,255,0.62)', DI = 'rgba(214,236,255,0.45)', FA = 'rgba(214,236,255,0.28)', MOLT = 'rgb(255,106,26)', GOLD = 'rgb(255,190,110)', CYAN = 'rgb(120,200,255)', OK = 'rgb(120,220,140)', BAD = 'rgb(255,110,95)', WARN = 'rgb(255,170,90)', VIO = 'rgb(185,150,255)', BD = 'rgba(214,236,255,0.14)', GLASS = 'rgba(9,11,18,0.72)', TINT = 'rgba(255,106,26,0.16)';
+    const noop = () => {};
+    const dot = (col, live) => React.createElement('span', { style: { display: 'inline-block', flex: 'none', width: 8, height: 8, borderRadius: '50%', background: col, boxShadow: live ? '0 0 10px ' + col : 'none', animation: live ? 'mc-pulse 1.2s ease-in-out infinite' : 'none' } });
+    const tabSt = on => ({ fg: on ? GOLD : 'rgba(214,236,255,0.5)', line: on ? 'inset 0 -1px 0 ' + MOLT : 'none' });
+    const segSt = on => ({ bg: on ? TINT : 'transparent', fg: on ? GOLD : 'rgba(214,236,255,0.6)', line: on ? 'inset 0 -1px 0 ' + MOLT : 'none' });
+    const mode = S.mode, dockOpen = !!(S.dockBy || {})[mode];
+    const wide = S.wide !== false;
+    const MODES = [['intel', 'INTELLIGENCE', '1', 'Connectome workbench', 'INTEL'], ['bench', 'TESTBENCH', '2', 'Arena, matrix, diffs, math and history', 'BENCH'], ['atlas', 'ATLAS', '3', 'The graph as a film', 'ATLAS']];
+    const ab = c && c.abilities ? c.abilities() : null;
+    const cnt = { msgs: S.msgs.length || '', th: c && c.thoughts && c.thoughts.length ? c.thoughts.length : '', pulled: c && c.gh && c.gh.stats && c.gh.stats.pulled ? c.gh.stats.pulled : '', ab: ab ? ab.counts.shipped : '' };
+    const shell = {
+      bootError: !!S.bootError, bootErrorText: S.bootErrorText || '',
+      wide, modes: MODES.map(([k, l, key, hint, sh]) => ({ label: wide ? l : sh, key: wide ? key : '', hint: hint + ' (' + key + ')', go: () => this.setMode(k), ...segSt(mode === k) })),
+      leftOpen: !!S.left, rightOpen: !!S.right, toggleLeft: () => this.setState(s => ({ left: !s.left })), toggleRight: () => this.setState(s => ({ right: !s.right })), leftFg: S.left ? GOLD : DI, rightFg: S.right ? GOLD : DI,
+      stageDisplay: mode === 'intel' ? 'block' : 'none', isBench: mode === 'bench', isAtlas: mode === 'atlas', tbTab: S.tbTab, tbReq: S.tbReq, core: c,
+      dockOpen, toggleDock: () => this.setState(s => ({ dockBy: { ...(s.dockBy || {}), [s.mode]: !(s.dockBy || {})[s.mode] } })), dockGlyph: dockOpen ? '▾' : '▴', dockTip: dockOpen ? 'Collapse console' : 'Expand console',
+      dockTabs: [['chat', 'CHAT', cnt.msgs], ['trace', 'TRACE', cnt.th], ['ingest', 'INGEST', cnt.pulled]].map(([k, l, n]) => ({ label: l, n, go: () => this.openDock(k), ...tabSt(dockOpen && S.dtab === k) })),
+      isChat: S.dtab === 'chat', isTrace: S.dtab === 'trace', isIngest: S.dtab === 'ingest',
+      itabs: [['node', 'NODE', ''], ['agent', 'AGENT', ''], ['abilities', 'ABILITIES', cnt.ab], ['stack', 'STACK', ''], ['files', 'FILES', '']].map(([k, l, n]) => ({ label: l, n, go: () => this.setState({ itab: k }), ...tabSt(S.itab === k) })),
+      isNode: S.itab === 'node', isAgentTab: S.itab === 'agent', isAbilities: S.itab === 'abilities', isStack: S.itab === 'stack', isFiles: S.itab === 'files',
+      stageRef: this.stageRef, chatRef: this.chatRef, palRef: this.palRef, listRef: this.listRef,
+      chatInput: S.input, onInput: e => this.setState({ input: e.target.value }), send: e => { e.preventDefault(); this.send(); },
+      repoIn: S.repoIn, onRepoIn: e => this.setState({ repoIn: e.target.value }), pathQ: S.pathQ, onPathQ: e => this.setState({ pathQ: e.target.value }),
+      paletteOpen: !!S.palette, openPalette: () => this.setState({ palette: true, pq: '', pi: 0 }), closePalette: () => this.setState({ palette: false }), stop: e => e.stopPropagation(), pq: S.pq, onPq: e => this.setState({ pq: e.target.value, pi: 0 }),
+      openHistory: () => this.openBench('history')
+    };
+    if (!c) return Object.assign(shell, {
+      hasToast: false, toast: {}, metrics: [], autoDot: dot(DI, false), autoLabel: 'AUTOPILOT', autoBg: 'transparent', autoFg: ICE, toggleAuto: noop, think: noop,
+      round: 0, stateDot: dot(DI, false), autoWord: 'BOOTING', hypothesis: 'Loading the corpus, strategies, arena and memory…', hasObservation: false, observation: '', loop: [], agents: [], thought: '', iqPts: '', devPts: '', insights: [], insightCount: '—', remine: noop,
+      nodeCount: '—', viewTitle: 'CONNECTOME', viewLegend: '', views: [], colorModes: [], layouts: [], lenses: [], is3d: true, is2d: false,
+      chatHint: '', messages: [], chatEmpty: true, prompts: [], thoughts: [], noThoughts: true, addRepo: e => e.preventDefault(), repoProgress: [], ingestMeta: '—', ingestFeed: [],
+      hasSel: false, noSel: true, sel: { stats: [] }, clearSel: noop, askSel: noop, probeSel: noop, inspectSel: noop, nbCount: 0, neighbours: [], suggestions: [], noSuggestions: true, tracePath: e => e.preventDefault(), nodeNames: [], hasPath: false, pathHops: [], hasPathMeta: false, pathMeta: '', clearPath: noop, hubs: [], spectrum: [], spectrumEmpty: true,
+      runGates: noop, requirements: [], proposals: [], noProposals: true, abLive: '—', abOf: '', abGroups: [], mcp: [], mcpCount: '', skills: [], skillCount: '', regen: noop, archSummary: '', archFiles: [], files: [], fileText: '',
+      healthDot: dot(DI, false), healthLabel: 'BOOTING', healthFg: DI, goHealth: noop, goStrat: noop, stratName: '—', lmState: '—', lmFg: DI, ghStats: [], telemetry: [],
+      paletteCount: '', palCats: [], paletteList: [], paletteEmpty: true, onPalKey: noop
+    });
+
+    const N = c.N, E = c.E, n = c.nc, fx = (v, d = 3) => (v == null || !isFinite(v) ? '—' : v.toFixed(d));
+    const vs = this.view ? this.view.getState() : { layout: 'force', lens: {}, mode: S.color, view: 'graph', sel: -1, pathTo: -1 };
+    const vview = vs.view || 'graph', sel = vs.sel != null && vs.sel >= 0 && N[vs.sel] ? vs.sel : -1;
+    const iqH = c.iqHist, iq = iqH[iqH.length - 1], d0 = iq - iqH[0], devNow = c.devHist[c.devHist.length - 1];
+    const ARCH = { force: 'FORCE', radial: 'ORBITS', chord: 'CHORDS', helix: 'HELIX', layers: 'STRATA', grid: 'GRID', sphere: 'GLOBE', tree: 'TREE', radialtree: 'RADIAL TREE', strata3d: '3D STRATA', arc: 'ARCS', galaxy: 'GALAXY' };
+    const VIEWN = { graph: 'GRAPH 3D', matrix: 'MATRIX', markmap: 'MIND MAP' };
+    const idx = []; for (let i = 0; i < n; i++) idx.push(i);
+    const onNode = S.right && S.itab === 'node', onChat = dockOpen && S.dtab === 'chat', onTrace = dockOpen && S.dtab === 'trace', onIngest = dockOpen && S.dtab === 'ingest', onAgent = S.right && S.itab === 'agent', onStack = S.right && S.itab === 'stack', onFiles = S.right && S.itab === 'files', onAb = S.right && S.itab === 'abilities';
+    const prOrd = c.pr && (onNode || (onChat && !S.msgs.length)) ? idx.slice().sort((a, b) => c.pr[b] - c.pr[a]) : idx, bcOrd = c.bc && onNode && sel >= 0 ? idx.slice().sort((a, b) => c.bc[b] - c.bc[a]) : idx;
+    const prRank = {}, bcRank = {}; if (onNode && sel >= 0) { prOrd.forEach((v, k) => { prRank[v] = k + 1; }); bcOrd.forEach((v, k) => { bcRank[v] = k + 1; }); }
+
+    let toast = null;
+    if (c.lastShip && performance.now() - c.lastShip.t < 7000 && c.lastShip.t > S.toastDismiss) { const cc = c.lastShip.cap; toast = { label: cc.label, note: cc.note, go: () => this.tryCapability(cc) }; }
+
+    const metrics = [
+      { k: 'GRAPH IQ', v: fx(iq), d: (d0 >= 0 ? '+' : '') + fx(d0), c: GOLD, dc: d0 >= 0 ? MOLT : BAD, tip: 'Train recall — click for history', go: () => this.openBench('history') },
+      { k: 'DEV', v: fx(devNow), d: '', c: ICE, dc: DI, tip: 'Held-out dev recall, the gate every change must hold — click for the arena', go: () => this.openBench('arena') },
+      { k: 'ABILITIES', v: ab.counts.shipped + '/' + ab.counts.caps, d: '', c: GOLD, dc: DI, tip: 'Live capabilities — click for the abilities tab', go: () => this.setState({ itab: 'abilities', right: true }) },
+      { k: 'CYCLE', v: String(c.cycle), d: '', c: ICE, dc: DI, tip: 'Autopilot cycles — click for the ReAct trace', go: () => this.openDock('trace') }
+    ];
+
+    const SC = c.science || { stage: 'observe', hypothesis: '', observation: '', round: 0 };
+    const STAGES = [['observe', 'OBSERVE'], ['gather', 'GATHER'], ['hypothesize', 'HYPOTHESIS'], ['experiment', 'TEST'], ['score', 'SCORE'], ['audit', 'AUDIT'], ['plan', 'PLAN']];
+    const si = Math.max(0, STAGES.findIndex(x => x[0] === SC.stage));
+    const loop = STAGES.map(([k, l], i) => ({ num: '0' + (i + 1), label: l, on: i === si, bg: i === si ? 'rgba(255,106,26,0.14)' : 'transparent', fg: i === si ? GOLD : i < si ? MU : DI, numFg: i === si ? MOLT : FA, go: () => { if (c.scienceStep) c.scienceStep(); } }));
+    const GH = c.gh || { stats: {}, repos: [], feed: [] }, ghS = GH.stats || {}, ghActive = !!(GH.busy || (GH.repos && GH.repos.length && !GH.done));
+    const agents = ['research', 'tester'].map(k => { const a = c.agents[k], idle = a.state === 'idle'; return { name: a.name, state: a.state, sig: a.sig, dot: idle ? FA : MOLT, glow: idle ? 'none' : '0 0 8px ' + MOLT, fg: idle ? DI : GOLD, go: () => this.openDock('trace') }; });
+    const spk = (arr, lo, hi) => arr.map((v, i) => (i / Math.max(1, arr.length - 1) * 232).toFixed(1) + ',' + (52 - (v - lo) / Math.max(1e-6, hi - lo) * 48).toFixed(1)).join(' ');
+    const allv = iqH.concat(c.devHist), slo = Math.min.apply(null, allv) - 0.02, shi = Math.max.apply(null, allv) + 0.02;
+
+    const nm = i => (N[i] ? N[i].name : '');
+    const actFor = x => {
+      const a0 = x.nodes && x.nodes[0], a1 = x.nodes && x.nodes[1];
+      if (x.kind === 'missing' && a0 != null && a1 != null) return ['LINK', 'Propose this missing link; kept only if dev holds', () => this.execIntent({ tool: 'add_edge', args: { a: nm(a0), b: nm(a1), relation: 'predicted' }, say: 'Proposing ' + nm(a0) + ' — ' + nm(a1) }, x.title)];
+      if (x.kind === 'fragile') return ['SHAKE', 'Stress-test robustness', () => this.execIntent({ tool: 'shake', args: {}, say: 'Stress-testing the fragile region' }, x.title)];
+      if (x.kind === 'analogy') return ['LENS', 'Turn on the analogy explorer', () => this.execIntent({ tool: 'use_ability', args: { id: 'analogy' }, say: 'Turning on the analogy explorer' }, x.title)];
+      if (x.kind === 'time') return ['HELIX', 'Show it on the timeline helix', () => this.execIntent({ tool: 'use_ability', args: { id: 'helix' }, say: 'Switching to the timeline helix' }, x.title)];
+      if (x.kind === 'bridge') return ['BRIDGES', 'Ring the bridge concepts', () => this.execIntent({ tool: 'use_ability', args: { id: 'bridges' }, say: 'Turning on the bridge finder' }, x.title)];
+      return ['ASK', 'Ask the agents this question', () => this.send(x.q || x.title)];
+    };
+    const insights = (c.insights || []).slice(0, 14).map((x, i) => { const a = actFor(x); return { kind: String(x.kind || '').toUpperCase(), title: x.title, bg: S.focusIdx === i && vs.mode === 'insight' ? 'rgba(255,106,26,0.08)' : 'transparent', focus: () => { c.focus = x; this.setColor('insight'); this.setState({ focusIdx: i, mode: 'intel' }); if (x.nodes && x.nodes[0] != null) this.selectNode(x.nodes[0]); }, actLabel: a[0], actTip: a[1], act: a[2] }; });
+
+    const chip = (on, lk) => lk ? { bd: 'rgba(214,236,255,0.1)', bg: GLASS, fg: FA } : on ? { bd: MOLT, bg: 'rgba(255,106,26,0.2)', fg: GOLD } : { bd: BD, bg: GLASS, fg: 'rgba(214,236,255,0.8)' };
+    const views = (ab.views || [{ id: 'graph', label: 'Graph 3D', status: 'shipped', view: 'graph' }]).map(x => { const lk = x.status !== 'shipped', key = x.view || x.id, on = vview === key; return { label: (lk ? '+ ' : '') + (VIEWN[key] || String(x.label).toUpperCase()), tip: lk ? x.label + ' is latent — click to ship it and switch' : x.label + (x.note ? ' — ' + x.note : ''), go: () => { this.useAbility(x.id); this.setMode('intel'); }, bg: on ? TINT : 'transparent', fg: on ? GOLD : lk ? FA : 'rgba(214,236,255,0.65)', line: on ? 'inset 0 -1px 0 ' + MOLT : 'none' }; });
+    const is2d = vview === 'matrix' || vview === 'markmap';
+    const COLORS = { heat: ['HEAT', 'Activation from the last probe spreading through data and modules.'], plastic: ['PLASTIC', 'Edge width is learned weight: orange strengthened, blue weakened; dashed edges were evolved or LM-proposed.'], community: ['COMMUNITY', 'Gold edges stay inside a community; orange edges cross between them.'], insight: ['INSIGHT', 'The nodes and edges of the focused insight.'] };
+    const cm0 = COLORS[vs.mode] ? vs.mode : 'heat';
+    const colorModes = Object.keys(COLORS).map(k => { const on = cm0 === k; return { label: COLORS[k][0], go: () => this.setColor(k), bg: on ? 'rgba(255,106,26,0.18)' : GLASS, bd: on ? MOLT : BD, fg: on ? GOLD : 'rgba(214,236,255,0.7)' }; });
+    const layouts = ab.layouts.map(x => { const lk = x.status !== 'shipped'; return { label: (lk ? '+ ' : '') + (ARCH[x.layout] || String(x.layout || x.label).toUpperCase()), tip: lk ? (x.label || x.layout) + ' is latent — click to ship it and use it' : (x.label || x.layout) + (x.note ? ' — ' + x.note : ''), go: () => this.useAbility(x.id), ...chip(vs.layout === x.layout, lk) }; });
+    const lensShort = s => String(s || '').replace(/ (map|inspector|explorer|finder|tracer|trail|halos)$/i, '').toUpperCase();
+    const lenses = ab.lenses.map(x => { const lk = x.status !== 'shipped', on = !!(vs.lens || {})[x.id]; return { label: (lk ? '+ ' : '') + lensShort(x.label || x.id), tip: lk ? x.label + ' is latent — click to ship it and turn it on' : x.label + (x.note ? ' — ' + x.note : '') + (on ? ' (on — click to turn off)' : ''), go: () => (lk ? this.useAbility(x.id) : this.toggleLens(x.id)), ...chip(on, lk) }; });
+    const VLEG = { matrix: 'Rows and columns are concepts grouped by community; cells take the colour mode and the diagonal shows probe activation. Hover to read a pair; click to select.', markmap: 'Graph → communities → concepts along the belongs-to tree. Click a community to fold it, the root to fold all; click a concept to select it.' };
+    const viewTitle = is2d ? VIEWN[vview] + (vview === 'matrix' ? ' · ' + COLORS[cm0][0] : '') : COLORS[cm0][0] + ' · ' + (ARCH[vs.layout] || String(vs.layout || 'force').toUpperCase()) + (cm0 === 'insight' && c.focus ? ' · ' + c.focus.title : '');
+
+    let selV = { stats: [] }, neighbours = [], suggestions = [], pathHops = [], pathMeta = '';
+    if (sel >= 0 && onNode) {
+      const d = N[sel], adjS = (c.adj()[sel] || []), mk = c.mods.indexOf(sel);
+      selV = { comm: String((AtlasCorpus.communities[d.comm] || ['—'])[0]).toUpperCase(), name: d.name, def: d.def, stats: [{ k: 'DEGREE', v: adjS.length, sub: '' }, { k: 'PAGERANK', v: '#' + (prRank[sel] || '—'), sub: ((c.pr ? c.pr[sel] : 0) * 100).toFixed(1) + '%' }, { k: 'BETWEENNESS', v: '#' + (bcRank[sel] || '—'), sub: (c.bc ? c.bc[sel] : 0).toFixed(3) }, { k: mk >= 0 ? 'MODULE' : 'YEAR', v: mk >= 0 ? AtlasCorpus.program[mk].id : (d.year || '—'), sub: '' }] };
+      neighbours = adjS.map(x => { const e = E[x[1]] || {}; return { i: x[0], w: e.w || 0, rel: e.t || '', evolved: !!(e.src && e.src !== 'corpus') }; }).sort((a, b) => b.w - a.w).slice(0, 10).map(x => ({ name: nm(x.i), rel: (x.evolved ? '+ ' : '') + x.rel, relFg: x.evolved ? GOLD : DI, wPct: Math.round(Math.min(1, x.w) * 100) + '%', go: () => this.selectNode(x.i) }));
+      suggestions = (c.suggestLinks ? c.suggestLinks(sel, 4) : []).map(s => ({ name: nm(s.i), score: s.score.toFixed(2), go: () => this.selectNode(s.i), propose: () => this.execIntent({ tool: 'add_edge', args: { a: d.name, b: nm(s.i), relation: 'suggested' }, say: 'Proposing ' + d.name + ' — ' + nm(s.i) + ' (Adamic–Adar ' + s.score.toFixed(2) + ')' }, 'propose ' + d.name + ' — ' + nm(s.i)) }));
+      const pt = vs.pathTo, ph = pt >= 0 && pt !== sel && c.pathBetween ? c.pathBetween(sel, pt) : null;
+      if (ph) { pathHops = ph.map((i, k) => ({ name: nm(i), more: k < ph.length - 1, go: () => this.selectNode(i) })); pathMeta = (ph.length - 1) + ' hops · ' + d.name + ' → ' + nm(pt); } else if (pt >= 0 && pt !== sel) pathMeta = 'no path to ' + nm(pt);
+    }
+    const hubs = (onNode && sel < 0 ? prOrd.slice(0, 6) : []).map((i, k) => ({ rank: '#' + (k + 1), name: nm(i), v: ((c.pr ? c.pr[i] : 0) * 100).toFixed(1) + '%', go: () => this.selectNode(i) }));
+    const actArr = c.lastRun ? c.lastRun.act : null;
+    const spectrum = actArr && onNode ? idx.slice().sort((a, b) => actArr[b] - actArr[a]).slice(0, 8).filter(i => actArr[i] > 0.05).map(i => ({ name: nm(i), v: actArr[i].toFixed(2), w: Math.round(Math.min(1, actArr[i]) * 100) + '%', go: () => this.selectNode(i) })) : [];
+
+    const requirements = (onAgent ? c.requirements.concat(c.customReq || []) : []).map(r => ({ label: r.label, mark: r.gate ? '● gate' : '○ soft', fg: r.gate ? MOLT : DI }));
+    const proposals = (onAgent ? (c.proposals || []) : []).slice(0, 8).map(p => ({ status: p.status, color: p.status === 'accepted' || p.status === 'shipped' ? OK : p.status === 'rejected' ? BAD : GOLD, text: p.kind === 'capability' ? p.cap.label : (p.op === 'add-edge' ? '+ ' + nm(p.a) + ' — ' + nm(p.b) : p.op === 'prune-edge' ? '− ' + nm(p.a) + ' — ' + nm(p.b) : p.op), go: () => this.openBench('diffs') }));
+
+    const T_ON = [MOLT, MOLT], T_LIVE = [GOLD, 'rgba(255,190,110,0.5)'], T_LAT = [DI, 'rgba(214,236,255,0.2)'];
+    const tagOf = (on, live) => (on ? T_ON : live ? T_LIVE : T_LAT);
+    const row = (label, note, tag, tg, fg, hasAct, act, go) => ({ label, note, tag, tagFg: tg[0], tagBd: tg[1], fg, hasAct, act, go });
+    const abGroups = !onAb ? [] : [
+      { title: 'LAYOUTS · ' + ab.layouts.length, rows: ab.layouts.map(x => { const live = x.status === 'shipped', on = vs.layout === x.layout && vview === 'graph'; return row(x.label || x.layout, x.note || (x.base ? 'n-body spring layout' : ''), on ? 'IN VIEW' : live ? 'LIVE' : 'LATENT', tagOf(on, live), live ? ICE : MU, !on, live ? 'USE' : 'SHIP + USE', () => { this.useAbility(x.id); if (vview !== 'graph') this.useAbility('graph'); this.setMode('intel'); }); }) },
+      { title: 'VIEWS · ' + (ab.views || []).length, rows: (ab.views || []).map(x => { const live = x.status === 'shipped', on = vview === (x.view || x.id); return row(x.label, x.note || '', on ? 'IN VIEW' : live ? 'LIVE' : 'LATENT', tagOf(on, live), live ? ICE : MU, !on, live ? 'USE' : 'SHIP + USE', () => { this.useAbility(x.id); this.setMode('intel'); }); }) },
+      { title: 'LENSES · ' + ab.lenses.length, rows: ab.lenses.map(x => { const live = x.status === 'shipped', on = !!(vs.lens || {})[x.id]; return row(x.label, x.note || '', on ? 'ON' : live ? 'LIVE' : 'LATENT', tagOf(on, live), live ? ICE : MU, true, !live ? 'SHIP + USE' : on ? 'TURN OFF' : 'TURN ON', () => { if (live) this.toggleLens(x.id); else this.useAbility(x.id); this.setMode('intel'); }); }) },
+      { title: 'RETRIEVERS · ' + ab.strategies.length, rows: ab.strategies.map(s => row(s.name, (c.getStrategy(s.id) || {}).tagline || (s.by ? 'by ' + s.by : ''), s.active ? 'ACTIVE' : 'IN POOL', tagOf(s.active, true), ICE, !s.active, 'USE', () => { c.useStrategy(s.id); this.bump(); })).concat(ab.strategyCaps.filter(x => !x.inPool).map(x => row(x.label, x.note || '', 'LATENT', T_LAT, MU, true, 'SHIP + USE', () => this.useAbility(x.id)))) }
+    ];
+
+    const mcp = (onStack ? c.mcp : []).map(s => { const on = s.status === 'connected'; return { name: s.name, tools: s.tools.join(', '), dot: on ? OK : FA, connected: on, latent: !on, connect: () => { if (c.connectMCP) c.connectMCP(s.id, 'inspector'); this.bump(); } }; });
+    const skills = (onStack ? c.skills : []).map(s => ({ name: s.name, desc: s.desc, tag: s.native ? 'native' : s.wish ? 'wished' : 'learned', tagBd: s.wish ? 'rgba(120,200,255,0.5)' : 'rgba(255,106,26,0.5)', tagFg: s.wish ? CYAN : GOLD }));
+    const archFiles = (onStack ? c.architecture.files : []).map(f => ({ name: f.name, open: () => this.setState({ itab: 'files', file: f.name }) }));
+    const allFiles = onFiles ? c.files() : []; let prevDir = null;
+    const files = allFiles.map(f => { const head = f.dir !== prevDir; prevDir = f.dir; const on = S.file === f.name; return { head, dir: f.dir, name: f.name, live: !!f.live, open: () => this.setState({ file: f.name }), bg: on ? 'rgba(255,106,26,0.12)' : 'transparent', fg: on ? GOLD : 'rgba(214,236,255,0.8)' }; });
+    const curFile = allFiles.find(f => f.name === S.file) || allFiles[0];
+
+    const WHO = { user: ['YOU', MOLT, 'rgba(255,106,26,0.1)', 'rgba(255,106,26,0.4)', 'flex-end'], research: ['RESEARCH AGENT', GOLD, 'rgba(255,190,110,0.06)', 'rgba(255,190,110,0.25)', 'flex-start'], tester: ['TESTER AGENT', CYAN, 'rgba(120,200,255,0.06)', 'rgba(120,200,255,0.25)', 'flex-start'], graph: ['GRAPH', 'rgba(214,236,255,0.7)', 'rgba(214,236,255,0.04)', 'rgba(214,236,255,0.14)', 'flex-start'], system: ['CONSOLE', DI, 'transparent', 'rgba(214,236,255,0.1)', 'flex-start'] };
+    const ST = { running: ['RUNNING', GOLD], done: ['DONE', OK], failed: ['FAILED', BAD] };
+    const argStr = a => (a && Object.keys(a).length ? Object.keys(a).map(k => k + ': ' + (typeof a[k] === 'string' ? a[k] : JSON.stringify(a[k]))).join(' · ') : '');
+    const messages = (onChat ? S.msgs : []).map(m => { const w = WHO[m.who] || WHO.graph, st = ST[m.status] || null; return { who: w[0], fg: w[1], bg: w[2], bd: w[3], align: w[4], hasText: !!m.text, text: m.text || '', hasTool: !!m.tool, tool: m.tool ? '→ ' + m.tool : '', args: argStr(m.args), status: st ? st[0] : '', statusFg: st ? st[1] : DI, hasObs: !!m.obs, obs: m.obs ? '⤷ ' + m.obs : '' }; });
+    const pA = prOrd[0], pB = prOrd[Math.min(7, n - 1)];
+    const prompts = (!onChat || S.msgs.length ? [] : ['add gitnexus repo', 'show the matrix view', 'switch to the mind map', 'ship the 3D strata layout', pA != null && pB != null && pA !== pB ? 'path from ' + nm(pA) + ' to ' + nm(pB) : null, 'turn on hub halos', 'shake the graph']).filter(Boolean).map(p => ({ label: p, go: () => this.send(p) }));
+    const thoughts = (onTrace ? (c.thoughts || []) : []).slice(0, 16).map(t => ({ tool: t.tool, args: t.args && t.args !== '{}' ? t.args : '', thought: t.thought || '', obs: t.obs ? '⤷ ' + t.obs : '', by: t.by === 'user' ? 'YOU' : String(t.by || 'agent').toUpperCase(), byFg: t.by === 'user' ? MOLT : GOLD }));
+
+    const KGH = { scour: CYAN, pull: GOLD, ingest: MOLT, comprehend: VIO, learn: 'rgb(170,220,255)', gate: OK, rate: WARN, err: BAD };
+    const repoProgress = (onIngest ? (GH.repos || []) : []).map(r => ({ slug: (r.added ? '+ ' : '') + r.slug, topic: r.topic || '', dot: !r.scoured ? FA : (r.paths && r.pull >= r.paths.length ? OK : MOLT), stat: r.scoured ? (r.pull + '/' + (r.paths ? r.paths.length : '?')) : 'queued', priFg: r.priority ? MOLT : FA, priTip: r.priority ? 'Pulled first — click to unpin' : 'Pull this repo first', prioritize: () => { r.priority = !r.priority; GH.done = false; this.bump(); }, remove: () => { if (GH.removeRepo) GH.removeRepo(r.slug); this.bump(); } }));
+    const ingestFeed = (onIngest ? (GH.feed || []) : []).slice(0, 30).map(e => ({ t: e.t, kind: e.kind, kc: KGH[e.kind] || ICE, text: (e.slug ? e.slug + (e.path ? '/' + e.path.split('/').pop() : '') + ' · ' : '') + e.msg }));
+
+    const gap = (iq || 0) - (devNow || 0), robv = c.lastShake ? c.lastShake.rob : null;
+    const accNum = (c.stats.predAdded || 0) + (c.stats.llmLinks || 0), accDen = accNum + (c.stats.rejected || 0), accPct = accDen ? accNum / accDen : 0, edgePct = c.EDGE_CAP ? E.length / c.EDGE_CAP : 0;
+    const telemetry = [
+      { k: 'gap', v: gap.toFixed(3), c: gap > 0.2 ? WARN : OK, tip: 'Train minus dev recall, an overfitting signal — click for history', go: () => this.openBench('history') },
+      { k: 'robust', v: robv != null ? (robv * 100).toFixed(0) + '%' : '—', c: robv == null ? DI : robv < 0.8 ? BAD : OK, tip: 'Recall retained after dropping 15% of edges — click to shake', go: () => this.execIntent({ tool: 'shake', args: {}, say: 'Stress-testing robustness' }, 'shake', { stay: true }) },
+      { k: 'accept', v: (accPct * 100).toFixed(0) + '%', c: GOLD, tip: 'Share of proposed links that passed the gate — click for the trace', go: () => this.openDock('trace') },
+      { k: 'edges', v: E.length + '/' + (c.EDGE_CAP || '—'), c: edgePct >= 0.95 ? BAD : 'rgba(214,236,255,0.78)', tip: 'Edge budget — click to compact', go: () => this.execIntent({ tool: 'compact_graph', args: {}, say: 'Pruning the weakest edges' }, 'compact', { stay: true }) }
+    ];
+    let hlev = 'NOMINAL'; if ((devNow || 0) < 0.3 || (robv != null && robv < 0.8) || edgePct >= 1) hlev = 'CRITICAL'; else if (gap > 0.22 || (GH.rate != null && GH.rate < 5)) hlev = 'DEGRADED';
+    const hc = hlev === 'NOMINAL' ? OK : hlev === 'DEGRADED' ? WARN : BAD;
+    const lmBusy = c.thinking || c.llmBusy;
+
+    const palOn = !!S.palette, cmds = [], add = (cat, src, label, desc, go, key) => { if (palOn) cmds.push({ cat, src, label, desc: desc || '', go, key: key || '' }); };
+    const openFile = f => this.setState({ itab: 'files', file: f, right: true });
+    MODES.forEach(([k, l, key, hint]) => add('Navigate', 'shell', 'Go to ' + l.toLowerCase(), hint, () => this.setMode(k), key));
+    [['arena', 'Arena'], ['matrix', 'Matrix'], ['diffs', 'Code diffs'], ['math', 'Math'], ['stack', 'DSPy stack'], ['policy', 'Q-policy'], ['history', 'History'], ['log', 'Log']].forEach(([k, l]) => add('Navigate', 'shell', 'Testbench · ' + l, 'Open the testbench on ' + l.toLowerCase(), () => this.openBench(k), k === 'history' ? 'H' : ''));
+    [['node', 'Node'], ['agent', 'Agent'], ['abilities', 'Abilities'], ['stack', 'Stack'], ['files', 'Files']].forEach(([k, l]) => add('Navigate', 'shell', 'Inspector · ' + l, 'Show ' + l.toLowerCase() + ' in the right inspector', () => this.setState({ itab: k, right: true })));
+    [['chat', 'Chat'], ['trace', 'ReAct trace'], ['ingest', 'Ingest feed']].forEach(([k, l]) => add('Navigate', 'shell', 'Console · ' + l, 'Open the console on ' + l.toLowerCase(), () => this.openDock(k)));
+    add('Navigate', 'shell', 'Toggle mission rail', 'Show or hide the left rail', () => this.setState(s => ({ left: !s.left })), '[');
+    add('Navigate', 'shell', 'Toggle inspector', 'Show or hide the right inspector', () => this.setState(s => ({ right: !s.right })), ']');
+    (ab.views || []).forEach(x => add('View', 'research', (x.status === 'shipped' ? 'View · ' : 'Ship + use view · ') + x.label, x.note || 'projection', () => { this.useAbility(x.id); this.setMode('intel'); }));
+    ab.layouts.forEach(x => add('View', 'research', (x.status === 'shipped' ? 'Layout · ' : 'Ship + use layout · ') + (x.label || x.layout), x.note || 'view archetype', () => { this.useAbility(x.id); if (vview !== 'graph') this.useAbility('graph'); this.setMode('intel'); }));
+    ab.lenses.forEach(x => add('View', 'research', (x.status === 'shipped' ? 'Lens · ' : 'Ship + use lens · ') + x.label, x.note || 'analysis lens', () => { if (x.status === 'shipped') this.toggleLens(x.id); else this.useAbility(x.id); this.setMode('intel'); }));
+    Object.keys(COLORS).forEach(k => add('View', 'shell', 'Colour · ' + COLORS[k][0].toLowerCase(), COLORS[k][1], () => this.setColor(k)));
+    add('View', 'research', 'Invent a new layout (LLM)', 'The agent authors a brand-new 3D layout and ships it live', () => this.execIntent({ tool: 'invent_layout', args: {}, say: 'Authoring a new layout' }, 'invent a layout'));
+    add('DSPy', 'research', 'Regenerate signature & Pydantic', 'Rebuild the typed GraphQA signature + nested models from the graph', () => { if (c.architect) c.architect(); openFile('graph_qa.py'); });
+    add('DSPy', 'tester', 'Compile program (param search)', 'MIPRO-style search over spreading params vs the benchmark', () => this.execIntent({ tool: 'compile', args: {}, say: 'Searching spreading parameters' }, 'compile'));
+    add('DSPy', 'tester', 'Benchmark retrievers', 'Score every retrieval strategy on held-out dev recall', () => this.execIntent({ tool: 'benchmark', args: {}, say: 'Scoring every retriever' }, 'benchmark'));
+    add('DSPy', 'tester', 'Optimize & ship retrieval code', 'Tester rewrites the active strategy, ships if dev holds', () => this.execIntent({ tool: 'improve_code', args: {}, say: 'Rewriting the retrieval code' }, 'improve code'));
+    add('DSPy', 'tester', 'Run arena · every strategy × every probe', 'Recall matrix, Elo, bootstrap CI and a sign test of champion vs challenger', () => { if (c.testbench) c.testbench.run(); this.openBench('arena'); });
+    add('DSPy', 'tester', 'Program of Thought', 'Write & run code that proposes graph links; keep if dev holds', () => this.execIntent({ tool: 'program_of_thought', args: {}, say: 'Writing a program of thought' }, 'program of thought'));
+    add('DSPy', 'research', 'Advance research loop', 'Step observe → gather → hypothesize → test → score → audit → plan', () => { if (c.scienceStep) c.scienceStep(); });
+    add('DSPy', 'research', 'View GraphQA signature', 'architect/graph_qa.py', () => openFile('graph_qa.py'));
+    add('DSPy', 'research', 'View config.yaml', 'retrieval + ingestion config', () => openFile('config.yaml'));
+    add('DSPy', 'tester', 'Export DSPy program', 'graph_agent.py', () => openFile('graph_agent.py'));
+    add('Graph', 'research', 'Run a probe (step)', 'Spread activation from a self-generated question', () => c.step());
+    add('Graph', 'research', 'Evolve the graph', 'Propose a structural patch, gate on held-out dev recall', () => { if (c.propose) c.propose(true); });
+    add('Graph', 'tester', 'Shake (robustness)', 'Drop 15% of edges ×5 and measure recall retention', () => this.execIntent({ tool: 'shake', args: {}, say: 'Stress-testing robustness' }, 'shake'));
+    add('Graph', 'tester', 'Compact graph', 'Prune the weakest edges to keep it lean (edge budget)', () => this.execIntent({ tool: 'compact_graph', args: {}, say: 'Pruning the weakest edges' }, 'compact'));
+    ab.strategies.forEach(s => add('Graph', 'tester', 'Use retriever · ' + s.name, (c.getStrategy(s.id) || {}).tagline, () => { c.useStrategy(s.id); this.bump(); }));
+    ab.strategyCaps.filter(x => !x.inPool).forEach(x => add('Graph', 'research', 'Ship retriever · ' + x.label, (x.note ? x.note + ' — ' : '') + 'joins the arena pool and competes on dev recall', () => this.useAbility(x.id)));
+    add('Insight', 'research', 'Mine insights', 'Re-mine bridges, fragility, missing links, analogies', () => { if (c._int && c._int.remine) c._int.remine(); this.bump(); });
+    (c.insights || []).forEach((x, i) => add('Insight', 'research', x.title, x.body, () => { c.focus = x; this.setColor('insight'); this.setState({ focusIdx: i, mode: 'intel' }); }));
+    ['all', 'graph', 'ai', 'safety'].forEach(d => add('Insight', 'research', 'Curriculum · ' + ({ all: 'all domains', graph: 'graph intelligence', ai: 'AI foundations', safety: 'AI safety & alignment' })[d], 'Focus extra training probes and the research prompts on this domain', () => { if (c.history) c.history.setFocus(d); }));
+    add('Insight', 'research', 'Run RAPTOR taxonomy (LLM)', 'Cluster + LM-name one community; builds the runtime taxonomy', () => this.execIntent({ tool: 'run_raptor', args: {}, say: 'Naming one community' }, 'raptor taxonomy'));
+    add('Sources', 'internet', 'Add a GitHub repo…', 'Type owner/name, a URL, or a name — e.g. “add gitnexus repo”', () => this.setState({ palette: true, pq: 'add ', pi: 0 }));
+    add('Sources', 'internet', 'Scour / ingest next file', 'Pull the next relevant file from GitHub', () => { if (c.research) c.research(); });
+    add('Sources', 'internet', 'Comprehend code (LM)', 'Read a pulled file and extract code-grounded links', () => { if (c.gh && c.gh.comprehendNext) c.gh.comprehendNext(); });
+    add('Sources', 'internet', 'Ingest starred repos', 'Discover & queue relevant repos from GitHub stars', () => this.execIntent({ tool: 'ingest_starred', args: {}, say: 'Discovering repos from GitHub stars' }, 'starred repos'));
+    (GH.repos || []).forEach(r => add('Sources', 'internet', 'Repo · ' + r.slug, (r.topic || '') + ' — ' + (r.scoured ? (r.pull + '/' + (r.paths ? r.paths.length : '?') + ' files') : 'queued'), () => this.openDock('ingest')));
+    (c.mcp || []).filter(m => m.status !== 'connected').forEach(m => add('Sources', 'internet', 'Connect · ' + m.name, m.purpose, () => { if (c.connectMCP) c.connectMCP(m.id, 'command palette'); }));
+
+    const pcat = S.pcat || 'all', pqRaw = (S.pq || '').trim(), pq = pqRaw.toLowerCase();
+    const top = [];
+    if (palOn && pqRaw) {
+      let it = null; try { it = c.intent ? c.intent(pqRaw) : null; } catch (e) {}
+      if (it && (it.tool || it.special)) top.push({ cat: 'Agent', src: 'research', label: it.tool ? 'Run · ' + it.tool + (argStr(it.args) ? ' (' + argStr(it.args) + ')' : '') : 'Think — let the agent pick', desc: it.say || 'Run through the agents’ tools', go: () => this.execIntent(it, pqRaw), key: '↵' });
+      top.push({ cat: 'Agent', src: 'research', label: 'Ask the agents · “' + pqRaw + '”', desc: 'Send to chat; the agent answers from the graph or acts through a tool', go: () => this.send(pqRaw), key: '' });
+    }
+    const filtered = top.concat(cmds.filter(m => (pcat === 'all' || m.cat === pcat) && (!pq || (m.label + ' ' + m.desc + ' ' + m.cat + ' ' + m.src).toLowerCase().includes(pq)))).slice(0, 90);
+    const pi = Math.min(S.pi, Math.max(0, filtered.length - 1));
+    const run = m => { this.setState({ palette: false }); try { m.go(); } catch (e) {} };
+    const CATFG = { Agent: MOLT, Navigate: 'rgba(214,236,255,0.6)', View: CYAN, DSPy: GOLD, Graph: 'rgb(170,220,255)', Insight: VIO, Sources: 'rgb(120,210,180)' };
+    const SRC = { research: ['RESEARCH', MOLT, 'rgba(255,106,26,0.45)'], tester: ['TESTER', CYAN, 'rgba(120,200,255,0.45)'], internet: ['INTERNET', 'rgb(120,210,180)', 'rgba(120,210,180,0.45)'], shell: ['', DI, 'rgba(214,236,255,0.2)'] };
+    const paletteList = filtered.map((m, i) => { const s = SRC[m.src] || SRC.shell; return { pi: i, cat: m.cat.toUpperCase(), catFg: CATFG[m.cat] || DI, label: m.label, desc: m.desc, tag: m.key || s[0], hasTag: !!(m.key || s[0]), tagFg: m.key ? DI : s[1], tagBd: m.key ? 'rgba(214,236,255,0.2)' : s[2], bg: i === pi ? 'rgba(255,106,26,0.1)' : 'transparent', mark: i === pi ? 'inset 2px 0 0 ' + MOLT : 'none', go: () => run(m), hover: () => { if (this.state.pi !== i) { this._hov = true; this.setState({ pi: i }); } } }; });
+    const onPalKey = e => { const k = filtered.length; if (e.key === 'ArrowDown') { e.preventDefault(); this.setState(s => ({ pi: Math.min(k - 1, s.pi + 1) })); } else if (e.key === 'ArrowUp') { e.preventDefault(); this.setState(s => ({ pi: Math.max(0, s.pi - 1) })); } else if (e.key === 'Enter') { e.preventDefault(); const m = filtered[pi]; if (m) run(m); else if (pqRaw) { this.setState({ palette: false }); this.send(pqRaw); } } };
+    const palCats = [['all', 'ALL'], ['Navigate', 'NAVIGATE'], ['View', 'VIEW'], ['DSPy', 'DSPY'], ['Graph', 'GRAPH'], ['Insight', 'INSIGHT'], ['Sources', 'SOURCES']].map(([k, l]) => ({ label: l, go: () => this.setState({ pcat: k, pi: 0 }), bg: pcat === k ? 'rgba(255,106,26,0.18)' : 'transparent', bd: pcat === k ? MOLT : BD, fg: pcat === k ? GOLD : 'rgba(214,236,255,0.7)' }));
+
+    return Object.assign(shell, {
+      hasToast: !!toast, toast: toast || {}, metrics,
+      autoDot: dot(c.autopilot ? MOLT : FA, !!c.autopilot), autoLabel: c.autopilot ? (wide ? 'AUTOPILOT ON' : 'AUTO') : (wide ? 'AUTOPILOT OFF' : 'MANUAL'), autoBg: c.autopilot ? 'rgba(255,106,26,0.14)' : 'transparent', autoFg: c.autopilot ? GOLD : ICE, toggleAuto: () => { c.setAutopilot(!c.autopilot, this.props.cycleMs ?? 2000); this.bump(); }, think: () => this.execIntent({ special: 'think' }, 'think'),
+      round: SC.round || 0, stateDot: dot(ghActive || c.autopilot ? MOLT : FA, ghActive), autoWord: ghActive ? 'RESEARCHING' : c.autopilot ? 'SELF-DRIVING' : 'IDLE', hypothesis: SC.hypothesis || 'Forming a hypothesis…', hasObservation: !!SC.observation, observation: SC.observation || '',
+      loop, agents, thought: (c.thoughts && c.thoughts[0]) ? (c.thoughts[0].thought || ('→ ' + c.thoughts[0].tool + ' · ' + c.thoughts[0].obs)) : 'Idle. The agent acts on an insight each cycle.', iqPts: spk(iqH, slo, shi), devPts: spk(c.devHist, slo, shi),
+      insights, insightCount: (c.insights || []).length, remine: () => { if (c._int && c._int.remine) c._int.remine(); this.bump(); },
+      nodeCount: n, viewTitle, viewLegend: is2d ? VLEG[vview] : COLORS[cm0][1], views, colorModes, layouts, lenses, is3d: !is2d, is2d,
+      chatHint: c.llmAvailable ? 'CLAUDE ONLINE · TOOLS + GRAPH QA' : 'EXTRACTIVE · TOOLS + GRAPH QA', messages, chatEmpty: !messages.length, prompts, thoughts, noThoughts: !thoughts.length,
+      addRepo: e => { e.preventDefault(); const v = (S.repoIn || '').trim(); if (!v) return; this.setState({ repoIn: '' }); this.execIntent({ tool: 'add_repo', args: { repo: v }, say: 'Adding ' + v + ' to the research queue' }, 'add repo ' + v, { stay: true }); },
+      repoProgress, ingestMeta: (ghS.pulled || 0) + '/' + (ghS.total || '?') + ' FILES · ' + (((ghS.bytes || 0) / 1024) | 0) + 'KB · ' + (ghS.linked || 0) + ' EDGES', ingestFeed,
+      hasSel: sel >= 0, noSel: sel < 0, sel: selV, nbCount: neighbours.length, neighbours, suggestions, noSuggestions: sel >= 0 && !suggestions.length, hubs, spectrum, spectrumEmpty: !spectrum.length,
+      clearSel: () => { if (this.view) { this.view.select(-1); this.view.setPathTo(-1); } this.bump(); },
+      askSel: () => { if (sel >= 0) this.send('What is ' + nm(sel) + ' connected to, and what is it missing?'); },
+      probeSel: () => { if (sel >= 0) this.execIntent({ tool: 'probe', args: { question: N[sel].name + ' ' + (N[sel].def || '') }, say: 'Probing from ' + nm(sel) }, 'probe ' + nm(sel), { stay: true }); },
+      inspectSel: () => { if (sel >= 0) this.execIntent({ tool: 'inspect', args: { node: nm(sel) }, say: 'Inspecting ' + nm(sel) }, 'inspect ' + nm(sel)); },
+      tracePath: e => { e.preventDefault(); const q = (S.pathQ || '').trim(); if (!q || sel < 0) return; this.execIntent({ tool: 'find_path', args: { a: nm(sel), b: q }, say: 'Tracing ' + nm(sel) + ' → ' + q }, 'path ' + nm(sel) + ' → ' + q, { stay: true }); },
+      nodeNames: onNode && sel >= 0 ? N.map(x => x.name) : [], hasPath: pathHops.length > 0, pathHops, hasPathMeta: !!pathMeta, pathMeta, clearPath: () => { if (this.view) this.view.setPathTo(-1); this.bump(); },
+      runGates: () => { if (c.testbench) c.testbench.run(); this.openBench('arena'); }, requirements, proposals, noProposals: !proposals.length,
+      abLive: ab.counts.shipped, abOf: 'OF ' + ab.counts.caps + ' CAPABILITIES LIVE · ' + ab.counts.strategies + ' RETRIEVERS', abGroups,
+      mcp, mcpCount: c.stats.mcp + '/' + c.mcp.length, skills, skillCount: c.skills.length, regen: () => { if (c.architect) c.architect(); this.setState({ itab: 'files', file: 'graph_qa.py' }); }, archSummary: c.architecture.summary, archFiles,
+      files, fileText: curFile ? curFile.get() : '',
+      healthDot: dot(hc, hlev !== 'NOMINAL'), healthLabel: 'SYSTEM ' + hlev, healthFg: hc, goHealth: () => this.openBench('arena'), goStrat: () => this.setState({ itab: 'abilities', right: true }),
+      stratName: (c.getStrategy && c.getStrategy(c.activeStrategy) || {}).name || c.activeStrategy || 'graphify', lmState: c.llmAvailable ? (lmBusy ? 'THINKING…' : 'ONLINE') : 'OFFLINE', lmFg: c.llmAvailable ? (lmBusy ? MOLT : OK) : DI,
+      ghStats: [{ k: 'repos', v: (ghS.scoured || 0) + '/' + (GH.repos ? GH.repos.length : 0), go: () => this.openDock('ingest') }, { k: 'pulled', v: ghS.pulled || 0, go: () => this.openDock('ingest') }, { k: 'linked', v: ghS.linked || 0, go: () => this.openDock('ingest') }, { k: 'api', v: GH.rate != null ? GH.rate + '/60' : '—', go: () => this.openDock('ingest') }],
+      telemetry, paletteCount: filtered.length + ' / ' + (cmds.length + top.length), palCats, paletteList, paletteEmpty: !filtered.length, onPalKey
+    });
+  }
+}
+</script>
+</body>
+</html>
