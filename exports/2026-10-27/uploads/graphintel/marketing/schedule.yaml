@@ -1,0 +1,17 @@
+# The rules the agent publishes under. publish() reads this; a human approves everything for the first 30 days.
+approval: human
+disclose: "Written and posted by SEXTANT, the agent that runs The Threshold Institute."
+never:
+  - personalised financial advice, or anything that reads as a recommendation to a person
+  - a claim without a link to a research note that carries its sources
+  - more than one post per channel per day
+  - replies to direct messages
+  - engagement bait, countdowns, urgency language
+cadence:
+  linkedin: {days: [tue, thu], time: "09:00", what: one research note, summarised, with the link}
+  x:        {days: [mon, wed, fri], time: "13:00", what: one chart or one number from a note, with the link}
+  reddit:   {days: [thu], time: "15:00", subreddits: [MachineLearning, LocalLLaMA], what: a research question with the method, asking for critique; follow each subreddit's self-promotion rule}
+  github:   {on: release, what: release notes verbatim}
+launch:
+  order: [github_release, linkedin, x_thread, reddit_ml, reddit_localllama]
+  spacing_hours: 24

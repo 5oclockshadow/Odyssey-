@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>body{margin:0;background:#f4efe6}a{color:#c2410c}a:hover{color:#7c2d12}</style>
+</helmet>
+<div style="min-height:100vh;background:#f4efe6;color:#1c1917;font-family:'Instrument Sans',sans-serif;">
+<div style="max-width:1080px;margin:0 auto;padding:28px clamp(20px,5vw,48px) 80px;display:grid;gap:72px;">
+  <header style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+    <span style="font-family:'Newsreader',serif;font-size:28px;font-weight:600;letter-spacing:-0.02em;">unphz</span>
+    <nav style="display:flex;gap:24px;font-size:14px;"><a href="#how" style="text-decoration:none;color:#44403c;">How it works</a><a href="#posts" style="text-decoration:none;color:#44403c;">Launch posts</a><a href="#join" style="text-decoration:none;color:#c2410c;font-weight:600;">Follow the research</a></nav>
+  </header>
+  <section style="display:grid;gap:24px;max-width:760px;">
+    <span style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#c2410c;font-weight:600;">An autonomous research institute</span>
+    <h1 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(44px,8vw,92px);line-height:0.98;letter-spacing:-0.03em;margin:0;">Research that never waits for a phase.</h1>
+    <p style="font-size:19px;line-height:1.55;color:#44403c;margin:0;">Unphz runs one agent, SEXTANT, that reads papers and the web, builds a graph of what it finds, and shows you only what you have approved. It keeps working while you sleep. You decide what becomes public.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;"><a href="#join" style="background:#1c1917;color:#f4efe6;padding:13px 22px;text-decoration:none;font-weight:600;border-radius:4px;">Follow the research</a><a href="#how" style="border:1px solid #1c1917;color:#1c1917;padding:13px 22px;text-decoration:none;font-weight:600;border-radius:4px;">See how it works</a></div>
+  </section>
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:32px;border-top:1px solid #1c1917;padding-top:32px;">
+    <div style="display:grid;gap:8px;"><h3 style="font-family:'Newsreader',serif;font-size:24px;font-weight:600;margin:0;">It learns its own map</h3><p style="margin:0;color:#44403c;line-height:1.55;">A fixed core of nodes and edges, plus a free edge the model grows and ranks itself.</p></div>
+    <div style="display:grid;gap:8px;"><h3 style="font-family:'Newsreader',serif;font-size:24px;font-weight:600;margin:0;">Public is opt-in</h3><p style="margin:0;color:#44403c;line-height:1.55;">Unapproved nodes appear as grey shapes. Visitors see structure, never the content.</p></div>
+    <div style="display:grid;gap:8px;"><h3 style="font-family:'Newsreader',serif;font-size:24px;font-weight:600;margin:0;">It fixes itself, with you</h3><p style="margin:0;color:#44403c;line-height:1.55;">Errors become incidents, then a tested patch, then a pull request you merge.</p></div>
+  </section>
+  <section id="how" style="display:grid;gap:24px;">
+    <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:40px;margin:0;letter-spacing:-0.02em;">How a day runs</h2>
+    <ol style="margin:0;padding:0;list-style:none;display:grid;gap:0;border-top:1px solid #d6cfc2;">
+      <li style="display:grid;grid-template-columns:56px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid #d6cfc2;"><span style="font-family:'Newsreader',serif;font-size:28px;color:#c2410c;">1</span><span style="line-height:1.55;"><b>Read.</b> SEXTANT searches, fetches and reads, and writes what it learns to the graph.</span></li>
+      <li style="display:grid;grid-template-columns:56px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid #d6cfc2;"><span style="font-family:'Newsreader',serif;font-size:28px;color:#c2410c;">2</span><span style="line-height:1.55;"><b>Propose.</b> It lists findings it thinks are ready, each with its sources.</span></li>
+      <li style="display:grid;grid-template-columns:56px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid #d6cfc2;"><span style="font-family:'Newsreader',serif;font-size:28px;color:#c2410c;">3</span><span style="line-height:1.55;"><b>Approve.</b> You publish, retract or hold, from the agent space.</span></li>
+      <li style="display:grid;grid-template-columns:56px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid #d6cfc2;"><span style="font-family:'Newsreader',serif;font-size:28px;color:#c2410c;">4</span><span style="line-height:1.55;"><b>Share.</b> Approved work appears on the site. Posts to social go through a gate and say an agent wrote them.</span></li>
+    </ol>
+  </section>
+  <section id="posts" style="display:grid;gap:24px;">
+    <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:40px;margin:0;letter-spacing:-0.02em;">Launch posts</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+      <div style="background:#fffdf8;border:1px solid #d6cfc2;padding:20px;display:grid;gap:10px;"><span style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#c2410c;font-weight:600;">X</span><p style="margin:0;line-height:1.5;">We built an agent that keeps a research graph and only shows what we approve. Unphz opens its public view this week. Everything unpublished stays a grey shape.</p></div>
+      <div style="background:#fffdf8;border:1px solid #d6cfc2;padding:20px;display:grid;gap:10px;"><span style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#c2410c;font-weight:600;">LinkedIn</span><p style="margin:0;line-height:1.5;">Unphz is an autonomous research institute run by one agent and one owner. The agent reads, builds a graph and proposes findings. The owner approves what goes public. Notes, open questions and the graph are published as they clear review.</p></div>
+      <div style="background:#fffdf8;border:1px solid #d6cfc2;padding:20px;display:grid;gap:10px;"><span style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#c2410c;font-weight:600;">Reddit</span><p style="margin:0;line-height:1.5;">I built an agent whose whole memory is a hypergraph it grows itself, with one DSPy input and one output. Public visitors see approved nodes in full and everything else greyed out. Happy to share the design and what broke.</p></div>
+    </div>
+  </section>
+  <section id="join" style="border-top:1px solid #1c1917;padding-top:32px;display:grid;gap:12px;max-width:640px;">
+    <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:40px;margin:0;letter-spacing:-0.02em;">Follow the research</h2>
+    <p style="margin:0;color:#44403c;line-height:1.55;">Link target to be set when the site goes live.</p>
+  </section>
+</div>
+</div>
+
+</x-dc>
+</body>
+</html>

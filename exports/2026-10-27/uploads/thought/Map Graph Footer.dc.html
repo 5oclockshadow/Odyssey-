@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<footer style="padding: 56px clamp(16px, 4vw, 48px) 36px; border-top: 1px solid #252c42; background: #090b13; color: #9aa3c4; font-family: 'Instrument Sans', sans-serif; font-size: 14px;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 32px; max-width: 1180px; margin: 0 auto;">
+    <div style="display: grid; gap: 10px; align-content: start;">
+      <div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; color: #eef1ff;">Map Graph</div>
+      <div style="line-height: 1.55; max-width: 250px;">Map anything, in the context you steer.</div>
+    </div>
+    <sc-for list="{{ cols }}" as="c" hint-placeholder-count="3">
+      <div style="display: grid; gap: 8px; align-content: start;">
+        <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #6d7699;">{{ c.title }}</div>
+        <sc-for list="{{ c.links }}" as="l" hint-placeholder-count="3"><a href="{{ l.href }}" style="color: #c9d0ee; text-decoration: none;">{{ l.label }}</a></sc-for>
+      </div>
+    </sc-for>
+  </div>
+  <div style="max-width: 1180px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid #252c42; display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 12px;"><span>Early-access preview. Names in samples are invented.</span><span style="margin-left: auto;">{{ year }}</span></div>
+</footer>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { cols: [], year: '' };
+  async componentDidMount() { const C = await import('./tandem-core.js'); const grp = g => C.PAGES.filter(p => p.group === g && p.id !== 'sitemap').map(p => ({ label: p.label, href: encodeURI(p.file) })); this.setState({ year: String(new Date().getFullYear()), cols: [{ title: 'Product', links: grp('Product').concat([{ label: 'Early access', href: C.pageUrl('access') }]) }, { title: 'Learn', links: [{ label: 'Docs', href: C.pageUrl('docs') }, { label: 'About', href: C.pageUrl('about') }, { label: 'Contact', href: C.pageUrl('contact') }] }, { title: 'Plan', links: [{ label: 'Site map', href: C.pageUrl('sitemap') }, { label: 'Join the waitlist', href: C.pageUrl('home') + '#join' }] }] }); }
+  renderVals() { return { cols: this.state.cols, year: this.state.year }; }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saltline Command Center</title>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#05080b;--panel:#0a0f14;--panel2:#0e151c;--line:#18232d;--line2:#23313e;--text:#d5dfe8;--dim:#7b8a97;--faint:#46545f;--cyan:#38c8ff;--amber:#ffb020;--green:#3ddc84;--red:#ff4d5e;--violet:#a78bfa;--land:#101921;--landline:#22303c;--sea:#070b0f;--grat:#111b24}
+[data-theme=light]{--bg:#e7ebee;--panel:#fbfcfd;--panel2:#f1f4f6;--line:#d3dae0;--line2:#bfc9d2;--text:#0e1620;--dim:#566472;--faint:#93a0ab;--cyan:#0072b0;--amber:#b36a00;--green:#0d8446;--red:#c51d33;--violet:#6a4bd6;--land:#dde3e8;--landline:#b6c1ca;--sea:#f3f6f8;--grat:#e6ebef}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:13px/1.45 Barlow,system-ui,sans-serif;transition:background .4s,color .4s}
+a{color:var(--cyan)} a:hover{color:var(--amber)}
+.m{font-family:'JetBrains Mono',monospace}
+.c{font-family:'Barlow Condensed',sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.cls{display:flex;justify-content:center;gap:24px;padding:3px;background:var(--green);color:var(--bg);font:600 11px/1.4 'Barlow Condensed';letter-spacing:.3em}
+.top{display:flex;align-items:center;flex-wrap:wrap;gap:10px 26px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{display:flex;align-items:center;gap:10px;font:700 20px 'Barlow Condensed';letter-spacing:.16em}
+.brand i{width:16px;height:16px;border:2px solid var(--cyan);transform:rotate(45deg);box-shadow:0 0 14px var(--cyan)}
+.kv{display:flex;flex-direction:column;line-height:1.1}.kv span{font:600 10px 'Barlow Condensed';letter-spacing:.18em;color:var(--dim)}.kv b{font:500 16px 'JetBrains Mono'}
+.status{padding:4px 12px;border:1px solid currentColor;font:700 13px 'Barlow Condensed';letter-spacing:.2em}
+.btn{background:transparent;border:1px solid var(--line2);color:var(--text);padding:5px 10px;font:600 11px 'Barlow Condensed';letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.btn:hover{border-color:var(--cyan);color:var(--cyan)} .btn:active{background:color-mix(in srgb,var(--cyan) 16%,transparent)}
+.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:1px}
+.main{display:grid;grid-template-columns:300px minmax(0,1fr) 350px;gap:8px;padding:8px}
+@media(max-width:1250px){.main{grid-template-columns:minmax(0,1fr)}}
+.main2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 8px 8px;align-items:start}
+@media(max-width:1100px){.main2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.main2{grid-template-columns:minmax(0,1fr)}}
+.scrl{max-height:302px;overflow:auto}
+.sub{font:700 10px 'Barlow Condensed',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:7px 0 3px;position:sticky;top:0;background:var(--panel);z-index:1}
+.sub:first-child{padding-top:0}
+.tg{font:700 9px 'Barlow Condensed',sans-serif;letter-spacing:.08em;padding:1px 5px;border:1px solid currentColor;white-space:nowrap}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);position:relative;min-width:0}
+.panel:before,.panel:after{content:"";position:absolute;width:10px;height:10px;border-color:var(--cyan);border-style:solid;pointer-events:none}
+.panel:before{left:-1px;top:-1px;border-width:2px 0 0 2px}.panel:after{right:-1px;bottom:-1px;border-width:0 2px 2px 0}
+.ph{display:flex;align-items:center;gap:8px;padding:6px 10px;white-space:nowrap;overflow:hidden;border-bottom:1px solid var(--line);font:600 12px 'Barlow Condensed';letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.ph b{color:var(--text);font-weight:700;flex:none}.ph .r{min-width:0;overflow:hidden;text-overflow:ellipsis;margin-left:auto;font:500 11px 'JetBrains Mono';letter-spacing:0;text-transform:none}
+.pb{padding:8px 10px;display:flex;flex-direction:column;gap:5px}
+.row{display:grid;gap:8px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.bar{height:5px;background:var(--line);position:relative;overflow:hidden}.bar>i{position:absolute;inset:0 auto 0 0;background:var(--cyan);transition:width .6s}
+.bar>i:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);animation:shim 1.8s linear infinite}
+@keyframes shim{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.seg{display:flex;gap:2px}.seg i{flex:1;height:8px;background:var(--line)}.seg i.on{background:var(--cyan);box-shadow:0 0 6px var(--cyan)}.seg i.rd{background:var(--violet);box-shadow:0 0 6px var(--violet)}
+.alert{display:grid;grid-template-columns:4px 1fr;gap:8px;padding:6px 8px;background:var(--panel2);animation:in .5s ease-out}
+.alert>s{display:block}.alert b{font:700 11px 'Barlow Condensed';letter-spacing:.16em}
+@keyframes in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+#mapbox{position:relative;height:max(470px,calc(100vh - 370px));overflow:hidden;background:var(--sea)}
+#map{width:100%;height:100%;display:block}
+.scan{position:absolute;top:0;bottom:0;width:160px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--cyan) 10%,transparent),transparent);animation:scan 9s linear infinite;pointer-events:none}
+@keyframes scan{from{left:-160px}to{left:100%}}
+.land{fill:var(--land);stroke:var(--landline);stroke-width:.5}.grat{fill:none;stroke:var(--grat);stroke-width:.6}.sphere{fill:var(--sea);stroke:var(--line2)}
+.arc{fill:none;stroke-width:1.4;stroke-dasharray:4 6;animation:flow 1.2s linear infinite;opacity:.85}
+@keyframes flow{to{stroke-dashoffset:-20}}
+.ping{transform-box:fill-box;transform-origin:center;animation:ping 2.6s ease-out infinite}
+@keyframes ping{from{transform:scale(.3);opacity:.9}to{transform:scale(2.6);opacity:0}}
+.lbl{font:600 10px 'Barlow Condensed';letter-spacing:.14em;fill:var(--text)}
+.legend{position:absolute;left:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px}
+.legend label{display:flex;align-items:center;gap:5px;padding:3px 8px;background:color-mix(in srgb,var(--panel) 85%,transparent);border:1px solid var(--line);font:600 11px 'Barlow Condensed';letter-spacing:.12em;cursor:pointer}
+.legend input{accent-color:var(--cyan);margin:0}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--cyan);padding:6px 9px;font:12px 'JetBrains Mono';display:none;max-width:280px;z-index:3}
+.hud{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:4px;text-align:right;font:11px 'JetBrains Mono';color:var(--dim)}
+.sats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:8px}
+.sat{background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column}
+.sat .img{height:92px;background:var(--line) center/cover;position:relative;overflow:hidden}
+.sat .img:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 60%,rgba(0,0,0,.55))}
+.sat div.t{padding:5px 8px;font:11px 'JetBrains Mono';display:flex;justify-content:space-between;gap:6px}
+.cmd{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:8px;padding:0 8px 8px}
+@media(max-width:900px){.cmd{grid-template-columns:1fr}.sats{grid-template-columns:repeat(2,1fr)}}
+.cli{display:flex;flex-direction:column}
+.cli input{width:100%;background:transparent;border:0;color:var(--text);font:14px 'JetBrains Mono';padding:9px 10px 9px 28px;outline:none;caret-color:var(--cyan)}
+.out{max-height:112px;overflow:auto;padding:0 10px 8px;font:12px 'JetBrains Mono';white-space:pre-wrap;color:var(--dim)}
+.out div:first-child{color:var(--text)}
+.tape{overflow:hidden;white-space:nowrap;border-top:1px solid var(--line);font:12px 'JetBrains Mono';padding:6px 0}
+.tape span{display:inline-block;padding-left:100%;animation:tape 60s linear infinite}
+@keyframes tape{to{transform:translateX(-100%)}}
+.num{font:600 22px 'JetBrains Mono';line-height:1.1}
+select{background:var(--panel2);color:var(--text);border:1px solid var(--line2);font:12px Barlow;padding:3px 6px;max-width:100%}
+[data-act]{cursor:pointer}
+.row.clk:hover,.alert.clk:hover,.kv[data-act]:hover,#ops[data-act]:hover,.clk:hover{background:color-mix(in srgb,var(--cyan) 10%,transparent)}
+.sat.clk:hover{border-color:var(--cyan)}.sat.clk:hover .img{filter:brightness(1.12)}
+.sat .img img{width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:0}
+.sattag{position:absolute;left:5px;bottom:5px;z-index:2;font:600 9px 'Barlow Condensed',sans-serif;letter-spacing:.1em;color:var(--text);background:color-mix(in srgb,var(--bg) 60%,transparent);padding:1px 5px;border:1px solid var(--line)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<style>
+.suitenav{display:flex;gap:2px;flex-wrap:wrap;align-items:center;padding:4px 14px;border-bottom:1px solid var(--line);background:var(--panel2,var(--panel))}
+.suitenav .sn-l{font:600 10px 'Barlow Condensed',sans-serif;letter-spacing:.2em;color:var(--dim);margin-right:8px}
+.suitenav a{color:var(--dim);text-decoration:none;font:600 12px 'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border:1px solid transparent}
+.suitenav a:hover{color:var(--text);border-color:var(--line)}.suitenav a.on{color:var(--cyan);border-color:var(--cyan)}
+.suiterow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 8px 8px}
+@media(max-width:1100px){.suiterow{grid-template-columns:minmax(0,1fr)}}
+.qak{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px}
+.qak div{border:1px solid var(--line);padding:4px 6px}.qak span{display:block;font:600 9px 'Barlow Condensed',sans-serif;letter-spacing:.14em;color:var(--dim)}.qak b{font:500 15px 'JetBrains Mono',monospace}
+.qrow{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;font-size:12px;padding:2px 0}
+.qrow span:nth-child(2){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qins{font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}.qins b{font:600 10px 'Barlow Condensed',sans-serif;letter-spacing:.12em;color:var(--violet);margin-right:6px}
+</style>
+</head>
+<body>
+<div class="cls"><span>INTERNAL</span><span>SALTLINE INSTITUTE · OPERATIONS PICTURE</span><span>INTERNAL</span></div>
+<header class="top">
+  <div class="brand"><i></i>SALTLINE COMMAND</div>
+  <div class="kv"><span>UTC</span><b id="clock">--:--:--</b></div>
+  <div class="kv" data-act="scroll" data-target="agents"><span>TASKS</span><b id="kTasks">0</b></div>
+  <div class="kv" data-act="scroll" data-target="rnd"><span>R&amp;D SHARE</span><b id="kRnd">--</b></div>
+  <div class="kv" data-act="scroll" data-target="pipe"><span>PIPELINE</span><b id="kPipe">--</b></div>
+  <div class="kv" data-act="scroll" data-target="sats"><span>FEEDS</span><b id="kFeeds">…</b></div>
+  <div id="ops" class="status" data-act="scroll" data-target="alerts" style="color:var(--green)">OPS GREEN</div>
+  <span style="flex:1"></span>
+  <button class="btn" id="pauseBtn">Pause agents</button>
+  <button class="btn" id="themeBtn">Light theme</button>
+</header>
+<nav class="suitenav"><span class="sn-l">SUITE</span><a href="Command Center.html" class="on">Console</a><a href="Dossier.html">Dossier Suite</a><a href="Dossier.html#/onboarding">Onboarding</a><a href="Dossier.html#/intake">Intake</a><a href="Dossier.html#/dossier">Dossier builder</a><a href="Tester.html">Tester agent</a><a href="Lead Graph.html">Intelligence graph</a><a href="Field Tools.html">Field tools</a><a href="Impact Assessment.html">ESIA workspace</a><a href="Dossier.html#/sitemap">Sitemap</a></nav>
+<div class="main">
+  <div class="col">
+    <section class="panel"><div class="ph"><b>Alerts</b><span class="r" id="alertN"></span></div><div class="pb" id="alerts"></div></section>
+    <section class="panel"><div class="ph"><b>Agents</b> live<span class="r" id="agentN"></span></div><div class="pb" id="agents"></div></section>
+    <section class="panel"><div class="ph"><b>R&amp;D · fleet</b> simulated</div><div class="pb" id="rnd"></div></section>
+  </div>
+  <div class="col">
+    <section class="panel">
+      <div class="ph"><b>Operating picture</b> sites · organisations · seismic · tracks<span class="r" id="mapNote">loading geometry</span></div>
+      <div id="mapbox"><svg id="map"></svg><div class="scan"></div><div class="tip" id="tip"></div>
+        <div class="hud"><span id="hudQ">SEISMIC —</span><span id="hudS">SENTINEL-2 TRACK · modeled</span><span>HUB · SITE A IBERIA</span></div>
+        <div class="legend" id="legend"></div></div>
+    </section>
+    <section class="panel"><div class="ph"><b>Satellite</b> S2 cloudless base · live pass index · click → EO Browser<span class="r" id="satN"></span></div><div class="sats" id="sats"></div></section>
+  </div>
+  <div class="col">
+    <section class="panel"><div class="ph"><b>Pipeline · drafts</b><span class="r" id="pipeN"></span></div><div class="pb" id="pipe"></div></section>
+    <section class="panel"><div class="ph"><b>Revenue · money</b> estimates</div><div class="pb" id="money"></div></section>
+    <section class="panel"><div class="ph"><b>Weather · flight</b> Open-Meteo</div><div class="pb" id="wx"></div></section>
+    <section class="panel"><div class="ph"><b>Regulatory radar</b> Federal Register</div><div class="pb" id="reg"></div></section>
+  </div>
+</div>
+<div class="suiterow">
+  <section class="panel"><div class="ph"><b>Dossier QA</b> tester agent<span class="r" id="qaN">no runs</span></div><div class="pb"><div class="qak" id="qaK"></div><div id="qaRows"></div><a href="Tester.html" style="font-size:11px">Open tester &rarr;</a></div></section>
+  <section class="panel"><div class="ph"><b>Intelligence</b> graph &rarr; tester<span class="r" id="insN"></span></div><div class="pb" id="qaIns"><div style="color:var(--dim)">Insights from the Hebbian graph and Q-table stream here.</div></div></section>
+  <section class="panel"><div class="ph"><b>Dossiers built</b> client SaaS<span class="r" id="dosN"></span></div><div class="pb" id="dos"></div></section>
+</div>
+<div class="main2">
+  <section class="panel"><div class="ph"><b>Service lines</b> revenue menu<span class="r" id="linesN"></span></div><div class="pb scrl" id="lines"></div></section>
+  <section class="panel"><div class="ph"><b>Capability catalog</b> the 200 features<span class="r" id="capsN"></span></div><div class="pb scrl" id="caps"></div></section>
+  <div class="col">
+    <section class="panel"><div class="ph"><b>Halophyte streams</b> products<span class="r">8</span></div><div class="pb" id="halo"></div></section>
+    <section class="panel"><div class="ph"><b>Autonomy roadmap</b> human &rarr; machine<span class="r">phase 0</span></div><div class="pb" id="phases"></div></section>
+    <section class="panel"><div class="ph"><b>Field jobs</b> crews now<span class="r" id="jobsN"></span></div><div class="pb" id="jobs"></div></section>
+  </div>
+</div>
+<div class="cmd">
+  <section class="panel cli"><div style="position:relative"><span class="m" style="position:absolute;left:10px;top:8px;color:var(--cyan)">›</span><input id="cli" autocomplete="off" placeholder="help · focus acwa · layer quakes · wx · eq · fr brine · calc sar 10 2 2 · ask … · theme"></div><div class="out" id="out"></div><div class="tape"><span id="tape"></span></div></section>
+  <section class="panel"><div class="ph"><b>Seismic</b> USGS · 24 h · M2.5+<span class="r" id="eqN"></span></div><div class="pb" id="eq"></div></section>
+</div>
+
+<script type="module">
+import * as S from './saltline-data.js';
+import { Engine } from './saltline-engine.js';
+import * as X from './institute-intel.js';
+import * as F from './features-data.js';
+
+const $ = id => document.getElementById(id), esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const GEO = { rsg: [46.68, 24.71], acwa: [46.9, 24.6], sfp: [10.75, 59.91], wwd: [-119.79, 36.74], ssmp: [-115.8, 33.3], sqm: [-70.67, -33.45], rsf: [39.1, 22.31], icba: [55.39, 25.1], masdar: [54.62, 24.43], sff: [4.8, 53.06], mdba: [149.13, -35.28], wi: [5.66, 52.04] };
+const HUB = [X.SITES[0].lon, X.SITES[0].lat];
+let saved = null; try { saved = JSON.parse(localStorage.getItem('saltline.os.v1') || 'null'); } catch (e) {}
+const E = new Engine(S, () => ({ rnd: 80, max: 12, tempo: 1, company: 'Saltline Institute', sender: '[Your name]' }), { change: () => {}, persist: () => {}, claude: () => Promise.reject(new Error('read only')) }, saved);
+E.start();
+const TERMS = { 'Irrigating halophytes with desalination reject brine': 'desalination brine', 'Autonomous drone surveys over coastal wetlands': 'unmanned aircraft wetlands', 'Importing and growing a non-native halophyte': 'plant import quarantine', 'Selling halophyte seed oil as a fuel feedstock': 'renewable fuel feedstock', 'Restoring mangrove on public foreshore': 'mangrove restoration', 'Selling carbon credits from a restored marsh': 'carbon credits wetlands' };
+const term = t => TERMS[t] || t;
+const D = { wx: null, sc: null, eq: null, reg: null, ana: null, st: {}, topic: X.TOPICS[0], layers: { sites: 1, orgs: 1, arcs: 1, quakes: 1, track: 1, drones: 1 } };
+const money = k => k >= 1000 ? '$' + (k / 1000).toFixed(2).replace(/\.?0+$/, '') + 'M' : '$' + Math.round(k) + 'k';
+const say = (t, c) => { const d = document.createElement('div'); d.textContent = t; if (c) d.style.color = c; $('out').prepend(d); };
+
+const theme = localStorage.getItem('saltline.theme') || 'dark';
+const setTheme = t => { document.documentElement.dataset.theme = t; localStorage.setItem('saltline.theme', t); $('themeBtn').textContent = t === 'dark' ? 'Light theme' : 'Dark theme'; };
+setTheme(theme);
+$('themeBtn').onclick = () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+$('pauseBtn').onclick = () => { E.paused = !E.paused; $('pauseBtn').textContent = E.paused ? 'Resume agents' : 'Pause agents'; };
+
+function feed(k, p) { D.st[k] = 'load'; return p.then(v => { D[k] = v; D.st[k] = 'ok'; paintFeeds(); return v; }, e => { D.st[k] = 'err'; paintFeeds(); say(k.toUpperCase() + ' feed unavailable: ' + e.message, 'var(--red)'); }); }
+const quakeFeed = () => fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+function load() { feed('wx', X.weather()); feed('sc', X.scenes()); feed('eq', quakeFeed()); feed('reg', X.regs(term(D.topic))); }
+
+function paintFeeds() {
+  const t = [['wx', 'WX'], ['sc', 'SAT'], ['eq', 'SEIS'], ['reg', 'REG']].map(([k, l]) => `<span style="color:${D.st[k] === 'ok' ? 'var(--green)' : D.st[k] === 'err' ? 'var(--red)' : 'var(--dim)'}">${l}</span>`).join(' ');
+  $('kFeeds').innerHTML = t; paintWx(); paintSats(); paintEq(); paintReg(); drawDyn();
+}
+function paintWx() {
+  if (!D.wx) return; const col = { Good: 'var(--green)', Marginal: 'var(--amber)', 'No-go': 'var(--red)' };
+  $('wx').innerHTML = D.wx.map(w => { const sid = (X.SITES.find(s => s.name === w.name) || {}).id || ''; return `<div class="row clk" data-act="site" data-site="${sid}" title="Focus ${esc(w.name)} on the map" style="grid-template-columns:minmax(0,1fr) 46px 90px 64px;white-space:nowrap"><span style="overflow:hidden;text-overflow:ellipsis">${esc(w.name)}</span><span class="m">${w.temp}</span><span class="m" style="color:var(--dim)">G ${w.gust}</span><span class="c" style="color:${col[w.adv]};font-weight:700;text-align:right">${w.adv}</span></div>`; }).join('') + '<div style="color:var(--dim);font-size:11px">Advisory only. The licensed pilot decides.</div>';
+}
+function paintSats() {
+  if (!D.sc) return;
+  const ok = D.sc.filter(s => s.date && s.date !== 'unavailable').length;
+  $('satN').textContent = ok + ' of ' + D.sc.length + ' sites · live index';
+  const gday = new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10);
+  $('sats').innerHTML = D.sc.map(s => {
+    const bbox = [s.lon - 0.45, s.lat - 0.22, s.lon + 0.45, s.lat + 0.22].join(',');
+    const eox = `https://tiles.maps.eox.at/wms?service=WMS&version=1.1.1&request=GetMap&layers=s2cloudless-2020&srs=EPSG:4326&bbox=${bbox}&width=320&height=160&format=image/jpeg`;
+    const gibs = `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=MODIS_Terra_CorrectedReflectance_TrueColor&SRS=EPSG:4326&BBOX=${bbox}&WIDTH=320&HEIGHT=160&FORMAT=image/jpeg&TIME=${gday}`;
+    return `<div class="sat clk" data-act="sat" data-site="${s.id}" title="Open live Sentinel-2 over ${esc(s.name)} in EO Browser"><div class="img"><img src="${eox}" alt="${esc(s.name)} cloudless" onerror="this.onerror=null;this.src='${gibs}'"><span class="sattag">S2 CLOUDLESS</span></div><div class="t"><span>${esc(s.name.split(' · ')[0])}</span><span class="m">${s.date || '—'}</span></div><div class="t" style="padding-top:0;color:var(--dim)"><span>${s.n} scenes/90d</span><span>${s.cloud ? 'last ' + s.cloud + ' cld' : ''}</span></div></div>`;
+  }).join('');
+}
+function paintEq() {
+  if (!D.eq) return; const fs = D.eq.features.slice().sort((a, b) => b.properties.mag - a.properties.mag);
+  $('eqN').textContent = fs.length + ' events'; $('hudQ').textContent = 'SEISMIC ' + fs.length + ' EVENTS · MAX M' + (fs[0] ? fs[0].properties.mag.toFixed(1) : '—');
+  $('eq').innerHTML = fs.slice(0, 5).map(q => { const m = q.properties.mag, c = q.geometry ? q.geometry.coordinates : [0, 0]; return `<div class="row clk" data-act="quake" data-lon="${c[0]}" data-lat="${c[1]}" data-mag="${m.toFixed(1)}" data-place="${esc(q.properties.place || 'Unnamed')}" title="Locate on map" style="grid-template-columns:48px minmax(0,1fr) 62px 14px"><span class="m" style="color:${m >= 6 ? 'var(--red)' : m >= 5 ? 'var(--amber)' : 'var(--text)'};font-weight:700">M${m.toFixed(1)}</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(q.properties.place || 'Unnamed')}</span><span class="m" style="color:var(--dim);text-align:right">${new Date(q.properties.time).toISOString().slice(11, 16)}</span><a href="${q.properties.url}" target="_blank" rel="noopener" title="USGS detail" style="text-align:right;text-decoration:none;color:var(--dim)">↗</a></div>`; }).join('');
+}
+function paintReg() {
+  const opts = X.TOPICS.map(t => `<option ${t === D.topic ? 'selected' : ''}>${esc(t)}</option>`).join('');
+  const docs = D.reg && !D.reg.docs.length ? '<div style="color:var(--dim)">No matching documents.</div>' : D.reg ? D.reg.docs.slice(0, 4).map(d => `<a href="${d.url}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.title)}</a><div style="color:var(--dim);font-size:11px;margin-top:-3px">${d.date} · ${esc(d.agency)}</div>`).join('') : '<div style="color:var(--dim)">Searching…</div>';
+  const ana = D.ana ? D.ana.incongruities.slice(0, 3).map(i => `<div style="border-left:2px solid var(--amber);padding-left:8px"><span class="c" style="color:var(--amber);font-weight:700;font-size:11px">${esc(i.kind)}</span> ${esc(i.issue)}</div>`).join('') + '<div style="color:var(--dim);font-size:11px">Claude analysis. Unverified until counsel or the agency confirms.</div>' : '';
+  $('reg').innerHTML = `<select id="topic">${opts}</select><div class="m" style="color:var(--dim);font-size:11px">${D.reg ? 'search: ' + esc(term(D.topic)) + ' · ' + D.reg.total + ' documents · ' + D.reg.agencies.slice(0, 3).map(esc).join(', ') : ''}</div>${docs}<button class="btn" id="anaBtn">${D.anaBusy ? 'Analysing…' : 'Find incongruities across levels'}</button>${ana}`;
+  $('topic').onchange = e => { D.topic = e.target.value; D.ana = null; D.reg = null; paintReg(); feed('reg', X.regs(term(D.topic))); };
+  $('anaBtn').onclick = analyse;
+}
+async function analyse() {
+  if (D.anaBusy) return; D.anaBusy = true; paintReg();
+  try { D.ana = X.parseAnalysis(await window.claude.complete(X.analysisRequest(D.topic, ['National or federal', 'State or provincial', 'Local or municipal'], '', D.reg))); }
+  catch (e) { say('Analysis failed: ' + e.message, 'var(--red)'); }
+  D.anaBusy = false; paintReg();
+}
+
+function alerts() {
+  const a = [];
+  (D.wx || []).forEach(w => { const sid = (X.SITES.find(s => s.name === w.name) || {}).id; if (w.adv === 'No-go') a.push([3, 'GROUNDED', `${w.name}: gusts ${w.gust}, rain ${w.rain}`, { site: sid }]); else if (w.adv === 'Marginal') a.push([2, 'CAUTION', `${w.name}: gusts ${w.gust}`, { site: sid }]); });
+  if (D.eq) D.eq.features.filter(q => q.properties.mag >= 5.5).slice(0, 3).forEach(q => { const c = q.geometry ? q.geometry.coordinates : null; a.push([q.properties.mag >= 6.5 ? 3 : 2, 'SEISMIC', `M${q.properties.mag.toFixed(1)} ${q.properties.place || ''}${q.properties.tsunami ? ' · tsunami flag' : ''}`, c ? { lon: c[0], lat: c[1] } : null]); });
+  const n = E.P.filter(p => p.stage === 'drafted').length; if (n) a.push([1, 'ACTION', `${n} outreach drafts await your approval`, { scroll: 'pipe' }]);
+  Object.entries(D.st).forEach(([k, v]) => { if (v === 'err') a.push([2, 'FEED', `${k.toUpperCase()} feed unavailable`, null]); });
+  if (E.paused) a.push([2, 'HOLD', 'All agents paused', null]);
+  return a.sort((x, y) => y[0] - x[0]);
+}
+const SEV = { 3: 'var(--red)', 2: 'var(--amber)', 1: 'var(--cyan)' };
+let lastAlert = '';
+function tick() {
+  const now = new Date(), sh = E.shares();
+  $('clock').textContent = now.toISOString().slice(11, 19); $('kTasks').textContent = E.running.length; $('kRnd').textContent = Math.round(sh.rnd * 100) + '%';
+  const vis = E.P.filter(p => p.disc), PR = { found: .02, drafting: .02, drafted: .05, approved: .08, sent: .12 };
+  const pipe = vis.reduce((s, p) => s + p.value, 0), wt = vis.reduce((s, p) => s + p.value * (PR[p.stage] || 0), 0);
+  $('kPipe').textContent = money(pipe);
+  const al = alerts(), key = al.map(x => x[2]).join('|'), worst = al.length ? al[0][0] : 0;
+  $('ops').textContent = worst >= 3 ? 'OPS RED' : worst === 2 ? 'OPS AMBER' : 'OPS GREEN'; $('ops').style.color = worst >= 3 ? 'var(--red)' : worst === 2 ? 'var(--amber)' : 'var(--green)';
+  if (key !== lastAlert) { lastAlert = key; $('alertN').textContent = al.length + ' open'; $('alerts').innerHTML = al.length ? al.map(([s, k, t, tg]) => { const d = tg || {}; return `<div class="alert clk" data-act="alert" data-sev="${s}" data-msg="${esc(t)}"${d.site ? ` data-site="${d.site}"` : ''}${d.lon != null ? ` data-lon="${d.lon}" data-lat="${d.lat}"` : ''}${d.scroll ? ` data-scroll="${d.scroll}"` : ''}><s style="background:${SEV[s]};box-shadow:0 0 8px ${SEV[s]}"></s><div><b style="color:${SEV[s]}">${k}</b><div>${esc(t)}</div></div></div>`; }).join('') : '<div style="color:var(--dim)">No open alerts.</div>'; }
+  $('agentN').textContent = E.running.length + ' running';
+  $('agents').innerHTML = E.agents.map(a => { const n = E.running.filter(r => r.a === a.id); const cur = n[0] ? n[0].title : (a.paused ? 'paused' : a.blocked ? (a.blocked === 'wait' ? 'waiting for R&D' : 'held by time budget') : 'idle'); return `<div class="clk" data-act="agent" data-agent="${a.id}" title="Echo ${esc(a.name)} tasks"><div class="row" style="grid-template-columns:76px minmax(0,1fr) 34px"><span style="font-weight:600">${a.name}</span><div class="seg">${Array.from({ length: a.cap }, (_, i) => `<i class="${i < n.length ? (a.lane === 'rnd' ? 'rd' : 'on') : ''}"></i>`).join('')}</div><span class="m" style="text-align:right;color:var(--dim)">${n.length}/${a.cap}</span></div><div style="font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(cur)}</div></div>`; }).join('');
+  $('rnd').innerHTML = E.progs.map(p => { const m = p.m, pc = Math.max(0, Math.min(1, (m.v - m.v0) / (m.t - m.v0))); return `<div class="clk" data-act="prog" data-detail="${esc(p.name + ' · ' + m.v.toFixed(m.t < 1 ? 2 : 1) + m.u + ' of ' + m.t + m.u + ' target · ' + Math.round(pc * 100) + '% complete')}"><div class="row" style="grid-template-columns:minmax(0,1fr) auto"><span>${p.name}</span><span class="m" style="color:var(--violet)">${m.v.toFixed(m.t < 1 ? 2 : 1)}${m.u}</span></div><div class="bar"><i style="width:${Math.round(pc * 100)}%;background:var(--violet)"></i></div></div>`; }).join('') + `<div class="row" style="grid-template-columns:1fr auto;margin-top:4px;padding-top:6px;border-top:1px solid var(--line)"><span class="c" style="font-weight:700;font-size:11px">Autonomy phase</span><span class="m" style="color:var(--amber)">0 · HUMAN CREWS</span></div>` + S.FLEET.map(f => `<div class="row clk" data-act="prog" data-detail="${esc(f.name + ' · ' + f.status)}" style="grid-template-columns:minmax(0,1fr) auto;font-size:12px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</span><span class="m" style="color:var(--dim)">${f.status}</span></div>`).join('');
+  const SN = { hidden: 'scouting', found: 'found', drafting: 'drafting', drafted: 'draft ready', approved: 'approved', sent: 'sent' }, SC = { drafted: 'var(--amber)', approved: 'var(--green)', sent: 'var(--green)', found: 'var(--cyan)' };
+  $('pipeN').textContent = vis.length + ' of ' + E.P.length + ' found';
+  $('pipe').innerHTML = E.P.slice().sort((a, b) => b.fit - a.fit).map(p => `<div class="row clk" data-act="org" data-org="${p.id}" style="grid-template-columns:minmax(0,1fr) 28px 86px;opacity:${p.disc ? 1 : .45}"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</span><span class="m" style="color:var(--dim)">${p.fit}</span><span class="c" style="text-align:right;font-weight:700;font-size:11px;color:${SC[p.stage] || 'var(--faint)'}">${SN[p.stage] || p.stage}</span></div>`).join('');
+  const byStage = ['found', 'drafted', 'approved', 'sent'].map(s => [s, vis.filter(p => p.stage === s).reduce((t, p) => t + p.value, 0)]), mx = Math.max(1, ...byStage.map(x => x[1]));
+  const avg = S.LINES.reduce((t, l) => t + l.k, 0) / S.LINES.length;
+  $('money').innerHTML = `<div class="row" style="grid-template-columns:repeat(3,1fr)"><div><div class="num">${money(pipe)}</div><div class="c" style="font-size:10px;color:var(--dim)">pipeline est.</div></div><div><div class="num" style="color:var(--amber)">${money(wt)}</div><div class="c" style="font-size:10px;color:var(--dim)">weighted</div></div><div><div class="num" style="color:var(--green)">$0</div><div class="c" style="font-size:10px;color:var(--dim)">booked</div></div></div>` + byStage.map(([s, v]) => { const cnt = vis.filter(p => p.stage === s).length; return `<div class="row clk" data-act="money" data-detail="${esc(SN[s] + ': ' + money(v) + ' across ' + cnt + ' organisation' + (cnt === 1 ? '' : 's'))}" style="grid-template-columns:70px minmax(0,1fr) 54px"><span class="c" style="font-size:11px;color:var(--dim)">${SN[s]}</span><div class="bar"><i style="width:${v / mx * 100}%;background:${SC[s]}"></i></div><span class="m" style="text-align:right">${money(v)}</span></div>`; }).join('') + `<div style="color:var(--dim);font-size:11px">${S.LINES.length} service lines, average first ticket ${money(avg)} · ${S.HALO.length} halophyte streams. Booked revenue changes only when you record a win.</div>`;
+  $('tape').textContent = E.feed.slice(0, 14).map(f => `${f.who.toUpperCase()} · ${f.msg}`).join('   ◆   ');
+  drawDyn();
+}
+
+const svg = d3.select('#map'), box = $('mapbox'), tip = $('tip');
+let proj, path, land, zoomT = d3.zoomIdentity;
+const gAll = svg.append('g'), gBase = gAll.append('g'), gArc = gAll.append('g'), gTrack = gAll.append('g'), gQ = gAll.append('g'), gSite = gAll.append('g'), gOrg = gAll.append('g'), gDr = gAll.append('g');
+const zoom = d3.zoom().scaleExtent([1, 8]).on('zoom', e => { zoomT = e.transform; gAll.attr('transform', zoomT); });
+svg.call(zoom);
+function showTip(e, html) { const r = box.getBoundingClientRect(); tip.innerHTML = html; tip.style.display = 'block'; tip.style.left = Math.min(r.width - 290, e.clientX - r.left + 14) + 'px'; tip.style.top = (e.clientY - r.top + 14) + 'px'; }
+const hideTip = () => { tip.style.display = 'none'; };
+const R2 = 6371 * 6371;
+function countryInfo(d) {
+  const name = (d.properties && d.properties.name) || 'Unknown territory';
+  const area = Math.round(d3.geoArea(d) * R2).toLocaleString();
+  const [lon, lat] = d3.geoCentroid(d);
+  const sites = X.SITES.filter(s => d3.geoContains(d, [s.lon, s.lat]));
+  const orgs = E.P.filter(p => GEO[p.id] && d3.geoContains(d, GEO[p.id]));
+  let a = `<b>${esc(name)}</b><br><span style="color:var(--dim)">~${area} km² · ${lat.toFixed(1)}°, ${lon.toFixed(1)}°</span>`;
+  if (sites.length) a += `<br><span style="color:var(--green)">◼ ${esc(sites.map(s => s.name).join(', '))}</span>`;
+  if (orgs.length) a += orgs.map(p => `<br><span style="color:${p.disc ? 'var(--cyan)' : 'var(--faint)'}">◆ ${esc(p.name)} · ${p.disc ? esc(p.stage) : 'not yet found'}</span>`).join('');
+  if (!sites.length && !orgs.length) a += `<br><span style="color:var(--faint)">no Saltline assets here</span>`;
+  return a;
+}
+function layout() {
+  const w = box.clientWidth, h = box.clientHeight; svg.attr('viewBox', `0 0 ${w} ${h}`);
+  proj = d3.geoNaturalEarth1().fitExtent([[8, 8], [w - 8, h - 8]], { type: 'Sphere' }); path = d3.geoPath(proj);
+  gBase.selectAll('*').remove();
+  gBase.append('path').attr('class', 'sphere').attr('d', path({ type: 'Sphere' }));
+  gBase.append('path').attr('class', 'grat').attr('d', path(d3.geoGraticule10()));
+  if (land) gBase.append('g').selectAll('path').data(land.features).join('path').attr('class', 'land').attr('d', path)
+    .style('cursor', 'crosshair')
+    .on('mousemove', (e, d) => showTip(e, countryInfo(d)))
+    .on('mouseover', function () { d3.select(this).raise().attr('fill', 'color-mix(in srgb,var(--cyan) 16%,var(--land))').attr('stroke', 'var(--cyan)').attr('stroke-width', 1); })
+    .on('mouseout', function () { d3.select(this).attr('fill', null).attr('stroke', null).attr('stroke-width', null); hideTip(); });
+  drawDyn(true);
+}
+let phase = 0;
+function drawDyn(force) {
+  if (!proj) return; const L = D.layers;
+  gArc.style('display', L.arcs ? null : 'none'); gOrg.style('display', L.orgs ? null : 'none'); gSite.style('display', L.sites ? null : 'none'); gQ.style('display', L.quakes ? null : 'none'); gTrack.style('display', L.track ? null : 'none'); gDr.style('display', L.drones ? null : 'none');
+  const SC = { drafted: 'var(--amber)', approved: 'var(--green)', sent: 'var(--green)', found: 'var(--cyan)', drafting: 'var(--cyan)' };
+  const orgs = E.P.filter(p => GEO[p.id]);
+  gArc.selectAll('path').data(orgs.filter(p => p.disc), p => p.id).join('path').attr('class', 'arc').attr('stroke', p => SC[p.stage] || 'var(--cyan)').attr('d', p => path({ type: 'LineString', coordinates: d3.range(0, 1.0001, 0.04).map(d3.geoInterpolate(HUB, GEO[p.id])) }));
+  const og = gOrg.selectAll('g.o').data(orgs, p => p.id).join(en => { const g = en.append('g').attr('class', 'o').style('cursor', 'pointer'); g.append('path').attr('class', 'mk'); return g; });
+  og.attr('transform', p => { const [x, y] = proj(GEO[p.id]); return `translate(${x},${y})`; }).on('mousemove', (e, p) => showTip(e, `<b>${esc(p.name)}</b><br>${esc(p.kind)} · ${esc(p.where)}<br>fit ${p.fit} · ${p.disc ? p.stage : 'not yet found'} · est. ${money(p.value)}`)).on('mouseleave', hideTip).on('click', (e, p) => focus(p.id));
+  og.select('path.mk').attr('d', d3.symbol(d3.symbolDiamond, 70)()).attr('fill', p => p.disc ? (SC[p.stage] || 'var(--cyan)') : 'none').attr('stroke', p => p.disc ? 'var(--bg)' : 'var(--faint)').attr('stroke-dasharray', p => p.disc ? null : '2 2');
+  const sg = gSite.selectAll('g.s').data(X.SITES, s => s.id).join(en => { const g = en.append('g').attr('class', 's'); g.append('circle').attr('class', 'ping').attr('r', 9).attr('fill', 'none').attr('stroke', 'var(--green)').attr('stroke-width', 1.5); g.append('rect').attr('x', -4).attr('y', -4).attr('width', 8).attr('height', 8).attr('fill', 'var(--green)'); g.append('text').attr('class', 'lbl').attr('x', 9).attr('y', 4); return g; });
+  sg.attr('transform', s => { const [x, y] = proj([s.lon, s.lat]); return `translate(${x},${y})`; }).on('mousemove', (e, s) => { const w = (D.wx || []).find(x => x.name === s.name); showTip(e, `<b>${esc(s.name)}</b><br>reference coordinates ${s.lat}, ${s.lon}${w ? `<br>${w.temp} · gusts ${w.gust} · ${w.adv}` : ''}`); }).on('mouseleave', hideTip).on('click', (e, s) => flyTo([s.lon, s.lat], 5, s.name)).style('cursor', 'pointer');
+  sg.select('text').text(s => s.id === 'D' ? 'SALTON' : 'SITE ' + s.id);
+  if (D.eq) {
+    const qs = D.eq.features.filter(q => q.geometry);
+    const qg = gQ.selectAll('g.q').data(qs, q => q.id).join(en => { const g = en.append('g').attr('class', 'q'); g.append('circle').attr('class', 'core'); g.filter(q => q.properties.mag >= 4.5).append('circle').attr('class', 'ping').attr('fill', 'none').attr('stroke-width', 1.2); return g; });
+    qg.attr('transform', q => { const [x, y] = proj(q.geometry.coordinates.slice(0, 2)); return `translate(${x},${y})`; }).on('mousemove', (e, q) => showTip(e, `<b>M${q.properties.mag.toFixed(1)}</b> ${esc(q.properties.place || '')}<br>${new Date(q.properties.time).toISOString().slice(0, 16).replace('T', ' ')} UTC · depth ${Math.round(q.geometry.coordinates[2])} km`)).on('mouseleave', hideTip).on('click', (e, q) => flyTo(q.geometry.coordinates.slice(0, 2), 6, 'M' + q.properties.mag.toFixed(1) + ' ' + (q.properties.place || ''))).style('cursor', 'pointer');
+    qg.select('circle.core').attr('r', q => Math.max(1.5, (q.properties.mag - 2) * 1.6)).attr('fill', q => q.properties.mag >= 5 ? 'var(--red)' : 'var(--amber)').attr('fill-opacity', .55);
+    qg.select('circle.ping').attr('r', q => (q.properties.mag - 2) * 3).attr('stroke', q => q.properties.mag >= 5 ? 'var(--red)' : 'var(--amber)');
+  }
+}
+function animate() {
+  phase += 0.006; const inc = 98.6 * Math.PI / 180, node = 20 - phase * 57.3 * 0.25;
+  const pt = u => { const lat = Math.asin(Math.sin(inc) * Math.sin(u)) * 57.3, lon = node + Math.atan2(Math.cos(inc) * Math.sin(u), Math.cos(u)) * 57.3; return [((lon + 540) % 360) - 180, lat]; };
+  if (proj) {
+    const pts = d3.range(-Math.PI, Math.PI, 0.05).map(pt);
+    gTrack.selectAll('path').data([0]).join('path').attr('fill', 'none').attr('stroke', 'var(--violet)').attr('stroke-width', 1).attr('stroke-dasharray', '1 4').attr('d', path({ type: 'LineString', coordinates: pts }));
+    const [sx, sy] = proj(pt(phase * 6)) || [0, 0];
+    gTrack.selectAll('circle').data([0]).join('circle').attr('r', 4).attr('fill', 'var(--violet)').attr('cx', sx).attr('cy', sy).style('filter', 'drop-shadow(0 0 6px var(--violet))').style('cursor', 'help')
+      .on('mousemove', ev => showTip(ev, '<b>Sentinel-2 ground track</b><br><span style="color:var(--dim)">sun-synchronous · 98.6° inclination<br>modeled pass · imaging source for site scenes</span>')).on('mouseleave', hideTip);
+    const drones = X.SITES.slice(0, 3).map((s, i) => { const a = phase * 20 + i * 2; const [x, y] = proj([s.lon, s.lat]); return [x + Math.cos(a) * 16, y + Math.sin(a) * 11]; });
+    gDr.selectAll('circle').data(drones).join('circle').attr('r', 2.2).attr('fill', 'var(--cyan)').attr('cx', d => d[0]).attr('cy', d => d[1]);
+  }
+  requestAnimationFrame(animate);
+}
+const scrollToPanel = id => { const t = $(id), el = t ? (t.closest('.panel') || t) : null; if (el) window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - 72), behavior: 'smooth' }); };
+function flyTo(c, k, msg) {
+  if (!c || !proj) return false;
+  const [x, y] = proj(c), w = box.clientWidth, h = box.clientHeight; k = k || 4;
+  svg.transition().duration(900).call(zoom.transform, d3.zoomIdentity.translate(w / 2 - k * x, h / 2 - k * y).scale(k));
+  scrollToPanel('mapbox'); if (msg) say(msg, 'var(--cyan)'); return true;
+}
+function focus(id) {
+  const p = E.P.find(x => x.id === id), s = X.SITES.find(x => x.id.toLowerCase() === String(id).toLowerCase());
+  const c = p && GEO[p.id] ? GEO[p.id] : s ? [s.lon, s.lat] : null;
+  return flyTo(c, 4, p ? `${p.name} · ${p.kind} · ${p.where} · fit ${p.fit} · ${p.stage}` : (s ? s.name : null));
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('a,input,select,button,.cli')) return;
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const a = el.dataset.act;
+  if (a === 'site' || a === 'sat') { const s = X.SITES.find(x => x.id === el.dataset.site); if (!s) return; focus(s.id); if (a === 'sat') window.open(`https://apps.sentinel-hub.com/eo-browser/?lat=${s.lat}&lng=${s.lon}&zoom=11`, '_blank', 'noopener'); return; }
+  if (a === 'org') { focus(el.dataset.org); return; }
+  if (a === 'quake') { flyTo([+el.dataset.lon, +el.dataset.lat], 5, `M${el.dataset.mag} · ${el.dataset.place}`); return; }
+  if (a === 'agent') { const ag = E.agents.find(x => x.id === el.dataset.agent); if (!ag) return; const nn = E.running.filter(r => r.a === ag.id); say(`${ag.name}: ${nn.length}/${ag.cap} active${nn.length ? ' · ' + nn.map(r => r.title).join(' · ') : ''}`, 'var(--cyan)'); scrollToPanel('out'); return; }
+  if (a === 'prog' || a === 'money') { say(el.dataset.detail, a === 'money' ? 'var(--green)' : 'var(--violet)'); scrollToPanel('out'); return; }
+  if (a === 'scroll') { scrollToPanel(el.dataset.target); return; }
+  if (a === 'alert') { if (el.dataset.site) focus(el.dataset.site); else if (el.dataset.lon) flyTo([+el.dataset.lon, +el.dataset.lat], 5); else if (el.dataset.scroll) scrollToPanel(el.dataset.scroll); say('› ' + el.dataset.msg, SEV[+el.dataset.sev] || 'var(--text)'); return; }
+});
+const LAY = [['sites', 'Sites'], ['orgs', 'Organisations'], ['arcs', 'Tracks'], ['quakes', 'Seismic'], ['track', 'Sentinel-2 track (modeled)'], ['drones', 'Drones (sim)']];
+$('legend').innerHTML = LAY.map(([k, l]) => `<label><input type="checkbox" data-l="${k}" checked> ${l}</label>`).join('') + '<label id="resetZ">Reset view</label>';
+$('legend').querySelectorAll('input').forEach(i => i.onchange = () => { D.layers[i.dataset.l] = i.checked ? 1 : 0; drawDyn(); });
+$('resetZ').onclick = () => svg.transition().duration(700).call(zoom.transform, d3.zoomIdentity);
+new ResizeObserver(() => layout()).observe(box);
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json()).then(t => { land = topojson.feature(t, t.objects.countries); $('mapNote').textContent = 'Natural Earth · scroll to zoom'; layout(); }).catch(e => { $('mapNote').textContent = 'geometry unavailable'; say('Map geometry failed: ' + e.message, 'var(--red)'); });
+
+const hist = []; let hi = -1;
+async function exec(line) {
+  const [c0, ...rest] = line.trim().split(/\s+/), c = (c0 || '').toLowerCase(), arg = rest.join(' ');
+  say('› ' + line, 'var(--cyan)'); if (!c) return;
+  if (c === 'help') return say('focus <org id|site letter> · layer <sites|orgs|arcs|quakes|track|drones> · reset · wx · eq · sat · fr <term> · calc <key> [numbers] · ask <question> · pause · resume · theme');
+  if (c === 'focus') return focus(arg) || say('Try: focus acwa, focus rsg, focus a. Ids: ' + Object.keys(GEO).join(' '), 'var(--amber)');
+  if (c === 'reset') return svg.transition().duration(700).call(zoom.transform, d3.zoomIdentity);
+  if (c === 'layer') { if (!(arg in D.layers)) return say('Layers: ' + Object.keys(D.layers).join(' '), 'var(--amber)'); D.layers[arg] = D.layers[arg] ? 0 : 1; const i = document.querySelector(`[data-l="${arg}"]`); if (i) i.checked = !!D.layers[arg]; drawDyn(); return say(`Layer ${arg} ${D.layers[arg] ? 'on' : 'off'}.`); }
+  if (c === 'wx') return feed('wx', X.weather()).then(w => w && say(w.map(x => `${x.name}: ${x.temp}, gusts ${x.gust} → ${x.adv}`).join('\n')));
+  if (c === 'eq') return feed('eq', quakeFeed()).then(q => q && say(q.features.length + ' events M2.5+ in 24 h.'));
+  if (c === 'sat') return feed('sc', X.scenes()).then(s => s && say(s.map(x => `${x.name}: latest ${x.date} ${x.cloud}`).join('\n')));
+  if (c === 'fr') { D.topic = arg || D.topic; D.ana = null; return feed('reg', X.regs(term(D.topic))).then(r => r && say(`${r.total} documents · ${r.agencies.join(', ')}`)); }
+  if (c === 'calc') { const C = F.CALCS[rest[0]]; if (!C) return say('Calculators: ' + Object.keys(F.CALCS).join(' '), 'var(--amber)'); const v = {}; C.f.forEach(([k], i) => { v[k] = rest[i + 1] !== undefined ? parseFloat(rest[i + 1]) : C.ex[k]; }); return say(C.run(v).filter(Boolean).map(r => `${r[0]}: ${r[1]}`).join('\n'), 'var(--green)'); }
+  if (c === 'ask') { if (!arg) return say('ask <question>', 'var(--amber)'); say('Asking Claude…'); try { say(await window.claude.complete({ system: F.COMMON + ' Answer in under 150 words, plain text.', messages: [{ role: 'user', content: arg }], max_tokens: 500 }), 'var(--text)'); } catch (e) { say('Claude unavailable: ' + e.message, 'var(--red)'); } return; }
+  if (c === 'pause' || c === 'resume') { E.paused = c === 'pause'; $('pauseBtn').textContent = E.paused ? 'Resume agents' : 'Pause agents'; return say(E.paused ? 'Agents paused.' : 'Agents running.'); }
+  if (c === 'theme') return $('themeBtn').click();
+  say(`Unknown command “${c}”. Type help.`, 'var(--amber)');
+}
+$('cli').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { const l = e.target.value; hist.unshift(l); hi = -1; e.target.value = ''; exec(l); }
+  else if (e.key === 'ArrowUp' && hist.length) { e.preventDefault(); hi = Math.min(hist.length - 1, hi + 1); e.target.value = hist[hi]; }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); hi = Math.max(-1, hi - 1); e.target.value = hi < 0 ? '' : hist[hi]; }
+});
+function buildCatalog() {
+  const MC = { A: 'var(--cyan)', AH: 'var(--amber)', F: 'var(--green)' };
+  $('linesN').textContent = S.LINES.length + ' lines';
+  $('lines').innerHTML = S.CATS.map(cat => { const rows = S.LINES.filter(l => l.cat === cat); return `<div class="sub">${esc(cat)} · ${rows.length}</div>` + rows.map(l => `<div class="row clk" data-act="money" data-detail="${esc(l.name + ' · ' + S.MODES[l.mode] + ' · first ticket ' + money(l.k) + ' · ~' + l.days + ' days')}" style="grid-template-columns:minmax(0,1fr) auto 46px;gap:6px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l.name)}</span><span class="tg" style="color:${MC[l.mode]}">${esc(S.MODES[l.mode])}</span><span class="m" style="text-align:right;color:var(--dim)">${money(l.k)}</span></div>`).join(''); }).join('');
+  const SG = { 'Market-ready': 'var(--green)', Pilot: 'var(--amber)', Research: 'var(--violet)' };
+  $('halo').innerHTML = S.HALO.map(h => `<div class="clk" data-act="money" data-detail="${esc(h.name + ' · ' + h.stage + ' · buyers: ' + h.buyers + ' · ' + h.note)}"><div class="row" style="grid-template-columns:minmax(0,1fr) auto;gap:6px"><span style="font-weight:600">${esc(h.name)}</span><span class="tg" style="color:${SG[h.stage] || 'var(--dim)'}">${esc(h.stage)}</span></div><div style="font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(h.species)}</div></div>`).join('');
+  let total = 0;
+  $('caps').innerHTML = F.DOMAINS.map(([name, tools]) => { total += tools.length; const calc = tools.filter(t => t.k === 'calc').length, live = tools.filter(t => t.k === 'live').length; return `<div class="row clk" data-act="prog" data-detail="${esc(name + ': ' + tools.map(t => t.n).join(' · '))}" style="grid-template-columns:minmax(0,1fr) auto;gap:6px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(name)}</span><span class="m" style="color:var(--dim);text-align:right">${tools.length}${calc ? ' · ' + calc + 'c' : ''}${live ? ' · ' + live + 'L' : ''}</span></div>`; }).join('');
+  $('capsN').textContent = F.DOMAINS.length + ' domains · ' + total + ' tools';
+  $('phases').innerHTML = S.PHASES.map(p => { const now = p.status === 'Now'; return `<div class="clk" data-act="prog" data-detail="${esc('Phase ' + p.n + ' · ' + p.name + ' · ' + p.body + ' Gate: ' + p.gate)}"><div class="row" style="grid-template-columns:auto minmax(0,1fr) auto;gap:6px"><span class="m" style="color:${now ? 'var(--green)' : 'var(--dim)'}">P${p.n}</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${now ? 'font-weight:600' : 'color:var(--dim)'}">${esc(p.name)}</span><span class="tg" style="color:${now ? 'var(--green)' : p.status === 'Next' ? 'var(--amber)' : 'var(--faint)'}">${esc(p.status)}</span></div><div class="bar"><i style="width:${p.share}%;background:${now ? 'var(--green)' : 'var(--violet)'}"></i></div></div>`; }).join('');
+  const JC = { 'Human crew': 'var(--green)', 'Drone-assisted': 'var(--cyan)', 'Autonomous (sim)': 'var(--violet)' };
+  $('jobsN').textContent = S.JOBS.length + ' active';
+  $('jobs').innerHTML = S.JOBS.map(jb => { const m = /Site (\w)/.exec(jb.site), sid = m ? m[1] : ''; return `<div class="row${sid ? ' clk' : ''}"${sid ? ` data-act="site" data-site="${sid}" title="Focus Site ${sid}"` : ''} style="grid-template-columns:minmax(0,1fr) auto;gap:6px"><div style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(jb.title)}</div><div style="font-size:11px;color:var(--dim)">${esc(jb.site)}</div></div><span class="tg" style="color:${JC[jb.ex] || 'var(--dim)'};align-self:center">${esc(jb.ex)}</span></div>`; }).join('');
+}
+buildCatalog();
+say('Command center online. Type help. Click any organisation to focus the map.');
+load(); setInterval(load, 300000); setInterval(tick, 700); tick(); requestAnimationFrame(animate);
+</script>
+<script>
+(function(){
+  const g=(k,d)=>{try{return JSON.parse(localStorage.getItem('saltline.'+k))||d}catch(e){return d}};
+  const e=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function paint(){
+    const R=g('tests',[]),I=g('insights',[]),D=g('dossiers',[]);
+    const n=R.length,p=R.filter(r=>r.pass).length,avg=k=>n?R.reduce((a,r)=>a+((r.metrics||{})[k]||0),0)/n:0;
+    document.getElementById('qaN').textContent=n?n+' runs':'no runs';
+    document.getElementById('qaK').innerHTML=[['TESTS',n],['PASS',n?Math.round(p/n*100)+'%':'—'],['RECALL',n?Math.round(avg('recall')*100)+'%':'—'],['COVER',n?Math.round(avg('coverage')*100)+'%':'—']].map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('');
+    document.getElementById('qaRows').innerHTML=R.slice(-7).reverse().map(r=>`<div class="qrow"><span style="font-family:'JetBrains Mono';color:${r.pass?'var(--green)':'var(--red)'}">${e(r.id)}</span><span>${e(r.name)}</span><span style="font-family:'JetBrains Mono';text-align:right;color:var(--dim)">${r.asserts.filter(a=>a.ok).length}/${r.asserts.length}</span></div>`).join('')||'<div style="color:var(--dim);font-size:12px">Run the tester agent to post results here.</div>';
+    document.getElementById('insN').textContent=I.length||'';
+    document.getElementById('qaIns').innerHTML=I.length?I.slice(-6).reverse().map(i=>`<div class="qins"><b>${e(i.kind)}</b>${e(i.text)}</div>`).join(''):'<div style="color:var(--dim)">Insights from the Hebbian graph and Q-table stream here.</div>';
+    document.getElementById('dosN').textContent=D.length||'';
+    document.getElementById('dos').innerHTML=D.length?D.slice(0,6).map(d=>`<div class="qrow" style="grid-template-columns:minmax(0,1fr) 54px"><span>${e(d.project||'Untitled')} · <span style="color:var(--dim)">${e(d.product)}</span></span><span style="font-family:'JetBrains Mono';text-align:right;color:var(--cyan)">${Math.round((d.coverage||0)*100)}%</span></div>`).join(''):'<div style="color:var(--dim);font-size:12px">No client dossiers yet. <a href="Dossier.html">Open the suite</a>.</div>';
+  }
+  paint();
+  if('BroadcastChannel' in window){new BroadcastChannel('saltline-suite').onmessage=()=>setTimeout(paint,60);}
+  window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('saltline.'))paint();});
+  setInterval(paint,5000);
+})();
+</script>
+</body>
+</html>

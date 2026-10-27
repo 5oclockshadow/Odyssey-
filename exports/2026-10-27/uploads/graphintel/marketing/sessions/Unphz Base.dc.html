@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="../studio-kit.js"></script>
+<style>body{margin:0;background:#1a1a1a}</style>
+</helmet>
+<div style="height:100vh;display:flex;flex-direction:column;background:#1a1a1a;color:#f5f5f5;font-family:'Space Grotesk',system-ui,sans-serif;">
+  <div style="display:flex;gap:16px;align-items:center;padding:8px 14px;font-size:12px;border-bottom:1px solid #333;"><b>unphz · base site from the 20-round session</b><span style="color:#9a9a94;">{{ status }}</span><a href="unphz-session.md" style="margin-left:auto;color:#d4ff3a;">Transcript</a><a href="../Style Studio.dc.html" style="color:#d4ff3a;">Open the Studio</a></div>
+  <iframe ref="{{ frame }}" sandbox="allow-scripts" src="about:blank" style="flex:1;border:0;width:100%;"></iframe>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { doc: '', status: 'Loading the spec…' };
+  componentDidMount() {
+    const go = async () => {
+      if (!window.SiteKit) return setTimeout(go, 150);
+      try { const spec = await (await fetch('unphz-base-spec.json')).json(); this.setState({ doc: window.SiteKit.build(spec), status: spec.title + ' · ' + window.SiteKit.ARCHS[spec.arch] + ' · ' + window.SiteKit.LOOKS[spec.look] }); }
+      catch (e) { this.setState({ status: 'Could not build: ' + e.message }); }
+    };
+    go();
+  }
+  frame = React.createRef();
+  componentDidUpdate() { const f = this.frame.current; if (f && this.state.doc && f.getAttribute('srcdoc') !== this.state.doc) f.srcdoc = this.state.doc; }
+  renderVals() { return { frame: this.frame, status: this.state.status }; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Money Engine</title>
+<style>
+  :root{
+    --bg:#070b11; --bg2:#0a0f17; --panel:#0c131d; --panel2:#0e1725; --line:#1a2740; --line2:#243552;
+    --text:#dde9fb; --dim:#7892ad; --dim2:#46586f;
+    --acc:#39ff9f; --acc2:#8affc9; --acc3:#1a7f55;
+    --ok:#39ff9f; --warn:#ffb347; --bad:#ff6b7d; --cy:#45d6ff; --vio:#b58cff; --mag:#ff5db1;
+    --mono:ui-monospace,SFMono-Regular,Menlo,"Cascadia Code",monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,sans-serif;
+  }
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+    --bg:#eef3fa;--bg2:#e5ecf6;--panel:#ffffff;--panel2:#eef4fb;--line:#d6e0ee;--line2:#bdd0e6;
+    --text:#0f1e36;--dim:#51657f;--dim2:#8698ae;--acc3:#128a54;color-scheme:light;}}
+  :root[data-theme="light"]{
+    --bg:#eef3fa;--bg2:#e5ecf6;--panel:#ffffff;--panel2:#eef4fb;--line:#d6e0ee;--line2:#bdd0e6;
+    --text:#0f1e36;--dim:#51657f;--dim2:#8698ae;--acc3:#128a54;color-scheme:light;}
+  :root[data-theme="dark"]{color-scheme:dark;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;}
+  #app{position:fixed;inset:0;display:grid;grid-template-columns:216px minmax(0,1fr);}
+  .rail{display:flex;flex-direction:column;gap:4px;padding:16px 10px;border-right:1px solid var(--line);
+    background:linear-gradient(180deg,var(--bg2),var(--bg));min-height:0;overflow:auto;}
+  .brand{display:flex;flex-direction:column;gap:2px;padding:4px 10px 14px;}
+  .brand b{font-size:17px;letter-spacing:-.01em;} .brand b i{color:var(--acc);font-style:normal;}
+  .brand span{font-size:11px;color:var(--dim);}
+  .nav{display:flex;flex-direction:column;gap:2px;}
+  .nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;cursor:pointer;
+    font:inherit;font-size:13px;padding:9px 11px;border-radius:9px;background:transparent;color:var(--dim);transition:.15s;}
+  .nav button:hover{background:rgba(127,160,200,.08);color:var(--text);}
+  .nav button.on{background:color-mix(in srgb,var(--acc) 15%,transparent);color:var(--text);}
+  .nav button .ic{width:16px;text-align:center;color:var(--dim2);font-size:13px;}
+  .nav button.on .ic{color:var(--acc);}
+  .nav button .ct{margin-left:auto;font-size:10px;color:var(--dim2);font-variant-numeric:tabular-nums;}
+  .railfoot{margin-top:auto;padding:12px 10px 2px;display:flex;flex-direction:column;gap:9px;}
+  .swrow{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+  .sw{width:15px;height:15px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
+  .sw.on{border-color:var(--text);}
+  .ctlrow{display:flex;gap:6px;}
+  .tbtn{height:28px;min-width:28px;padding:0 8px;border-radius:7px;border:1px solid var(--line);background:var(--panel);
+    color:var(--dim);cursor:pointer;font:inherit;font-size:11px;display:grid;place-items:center;}
+  .tbtn:hover{border-color:var(--acc);color:var(--text);}
+  main{display:flex;flex-direction:column;min-width:0;min-height:0;}
+  .top{display:flex;align-items:center;gap:12px;padding:0 20px;height:48px;border-bottom:1px solid var(--line);background:var(--bg2);flex:0 0 auto;}
+  .top .ttl{font-weight:600;font-size:14px;} .top .crumb{font-size:12px;color:var(--dim);}
+  .top .right{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;}
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--panel);}
+  .pill b{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 7px var(--acc);animation:bl 1.5s infinite;}
+  @keyframes bl{50%{opacity:.3;}}
+  .ticker{max-width:220px;overflow:hidden;white-space:nowrap;font-family:var(--mono);color:var(--dim2);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);}
+  .wrap{flex:1;min-height:0;overflow:auto;padding:20px;}
+  .view{display:none;} .view.on{display:block;animation:vf .28s ease;}
+  @keyframes vf{from{opacity:0;transform:translateY(6px);}}
+  .head{margin:0 0 16px;} .head h1{margin:0 0 4px;font-size:21px;letter-spacing:-.01em;}
+  .head p{margin:0;color:var(--dim);font-size:13px;line-height:1.55;max-width:80ch;}
+  .grid{display:grid;gap:13px;} .g2{grid-template-columns:1fr 1fr;} .g3{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr));} .g5{grid-template-columns:repeat(5,minmax(0,1fr));} .g6{grid-template-columns:repeat(6,minmax(0,1fr));}
+  .g32{grid-template-columns:3fr 2fr;} .g23{grid-template-columns:2fr 3fr;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px;min-width:0;}
+  .card.glow{box-shadow:0 0 0 1px color-mix(in srgb,var(--acc) 22%,transparent),0 16px 44px -26px var(--acc);}
+  .card.pad0{padding:0;overflow:hidden;}
+  .ck{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2);margin-bottom:10px;display:flex;justify-content:space-between;gap:8px;align-items:center;}
+  .ck .r{text-transform:none;letter-spacing:.01em;font-size:10.5px;color:var(--dim);}
+  .big{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+  .big.sm{font-size:17px;} .big.up{color:var(--ok);} .sub{font-size:11.5px;color:var(--dim);margin-top:3px;} .up{color:var(--ok);}
+  .row{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:12.5px;}
+  .row:first-of-type{border-top:0;} .row.tight{padding:5px 0;}
+  .grow{flex:1;min-width:0;} .mono{font-family:var(--mono);font-size:11.5px;} .mut{color:var(--dim);}
+  .nowrap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tag{font-size:10px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--dim);white-space:nowrap;}
+  .tag.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent);background:color-mix(in srgb,var(--ok) 10%,transparent);}
+  .tag.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent);}
+  .tag.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent);}
+  .tag.cy{color:var(--cy);border-color:color-mix(in srgb,var(--cy) 40%,transparent);}
+  .tag.vi{color:var(--vio);border-color:color-mix(in srgb,var(--vio) 40%,transparent);}
+  .tag.mg{color:var(--mag);border-color:color-mix(in srgb,var(--mag) 40%,transparent);}
+  .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;} .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc3),var(--acc));}
+  .bar.sm{height:4px;}
+  .note{font-size:12px;color:var(--dim);line-height:1.6;} .note b{color:var(--text);}
+  .kbd{font-family:var(--mono);font-size:10.5px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--acc2);}
+  .term{background:#05080d;border-radius:11px;font-family:var(--mono);font-size:11px;color:#9fb4cf;overflow:hidden;}
+  :root[data-theme="light"] .term{background:#0a1220;}
+  .term .b2{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--line);background:var(--panel2);font-size:10.5px;}
+  .term .b2 .d{width:8px;height:8px;border-radius:50%;}
+  .term .b{padding:10px 11px;line-height:1.55;max-height:240px;overflow:auto;white-space:pre-wrap;}
+  .term .b .g{color:var(--acc);} .term .b .c{color:var(--cy);} .term .b .y{color:var(--warn);} .term .b .m{color:var(--mag);} .term .b .v{color:var(--vio);} .term .b .d2{color:var(--dim2);}
+  canvas{display:block;width:100%;}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th{text-align:left;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim2);font-weight:500;padding:0 8px 7px 0;border-bottom:1px solid var(--line);}
+  td{padding:7px 8px 7px 0;border-bottom:1px solid var(--line);vertical-align:middle;}
+  td.n,th.n{text-align:right;font-family:var(--mono);font-size:11.5px;}
+  tr:last-child td{border-bottom:0;} tr.clickable{cursor:pointer;} tr.clickable:hover td{background:color-mix(in srgb,var(--acc) 7%,transparent);}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--dim);}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+  h3.sec{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);margin:22px 0 10px;}
+  :focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px;}
+  /* sliders */
+  .ctl{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:12px;color:var(--dim);}
+  .ctl label{width:84px;} .ctl output{width:76px;text-align:right;font-family:var(--mono);color:var(--text);}
+  input[type=range]{appearance:none;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;flex:1;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 6px var(--acc);}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radius:50%;background:var(--acc);cursor:pointer;}
+  /* drawer */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s;}
+  .scrim.on{opacity:1;pointer-events:auto;}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,94vw);background:var(--panel);border-left:1px solid var(--line2);
+    box-shadow:-20px 0 60px -30px #000;transform:translateX(100%);transition:transform .25s ease;z-index:41;overflow:auto;padding:20px;}
+  .drawer.on{transform:translateX(0);}
+  .drawer .x{position:absolute;top:14px;right:14px;cursor:pointer;color:var(--dim);border:1px solid var(--line);border-radius:8px;width:28px;height:28px;display:grid;place-items:center;background:var(--panel2);}
+  /* palette + toasts */
+  .pal{position:fixed;inset:0;background:rgba(2,5,10,.5);z-index:50;display:none;align-items:flex-start;justify-content:center;padding-top:12vh;}
+  .pal.on{display:flex;}
+  .palbox{width:min(560px,92vw);background:var(--panel);border:1px solid var(--line2);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px -30px #000;}
+  .palbox input{width:100%;border:0;background:var(--panel2);color:var(--text);font:inherit;font-size:15px;padding:14px 16px;outline:none;}
+  .palist{max-height:46vh;overflow:auto;} .palrow{display:flex;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;border-top:1px solid var(--line);}
+  .palrow.sel,.palrow:hover{background:color-mix(in srgb,var(--acc) 15%,transparent);}
+  .toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:60;}
+  .toast{background:var(--panel);border:1px solid var(--line2);border-left:3px solid var(--acc);border-radius:10px;padding:9px 13px;font-size:12.5px;color:var(--text);box-shadow:0 14px 40px -22px #000;animation:ti .25s ease;max-width:300px;}
+  @keyframes ti{from{opacity:0;transform:translateY(8px);}}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
+  @media(max-width:880px){#app{grid-template-columns:1fr;grid-template-rows:auto 1fr;}.rail{flex-direction:row;overflow-x:auto;align-items:center;gap:6px;border-right:0;border-bottom:1px solid var(--line);}.brand,.railfoot{display:none;}.nav{flex-direction:row;}.nav button .ct{display:none;}.g6,.g5,.g4,.g3,.g32,.g23{grid-template-columns:1fr 1fr;}.g2{grid-template-columns:1fr;}}
+  @media(max-width:560px){.g6,.g5,.g4,.g3,.g2,.g32,.g23{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside class="rail">
+    <div class="brand"><b>Money<i>·</i>Engine</b><span>find · build · earn · gated</span></div>
+    <nav class="nav" id="nav">
+      <button data-v="over" class="on"><span class="ic">◈</span>Overview</button>
+      <button data-v="scan"><span class="ic">◎</span>Scanners<span class="ct">13</span></button>
+      <button data-v="plays"><span class="ic">★</span>Plays<span class="ct">37</span></button>
+      <button data-v="forge"><span class="ic">⚒</span>Asset Forge</button>
+      <button data-v="pipe"><span class="ic">⇶</span>Pipeline</button>
+      <button data-v="rev"><span class="ic">$</span>Revenue &amp; Tiers</button>
+      <button data-v="econ"><span class="ic">∑</span>Economics</button>
+      <button data-v="gate"><span class="ic">⛨</span>Approvals</button>
+      <button data-v="auto"><span class="ic">⟳</span>Autonomy</button>
+    </nav>
+    <div class="railfoot">
+      <div class="swrow" id="swrow"></div>
+      <div class="ctlrow"><button class="tbtn" id="themeBtn" title="Theme">◐</button><button class="tbtn" id="palBtn" title="Command palette (⌘K)">⌘K</button></div>
+    </div>
+  </aside>
+  <main>
+    <div class="top"><span class="ttl" id="crumbTtl">Overview</span><span class="crumb">money-engine · gated outbound</span>
+      <div class="right"><span class="ticker" id="ticker">● live</span><span class="pill"><b></b>representative</span><span id="clock">--:--:--</span></div></div>
+    <div class="wrap">
+
+      <!-- OVERVIEW -->
+      <section class="view on" data-v="over">
+        <div class="head"><h1>Money Engine</h1><p>Autonomous agent-graph that hunts concrete, executable AI money plays, builds the assets, sources clients, and parks every outbound action behind a human gate. Broadcaster / Operator and the mini-apps are its tiered programmatic revenue lines.</p></div>
+        <div class="grid g6" style="margin-bottom:13px">
+          <div class="card glow"><div class="ck">plays found</div><div class="big" id="k_plays">37</div><div class="sub">scored · deduped</div></div>
+          <div class="card"><div class="ck">pending gate</div><div class="big">8</div><div class="sub warn" style="color:var(--warn)">your tap</div></div>
+          <div class="card"><div class="ck">shipped wk</div><div class="big">5</div><div class="sub up">2 earning</div></div>
+          <div class="card"><div class="ck">MRR</div><div class="big sm up" id="k_mrr">$4.1k</div><div class="sub">live</div></div>
+          <div class="card"><div class="ck">pipeline</div><div class="big sm">$6.2k</div><div class="sub">weighted</div></div>
+          <div class="card"><div class="ck">realized</div><div class="big sm up">$840</div><div class="sub">this month</div></div>
+        </div>
+        <div class="grid g32" style="margin-bottom:13px">
+          <div class="card pad0"><div class="ck" style="padding:14px 14px 0">MRR — last 12 weeks<span class="r">target $10k</span></div><canvas id="revChart" height="150"></canvas></div>
+          <div class="card pad0"><div class="term"><div class="b2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--warn)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">discovery stream</span></div><div class="b" id="discLog"></div></div></div>
+        </div>
+        <div class="card"><div class="ck">top plays by $/effort<span class="r">click a row for the brief</span></div>
+          <table id="topPlays"><thead><tr><th>play</th><th>channel</th><th class="n">fit</th><th class="n">$/mo</th><th>state</th></tr></thead><tbody>
+            <tr class="clickable" data-play="ugc"><td>AI UGC ads for DTC — retainer</td><td><span class="tag mg">TikTok</span></td><td class="n">0.91</td><td class="n up">$1.5k</td><td><span class="tag warn">gate</span></td></tr>
+            <tr class="clickable" data-play="triage"><td>Inbox-triage DFY for SMBs</td><td><span class="tag cy">LinkedIn</span></td><td class="n">0.87</td><td class="n up">$600×N</td><td><span class="tag warn">gate</span></td></tr>
+            <tr class="clickable" data-play="recept"><td>Local AI phone receptionist</td><td><span class="tag">GMaps</span></td><td class="n">0.81</td><td class="n">$300/mo</td><td><span class="tag">draft</span></td></tr>
+            <tr class="clickable" data-play="channel"><td>Faceless channel-in-a-box</td><td><span class="tag vi">YouTube</span></td><td class="n">0.83</td><td class="n">$2k setup</td><td><span class="tag">draft</span></td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <!-- SCANNERS -->
+      <section class="view" data-v="scan">
+        <div class="head"><h1>Channel Scanners</h1><p>One scanner per channel — every social, local, and marketplace. Each watches its source for executable plays (a real offer with a buyer, not a listicle), scores by $/effort, and starts the asset.</p></div>
+        <div class="grid g4" id="scanGrid" style="margin-bottom:13px"></div>
+        <div class="grid g3">
+          <div class="card"><div class="ck">sources</div><div class="note" id="srcList"></div></div>
+          <div class="card"><div class="ck">play filter</div>
+            <div class="ctl"><label>min $/eff</label><input type="range" id="f_eff" min="0" max="100" value="50"><output id="o_eff">5.0</output></div>
+            <div class="ctl"><label>min fit</label><input type="range" id="f_fit" min="50" max="99" value="75"><output id="o_fit">0.75</output></div>
+            <div class="row tight"><span class="grow">reject listicles</span><span class="tag ok">on</span></div>
+            <div class="row tight"><span class="grow">dedupe window</span><span class="mono">7 days</span></div>
+          </div>
+          <div class="card pad0"><div class="ck" style="padding:14px 14px 0">scoring brain<span class="r">Hebbian + Q</span></div><canvas id="brain" height="150"></canvas>
+            <div class="note" style="padding:0 14px 12px">Sources that paid get scanned harder — the cascade is the scorer firing.</div></div>
+        </div>
+      </section>
+
+      <!-- PLAYS -->
+      <section class="view" data-v="plays">
+        <div class="head"><h1>Play Queue</h1><p>Ranked by realized $/effort. Click any play for the full brief — ICP, offer, assets already built, projected economics, funnel, and the gate.</p></div>
+        <div class="card"><div class="ck">ranked plays</div>
+          <table id="playTable"><thead><tr><th>#</th><th>play</th><th>channel</th><th class="n">fit</th><th class="n">effort</th><th class="n">$/mo</th><th>state</th></tr></thead><tbody>
+            <tr class="clickable" data-play="ugc"><td class="n">1</td><td>AI UGC ads for DTC — retainer</td><td><span class="tag mg">TikTok</span></td><td class="n">0.91</td><td class="n">LOW</td><td class="n up">$1.5k</td><td><span class="tag warn">gate</span></td></tr>
+            <tr class="clickable" data-play="triage"><td class="n">2</td><td>Inbox-triage DFY for SMBs</td><td><span class="tag cy">LinkedIn</span></td><td class="n">0.87</td><td class="n">MED</td><td class="n up">$600×N</td><td><span class="tag warn">gate</span></td></tr>
+            <tr class="clickable" data-play="channel"><td class="n">3</td><td>Faceless channel-in-a-box</td><td><span class="tag vi">YouTube</span></td><td class="n">0.83</td><td class="n">MED</td><td class="n">$2k setup</td><td><span class="tag">draft</span></td></tr>
+            <tr class="clickable" data-play="recept"><td class="n">4</td><td>Local AI phone receptionist</td><td><span class="tag">GMaps</span></td><td class="n">0.81</td><td class="n">MED</td><td class="n">$300/mo</td><td><span class="tag">draft</span></td></tr>
+            <tr class="clickable" data-play="rag"><td class="n">5</td><td>Niche RAG chatbot licensing</td><td><span class="tag cy">X</span></td><td class="n">0.74</td><td class="n">LOW</td><td class="n">$99/mo</td><td><span class="tag">scouting</span></td></tr>
+            <tr class="clickable" data-play="listing"><td class="n">6</td><td>Etsy/Gumroad listing optimizer</td><td><span class="tag mg">Etsy</span></td><td class="n">0.75</td><td class="n">LOW</td><td class="n">$49</td><td><span class="tag">draft</span></td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <!-- FORGE -->
+      <section class="view" data-v="forge">
+        <div class="head"><h1>Asset Forge</h1><p>It doesn't just suggest — it builds the thing. Copy, hooks, scripts, AI voiceover, b-roll, thumbnails, landing pages, the product template. Media gen is first-class (Broadcaster's audio/video skills plug in here).</p></div>
+        <div class="grid g4" style="margin-bottom:13px">
+          <div class="card"><div class="ck">copy</div><div class="note">hook variants ×12 · ad scripts · cold emails · landing page</div></div>
+          <div class="card"><div class="ck">video / audio</div><div class="note">UGC clips · AI voiceover · b-roll · thumbnails</div></div>
+          <div class="card"><div class="ck">product</div><div class="note">n8n + MCP template · RAG bot · receptionist flow</div></div>
+          <div class="card"><div class="ck">funnel</div><div class="note">link-in-bio · Stripe checkout · booking page</div></div>
+        </div>
+        <div class="card"><div class="ck">build queue</div>
+          <div class="row"><span class="tag mg">VIDEO</span><span class="grow">UGC variant 7/12 — before/after</span><div class="bar" style="max-width:180px;flex:1"><i style="width:60%"></i></div><span class="mono">rendering</span></div>
+          <div class="row"><span class="tag vi">VOICE</span><span class="grow">VO for pilot doc — natural EN-US</span><div class="bar" style="max-width:180px;flex:1"><i style="width:90%"></i></div><span class="mono">90%</span></div>
+          <div class="row"><span class="tag cy">PAGE</span><span class="grow">landing: triage-DFY</span><div class="bar" style="max-width:180px;flex:1"><i style="width:100%"></i></div><span class="tag ok">ready</span></div>
+          <div class="row"><span class="tag warn">THUMB</span><span class="grow">3 thumbnail variants · A/B</span><div class="bar" style="max-width:180px;flex:1"><i style="width:40%"></i></div><span class="mono">scoring</span></div>
+        </div>
+      </section>
+
+      <!-- PIPELINE -->
+      <section class="view" data-v="pipe">
+        <div class="head"><h1>Pipeline &amp; Outreach</h1><p>CRM-lite. The engine finds its own clients, drafts the sequence, and every send waits on you. Replies feed attribution back to the Q-table so winning sources get hunted harder.</p></div>
+        <div class="grid g5" style="margin-bottom:13px">
+          <div class="card"><div class="ck">scouted</div><div class="big sm">214</div></div>
+          <div class="card"><div class="ck">drafted</div><div class="big sm">48</div></div>
+          <div class="card"><div class="ck">sent</div><div class="big sm">31</div><div class="sub">approved</div></div>
+          <div class="card"><div class="ck">replied</div><div class="big sm up">9</div></div>
+          <div class="card"><div class="ck">won</div><div class="big sm up">3</div></div>
+        </div>
+        <div class="grid g2">
+          <div class="card"><div class="ck">prospects<span class="r">auto-sourced</span></div>
+            <div class="row"><span class="grow nowrap">Northwind Supplements</span><span class="tag mg">DTC</span><span class="tag warn">draft 1/3</span></div>
+            <div class="row"><span class="grow nowrap">Acme Home Services</span><span class="tag">local</span><span class="tag ok">replied</span></div>
+            <div class="row"><span class="grow nowrap">Lumen Skincare</span><span class="tag mg">DTC</span><span class="tag ok">won $1.5k</span></div>
+            <div class="row"><span class="grow nowrap">BrightDesk SaaS</span><span class="tag cy">SMB</span><span class="tag">sent</span></div>
+          </div>
+          <div class="card pad0"><div class="term"><div class="b2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--warn)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">sequence · Northwind 1/3</span></div>
+            <div class="b"><span class="d2">to</span> founder@northwind.co
+<span class="d2">subj</span> 20 UGC ads/mo, you approve each
+<span class="c">Hi {first} — your TikTok ads run but you</span>
+<span class="c">post 2/wk. We ship 20 AI-made UGC variants</span>
+<span class="c">monthly; you approve, we bill on what runs…</span>
+<span class="y">GATE</span> awaiting approval → <span class="g">Telegram</span></div></div></div>
+        </div>
+      </section>
+
+      <!-- REVENUE & TIERS -->
+      <section class="view" data-v="rev">
+        <div class="head"><h1>Revenue &amp; Tiers</h1><p>Broadcaster / Operator is a tiered, programmatic done-for-you engine — people pay fees for the channel work done <i>for</i> them, per tier. The mini-apps inside are billable micro-services. Operator is the managed layer.</p></div>
+        <div class="grid g32" style="margin-bottom:13px">
+          <div class="card"><div class="ck">tiers — fees for done-for-you ops</div>
+            <table><thead><tr><th>tier</th><th>offer</th><th class="n">$/mo</th><th class="n">accts</th><th class="n">MRR</th></tr></thead><tbody>
+              <tr><td>citizen / creator</td><td class="mut">self-serve + assist</td><td class="n">$49</td><td class="n">12</td><td class="n">$588</td></tr>
+              <tr><td>private / corporate</td><td class="mut">managed channels</td><td class="n">$800</td><td class="n">3</td><td class="n">$2.4k</td></tr>
+              <tr><td>cities / universities</td><td class="mut">institutional</td><td class="n">$2.5k</td><td class="n">1</td><td class="n">$2.5k</td></tr>
+              <tr><td>gov / military</td><td class="mut">compliance-grade</td><td class="n">$6k</td><td class="n">0</td><td class="n">pilot</td></tr>
+              <tr><td>farming / niche</td><td class="mut">vertical packs</td><td class="n">$300</td><td class="n">2</td><td class="n">$600</td></tr>
+            </tbody></table>
+          </div>
+          <div class="card"><div class="ck">mini-apps = billable micro-services</div>
+            <div class="row tight"><span class="grow">script-as-a-service</span><span class="mono">$0.50/script</span></div>
+            <div class="row tight"><span class="grow">AI voiceover</span><span class="mono">$2/min</span></div>
+            <div class="row tight"><span class="grow">visuals / b-roll / thumbs</span><span class="mono">$5/asset</span></div>
+            <div class="row tight"><span class="grow">assemble + publish</span><span class="mono">$8/video</span></div>
+            <div class="row tight"><span class="grow">safety / compliance review</span><span class="mono">$3/item</span></div>
+            <div class="row tight"><span class="grow">outreach / lead-gen</span><span class="mono">% of close</span></div>
+            <div class="row tight"><span class="grow">analytics subscription</span><span class="mono">$29/mo</span></div>
+          </div>
+        </div>
+        <div class="grid g3">
+          <div class="card"><div class="ck">programmatic fee lines</div><div class="note">per-channel retainer · per-video / per-asset · per-publish + per-boost · outreach fee · analytics subscription. Billed via the pipeline; cost floored by the free-tier router cascade.</div></div>
+          <div class="card"><div class="ck">operator — managed layer</div><div class="row tight"><span class="grow">channels / tenant</span><span class="mono">kestrels</span></div><div class="row tight"><span class="grow">SLA + billing</span><span class="tag ok">wired</span></div><div class="row tight"><span class="grow">path</span><span class="mut">self-serve → managed → white-label</span></div></div>
+          <div class="card"><div class="ck">media-gen quality</div><div class="row tight"><span class="grow">current</span><span class="tag bad">~3%</span></div><div class="row tight"><span class="grow">status</span><span class="tag warn">highest-ROI lever</span></div><div class="note" style="margin-top:7px">This is the thing customers pay for — fixing it at the model is the biggest revenue unlock, not a reason to park.</div></div>
+        </div>
+      </section>
+
+      <!-- ECONOMICS -->
+      <section class="view" data-v="econ">
+        <div class="head"><h1>Economics</h1><p>Unit economics for a play — move the sliders. Cost is floored by the free-tier router cascade, so margins stay high; the engine only pursues plays whose LTV:CAC clears the bar.</p></div>
+        <div class="grid g23">
+          <div class="card"><div class="ck">inputs</div>
+            <div class="ctl"><label>clients</label><input type="range" id="e_cl" min="1" max="50" value="6"><output id="o_cl">6</output></div>
+            <div class="ctl"><label>price / mo</label><input type="range" id="e_pr" min="49" max="3000" step="1" value="1500"><output id="o_pr">$1500</output></div>
+            <div class="ctl"><label>COGS %</label><input type="range" id="e_co" min="2" max="45" value="8"><output id="o_co">8%</output></div>
+            <div class="ctl"><label>churn %/mo</label><input type="range" id="e_ch" min="1" max="15" value="5"><output id="o_ch">5%</output></div>
+            <div class="ctl"><label>CAC</label><input type="range" id="e_ca" min="50" max="2000" step="10" value="400"><output id="o_ca">$400</output></div>
+          </div>
+          <div class="grid g2" style="align-content:start">
+            <div class="card"><div class="ck">MRR</div><div class="big up" id="r_mrr">$9,000</div><div class="sub" id="r_arr">$108k ARR</div></div>
+            <div class="card"><div class="ck">gross margin</div><div class="big" id="r_gm">92%</div><div class="sub" id="r_gmd">$8,280/mo</div></div>
+            <div class="card"><div class="ck">LTV</div><div class="big sm" id="r_ltv">$27,600</div><div class="sub">per client</div></div>
+            <div class="card"><div class="ck">LTV : CAC</div><div class="big sm up" id="r_ratio">69×</div><div class="sub" id="r_pb">payback 0.3mo</div></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:13px"><div class="ck">verdict</div><div class="note" id="r_verdict">Strong: LTV:CAC well above 3× and sub-month payback — the engine would prioritize this play and auto-build its assets, gating only the outbound.</div></div>
+      </section>
+
+      <!-- APPROVALS -->
+      <section class="view" data-v="gate">
+        <div class="head"><h1>Approvals &amp; Gateway</h1><p>The safety spine. Nothing leaves the building without a tap. Perms, spend caps, and the gateway pool are set in ENV; the LLM only chooses among what you allowed.</p></div>
+        <div class="grid g2" style="margin-bottom:13px">
+          <div class="card"><div class="ck">approval inbox<span class="r warn" style="color:var(--warn)">8 waiting</span></div>
+            <div class="row"><span class="tag mg">EMAIL</span><span class="grow">Cold outreach → 6 DTC founders</span><span class="tag ok">approve</span><span class="tag bad">edit</span></div>
+            <div class="row"><span class="tag cy">POST</span><span class="grow">TikTok CTA + link-in-bio</span><span class="tag ok">approve</span><span class="tag bad">hold</span></div>
+            <div class="row"><span class="tag vi">PUBLISH</span><span class="grow">YouTube pilot (faceless)</span><span class="tag ok">approve</span><span class="tag bad">hold</span></div>
+            <div class="row"><span class="tag warn">SPEND</span><span class="grow">$40 product sample order</span><span class="tag ok">approve</span><span class="tag bad">deny</span></div>
+            <div class="row"><span class="tag warn">SPEND</span><span class="grow">$12 domain + mailbox</span><span class="tag ok">approve</span><span class="tag bad">deny</span></div>
+          </div>
+          <div class="card"><div class="ck">CTA gateway<span class="r">LLM-decided per play</span></div>
+            <div class="row"><span class="tag cy">Telegram</span><span class="grow mut">@odyssey_cta_bot</span><span class="tag ok">live</span></div>
+            <div class="row"><span class="tag vi">Discord</span><span class="grow mut">#approvals</span><span class="tag ok">live</span></div>
+            <div class="row"><span class="grow mut">Slack / email fallback</span><span class="tag">env</span></div>
+            <div class="note" style="margin-top:9px">Gateway pool from <span class="kbd">CTA_GATEWAYS</span>; the agent routes each approval to the channel that fits the play &amp; urgency.</div>
+          </div>
+        </div>
+        <div class="grid g3">
+          <div class="card"><div class="ck">guardrails</div><div class="row tight"><span class="grow">daily send cap</span><span class="mono">40</span></div><div class="row tight"><span class="grow">spend cap</span><span class="mono">$50/day</span></div><div class="row tight"><span class="grow">no-send domains</span><span class="mono">12</span></div></div>
+          <div class="card"><div class="ck">perms (ENV)</div><div class="row tight"><span class="grow">web · social · email · pay</span><span class="tag ok">allowed set</span></div><div class="row tight"><span class="grow">deny by default</span><span class="tag ok">on</span></div></div>
+          <div class="card"><div class="ck">compliance</div><div class="row tight"><span class="grow">CAN-SPAM footer</span><span class="tag ok">auto</span></div><div class="row tight"><span class="grow">opt-out honored</span><span class="tag ok">on</span></div><div class="row tight"><span class="grow">SOC2 evidence</span><span class="tag ok">per action</span></div></div>
+        </div>
+      </section>
+
+      <!-- AUTONOMY -->
+      <section class="view" data-v="auto">
+        <div class="head"><h1>Autonomy &amp; Tester</h1><p>Full-auto from ENV, pause-only, never-stop, with a hard kill-switch — and its own tester peer that builds and verifies before anything ships. One permissive MCP server fronts the tools.</p></div>
+        <div class="grid g4">
+          <div class="card"><div class="ck">autonomy</div><div class="row tight"><span class="grow">mode</span><span class="tag ok">pause-only</span></div><div class="row tight"><span class="grow">auto-from-env</span><span class="tag ok">on</span></div><div class="row tight"><span class="grow">hard-stop</span><span class="tag bad">armed</span></div></div>
+          <div class="card"><div class="ck">tester peer</div><div class="row tight"><span class="grow">:9914</span><span class="tag ok">green</span></div><div class="row tight"><span class="grow">last run</span><span class="mono">42/42</span></div><div class="row tight"><span class="grow">builds/improves</span><span class="tag ok">on</span></div></div>
+          <div class="card"><div class="ck">MCP-of-MCP</div><div class="row tight"><span class="grow">tools mounted</span><span class="mono">31</span></div><div class="row tight"><span class="grow">web·social·email·pay</span><span class="tag ok">env perms</span></div></div>
+          <div class="card"><div class="ck">recorder</div><div class="row tight"><span class="grow">live view</span><span class="tag ok">on</span></div><div class="row tight"><span class="grow">playback</span><span class="tag ok">tape</span></div></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer"><div class="x" id="drawerX">✕</div><div id="drawerBody"></div></div>
+<div class="pal" id="pal"><div class="palbox"><input id="palIn" placeholder="Jump to a section…" aria-label="Command palette"><div class="palist" id="palList"></div></div></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+"use strict";
+const root=document.documentElement;
+setInterval(()=>{document.getElementById("clock").textContent=new Date().toTimeString().slice(0,8);},1000);
+function setTxt(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+setInterval(()=>{setTxt("k_plays",(35+Math.random()*5|0));setTxt("k_mrr","$"+(4.0+Math.random()*0.3).toFixed(1)+"k");},1800);
+
+const nav=document.getElementById("nav");
+const TITLES={over:"Overview",scan:"Scanners",plays:"Plays",forge:"Asset Forge",pipe:"Pipeline",rev:"Revenue & Tiers",econ:"Economics",gate:"Approvals",auto:"Autonomy"};
+function go(v){[...nav.children].forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.dataset.v===v));setTxt("crumbTtl",TITLES[v]||v);}
+nav.addEventListener("click",e=>{const b=e.target.closest("button");if(b)go(b.dataset.v);});
+
+/* theme */
+const ACC={neon:["#39ff9f","#8affc9","#1a7f55"],cyan:["#45d6ff","#9ae9ff","#1a6a8f"],magenta:["#ff5db1","#ffa6d6","#8f2a63"],amber:["#ffb347","#ffd79a","#8f5e1a"],violet:["#b58cff","#d6c2ff","#5e3f8f"]};
+function setAccent(k){const a=ACC[k]||ACC.neon;root.style.setProperty("--acc",a[0]);root.style.setProperty("--acc2",a[1]);root.style.setProperty("--acc3",a[2]);root.style.setProperty("--ok",a[0]);
+  document.querySelectorAll("#swrow .sw").forEach(s=>s.classList.toggle("on",s.dataset.k===k));try{localStorage.setItem("me-accent",k);}catch(e){}}
+function setTheme(t){const b=document.getElementById("themeBtn");if(t==="system")root.removeAttribute("data-theme");else root.setAttribute("data-theme",t);
+  if(b)b.textContent=t==="light"?"☀":t==="dark"?"☾":"◐";try{localStorage.setItem("me-theme",t);}catch(e){}}
+function curTheme(){try{return localStorage.getItem("me-theme")||"system";}catch(e){return "system";}}
+const swrow=document.getElementById("swrow");
+Object.keys(ACC).forEach(k=>{const d=document.createElement("span");d.className="sw";d.dataset.k=k;d.style.background=ACC[k][0];d.title=k;d.onclick=()=>setAccent(k);swrow.appendChild(d);});
+document.getElementById("themeBtn").onclick=()=>{const c=curTheme();setTheme(c==="system"?"dark":c==="dark"?"light":"system");};
+try{setAccent(localStorage.getItem("me-accent")||"neon");}catch(e){setAccent("neon");}
+try{const t=localStorage.getItem("me-theme");if(t&&t!=="system")setTheme(t);}catch(e){}
+
+/* toasts */
+const tc=document.getElementById("toasts");
+function toast(m){const el=document.createElement("div");el.className="toast";el.textContent=m;tc.appendChild(el);
+  setTimeout(()=>{el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),320);},2200);}
+document.addEventListener("click",e=>{const tg=e.target.closest(".tag");if(!tg)return;const w=tg.textContent.trim().toLowerCase();
+  if(/^approve/.test(w))toast("✓ approved — dispatched to gateway");else if(/^(deny|hold|edit)/.test(w))toast("● "+tg.textContent.trim());});
+
+/* palette */
+const PAL=Object.keys(TITLES).map(v=>({v,label:TITLES[v]}));
+const pal=document.getElementById("pal"),palIn=document.getElementById("palIn"),palList=document.getElementById("palList");
+let psel=0,prows=[];
+function rpal(q){q=(q||"").toLowerCase();prows=PAL.filter(r=>r.label.toLowerCase().includes(q));psel=0;
+  palList.innerHTML=prows.map((r,i)=>'<div class="palrow'+(i===0?' sel':'')+'" data-i="'+i+'">'+r.label+'</div>').join("")||'<div class="palrow">no match</div>';}
+function opal(){pal.classList.add("on");palIn.value="";rpal("");palIn.focus();}function cpal(){pal.classList.remove("on");}
+function gpal(r){if(r){go(r.v);cpal();}}
+document.getElementById("palBtn").onclick=opal;palIn.addEventListener("input",()=>rpal(palIn.value));
+palList.addEventListener("click",e=>{const r=e.target.closest(".palrow");if(r&&prows[r.dataset.i])gpal(prows[r.dataset.i]);});
+pal.addEventListener("click",e=>{if(e.target===pal)cpal();});
+document.addEventListener("keydown",e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();opal();return;}
+  if(e.key==="Escape"){cpal();closeDrawer();return;}
+  if(pal.classList.contains("on")){if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();psel=Math.max(0,Math.min(prows.length-1,psel+(e.key==="ArrowDown"?1:-1)));[...palList.children].forEach((c,i)=>c.classList.toggle("sel",i===psel));}if(e.key==="Enter")gpal(prows[psel]);return;}
+  if(e.target.tagName==="INPUT")return;
+  if(e.key>="1"&&e.key<="9"){const b=nav.children[+e.key-1];if(b)go(b.dataset.v);}});
+
+/* ticker + discovery stream */
+const TK=["scan#412 TikTok · AI UGC","play scored 0.91","asset: 12 hooks drafted","GATE 6 emails await","reply: Lumen → won $1.5k","q-reward: TikTok +0.4","scan#444 GMaps · receptionist"];
+(function(){const t=document.getElementById("ticker");let i=0;setInterval(()=>{t.textContent="● "+TK[i%TK.length];i++;},2200);})();
+(function(){const el=document.getElementById("discLog");const L=['<span class="m">SCAN</span> TikTok · trend "AI UGC ads"','<span class="g">PLAY</span> 20 UGC/mo @ $1.5k · fit 0.91','<span class="c">ASSET</span> hook-script ×12 drafted','<span class="y">GATE</span> post CTA? → Telegram','<span class="g">PLAY</span> inbox-triage DFY · fit 0.87','<span class="c">SOURCE</span> 6 DTC founders found'];let i=0;
+  setInterval(()=>{if(!document.querySelector('.view[data-v="over"]').classList.contains("on"))return;const d=document.createElement("div");
+    d.innerHTML='<span class="d2">'+new Date().toTimeString().slice(0,8)+'</span> '+L[i%L.length];i++;el.appendChild(d);while(el.children.length>11)el.removeChild(el.firstChild);el.scrollTop=el.scrollHeight;},1100);})();
+
+/* scanners grid */
+const CH=[["TikTok","mg",0.91,"faceless UGC for DTC · 20/mo","gate"],["Instagram","mg",0.88,"carousel lead-gen for coaches","gate"],["YouTube","vi",0.83,"faceless doc channel-in-a-box","draft"],["X / Twitter","cy",0.74,"niche RAG bot licensing","scouting"],["LinkedIn","cy",0.87,"inbox-triage DFY for SMBs","gate"],["Reddit","vi",0.69,"community RAG assistant","scouting"],["Facebook","cy",0.72,"local-group offer bot","draft"],["Pinterest","warn",0.70,"AI pins → affiliate funnels","scouting"],["Threads","vi",0.69,"thought-leader ghostwrite","draft"],["Twitch","vi",0.66,"stream-clip repurposing","draft"],["Google Maps","cy",0.81,"local AI receptionist","gate"],["Etsy / Gumroad","mg",0.75,"listing + SEO optimizer","draft"],["ProductHunt","ok",0.77,"launch-day RAG bot","scouting"]];
+(function(){const g=document.getElementById("scanGrid");g.innerHTML=CH.map(c=>'<div class="card"><div class="ck"><span class="tag '+c[1]+'">'+c[0]+'</span><span class="tag ok">'+c[2].toFixed(2)+'</span></div><div class="note" style="color:var(--text);font-size:11.5px">'+c[3]+'</div><div class="row tight" style="margin-top:7px"><span class="mono mut">scan#'+(410+(Math.random()*80|0))+'</span><span class="grow"></span><span class="tag '+(c[4]==="gate"?"warn":"")+'">'+c[4]+'</span></div></div>').join("");
+  document.getElementById("srcList").innerHTML="TikTok Creative CDN · X/Nitter firehose · Reddit ×14 · YouTube trending · ProductHunt / HN · Google Maps · Etsy/Gumroad · Instagram graph";})();
+function slid(id,out,fmt){const s=document.getElementById(id),o=document.getElementById(out);if(!s)return;const upd=()=>o.textContent=fmt(+s.value);s.addEventListener("input",upd);upd();}
+slid("f_eff","o_eff",v=>(v/10).toFixed(1));slid("f_fit","o_fit",v=>(v/100).toFixed(2));
+
+/* play drawer */
+const PLAYS={
+ ugc:{t:"AI UGC ads for DTC",tags:["TikTok","retainer","LOW"],rows:[["ICP","DTC brands $50k–500k/mo spend, running paid but posting <3 organic/wk"],["Offer","20 AI-made UGC ad variants / month. You approve each; bill only on what runs."],["Assets built","12 hook scripts · 7 rendered clips · landing page · cold-email seq 1/3"],["Economics","$1.5k/mo × 6 = $9k MRR · COGS ~$120 · ~92% margin"],["Funnel","cold email → Loom teardown → 3 free samples → retainer"],["Gate","post CTA + outbound emails await approval via Telegram"]]},
+ triage:{t:"Inbox-triage DFY for SMBs",tags:["LinkedIn","$600×N","MED"],rows:[["ICP","SMB owners / solo founders with 50+ inbound/day"],["Offer","Done-for-you AI triage: label, draft replies, route — you approve sends"],["Product","n8n + MCP template, hosted or self-host; 1-day setup"],["Economics","$600 setup + $300/mo · low churn once wired into the inbox"],["Gate","6 cold emails to sourced prospects await approval"]]},
+ channel:{t:"Faceless channel-in-a-box",tags:["YouTube","$2k setup","MED"],rows:[["ICP","Creators/marketers wanting a faceless niche channel without the work"],["Offer","Full channel: niche, scripting, AI voice, b-roll, thumbs, cadence"],["Assets built","1 pilot video · VO 90% · thumbnail set · niche research"],["Economics","$2k setup + $800/mo ops · scales on Broadcaster/operator"],["Gate","publish of pilot awaits approval"]]},
+ recept:{t:"Local AI phone receptionist",tags:["GMaps","$300/mo","MED"],rows:[["ICP","Local service businesses missing after-hours calls"],["Offer","AI receptionist: books, answers FAQs, texts summary — local number"],["Assets built","call flow · voice · booking page · Maps-sourced outreach list"],["Economics","$300/mo × many · sticky once it books real jobs"],["Gate","outbound + number provisioning ($12) await approval"]]},
+ rag:{t:"Niche RAG chatbot licensing",tags:["X","$99/mo","LOW"],rows:[["ICP","Niche communities / info-product owners with a docs corpus"],["Offer","White-label RAG bot over their content; monthly license"],["Assets built","bot scaffold · embed widget · 2 demo corpora"],["Economics","$99/mo × many · near-zero marginal on free-tier router"],["Gate","scouting prospects; nothing sent yet"]]},
+ listing:{t:"Etsy/Gumroad listing optimizer",tags:["Etsy","$49","LOW"],rows:[["ICP","Marketplace sellers with poor listing SEO/conversion"],["Offer","AI rewrites titles/tags/descriptions + A/B thumbnails"],["Assets built","optimizer flow · 2 before/after demos"],["Economics","$49 one-off or $19/mo · high volume, low touch"],["Gate","outreach drafts pending"]]}};
+const drawer=document.getElementById("drawer"),scrim=document.getElementById("scrim"),dbody=document.getElementById("drawerBody");
+function openDrawer(k){const p=PLAYS[k];if(!p)return;
+  dbody.innerHTML='<div class="ck">play brief</div><div class="big sm" style="margin-bottom:6px">'+p.t+'</div><div style="margin-bottom:12px">'+p.tags.map(t=>'<span class="tag" style="margin-right:5px">'+t+'</span>').join("")+'</div>'+
+    p.rows.map(r=>'<div class="ck" style="margin:12px 0 3px">'+r[0]+'</div><div class="note" style="color:var(--text)">'+r[1]+'</div>').join("")+
+    '<div style="margin-top:16px;display:flex;gap:8px"><span class="tag ok">approve all gates</span><span class="tag bad">hold</span></div>';
+  drawer.classList.add("on");scrim.classList.add("on");}
+function closeDrawer(){drawer.classList.remove("on");scrim.classList.remove("on");}
+document.getElementById("drawerX").onclick=closeDrawer;scrim.onclick=closeDrawer;
+document.addEventListener("click",e=>{const tr=e.target.closest("tr[data-play]");if(tr)openDrawer(tr.dataset.play);});
+
+/* economics calc */
+function money(n){return "$"+Math.round(n).toLocaleString();}
+function econ(){const cl=+v("e_cl"),pr=+v("e_pr"),co=+v("e_co"),ch=+v("e_ch"),ca=+v("e_ca");
+  setTxt("o_cl",cl);setTxt("o_pr","$"+pr);setTxt("o_co",co+"%");setTxt("o_ch",ch+"%");setTxt("o_ca","$"+ca);
+  const mrr=cl*pr,gm=1-co/100,gmd=mrr*gm,ltv=pr*gm/(ch/100),ratio=ltv/ca,pb=ca/(pr*gm);
+  setTxt("r_mrr",money(mrr));setTxt("r_arr",money(mrr*12)+" ARR");setTxt("r_gm",Math.round(gm*100)+"%");setTxt("r_gmd",money(gmd)+"/mo");
+  setTxt("r_ltv",money(ltv));setTxt("r_ratio",(ratio>=10?Math.round(ratio):ratio.toFixed(1))+"×");setTxt("r_pb","payback "+pb.toFixed(1)+"mo");
+  const good=ratio>=3&&pb<=12;const ve=document.getElementById("r_verdict");
+  if(ve)ve.textContent=good?"Strong: LTV:CAC "+(ratio>=10?Math.round(ratio):ratio.toFixed(1))+"× and "+pb.toFixed(1)+"-month payback — the engine prioritizes this play, auto-builds assets, and gates only the outbound.":"Weak: LTV:CAC "+ratio.toFixed(1)+"× or payback "+pb.toFixed(1)+"mo is below bar — the engine would deprioritize or restructure the offer before spending on outreach.";}
+function v(id){return document.getElementById(id).value;}
+["e_cl","e_pr","e_co","e_ch","e_ca"].forEach(id=>{const s=document.getElementById(id);if(s)s.addEventListener("input",econ);});
+econ();
+
+/* revenue chart */
+function revChart(){const cv=document.getElementById("revChart");if(!cv)return;const dpr=Math.min(2,window.devicePixelRatio||1),H=150;
+  function size(){cv.width=Math.max(2,cv.clientWidth*dpr);cv.height=H*dpr;cv.getContext("2d").setTransform(dpr,0,0,dpr,0,0);}size();
+  const ctx=cv.getContext("2d");const data=[1.1,1.3,1.2,1.6,2.0,2.3,2.1,2.8,3.2,3.6,3.9,4.1];const max=10;
+  let t=0,last=performance.now();
+  function frame(now){requestAnimationFrame(frame);if(cv.offsetParent===null)return;
+    if(Math.abs(cv.width/dpr-cv.clientWidth)>4||cv.width<3)size();
+    const dt=Math.min(.05,(now-last)/1000);last=now;t=Math.min(1,t+dt*0.5);
+    const W=cv.clientWidth,pad=14,gw=W-pad*2,gh=H-pad*2;ctx.clearRect(0,0,W,H);
+    const acc=getComputedStyle(root).getPropertyValue("--acc").trim()||"#39ff9f";
+    // target line
+    ctx.strokeStyle="rgba(127,160,200,.25)";ctx.setLineDash([4,4]);ctx.beginPath();const ty=pad+gh-(max/max)*0+gh*(1-max/max);ctx.moveTo(pad,pad);ctx.lineTo(W-pad,pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle="rgba(127,160,200,.5)";ctx.font="9px "+getComputedStyle(document.body).fontFamily;ctx.textAlign="left";ctx.fillText("$10k target",pad,pad-3);
+    const n=Math.max(2,Math.floor(data.length*t));
+    const pts=data.slice(0,n).map((d,i)=>({x:pad+gw*(i/(data.length-1)),y:pad+gh-(d/max)*gh}));
+    // area
+    const grad=ctx.createLinearGradient(0,pad,0,H);grad.addColorStop(0,acc+"55");grad.addColorStop(1,acc+"00");
+    ctx.beginPath();ctx.moveTo(pts[0].x,H-pad);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,H-pad);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=acc;ctx.lineWidth=2;ctx.stroke();
+    const lp=pts[pts.length-1];ctx.beginPath();ctx.arc(lp.x,lp.y,3,0,7);ctx.fillStyle=acc;ctx.fill();
+    ctx.fillStyle=acc;ctx.textAlign="right";ctx.font="600 11px "+getComputedStyle(document.body).fontFamily;ctx.fillText("$"+data[n-1].toFixed(1)+"k",W-pad,lp.y-6);
+  }requestAnimationFrame(frame);}
+revChart();
+
+/* scoring brain (shared cascade) */
+function startBrain(id){const cv=document.getElementById(id);if(!cv)return;const dpr=Math.min(2,window.devicePixelRatio||1),H=cv.getAttribute("height")?+cv.getAttribute("height"):150,N=140,COMM=6;
+  function size(){cv.width=Math.max(2,cv.clientWidth*dpr);cv.height=H*dpr;cv.getContext("2d").setTransform(dpr,0,0,dpr,0,0);}const ctx=cv.getContext("2d");
+  const rnd=s=>()=>((s=(s*1664525+1013904223)>>>0)/4294967296),R=rnd(9);const nodes=[],hubs=[];
+  for(let c=0;c<COMM;c++)hubs.push([(c&1)?1:-1,(c&2)?1:-1,(c&4)?1:-1]);
+  for(let i=0;i<N;i++){const c=i%COMM,h=hubs[c];nodes.push({c,deg:0,v:[h[0]*.9+(R()-.5),h[1]*.9+(R()-.5),h[2]*.9+(R()-.5)]});}
+  const adj=Array.from({length:N},()=>[]),edges=[];function addE(a,b){if(a===b)return;edges.push([a,b]);adj[a].push(b);adj[b].push(a);nodes[a].deg++;nodes[b].deg++;}
+  for(let i=0;i<N;i++){const c=i%COMM;for(let k=0;k<3;k++){const j=(i+(1+Math.floor(R()*18))*COMM)%N;if(j%COMM===c)addE(i,j);}}
+  const lit=new Float32Array(N),pulses=[];let nextAt=0,yaw=.5,a={xy:0,xz:0},last=performance.now();
+  const COL=[[57,255,159],[69,214,255],[181,140,255],[255,93,177],[255,179,71],[140,200,255]];
+  function rot(v){let x=v[0],y=v[1],z=v[2],c,s,n;c=Math.cos(a.xy);s=Math.sin(a.xy);n=x*c-y*s;y=x*s+y*c;x=n;c=Math.cos(a.xz);s=Math.sin(a.xz);n=x*c-z*s;z=x*s+z*c;x=n;return[x,y,z];}
+  function proj(v,W,Hh){const cy=Math.cos(yaw),sy=Math.sin(yaw);let x=v[0]*cy-v[2]*sy,z=v[0]*sy+v[2]*cy;const k=3.0/Math.max(.3,3.4+z),sc=Math.min(W,Hh)*.42;return{x:W/2+x*k*sc,y:Hh/2-v[1]*k*sc,s:k};}
+  function fire(now){let seed=0,b=-1;for(let t=0;t<8;t++){const i=Math.random()*N|0;if(nodes[i].deg>b){b=nodes[i].deg;seed=i;}}
+    const lv=[[seed]],seen=new Set([seed]);for(let h=0;h<3;h++){const nx=[];for(const u of lv[h])for(const q of adj[u])if(!seen.has(q)){seen.add(q);nx.push(q);}if(!nx.length)break;lv.push(nx);}
+    lv.forEach((l,h)=>pulses.push({nodes:l,at:now+h*.15,life:0,dur:1.0,hop:h}));}
+  function frame(now){requestAnimationFrame(frame);if(cv.offsetParent===null)return;if(Math.abs(cv.width/dpr-cv.clientWidth)>4||cv.width<3)size();
+    const dt=Math.min(.05,(now-last)/1000);last=now;a.xy+=dt*.05;a.xz+=dt*.03;yaw+=dt*.05;
+    const nS=now/1000;if(nS>=nextAt){fire(nS);nextAt=nS+1.4;}const dec=Math.pow(.12,dt);for(let i=0;i<N;i++)lit[i]*=dec;
+    for(let i=pulses.length-1;i>=0;i--){const p=pulses[i];if(nS<p.at)continue;p.life+=dt;const f=Math.min(1,p.life/p.dur);for(const n of p.nodes)lit[n]=Math.max(lit[n],(1-f)*(1-p.hop*.12));if(p.life>=p.dur)pulses.splice(i,1);}
+    const W=cv.clientWidth,Hh=H;ctx.clearRect(0,0,W,Hh);const P=nodes.map(n=>proj(rot(n.v),W,Hh));
+    for(const e of edges){const pa=P[e[0]],pb=P[e[1]],l=Math.max(lit[e[0]],lit[e[1]]);ctx.strokeStyle=l<.05?"rgba(120,150,190,.07)":"rgba(138,255,201,"+(.15+.5*l)+")";ctx.lineWidth=l<.05?1:.8+1.3*l;ctx.beginPath();ctx.moveTo(pa.x,pa.y);ctx.lineTo(pb.x,pb.y);ctx.stroke();}
+    ctx.lineWidth=1;const ord=[...P.keys()].sort((x,y)=>P[y].s-P[x].s);
+    for(const i of ord){const p=P[i],l=lit[i],cc=COL[nodes[i].c],r=(1+Math.min(2,nodes[i].deg*.16))*p.s*1.1*(1+l);
+      if(l>.05){ctx.beginPath();ctx.arc(p.x,p.y,r+l*5,0,7);ctx.fillStyle="rgba(57,255,159,"+(.1+l*.18)+")";ctx.fill();}
+      ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.6,r),0,7);ctx.fillStyle=l>.1?"rgba(138,255,201,"+(.6+.4*l)+")":"rgba("+cc[0]+","+cc[1]+","+cc[2]+","+(.3+.4*Math.min(1,p.s)).toFixed(2)+")";ctx.fill();}}
+  requestAnimationFrame(frame);}
+startBrain("brain");
+</script>
+</body>
+</html>

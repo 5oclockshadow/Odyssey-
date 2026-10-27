@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <script src="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>html,body{margin:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);text-wrap:pretty;-webkit-font-smoothing:antialiased}a{color:var(--color-accent-300);text-decoration:none}a:hover{color:var(--color-accent-200)}:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}code,pre{font-family:ui-monospace,"SF Mono",Menlo,monospace}</style>
+</helmet>
+<div data-screen-label="Institute site" style="min-height:100vh;background:radial-gradient(ellipse 55% 38% at 12% 0%, var(--color-accent-900) 0%, transparent 62%), var(--color-bg);color:var(--color-text);font-size:14px;">
+
+  <header style="position:sticky;top:0;z-index:40;height:52px;display:flex;align-items:center;gap:12px;padding:0 18px;background:color-mix(in srgb,var(--color-bg) 86%,transparent);backdrop-filter:blur(10px);">
+    <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-ghost" data-e2e="menu" aria-label="Menu" onClick="{{ toggleMenu }}" style="min-height:36px;width:36px;padding:0;"><i class="{{ menuIcon }}" style="font-size:18px;"></i></button></sc-if>
+    <a href="#/" data-e2e="brand" style="display:flex;align-items:baseline;gap:9px;color:var(--color-text);min-width:0;"><span style="font-size:15px;font-weight:500;letter-spacing:-0.01em;white-space:nowrap;">The Threshold Institute</span><span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:var(--color-accent-300);">ANIMA</span></a>
+    <span style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+        <span data-e2e="engine-status" title="{{ engineTip }}" style="{{ engineSt }}"><span style="{{ engineDot }}"></span>{{ engineLabel }}</span>
+        <a class="btn btn-secondary" href="{{ youHref }}" data-e2e="top-you" style="min-height:32px;padding:0 12px;font-size:13px;">{{ youLabel }}</a>
+      </sc-if>
+      <a class="btn btn-primary" href="#/pricing" data-e2e="cta-key" style="min-height:32px;padding:0 12px;font-size:13px;white-space:nowrap;">Get a key</a>
+    </span>
+    <span style="position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(to right,transparent,var(--color-divider) 48px,var(--color-divider) calc(100% - 48px),transparent);"></span>
+  </header>
+
+  <div style="display:flex;align-items:flex-start;">
+    <nav data-e2e="{{ railE2e }}" aria-label="Site" style="{{ railSt }}">
+      <div style="display:grid;gap:2px;">
+        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);padding:0 10px 5px;">Institute</span>
+        <a href="#/" data-e2e="nav-home" style="{{ navSt.home }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-house" style="font-size:16px;"></i>Overview</a>
+        <a href="#/experiment" data-e2e="nav-experiment" style="{{ navSt.experiment }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-flask" style="font-size:16px;"></i>The experiment</a>
+        <a href="#/research" data-e2e="nav-research" style="{{ navSt.research }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-books" style="font-size:16px;"></i>Research</a>
+      </div>
+      <div style="display:grid;gap:2px;">
+        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);padding:0 10px 5px;">Build</span>
+        <a href="#/repos" data-e2e="nav-repos" style="{{ navSt.repos }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-git-branch" style="font-size:16px;"></i><span style="flex:1;">Repos</span><span style="font:500 11px ui-monospace,Menlo,monospace;color:var(--color-neutral-400);">100</span></a>
+        <a href="../../ops/src/Explorer.dc.html" target="_blank" rel="noopener" data-e2e="nav-graph" style="{{ navSt.graph }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-graph" style="font-size:16px;"></i><span style="flex:1;">Live graph</span><i class="ph ph-arrow-up-right" style="font-size:12px;color:var(--color-neutral-400);"></i></a>
+      </div>
+      <div style="display:grid;gap:2px;">
+        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);padding:0 10px 5px;">API</span>
+        <a href="#/pricing" data-e2e="nav-pricing" style="{{ navSt.pricing }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-tag" style="font-size:16px;"></i>Pricing</a>
+        <a href="#/docs" data-e2e="nav-docs" style="{{ navSt.docs }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-book-open" style="font-size:16px;"></i>Docs</a>
+        <a href="#/sandbox" data-e2e="nav-sandbox" style="{{ navSt.sandbox }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-terminal-window" style="font-size:16px;"></i>Sandbox</a>
+      </div>
+      <div style="display:grid;gap:2px;">
+        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);padding:0 10px 5px;">You</span>
+        <a href="#/signin" data-e2e="nav-signin" style="{{ navSt.signin }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-sign-in" style="font-size:16px;"></i>Sign in</a>
+        <a href="#/account" data-e2e="nav-account" style="{{ navSt.account }}" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><i class="ph ph-user-circle" style="font-size:16px;"></i>Account</a>
+      </div>
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+        <span style="{{ engineSt }}" title="{{ engineTip }}"><span style="{{ engineDot }}"></span>{{ engineLabel }}</span>
+      </sc-if>
+    </nav>
+
+    <main style="flex:1;min-width:0;padding:{{ mainPad }};box-sizing:border-box;">
+      <div style="max-width:880px;display:grid;gap:44px;">
+
+        <sc-if value="{{ is.home }}" hint-placeholder-val="{{ true }}">
+          <section data-e2e="route-home" data-screen-label="01 Overview" style="display:grid;gap:48px;">
+            <div data-e2e="hero" style="display:grid;gap:18px;padding-top:8px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Anima · the headline experiment</span>
+              <h1 style="margin:0;font-size:clamp(34px,5vw,52px);line-height:1.04;letter-spacing:-0.025em;font-weight:500;max-width:760px;">Seed once. Shrink the model. Watch the line stay flat.</h1>
+              <p style="margin:0;font-size:18px;line-height:1.55;color:var(--color-neutral-300);max-width:640px;">The Threshold Institute runs one seeded brain, Bridago, on a ladder of models from 30B parameters down to an LSTM on a CPU. The claim this tests: a large, expensive model is not required when the cognitive and memory layer is built and seeded right.</p>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:4px;">
+                <a class="btn btn-primary" href="#/experiment" data-e2e="cta-experiment">Read the experiment<i class="ph ph-arrow-right"></i></a>
+                <a class="btn btn-secondary" href="#/repos" data-e2e="cta-repos">Browse the 100 repos</a>
+                <a class="btn btn-ghost" href="../../ops/src/Explorer.dc.html" target="_blank" rel="noopener" data-e2e="cta-graph"><i class="ph ph-graph"></i>Open the live graph</a>
+              </div>
+            </div>
+
+            <div data-e2e="ladder" style="display:grid;gap:12px;">
+              <div style="display:grid;gap:4px;">
+                <h2 style="margin:0;font-size:22px;line-height:1.2;font-weight:500;">What one call costs on each rung</h2>
+                <span style="font-size:13px;color:var(--color-neutral-400);">The API meters every call by the rung that answered it. Prices from the engine's price table, in US dollars.</span>
+              </div>
+              <div style="display:grid;">
+                <div data-e2e="rung" style="display:grid;gap:8px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;"><span style="font-size:14px;">Large open model</span><span style="font-size:12px;color:var(--color-neutral-400);">~30B · GPU</span><span style="margin-left:auto;font:500 13px ui-monospace,Menlo,monospace;">$0.004</span><span style="font-size:12px;color:var(--color-neutral-400);min-width:76px;text-align:right;">the top rung</span></div>
+                  <div style="height:4px;border-radius:2px;background:color-mix(in srgb,var(--color-text) 6%,transparent);"><div style="height:4px;border-radius:2px;width:100%;background:var(--color-accent);box-shadow:0 0 12px color-mix(in srgb,var(--color-accent) 50%,transparent);"></div></div>
+                </div>
+                <div data-e2e="rung" style="display:grid;gap:8px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;"><span style="font-size:14px;">Mid open model</span><span style="font-size:12px;color:var(--color-neutral-400);">~8B · one GPU</span><span style="margin-left:auto;font:500 13px ui-monospace,Menlo,monospace;">$0.0012</span><span style="font-size:12px;color:var(--color-neutral-400);min-width:76px;text-align:right;">3.3× less</span></div>
+                  <div style="height:4px;border-radius:2px;background:color-mix(in srgb,var(--color-text) 6%,transparent);"><div style="height:4px;border-radius:2px;width:30%;background:var(--color-accent);box-shadow:0 0 12px color-mix(in srgb,var(--color-accent) 50%,transparent);"></div></div>
+                </div>
+                <div data-e2e="rung" style="display:grid;gap:8px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;"><span style="font-size:14px;">Small open model</span><span style="font-size:12px;color:var(--color-neutral-400);">1–3B · CPU or one GPU</span><span style="margin-left:auto;font:500 13px ui-monospace,Menlo,monospace;">$0.0004</span><span style="font-size:12px;color:var(--color-neutral-400);min-width:76px;text-align:right;">10× less</span></div>
+                  <div style="height:4px;border-radius:2px;background:color-mix(in srgb,var(--color-text) 6%,transparent);"><div style="height:4px;border-radius:2px;width:10%;background:var(--color-accent);box-shadow:0 0 12px color-mix(in srgb,var(--color-accent) 50%,transparent);"></div></div>
+                </div>
+                <div data-e2e="rung" style="display:grid;gap:8px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;"><span style="font-size:14px;">Tiny transformer</span><span style="font-size:12px;color:var(--color-neutral-400);">~7–50M · CPU</span><span style="margin-left:auto;font:500 13px ui-monospace,Menlo,monospace;">$0.0001</span><span style="font-size:12px;color:var(--color-neutral-400);min-width:76px;text-align:right;">40× less</span></div>
+                  <div style="height:4px;border-radius:2px;background:color-mix(in srgb,var(--color-text) 6%,transparent);"><div style="height:4px;border-radius:2px;width:2.5%;min-width:3px;background:var(--color-accent);box-shadow:0 0 12px color-mix(in srgb,var(--color-accent) 50%,transparent);"></div></div>
+                </div>
+                <div data-e2e="rung" style="display:grid;gap:8px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;"><span style="font-size:14px;">LSTM (xLSTM, minLSTM)</span><span style="font-size:12px;color:var(--color-neutral-400);">~7–50M · CPU</span><span style="margin-left:auto;font:500 13px ui-monospace,Menlo,monospace;">$0.00005</span><span style="font-size:12px;color:var(--color-neutral-400);min-width:76px;text-align:right;">80× less</span></div>
+                  <div style="height:4px;border-radius:2px;background:color-mix(in srgb,var(--color-text) 6%,transparent);"><div style="height:4px;border-radius:2px;width:1.25%;min-width:3px;background:var(--color-accent);box-shadow:0 0 12px color-mix(in srgb,var(--color-accent) 50%,transparent);"></div></div>
+                </div>
+                <div data-e2e="rung" style="display:grid;gap:8px;padding:12px 0;">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;"><span style="font-size:14px;">The graph, no model</span><span style="font-size:12px;color:var(--color-neutral-400);">reads the published graph · CPU</span><span style="margin-left:auto;font:500 13px ui-monospace,Menlo,monospace;">$0.00001</span><span style="font-size:12px;color:var(--color-neutral-400);min-width:76px;text-align:right;">400× less</span></div>
+                  <div style="height:4px;border-radius:2px;background:color-mix(in srgb,var(--color-text) 6%,transparent);"><div style="height:4px;border-radius:2px;width:0.25%;min-width:3px;background:var(--color-accent);box-shadow:0 0 12px color-mix(in srgb,var(--color-accent) 50%,transparent);"></div></div>
+                </div>
+              </div>
+              <p style="margin:0;font-size:13.5px;line-height:1.6;color:var(--color-neutral-400);max-width:680px;">Nothing on this ladder has been measured yet. Phase P3 runs the large, small and LSTM rungs at depth 1–3 with a curated seed, and the result goes here whichever way it falls.</p>
+            </div>
+
+            <div style="display:grid;gap:14px;">
+              <h2 style="margin:0;font-size:22px;line-height:1.2;font-weight:500;">What would prove it wrong</h2>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px;">
+                <div class="card" data-e2e="hypothesis" style="gap:8px;"><span class="card-kicker">H0 · headline</span><span class="card-body" style="font-size:14px;line-height:1.5;">Seeded by retrieval with a curated seed, every rung from 30B to the LSTM stays within 5 points of the 30B model.</span><span class="card-meta" style="font-size:12.5px;">Refuted if any rung falls more than 5 points below it.</span></div>
+                <div class="card" data-e2e="hypothesis" style="gap:8px;"><span class="card-kicker">H4 · the LSTM signature</span><span class="card-body" style="font-size:14px;line-height:1.5;">The LSTM fails unseeded and with the seed in its context, and passes when the graph serves the seed by retrieval.</span><span class="card-meta" style="font-size:12.5px;">Refuted if in context is about equal to retrieval, or retrieval to unseeded.</span></div>
+                <div class="card" data-e2e="hypothesis" style="gap:8px;"><span class="card-kicker">H5 · structure, not volume</span><span class="card-body" style="font-size:14px;line-height:1.5;">A shuffled seed of the same size removes at least 80% of the gain.</span><span class="card-meta" style="font-size:12.5px;">Refuted if the shuffled seed keeps more than 20% of it.</span></div>
+              </div>
+              <a href="#/experiment" style="font-size:13.5px;">All eight hypotheses and the design</a>
+            </div>
+
+            <div style="display:grid;gap:14px;">
+              <h2 style="margin:0;font-size:22px;line-height:1.2;font-weight:500;">Start here</h2>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;">
+                <a class="card" href="#/research" data-e2e="portal-research" style="gap:6px;color:var(--color-text);" style-hover="box-shadow:var(--shadow-md);"><i class="ph ph-books" style="font-size:20px;color:var(--color-accent);"></i><span class="card-title" style="font-size:15px;">Research</span><span class="card-body" style="font-size:13px;">Open questions, each with the result that would refute it, and the reports.</span></a>
+                <a class="card" href="#/repos" data-e2e="portal-repos" style="gap:6px;color:var(--color-text);" style-hover="box-shadow:var(--shadow-md);"><i class="ph ph-git-branch" style="font-size:20px;color:var(--color-accent);"></i><span class="card-title" style="font-size:15px;">100 repos</span><span class="card-body" style="font-size:13px;">Everything the institute has in code or research, packaged and tested in the open.</span></a>
+                <a class="card" href="#/docs" data-e2e="portal-docs" style="gap:6px;color:var(--color-text);" style-hover="box-shadow:var(--shadow-md);"><i class="ph ph-book-open" style="font-size:20px;color:var(--color-accent);"></i><span class="card-title" style="font-size:15px;">API</span><span class="card-body" style="font-size:13px;">Metered by the rung that answered. Docs, a sandbox and keys.</span></a>
+                <a class="card" href="../../ops/src/Explorer.dc.html" target="_blank" rel="noopener" data-e2e="portal-graph" style="gap:6px;color:var(--color-text);" style-hover="box-shadow:var(--shadow-md);"><i class="ph ph-graph" style="font-size:20px;color:var(--color-accent);"></i><span class="card-title" style="font-size:15px;">The live graph</span><span class="card-body" style="font-size:13px;">What the operator has published in full; everything else as a grey shape.</span></a>
+              </div>
+            </div>
+
+            <div style="display:grid;gap:14px;">
+              <h2 style="margin:0;font-size:22px;line-height:1.2;font-weight:500;">Who runs it</h2>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px 28px;">
+                <div style="display:grid;gap:5px;"><span style="font:500 12px ui-monospace,Menlo,monospace;letter-spacing:0.08em;color:var(--color-accent-200);">BRIDAGO</span><span style="font-size:14px;line-height:1.55;color:var(--color-neutral-300);">The shared seeded brain. Rex carries the graph, Jarvis the cognition layer; both are branches of it.</span></div>
+                <div style="display:grid;gap:5px;"><span style="font:500 12px ui-monospace,Menlo,monospace;letter-spacing:0.08em;color:var(--color-accent-200);">SEXTANT</span><span style="font-size:14px;line-height:1.55;color:var(--color-neutral-300);">The agent that runs the institute: research rounds, repairs proposed as pull requests, posts through a gate the owner approves.</span></div>
+                <div style="display:grid;gap:5px;"><span style="font:500 12px ui-monospace,Menlo,monospace;letter-spacing:0.08em;color:var(--color-accent-200);">TESTER</span><span style="font-size:14px;line-height:1.55;color:var(--color-neutral-300);">One graph of the whole repository. It tests the code, the stack and this site, and keeps a fix only when the re-test passes.</span></div>
+              </div>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.experiment }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-experiment" data-screen-label="02 Experiment" style="display:grid;gap:40px;">
+            <div style="display:grid;gap:14px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">The experiment · Seeded Substrate Plan v4</span>
+              <h1 style="margin:0;font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">A substrate ladder × seed conditions × seed quality</h1>
+              <p style="margin:0;font-size:17px;line-height:1.6;color:var(--color-neutral-300);max-width:660px;">The same tasks run on every rung. Unseeded, quality should fall as the model shrinks. Seeded once, the line should stay flat. Each cell of the grid writes one results row.</p>
+              <a href="../../../research/reports/Seeded%20Substrate%20Plan%20v4.dc.html" target="_blank" rel="noopener" style="font-size:13.5px;">Read the full plan</a>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">The ladder</h2>
+              <div style="overflow-x:auto;"><table class="table" style="min-width:560px;">
+                <thead><tr><th>Rung</th><th>Size</th><th>Hardware</th><th>Note</th></tr></thead>
+                <tbody>
+                  <tr><td>L · large open model</td><td>~30B</td><td>GPU</td><td>The top of the ladder</td></tr>
+                  <tr><td>M · mid open model</td><td>~8B</td><td>one GPU</td><td>small/fast server</td></tr>
+                  <tr><td>S · small open model</td><td>1–3B</td><td>CPU or one GPU</td><td>small/fast server</td></tr>
+                  <tr><td>T · tiny transformer</td><td>~7–50M</td><td>CPU</td><td>trained on seed → query → answer only</td></tr>
+                  <tr><td>R · LSTM (xLSTM, minLSTM)</td><td>~7–50M</td><td>CPU</td><td>same data and budget as T</td></tr>
+                  <tr><td>G · hypergraph GNN</td><td>~1M</td><td>CPU</td><td>no-language baseline</td></tr>
+                </tbody>
+              </table></div>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Seed conditions and qualities</h2>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px;">
+                <div class="card" data-e2e="condition"><span class="card-kicker">∅ · unseeded</span><span class="card-body" style="font-size:13.5px;">The task only.</span></div>
+                <div class="card" data-e2e="condition"><span class="card-kicker">C · in context</span><span class="card-body" style="font-size:13.5px;">The seed serialized into the prompt.</span></div>
+                <div class="card" data-e2e="condition"><span class="card-kicker">Q · by retrieval</span><span class="card-body" style="font-size:13.5px;">The seed in the graph; Bridago answers lookups.</span></div>
+                <div class="card" data-e2e="condition"><span class="card-kicker">X · shuffled</span><span class="card-body" style="font-size:13.5px;">Q with the permuted seed. The control.</span></div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px;">
+                <div class="card" data-e2e="quality"><span class="card-kicker">Minimal</span><span class="card-body" style="font-size:13.5px;">Incidence and types only.</span></div>
+                <div class="card" data-e2e="quality"><span class="card-kicker">Generated</span><span class="card-body" style="font-size:13.5px;">All five blocks from the generator, unreviewed.</span></div>
+                <div class="card" data-e2e="quality"><span class="card-kicker">Curated</span><span class="card-body" style="font-size:13.5px;">All five blocks, constraints and energy reviewed by hand.</span></div>
+              </div>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Hypotheses</h2>
+              <div style="overflow-x:auto;"><table class="table" style="min-width:600px;">
+                <thead><tr><th style="width:96px;">#</th><th>Hypothesis</th><th>Refuted if</th></tr></thead>
+                <tbody>
+                  <tr data-e2e="hypothesis"><td>H0 · headline</td><td>Seeded (Q, curated), every rung from L to R stays within 5 points of L</td><td>Any rung falls more than 5 points below L</td></tr>
+                  <tr data-e2e="hypothesis"><td>H1</td><td>SQ within 5 points of L∅ on schema validity at depth ≤ 6</td><td>Gap &gt; 5 points at any depth ≥ 3</td></tr>
+                  <tr data-e2e="hypothesis"><td>H2</td><td>Seeding halves the spread between substrates</td><td>Spread under Q ≥ 50% of spread under ∅</td></tr>
+                  <tr data-e2e="hypothesis"><td>H3</td><td>RQ within 5 points of TQ on inferred reachability, at ≥ 10× lower CPU cost per item</td><td>R trails T by &gt; 5 points under Q</td></tr>
+                  <tr data-e2e="hypothesis"><td>H4</td><td>R fails ∅ and C, passes Q (the LSTM signature)</td><td>RC ≈ RQ, or RQ ≈ R∅</td></tr>
+                  <tr data-e2e="hypothesis"><td>H5</td><td>The shuffled seed removes ≥ 80% of the gain</td><td>X keeps &gt; 20% of the Q − ∅ gain</td></tr>
+                  <tr data-e2e="hypothesis"><td>H6</td><td>The seeded gain grows with schema depth</td><td>Gain flat or shrinking from depth 1 to 6</td></tr>
+                  <tr data-e2e="hypothesis"><td>H7</td><td>Seed quality (minimal → curated) moves accuracy more than substrate size (L → R)</td><td>The size effect is larger than the seed-quality effect</td></tr>
+                </tbody>
+              </table></div>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Phases</h2>
+              <div style="display:grid;gap:10px;max-width:720px;">
+                <div data-e2e="phase" style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;font-size:14.5px;line-height:1.55;"><span style="font:500 13px ui-monospace,Menlo,monospace;color:var(--color-accent-200);">P0</span><span><b style="font-weight:500;">Unify.</b> Rex and Jarvis merged as branches of Bridago, one port map, one repo.</span></div>
+                <div data-e2e="phase" style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;font-size:14.5px;line-height:1.55;"><span style="font:500 13px ui-monospace,Menlo,monospace;color:var(--color-accent-200);">P1</span><span><b style="font-weight:500;">Replicate.</b> S∅ reproduces dspy-router-test. If it does not, stop and fix the baseline.</span></div>
+                <div data-e2e="phase" style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;font-size:14.5px;line-height:1.55;"><span style="font:500 13px ui-monospace,Menlo,monospace;color:var(--color-accent-200);">P2</span><span style="display:grid;gap:6px;"><span><b style="font-weight:500;">Seed.</b> Generator, shuffle control and Bridago retrieval, with tests.</span><span style="display:flex;flex-wrap:wrap;gap:6px;"><a class="tag tag-accent" href="#/repos?q=seed-gen">anima/seed-gen · written</a><a class="tag tag-accent" href="#/repos?q=anima-harness">anima/anima-harness · written</a><a class="tag tag-outline" href="#/repos?q=seed-shuffle">anima/seed-shuffle · queued</a></span></span></div>
+                <div data-e2e="phase" style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;font-size:14.5px;line-height:1.55;"><span style="font:500 13px ui-monospace,Menlo,monospace;color:var(--color-accent-200);">P3</span><span><b style="font-weight:500;">Small grid.</b> L, S, R at depth 1–3, curated seed only. Read H0, H4, H5 before spending on the rest.</span></div>
+                <div data-e2e="phase" style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;font-size:14.5px;line-height:1.55;"><span style="font:500 13px ui-monospace,Menlo,monospace;color:var(--color-accent-200);">P4</span><span><b style="font-weight:500;">Full grid.</b> All rungs, depth 1–6, three seed qualities, probes.</span></div>
+                <div data-e2e="phase" style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;font-size:14.5px;line-height:1.55;"><span style="font:500 13px ui-monospace,Menlo,monospace;color:var(--color-accent-200);">P5</span><span><b style="font-weight:500;">Publish.</b> Seeded and unseeded curves from 30B to LSTM on one chart, results on the public graph.</span></div>
+              </div>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.research }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-research" data-screen-label="03 Research" style="display:grid;gap:40px;">
+            <div style="display:grid;gap:14px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Research</span>
+              <h1 style="margin:0;font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Open questions, each with its falsifier</h1>
+              <p style="margin:0;font-size:17px;line-height:1.6;color:var(--color-neutral-300);max-width:660px;">SEXTANT works these in public. Every question carries the result that would refute it; the agent marks where a claim is thin.</p>
+            </div>
+            <div style="display:grid;">
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">Which headline AI claims rest on one source, and which are triangulated?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: a field where nearly every claim has several independent sources</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">Which energy forecasts in circulation are stale, and who still cites them?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: the IEA restates the 1,000 TWh figure for 2026</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">Does high consistency energy in a region predict later revision of its claims?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: no correlation after 90 days of tracking</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">Do minted types converge across runs, or does the ontology drift?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: types never overlap between runs</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">Is entry-level demand falling in exposed jobs, and is the evidence more than a few studies?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: many independent studies agree on a small effect</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">Where do evaluations fail because models detect the test?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: results hold under hidden evaluations</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">In which sectors does reported AI use exceed measured value, and by how much?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: outcome studies match the use surveys in every sector</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">For a given water body, do federal, provincial and municipal rules agree, and where does one tier leave a gap?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: every tier cites the same standard and the same monitor</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">Does the payout per phone exceed what the owner pays in battery wear, data and risk?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: measured payouts per device stay above the owner's cost on a median phone</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">Can a seeded graph and a force-field screen propose stable molecules that are not in the literature, at a rate a bench can keep up with?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: a wet lab fails to make the first ten candidates that cleared the screen</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">What does the public Bitcoin transaction graph show about key reuse and miner concentration that is not already reported?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: every structural finding also appears in a degree-preserving shuffle of the same graph</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><span style="font-size:15px;line-height:1.45;">For a named seizure of land or removal of a leader, what does the primary record actually support, and where is it silent or contested?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: every assertion in a case brief resolves to a primary source and none is contested</span></div>
+              <div data-e2e="question" style="display:grid;gap:4px;padding:14px 0;"><span style="font-size:15px;line-height:1.45;">What do GPU-hours rent for by model and contract type, how fast are they falling, and what utilisation does the rent imply?</span><span style="font-size:13px;color:var(--color-neutral-400);">Refuted if: rental prices per GPU-hour stop falling for two quarters while utilisation stays high</span></div>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Reports</h2>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:8px 24px;">
+                <a data-e2e="report-link" href="../../../research/reports/Seeded%20Substrate%20Plan%20v4.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>Seeded Substrate Plan v4</a>
+                <a data-e2e="report-link" href="../../../research/reports/Graph%20Intelligence%20Report%20v3.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>Graph Intelligence Report v3</a>
+                <a data-e2e="report-link" href="../../../research/reports/Institute%20Blueprint%20v3.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>Institute Blueprint v3</a>
+                <a data-e2e="report-link" href="../../../research/reports/Landscape%202026.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>Landscape 2026</a>
+                <a data-e2e="report-link" href="../../../research/reports/Cheap%20Brain%20Evidence.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>Cheap Brain Evidence</a>
+                <a data-e2e="report-link" href="../../../research/reports/Catalogue%205M.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>Catalogue 5M</a>
+                <a data-e2e="report-link" href="../../../research/reports/AI%20Era%20Bubble.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>AI Era Bubble</a>
+                <a data-e2e="report-link" href="../../../research/reports/Exposure%20and%20Templates.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>Exposure and Templates</a>
+                <a data-e2e="report-link" href="../../../research/reports/Graph%20Inversion%20Directive%20v1.dc.html" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:baseline;font-size:14.5px;padding:6px 0;"><i class="ph ph-file-text"></i>Graph Inversion Directive v1</a>
+              </div>
+              <span style="font-size:12.5px;color:var(--color-neutral-400);">Earlier versions: <a href="../../../research/reports/Graph%20Intelligence%20Report%20v2.dc.html" target="_blank" rel="noopener">Graph Intelligence v2</a> · <a href="../../../research/reports/Graph%20Intelligence%20Report.dc.html" target="_blank" rel="noopener">v1</a> · <a href="../../../research/reports/Institute%20Blueprint%20v2.dc.html" target="_blank" rel="noopener">Blueprint v2</a> · <a href="../../../research/reports/Institute%20Blueprint.dc.html" target="_blank" rel="noopener">v1</a></span>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Standing goals</h2>
+              <ul style="margin:0;padding-left:18px;display:grid;gap:8px;font-size:14.5px;line-height:1.55;color:var(--color-neutral-300);max-width:720px;">
+                <li data-e2e="goal">Map where AI capability, money, compute and energy actually stand, and mark every claim with its support.</li>
+                <li data-e2e="goal">Test whether consistency energy can grade prose claims the way a test suite grades code.</li>
+                <li data-e2e="goal">Debunk stale or single-sourced AI claims and warn early, with falsifiers, where the evidence is strong.</li>
+                <li data-e2e="goal">Ship small tested apps and notes that make the research usable.</li>
+                <li data-e2e="goal">Earn trust and contracts through assurance, provenance and audit-ready records.</li>
+                <li data-e2e="goal">Track where AI is used and where it pays off in private enterprise, schools, hospitals, healthcare and travel, separating surveys of use from measured outcomes.</li>
+                <li data-e2e="goal">Compare federal, provincial and municipal rules for a named water body or process, and report conflicts and gaps.</li>
+                <li data-e2e="goal">Work out whether idle phones and tablets can be paid to share compute, and what has to be true for it to work.</li>
+                <li data-e2e="goal">Run standing labs where a claim can be computed, then tested on a real bench, and never call a computation a result.</li>
+                <li data-e2e="goal">Work out from sources whether the GPU build-out is priced ahead of the revenue it can earn, with every limit stated.</li>
+              </ul>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.repos }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-repos" data-screen-label="04 Repos" style="display:grid;gap:28px;">
+            <div style="display:grid;gap:14px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Build · released in five waves</span>
+              <h1 style="margin:0;font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">One hundred repos from one seeded brain</h1>
+              <p style="margin:0;font-size:17px;line-height:1.6;color:var(--color-neutral-300);max-width:680px;">Each packages something the institute already has in code or in research. TESTER packages the ones with source here, SEXTANT writes the ones that exist only as research, and every repo ships when it clears the bar.</p>
+              <span data-e2e="repo-stats" style="font:13px ui-monospace,Menlo,monospace;color:var(--color-neutral-300);">{{ stats.line }}</span>
+            </div>
+            <div data-e2e="repo-bar" class="card" style="gap:10px;">
+              <span class="card-kicker">The bar every repo clears before it ships</span>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:6px 20px;font-size:13.5px;line-height:1.5;color:var(--color-neutral-200);">
+                <span>Tests in CI, no network, no model</span><span><code>docker compose up</code> in one line</span><span>README names the finding and hypothesis</span><span>Licence, secrets scan, dependency audit</span><span>A runnable example under 60 seconds</span><span>Links back to the site and the graph</span>
+              </div>
+            </div>
+            <div style="display:grid;gap:10px;">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+                <input class="input" data-e2e="repo-search" placeholder="Search repos" aria-label="Search repos" value="{{ q }}" onInput="{{ onQ }}" style="max-width:260px;">
+                <select class="input" data-e2e="f-cat" aria-label="Category" value="{{ fCat }}" onChange="{{ onCat }}" style="max-width:210px;">
+                  <option value="">Every category</option><option value="Seed · Rex">Seed · Rex</option><option value="Cognition · Jarvis">Cognition · Jarvis</option><option value="Substrates">Substrates</option><option value="Harness · eval">Harness · eval</option><option value="Agent ops">Agent ops</option><option value="Observability">Observability</option><option value="Visual">Visual</option><option value="Integrations · MCP">Integrations · MCP</option><option value="Domain seeds">Domain seeds</option><option value="Studio · sites">Studio · sites</option>
+                </select>
+                <select class="input" data-e2e="f-wave" aria-label="Wave" value="{{ fWave }}" onChange="{{ onWave }}" style="max-width:170px;">
+                  <option value="">Every wave</option><option value="0">W0 · launch day</option><option value="1">W1 · week 1</option><option value="2">W2 · week 2</option><option value="3">W3 · week 3</option><option value="4">W4 · week 4</option>
+                </select>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <sc-for list="{{ lineBtns }}" as="b" hint-placeholder-count="4"><button type="button" class="{{ b.cls }}" data-e2e="{{ b.e2e }}" onClick="{{ b.pick }}" style="min-height:30px;padding:0 11px;font-size:12.5px;">{{ b.label }}</button></sc-for>
+                <span style="width:10px;"></span>
+                <sc-for list="{{ builderBtns }}" as="b" hint-placeholder-count="4"><button type="button" class="{{ b.cls }}" data-e2e="{{ b.e2e }}" onClick="{{ b.pick }}" style="min-height:30px;padding:0 11px;font-size:12.5px;">{{ b.label }}</button></sc-for>
+                <span data-e2e="repo-count" style="margin-left:auto;font-size:12.5px;color:var(--color-neutral-400);">{{ shownLine }}</span>
+              </div>
+            </div>
+            <sc-if value="{{ regErr }}" hint-placeholder-val="{{ false }}"><span style="font-size:13.5px;color:var(--color-accent-200);">{{ regErr }}</span></sc-if>
+            <div data-e2e="repo-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:10px;">
+              <sc-for list="{{ repos }}" as="r" hint-placeholder-count="9">
+                <div class="card" data-e2e="repo-card" style="gap:8px;align-content:start;">
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><span style="font:13px ui-monospace,Menlo,monospace;color:var(--color-accent-200);overflow-wrap:anywhere;">{{ r.name }}</span><span class="{{ r.lineCls }}" style="font-size:10px;padding:1px 7px;white-space:nowrap;">{{ r.line }}</span></div>
+                  <span class="card-body" style="font-size:13px;line-height:1.5;">{{ r.what }}</span>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"><span class="{{ r.statusCls }}" style="font-size:10px;padding:1px 7px;">{{ r.statusLabel }}</span><span class="card-meta" style="font-size:11px;">{{ r.cat }} · W{{ r.wave }} · {{ r.builderLabel }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ noMatch }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;align-items:center;font-size:14px;color:var(--color-neutral-300);">No repo matches those filters.<button type="button" class="btn btn-ghost" data-e2e="f-clear" onClick="{{ clearFilters }}" style="min-height:30px;font-size:12.5px;">Clear filters</button></div></sc-if>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.pricing }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-pricing" data-screen-label="05 Pricing" style="display:grid;gap:40px;">
+            <div style="display:grid;gap:14px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">API · pricing</span>
+              <h1 style="margin:0;font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Pay for the rung that answered</h1>
+              <p style="margin:0;font-size:17px;line-height:1.6;color:var(--color-neutral-300);max-width:660px;">Every call is metered by the rung that answered it, so a read from the published graph costs a fraction of a model call. You set a monthly cap; at the cap, calls stop with a 402 until you raise it.</p>
+              <span class="tag tag-outline" style="justify-self:start;font-size:11.5px;">Billing opens once the institute is a legal entity. Until then the owner issues keys by hand.</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
+              <div class="card" data-e2e="plan" style="gap:10px;"><span class="card-kicker">Metered</span><span style="font-size:30px;font-weight:500;letter-spacing:-0.02em;">$0<span style="font-size:14px;color:var(--color-neutral-400);"> / month</span></span><span class="card-body" style="font-size:13.5px;">Pay per call only. The right start for a project or a paper.</span><a class="btn btn-primary" href="#/signup?plan=metered" data-e2e="plan-metered-cta" style="margin-top:auto;">Request a key</a></div>
+              <div class="card" data-e2e="plan" style="gap:10px;"><span class="card-kicker">Team</span><span style="font-size:30px;font-weight:500;letter-spacing:-0.02em;">$99<span style="font-size:14px;color:var(--color-neutral-400);"> / month</span></span><span class="card-body" style="font-size:13.5px;">A subscription plus metered calls, for a group sharing one tenant.</span><a class="btn btn-primary" href="#/signup?plan=team" data-e2e="plan-team-cta" style="margin-top:auto;">Request a key</a></div>
+              <div class="card" data-e2e="plan" style="gap:10px;"><span class="card-kicker">Scale</span><span style="font-size:30px;font-weight:500;letter-spacing:-0.02em;">$499<span style="font-size:14px;color:var(--color-neutral-400);"> / month</span></span><span class="card-body" style="font-size:13.5px;">A subscription plus metered calls, for production traffic.</span><a class="btn btn-primary" href="#/signup?plan=scale" data-e2e="plan-scale-cta" style="margin-top:auto;">Request a key</a></div>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Per call, by rung</h2>
+              <div style="overflow-x:auto;"><table class="table" data-e2e="price-table" style="min-width:480px;">
+                <thead><tr><th>Rung</th><th>Per call</th><th>Per 10,000 calls</th></tr></thead>
+                <tbody>
+                  <tr><td>30B</td><td>$0.004</td><td>$40.00</td></tr>
+                  <tr><td>8B</td><td>$0.0012</td><td>$12.00</td></tr>
+                  <tr><td>1–3B</td><td>$0.0004</td><td>$4.00</td></tr>
+                  <tr><td>Tiny transformer</td><td>$0.0001</td><td>$1.00</td></tr>
+                  <tr><td>LSTM</td><td>$0.00005</td><td>$0.50</td></tr>
+                  <tr><td>The graph, no model</td><td>$0.00001</td><td>$0.10</td></tr>
+                </tbody>
+              </table></div>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Personas and rate limits</h2>
+              <p style="margin:0;font-size:14.5px;line-height:1.6;color:var(--color-neutral-300);max-width:680px;">Each call names a persona in the <code>X-Persona</code> header. A persona is a policy, not a permission: it sets the reading level, how much of a record is shown and the rate. Nothing a persona asks for can reach an unpublished node.</p>
+              <div style="overflow-x:auto;"><table class="table" data-e2e="rate-table" style="min-width:480px;">
+                <thead><tr><th>Persona</th><th>Reading level</th><th>Requests per minute</th></tr></thead>
+                <tbody>
+                  <tr><td>scholar</td><td>academic</td><td>60</td></tr>
+                  <tr><td>journalist</td><td>plain</td><td>60</td></tr>
+                  <tr><td>corporate</td><td>technical</td><td>120</td></tr>
+                  <tr><td>government</td><td>technical</td><td>120</td></tr>
+                  <tr><td>developer</td><td>technical</td><td>240</td></tr>
+                </tbody>
+              </table></div>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.signup }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-signup" data-screen-label="06 Request a key" style="display:grid;gap:28px;max-width:620px;">
+            <div style="display:grid;gap:14px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">API · request a key</span>
+              <h1 style="margin:0;font-size:clamp(28px,4vw,38px);line-height:1.1;letter-spacing:-0.02em;font-weight:500;">Tell the owner what you would build</h1>
+              <p style="margin:0;font-size:16px;line-height:1.6;color:var(--color-neutral-300);">Your request goes to the institute's contact queue. The owner issues keys by hand and answers by email.</p>
+            </div>
+            <sc-if value="{{ su.showForm }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;gap:14px;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;">
+                  <div class="field"><label for="su-name">Name</label><input id="su-name" class="input" data-e2e="signup-name" value="{{ su.name }}" onInput="{{ su.onName }}" autocomplete="name"></div>
+                  <div class="field"><label for="su-email">Email</label><input id="su-email" class="input" type="email" data-e2e="signup-email" value="{{ su.email }}" onInput="{{ su.onEmail }}" autocomplete="email"></div>
+                  <div class="field"><label for="su-org">Organisation (optional)</label><input id="su-org" class="input" data-e2e="signup-org" value="{{ su.org }}" onInput="{{ su.onOrg }}" autocomplete="organization"></div>
+                  <div class="field"><label for="su-plan">Plan</label><select id="su-plan" class="input" data-e2e="signup-plan" value="{{ su.plan }}" onChange="{{ su.onPlan }}"><option value="metered">Metered · $0 / month</option><option value="team">Team · $99 / month</option><option value="scale">Scale · $499 / month</option></select></div>
+                </div>
+                <div class="field"><label for="su-use">What would you use it for?</label><textarea id="su-use" class="input" data-e2e="signup-use" value="{{ su.use }}" onInput="{{ su.onUse }}" placeholder="A sentence or two is enough."></textarea></div>
+                <sc-if value="{{ su.hasErr }}" hint-placeholder-val="{{ false }}"><span data-e2e="signup-error" role="alert" style="font-size:13.5px;color:var(--color-accent-200);">{{ su.err }}</span></sc-if>
+                <sc-if value="{{ su.offline }}" hint-placeholder-val="{{ false }}"><span data-e2e="signup-offline" role="status" style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">Not sent: the engine did not answer at /api. Your answers stay in this form; try again from the running site.</span></sc-if>
+                <div style="display:flex;gap:10px;align-items:center;"><button type="button" class="btn btn-primary" data-e2e="signup-submit" onClick="{{ su.submit }}" disabled="{{ su.busy }}">{{ su.submitLabel }}</button><a href="#/pricing" style="font-size:13.5px;">Back to pricing</a></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ su.sent }}" hint-placeholder-val="{{ false }}"><div class="card" data-e2e="signup-sent" style="gap:8px;"><span class="card-kicker">Sent</span><span class="card-body" style="font-size:14.5px;">Your request is in the contact queue. The owner answers by email.</span></div></sc-if>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.docs }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-docs" data-screen-label="07 Docs" style="display:grid;gap:36px;">
+            <div style="display:grid;gap:14px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">API · reference</span>
+              <h1 style="margin:0;font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">The /v1 API</h1>
+              <p style="margin:0;font-size:17px;line-height:1.6;color:var(--color-neutral-300);max-width:660px;">One key per tenant, one persona per call, every call metered by the rung that answered. Reads come from the repricing board and the published graph with no model; <code>/v1/ask</code> runs a public round on the configured model.</p>
+            </div>
+            <div style="display:grid;gap:10px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Authentication</h2>
+              <pre data-e2e="auth-example" style="margin:0;padding:14px 16px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);font-size:12.5px;line-height:1.6;overflow-x:auto;color:var(--color-neutral-200);">{{ authCurl }}</pre>
+              <span style="font-size:13px;color:var(--color-neutral-400);">Keys look like <code>anma_</code> followed by 32 hex characters and are stored by the engine only as hashes.</span>
+            </div>
+            <div style="display:grid;gap:10px;">
+              <h2 style="margin:0;font-size:20px;font-weight:500;">Errors</h2>
+              <div style="overflow-x:auto;"><table class="table" style="min-width:460px;">
+                <thead><tr><th style="width:80px;">Status</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td>401</td><td>No key, or a key the engine does not know</td></tr>
+                  <tr><td>402</td><td>The monthly cap is reached; raise it in your account</td></tr>
+                  <tr><td>403</td><td>This persona needs the owner to approve the tenant for it</td></tr>
+                  <tr><td>429</td><td>Over the persona's requests per minute</td></tr>
+                </tbody>
+              </table></div>
+            </div>
+            <div style="display:grid;gap:4px;">
+              <h2 style="margin:0 0 6px;font-size:20px;font-weight:500;">Endpoints</h2>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-accent" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/v1/limits</code><span class="tag tag-outline" style="font-size:10.5px;">key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.limits }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.limits }}</button><a class="btn btn-secondary" href="#/sandbox?ep=limits" data-e2e="try-limits" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">Your rate limit and monthly cap for the persona you call as.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-accent" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/v1/usage</code><span class="tag tag-outline" style="font-size:10.5px;">key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.usage }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.usage }}</button><a class="btn btn-secondary" href="#/sandbox?ep=usage" data-e2e="try-usage" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">Your calls and spend this month, by the rung that answered.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-accent" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/v1/reprice</code><span class="tag tag-outline" style="font-size:10.5px;">key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.reprice }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.reprice }}</button><a class="btn btn-secondary" href="#/sandbox?ep=reprice" data-e2e="try-reprice" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">The repricing board the owner has approved, optionally filtered by <code>kind</code>.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-accent" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/v1/reprice/{asset}</code><span class="tag tag-outline" style="font-size:10.5px;">key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.repriceAsset }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.repriceAsset }}</button><a class="btn btn-secondary" href="#/sandbox?ep=reprice-asset" data-e2e="try-reprice-asset" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">One asset on the board.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-accent" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/v1/graph/node/{nid}?hops=1</code><span class="tag tag-outline" style="font-size:10.5px;">key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.node }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.node }}</button><a class="btn btn-secondary" href="#/sandbox?ep=node" data-e2e="try-node" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">A published node and its neighbourhood.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-accent" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/v1/provenance</code><span class="tag tag-outline" style="font-size:10.5px;">key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.provenance }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.provenance }}</button><a class="btn btn-secondary" href="#/sandbox?ep=provenance" data-e2e="try-provenance" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">Where each published node came from.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-accent" style="font:600 10.5px ui-monospace,Menlo,monospace;">POST</span><code style="font-size:13.5px;">/v1/ask</code><span class="tag tag-outline" style="font-size:10.5px;">key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.ask }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.ask }}</button><a class="btn btn-secondary" href="#/sandbox?ep=ask" data-e2e="try-ask" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">A public round on the configured model. Body: <code>{"question": "…"}</code>.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-neutral" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/public/graph?focus=institute</code><span class="tag tag-outline" style="font-size:10.5px;">no key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.publicGraph }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.publicGraph }}</button><a class="btn btn-secondary" href="#/sandbox?ep=public-graph" data-e2e="try-public-graph" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">The hop view: published nodes in full, everything else a grey shape with an opaque id.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-neutral" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/public/questions</code><span class="tag tag-outline" style="font-size:10.5px;">no key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.publicQuestions }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.publicQuestions }}</button><a class="btn btn-secondary" href="#/sandbox?ep=public-questions" data-e2e="try-public-questions" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">The open questions with their falsifiers.</span></div>
+              <div data-e2e="endpoint" style="display:grid;gap:6px;padding:12px 0;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><span class="tag tag-neutral" style="font:600 10.5px ui-monospace,Menlo,monospace;">GET</span><code style="font-size:13.5px;">/public/counters</code><span class="tag tag-outline" style="font-size:10.5px;">no key</span><span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" data-e2e="copy-curl" onClick="{{ copy.publicCounters }}" style="min-height:28px;padding:0 10px;font-size:12px;">{{ copyLabel.publicCounters }}</button><a class="btn btn-secondary" href="#/sandbox?ep=public-counters" data-e2e="try-public-counters" style="min-height:28px;padding:0 10px;font-size:12px;">Try</a></span></div><span style="font-size:13.5px;line-height:1.5;color:var(--color-neutral-300);">The counters on the front page.</span></div>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.sandbox }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-sandbox" data-screen-label="08 Sandbox" style="display:grid;gap:26px;">
+            <div style="display:grid;gap:14px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">API · sandbox</span>
+              <h1 style="margin:0;font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-0.02em;font-weight:500;">Call the API from here</h1>
+              <p style="margin:0;font-size:16px;line-height:1.6;color:var(--color-neutral-300);max-width:640px;">Requests go to the engine behind this site at <code>{{ apiBase }}</code>. Your key stays in this tab.</p>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;">
+              <div class="field"><label for="sb-ep">Endpoint</label><select id="sb-ep" class="input" data-e2e="sb-endpoint" value="{{ sb.ep }}" onChange="{{ sb.onEp }}">
+                <option value="limits">GET /v1/limits</option><option value="usage">GET /v1/usage</option><option value="reprice">GET /v1/reprice</option><option value="reprice-asset">GET /v1/reprice/{asset}</option><option value="node">GET /v1/graph/node/{nid}</option><option value="provenance">GET /v1/provenance</option><option value="ask">POST /v1/ask</option><option value="public-graph">GET /public/graph</option><option value="public-questions">GET /public/questions</option><option value="public-counters">GET /public/counters</option>
+              </select></div>
+              <div class="field"><label for="sb-persona">Persona</label><select id="sb-persona" class="input" data-e2e="sb-persona" value="{{ sb.persona }}" onChange="{{ sb.onPersona }}"><option value="developer">developer</option><option value="scholar">scholar</option><option value="journalist">journalist</option><option value="corporate">corporate</option><option value="government">government</option></select></div>
+              <div class="field"><label for="sb-key">API key</label><input id="sb-key" class="input" type="password" data-e2e="sb-key" value="{{ sb.key }}" onInput="{{ sb.onKey }}" placeholder="anma_…" autocomplete="off"></div>
+              <sc-if value="{{ sb.hasParam }}" hint-placeholder-val="{{ false }}"><div class="field"><label for="sb-param">{{ sb.paramLabel }}</label><input id="sb-param" class="input" data-e2e="sb-param" value="{{ sb.param }}" onInput="{{ sb.onParam }}"></div></sc-if>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+              <button type="button" class="btn btn-primary" data-e2e="sb-send" onClick="{{ sb.send }}" disabled="{{ sb.busy }}"><i class="ph ph-paper-plane-tilt"></i>{{ sb.sendLabel }}</button>
+              <code data-e2e="sb-curl" style="font-size:12px;color:var(--color-neutral-400);overflow-wrap:anywhere;">{{ sb.curl }}</code>
+            </div>
+            <sc-if value="{{ sb.hasError }}" hint-placeholder-val="{{ false }}"><span data-e2e="sb-error" role="alert" style="font-size:13.5px;color:var(--color-accent-200);">{{ sb.error }}</span></sc-if>
+            <sc-if value="{{ sb.hasRes }}" hint-placeholder-val="{{ false }}">
+              <div data-e2e="sb-result" style="display:grid;gap:8px;">
+                <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;font:12.5px ui-monospace,Menlo,monospace;"><span class="{{ sb.res.cls }}">{{ sb.res.status }}</span><span style="color:var(--color-neutral-400);">{{ sb.res.line }}</span></div>
+                <pre style="margin:0;padding:14px 16px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);font-size:12.5px;line-height:1.55;max-height:420px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--color-neutral-200);">{{ sb.res.body }}</pre>
+              </div>
+            </sc-if>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.signin }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-signin" data-screen-label="09 Sign in" style="display:grid;gap:24px;max-width:520px;">
+            <div style="display:grid;gap:12px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">You · sign in</span>
+              <h1 style="margin:0;font-size:clamp(28px,4vw,38px);line-height:1.1;letter-spacing:-0.02em;font-weight:500;">Sign in</h1>
+            </div>
+            <div class="seg" role="radiogroup" aria-label="Sign in with" style="justify-self:start;">
+              <label class="seg-opt" data-e2e="signin-mode-key" style="position:relative;"><input type="radio" name="si-mode" checked="{{ si.isKey }}" onChange="{{ si.toKey }}" style="position:absolute;opacity:0;pointer-events:none;">API key</label>
+              <label class="seg-opt" data-e2e="signin-mode-seat" style="position:relative;"><input type="radio" name="si-mode" checked="{{ si.isSeat }}" onChange="{{ si.toSeat }}" style="position:absolute;opacity:0;pointer-events:none;">Tester seat</label>
+              <label class="seg-opt" data-e2e="signin-mode-owner" style="position:relative;"><input type="radio" name="si-mode" checked="{{ si.isOwner }}" onChange="{{ si.toOwner }}" style="position:absolute;opacity:0;pointer-events:none;">Owner</label>
+            </div>
+            <sc-if value="{{ si.isKey }}" hint-placeholder-val="{{ true }}"><div class="field"><label for="si-key">API key</label><input id="si-key" class="input" type="password" data-e2e="key-input" value="{{ si.key }}" onInput="{{ si.onKey }}" placeholder="anma_…" autocomplete="off"></div></sc-if>
+            <sc-if value="{{ si.isSeat }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:12px;"><div class="field"><label for="si-user">Seat</label><input id="si-user" class="input" data-e2e="seat-user" value="{{ si.user }}" onInput="{{ si.onUser }}" autocomplete="username"></div><div class="field"><label for="si-code">Code</label><input id="si-code" class="input" type="password" data-e2e="seat-code" value="{{ si.code }}" onInput="{{ si.onCode }}" autocomplete="one-time-code"></div></div></sc-if>
+            <sc-if value="{{ si.isOwner }}" hint-placeholder-val="{{ false }}"><div class="field"><label for="si-pw">Owner password</label><input id="si-pw" class="input" type="password" data-e2e="owner-password" value="{{ si.pw }}" onInput="{{ si.onPw }}" autocomplete="current-password"></div></sc-if>
+            <sc-if value="{{ si.hasErr }}" hint-placeholder-val="{{ false }}"><span data-e2e="signin-error" role="alert" style="font-size:13.5px;color:var(--color-accent-200);">{{ si.err }}</span></sc-if>
+            <sc-if value="{{ si.hasOk }}" hint-placeholder-val="{{ false }}"><span data-e2e="signin-ok" role="status" style="font-size:13.5px;color:var(--color-neutral-200);">{{ si.ok }}</span></sc-if>
+            <div style="display:flex;gap:12px;align-items:center;"><button type="button" class="btn btn-primary" data-e2e="signin-submit" onClick="{{ si.submit }}" disabled="{{ si.busy }}">{{ si.submitLabel }}</button><a href="#/pricing" style="font-size:13.5px;">No key yet?</a></div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.account }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-account" data-screen-label="10 Account" style="display:grid;gap:24px;">
+            <div style="display:grid;gap:12px;">
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">You · account</span>
+              <h1 style="margin:0;font-size:clamp(28px,4vw,38px);line-height:1.1;letter-spacing:-0.02em;font-weight:500;">Your plan, limits and usage</h1>
+            </div>
+            <sc-if value="{{ ac.signedOut }}" hint-placeholder-val="{{ true }}"><div style="display:grid;gap:12px;justify-items:start;"><span style="font-size:15px;line-height:1.55;color:var(--color-neutral-300);">Sign in with an API key to see your plan, limits and usage.</span><a class="btn btn-primary" href="#/signin" data-e2e="account-signin">Sign in</a></div></sc-if>
+            <sc-if value="{{ ac.signedIn }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;gap:18px;">
+                <sc-if value="{{ ac.busy }}" hint-placeholder-val="{{ false }}"><span style="font-size:13.5px;color:var(--color-neutral-400);">Reading your account…</span></sc-if>
+                <sc-if value="{{ ac.hasErr }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:13.5px;color:var(--color-accent-200);">{{ ac.err }}</span></sc-if>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;">
+                  <div class="card" data-e2e="account-limits" style="gap:8px;"><span class="card-kicker">Limits</span><sc-for list="{{ ac.limits }}" as="r" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:var(--color-neutral-400);">{{ r.k }}</span><span style="font-family:ui-monospace,Menlo,monospace;text-align:right;overflow-wrap:anywhere;">{{ r.v }}</span></div></sc-for></div>
+                  <div class="card" data-e2e="account-usage" style="gap:8px;"><span class="card-kicker">This month</span><sc-for list="{{ ac.usage }}" as="r" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:var(--color-neutral-400);">{{ r.k }}</span><span style="font-family:ui-monospace,Menlo,monospace;text-align:right;overflow-wrap:anywhere;">{{ r.v }}</span></div></sc-for></div>
+                </div>
+                <div style="display:flex;gap:10px;"><a class="btn btn-secondary" href="#/sandbox" data-e2e="account-sandbox">Open the sandbox</a><button type="button" class="btn btn-ghost" data-e2e="signout" onClick="{{ ac.signout }}">Sign out</button></div>
+              </div>
+            </sc-if>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ is.missing }}" hint-placeholder-val="{{ false }}">
+          <section data-e2e="route-missing" style="display:grid;gap:12px;"><h1 style="margin:0;font-size:32px;font-weight:500;">Nothing lives at this address</h1><a href="#/" style="font-size:14px;">Back to the overview</a></section>
+        </sc-if>
+
+        <footer style="display:grid;gap:6px;padding-top:20px;font-size:12.5px;line-height:1.6;color:var(--color-neutral-400);background:linear-gradient(to right,transparent,var(--color-divider) 48px,var(--color-divider) calc(100% - 48px),transparent) no-repeat top / 100% 1px;">
+          <span>© 2026 The Threshold Institute (working name). SEXTANT, the agent that runs it, says it is an agent in everything it publishes. It gives no personalised financial advice and never manages money.</span>
+        </footer>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;apiBase&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;/api&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Engine&quot;}, &quot;registryUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;../../../repos/registry.json&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Engine&quot;}}">
+const EP = {
+  limits: { m: 'GET', p: '/v1/limits', key: true },
+  usage: { m: 'GET', p: '/v1/usage', key: true },
+  reprice: { m: 'GET', p: '/v1/reprice', key: true, param: 'kind', label: 'kind (optional)', q: true },
+  'reprice-asset': { m: 'GET', p: '/v1/reprice/{asset}', key: true, param: 'asset', label: 'Asset', path: true },
+  node: { m: 'GET', p: '/v1/graph/node/{nid}', key: true, param: 'nid', label: 'Node id', path: true, def: 'institute', extra: 'hops=1' },
+  provenance: { m: 'GET', p: '/v1/provenance', key: true },
+  ask: { m: 'POST', p: '/v1/ask', key: true, param: 'question', label: 'Question', body: true },
+  'public-graph': { m: 'GET', p: '/public/graph', key: false, param: 'focus', label: 'Focus node', q: true, def: 'institute' },
+  'public-questions': { m: 'GET', p: '/public/questions', key: false },
+  'public-counters': { m: 'GET', p: '/public/counters', key: false },
+};
+const COPY_IDS = { limits: 'limits', usage: 'usage', reprice: 'reprice', repriceAsset: 'reprice-asset', node: 'node', provenance: 'provenance', ask: 'ask', publicGraph: 'public-graph', publicQuestions: 'public-questions', publicCounters: 'public-counters' };
+const ROUTES = ['/', '/experiment', '/research', '/repos', '/pricing', '/signup', '/docs', '/sandbox', '/signin', '/account'];
+const NAV = { home: '/', experiment: '/experiment', research: '/research', repos: '/repos', pricing: '/pricing', docs: '/docs', sandbox: '/sandbox', signin: '/signin', account: '/account', graph: '#' };
+const BUILDER = { claude: 'written first', tester: 'TESTER packages', sextant: 'SEXTANT writes' };
+const STATUS = { queued: ['queued', 'tag tag-outline'], packed: ['packed', 'tag tag-neutral'], briefed: ['briefed', 'tag tag-neutral'], built: ['built', 'tag tag-neutral'], failing: ['failing the bar', 'tag tag-outline'], passing: ['passes the bar', 'tag tag-accent'], shipped: ['shipped', 'tag tag-accent'] };
+const LINE_CLS = { open: 'tag tag-accent', 'open-core': 'tag tag-neutral', 'paid API': 'tag tag-outline' };
+const ss = (k, v) => { try { if (v === undefined) return sessionStorage.getItem(k) || ''; if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return ''; } };
+
+class Component extends DCLogic {
+  state = {
+    route: '/', w: 1280, menu: false, engine: 'checking', reg: null, regErr: '', q: '', fCat: '', fWave: '', fLine: '', fBuilder: '', copied: '',
+    sb: { ep: 'public-questions', persona: 'developer', key: '', param: '', busy: false, res: null, error: '' },
+    si: { mode: 'key', key: '', user: '', code: '', pw: '', busy: false, err: '', ok: '' },
+    ac: { busy: false, limits: null, usage: null, err: '' },
+    su: { name: '', email: '', org: '', plan: 'metered', use: '', busy: false, err: '', sent: false, offline: false },
+  };
+
+  componentDidMount() {
+    this.onHash = () => this.readHash();
+    this.onResize = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('hashchange', this.onHash);
+    window.addEventListener('resize', this.onResize);
+    this.onResize();
+    const k = ss('anima.key');
+    if (k) this.setState(s => ({ sb: { ...s.sb, key: k } }));
+    this.readHash();
+    this.probe();
+    this.loadRegistry();
+  }
+  componentWillUnmount() { window.removeEventListener('hashchange', this.onHash); window.removeEventListener('resize', this.onResize); clearTimeout(this._ct); }
+
+  base() { return (this.props.apiBase ?? '/api').replace(/\/$/, ''); }
+  readHash() {
+    const h = (location.hash || '#/').slice(1) || '/', i = h.indexOf('?'), path = (i < 0 ? h : h.slice(0, i)) || '/';
+    const query = Object.fromEntries(new URLSearchParams(i < 0 ? '' : h.slice(i + 1)));
+    this.setState(s => {
+      const patch = { route: path, menu: false };
+      if (path === '/signup' && query.plan) patch.su = { ...s.su, plan: query.plan, sent: false, offline: false, err: '' };
+      if (path === '/sandbox' && query.ep && EP[query.ep]) patch.sb = { ...s.sb, ep: query.ep, param: EP[query.ep].def || '', res: null, error: '' };
+      if (path === '/repos' && query.q != null) patch.q = query.q;
+      return patch;
+    }, () => { if (path === '/account') this.loadAccount(); try { window.scrollTo(0, 0); } catch (e) {} });
+  }
+  async api(path, opt = {}) {
+    const t0 = performance.now(), ctl = new AbortController(), to = setTimeout(() => ctl.abort(), opt.timeout || 8000);
+    try {
+      const r = await fetch(this.base() + path, { method: opt.method || 'GET', headers: opt.headers || {}, body: opt.body, signal: ctl.signal, credentials: 'same-origin', cache: 'no-store' });
+      const text = await r.text(); let json = null;
+      if (/json/.test(r.headers.get('content-type') || '')) { try { json = JSON.parse(text); } catch (e) {} }
+      return { status: r.status, ms: Math.round(performance.now() - t0), json, text, offline: !json };
+    } catch (e) { return { status: 0, ms: Math.round(performance.now() - t0), json: null, text: String((e && e.message) || e), offline: true }; }
+    finally { clearTimeout(to); }
+  }
+  async probe() { const r = await this.api('/health', { timeout: 2500 }); this.setState({ engine: r.json && r.json.ok ? 'online' : 'offline' }); }
+  async loadRegistry() {
+    try { const r = await fetch(this.props.registryUrl ?? '../../../repos/registry.json', { cache: 'no-store' }); if (!r.ok) throw new Error('HTTP ' + r.status);
+      const reg = await r.json();
+      try { const live = JSON.parse(localStorage.getItem('buildroom.v1') || 'null'); if (live && live.st) reg.repos = reg.repos.map(x => { const v = live.st[x.id]; return v && v.status && v.status !== 'testing' ? { ...x, status: v.status } : x; }); } catch (e) {}
+      this.setState({ reg, regErr: '' }); }
+    catch (e) { this.setState({ regErr: 'Could not load the repo registry (' + e.message + ').' }); }
+  }
+  async loadAccount() {
+    const k = ss('anima.key');
+    if (!k) { this.setState({ ac: { busy: false, limits: null, usage: null, err: '' } }); return; }
+    this.setState({ ac: { busy: true, limits: null, usage: null, err: '' } });
+    const h = { authorization: 'Bearer ' + k, 'x-persona': 'developer' };
+    const [l, u] = await Promise.all([this.api('/v1/limits', { headers: h }), this.api('/v1/usage', { headers: h })]);
+    const err = l.offline ? 'The engine did not answer at ' + this.base() + '.' : l.status >= 400 ? ((l.json && l.json.detail) || 'The engine answered ' + l.status + '.') : '';
+    this.setState({ ac: { busy: false, limits: l.json, usage: u.json, err } });
+  }
+  curl(id, param) {
+    const e = EP[id], origin = (location.origin && location.origin !== 'null' ? location.origin : 'https://<site>') + this.base();
+    let p = e.p, qs = [];
+    if (e.path) p = p.replace(/\{\w+\}/, encodeURIComponent(param || e.def || '<' + e.param + '>'));
+    if (e.q && (param || e.def)) qs.push(e.param + '=' + encodeURIComponent(param || e.def));
+    if (e.extra) qs.push(e.extra);
+    let c = 'curl -s ' + (e.m === 'POST' ? '-X POST ' : '') + '"' + origin + p + (qs.length ? '?' + qs.join('&') : '') + '"';
+    if (e.key) c += ' -H "Authorization: Bearer $ANIMA_KEY" -H "X-Persona: ' + this.state.sb.persona + '"';
+    if (e.body) c += " -H 'content-type: application/json' -d '" + JSON.stringify({ question: param || 'What does the graph say about q-energy?' }) + "'";
+    return c;
+  }
+  async copy(id) {
+    const text = this.curl(id, '');
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {}
+    this.setState({ copied: (ok ? 'ok:' : 'no:') + id });
+    clearTimeout(this._ct); this._ct = setTimeout(() => this.setState({ copied: '' }), 1800);
+  }
+  async send() {
+    const s = this.state.sb, e = EP[s.ep], set = p => this.setState(x => ({ sb: { ...x.sb, ...p } }));
+    if (e.key && !s.key.trim()) { set({ error: 'This endpoint needs an API key. Public endpoints work without one.', res: null }); return; }
+    if (e.path && !(s.param || e.def)) { set({ error: 'Fill in ' + e.label.toLowerCase() + '.', res: null }); return; }
+    if (e.body && !s.param.trim()) { set({ error: 'Ask a question.', res: null }); return; }
+    set({ busy: true, error: '' });
+    let p = e.p; const qs = [];
+    if (e.path) p = p.replace(/\{\w+\}/, encodeURIComponent(s.param || e.def));
+    if (e.q && (s.param || e.def)) qs.push(e.param + '=' + encodeURIComponent(s.param || e.def));
+    if (e.extra) qs.push(e.extra);
+    const headers = {};
+    if (e.key) { headers.authorization = 'Bearer ' + s.key.trim(); headers['x-persona'] = s.persona; }
+    if (e.body) headers['content-type'] = 'application/json';
+    const r = await this.api(p + (qs.length ? '?' + qs.join('&') : ''), { method: e.m, headers, body: e.body ? JSON.stringify({ question: s.param.trim() }) : undefined, timeout: e.body ? 60000 : 8000 });
+    const res = r.offline
+      ? { status: r.status ? 'HTTP ' + r.status : 'no answer', cls: 'tag tag-outline', line: e.m + ' ' + this.base() + p + ' · ' + r.ms + ' ms · no engine behind this page', body: 'No engine answered at ' + this.base() + '. Start the stack with docker compose up and open the sandbox from the running site, or run the command above.' }
+      : { status: 'HTTP ' + r.status, cls: r.status < 300 ? 'tag tag-accent' : 'tag tag-outline', line: e.m + ' ' + this.base() + p + ' · ' + r.ms + ' ms', body: JSON.stringify(r.json, null, 2).slice(0, 6000) };
+    set({ busy: false, res });
+  }
+  async signin() {
+    const s = this.state.si, set = p => this.setState(x => ({ si: { ...x.si, ...p } })), json = { 'content-type': 'application/json' };
+    const offline = 'The engine did not answer at ' + this.base() + '. Sign in from the running site.';
+    if (s.mode === 'key') {
+      const k = s.key.trim();
+      if (!k) return set({ err: 'Paste your API key.', ok: '' });
+      if (!/^anma_[0-9a-f]{32}$/.test(k)) return set({ err: 'Keys start with anma_ followed by 32 hex characters.', ok: '' });
+      set({ busy: true, err: '', ok: '' });
+      const r = await this.api('/v1/limits', { headers: { authorization: 'Bearer ' + k, 'x-persona': 'developer' } });
+      if (r.offline) return set({ busy: false, err: offline });
+      if (r.status === 401 || r.status === 403) return set({ busy: false, err: 'That key was not accepted.' });
+      if (r.status >= 400) return set({ busy: false, err: (r.json && r.json.detail) || 'The engine answered ' + r.status + '.' });
+      ss('anima.key', k);
+      set({ busy: false, key: '' });
+      this.setState(x => ({ sb: { ...x.sb, key: k } }));
+      location.hash = '#/account';
+      return;
+    }
+    if (s.mode === 'seat') {
+      if (!s.user.trim() || !s.code.trim()) return set({ err: 'Enter your seat and your code.', ok: '' });
+      set({ busy: true, err: '', ok: '' });
+      const r = await this.api('/tester/login', { method: 'POST', headers: json, body: JSON.stringify({ user: s.user.trim(), code: s.code.trim() }) });
+      if (r.offline) return set({ busy: false, err: offline });
+      if (r.status >= 400) return set({ busy: false, err: r.status === 401 ? 'Unknown seat or code.' : (r.json && r.json.detail) || 'The engine answered ' + r.status + '.' });
+      ss('anima.seat', String(r.json.seat || ''));
+      return set({ busy: false, code: '', ok: 'Signed in as tester seat ' + (r.json.seat || '') + '.' });
+    }
+    if (!s.pw) return set({ err: 'Enter the owner password.', ok: '' });
+    set({ busy: true, err: '', ok: '' });
+    const r = await this.api('/auth/login', { method: 'POST', headers: json, body: JSON.stringify({ password: s.pw }) });
+    if (r.offline) return set({ busy: false, err: offline });
+    if (r.status >= 400) return set({ busy: false, err: (r.json && r.json.detail) || 'The engine answered ' + r.status + '.' });
+    set({ busy: false, pw: '', ok: 'Signed in as the owner. The workspace is at /terminal.' });
+  }
+  async signup() {
+    const f = this.state.su, set = p => this.setState(x => ({ su: { ...x.su, ...p } }));
+    if (!f.name.trim()) return set({ err: 'Add your name.', offline: false });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) return set({ err: 'That email address does not look right.', offline: false });
+    if (f.use.trim().length < 20) return set({ err: 'Say in a sentence or two what you would use the API for.', offline: false });
+    set({ busy: true, err: '', offline: false });
+    const text = ['Access request', 'name: ' + f.name.trim(), 'email: ' + f.email.trim(), 'organisation: ' + (f.org.trim() || 'none given'), 'plan: ' + f.plan, 'use: ' + f.use.trim()].join('\n');
+    const r = await this.api('/round', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, kind: 'contact' }), timeout: 20000 });
+    if (r.offline) return set({ busy: false, offline: true });
+    if (r.status >= 400) return set({ busy: false, err: (r.json && r.json.detail) || 'The engine answered ' + r.status + '.' });
+    set({ busy: false, sent: true });
+  }
+
+  renderVals() {
+    const s = this.state, narrow = s.w < 900, route = ROUTES.includes(s.route) ? s.route : null;
+    const navBase = 'display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--radius-md);font-size:14px;text-decoration:none;';
+    const navSt = {};
+    Object.keys(NAV).forEach(k => { navSt[k] = navBase + (NAV[k] === s.route ? 'color:var(--color-accent);background:color-mix(in srgb,var(--color-accent) 9%,transparent);box-shadow:inset 2px 0 0 var(--color-accent);' : 'color:var(--color-neutral-200);'); });
+    const is = { home: route === '/', experiment: route === '/experiment', research: route === '/research', repos: route === '/repos', pricing: route === '/pricing', signup: route === '/signup', docs: route === '/docs', sandbox: route === '/sandbox', signin: route === '/signin', account: route === '/account', missing: !route };
+    const eng = { checking: ['checking engine', 'var(--color-neutral-400)'], online: ['engine online', 'var(--color-accent)'], offline: ['engine offline', 'var(--color-neutral-500)'] }[s.engine];
+
+    const reg = s.reg ? s.reg.repos : [], q = s.q.trim().toLowerCase();
+    const list = reg.filter(r => (!q || (r.name + ' ' + r.what + ' ' + r.cat).toLowerCase().includes(q)) && (!s.fCat || r.cat === s.fCat) && (s.fWave === '' || String(r.wave) === s.fWave) && (!s.fLine || r.line === s.fLine) && (!s.fBuilder || r.builder === s.fBuilder));
+    const count = (k, v) => reg.filter(r => r[k] === v).length;
+    const passing = reg.filter(r => r.status === 'passing' || r.status === 'shipped').length;
+    const btn = (on) => on ? 'btn btn-primary' : 'btn btn-ghost';
+    const lineBtns = [['', 'Every line', 'all'], ['open', 'Open', 'open'], ['open-core', 'Open-core', 'open-core'], ['paid API', 'Paid API', 'paid-api']].map(([v, label, e]) => ({ label, e2e: 'f-line-' + e, cls: btn(s.fLine === v), pick: () => this.setState({ fLine: v }) }));
+    const builderBtns = [['', 'Anyone', 'all'], ['claude', 'Written first', 'claude'], ['tester', 'TESTER', 'tester'], ['sextant', 'SEXTANT', 'sextant']].map(([v, label, e]) => ({ label, e2e: 'f-builder-' + e, cls: btn(s.fBuilder === v), pick: () => this.setState({ fBuilder: v }) }));
+
+    const copyLabel = {}, copy = {};
+    Object.entries(COPY_IDS).forEach(([k, id]) => { copyLabel[k] = s.copied === 'ok:' + id ? 'Copied' : s.copied === 'no:' + id ? 'Copy blocked' : 'Copy curl'; copy[k] = () => this.copy(id); });
+    const e = EP[s.sb.ep] || EP['public-questions'], setSb = p => this.setState(x => ({ sb: { ...x.sb, ...p } }));
+    const rows = o => o && typeof o === 'object' ? Object.entries(o).slice(0, 14).map(([k, v]) => ({ k, v: v && typeof v === 'object' ? JSON.stringify(v).slice(0, 80) : String(v) })) : [];
+    const setSi = p => this.setState(x => ({ si: { ...x.si, ...p } })), setSu = p => this.setState(x => ({ su: { ...x.su, ...p } }));
+    const signedIn = !!ss('anima.key');
+
+    return {
+      narrow, wide: !narrow, menuIcon: s.menu ? 'ph ph-x' : 'ph ph-list', toggleMenu: () => this.setState(x => ({ menu: !x.menu })),
+      railE2e: narrow ? 'nav-panel' : 'nav-rail',
+      railSt: !narrow ? 'position:sticky;top:52px;align-self:flex-start;width:232px;flex:none;box-sizing:border-box;height:calc(100vh - 52px);overflow:auto;padding:26px 12px 24px 14px;display:grid;gap:22px;align-content:start;'
+        : s.menu ? 'position:fixed;left:0;right:0;top:52px;bottom:0;z-index:35;overflow:auto;padding:20px 16px 40px;display:grid;gap:22px;align-content:start;background:var(--color-bg);' : 'display:none;',
+      mainPad: narrow ? '28px 18px 64px' : '40px 48px 80px',
+      navSt, is,
+      engineLabel: eng[0], engineTip: 'GET ' + this.base() + '/health',
+      engineSt: 'display:inline-flex;align-items:center;gap:7px;padding:4px 10px;border-radius:999px;font:500 11.5px ui-monospace,Menlo,monospace;color:var(--color-neutral-300);box-shadow:inset 0 0 0 1px var(--color-divider);justify-self:start;',
+      engineDot: 'width:7px;height:7px;border-radius:50%;background:' + eng[1] + ';' + (s.engine === 'online' ? 'box-shadow:0 0 8px ' + eng[1] + ';' : ''),
+      youHref: signedIn ? '#/account' : '#/signin', youLabel: signedIn ? 'Account' : 'Sign in',
+      apiBase: this.base(),
+
+      stats: { line: reg.length ? reg.length + ' repos · ' + count('builder', 'claude') + ' written first · ' + count('builder', 'tester') + ' TESTER packages · ' + count('builder', 'sextant') + ' SEXTANT writes · ' + passing + ' pass the bar' : 'Loading the registry…' },
+      q: s.q, onQ: ev => this.setState({ q: ev.target.value }), fCat: s.fCat, onCat: ev => this.setState({ fCat: ev.target.value }), fWave: s.fWave, onWave: ev => this.setState({ fWave: ev.target.value }),
+      lineBtns, builderBtns, shownLine: reg.length ? list.length + ' shown' : '', regErr: s.regErr, noMatch: !!reg.length && !list.length,
+      clearFilters: () => this.setState({ q: '', fCat: '', fWave: '', fLine: '', fBuilder: '' }),
+      repos: list.map(r => ({ name: r.name, what: r.what, cat: r.cat, wave: r.wave, line: r.line, lineCls: LINE_CLS[r.line] || 'tag tag-neutral', builderLabel: BUILDER[r.builder] || r.builder, statusLabel: (STATUS[r.status] || STATUS.queued)[0], statusCls: (STATUS[r.status] || STATUS.queued)[1] })),
+
+      authCurl: 'curl -s "' + ((location.origin && location.origin !== 'null') ? location.origin : 'https://<site>') + this.base() + '/v1/limits" \\\n  -H "Authorization: Bearer $ANIMA_KEY" \\\n  -H "X-Persona: developer"',
+      copy, copyLabel,
+
+      sb: {
+        ep: s.sb.ep, persona: s.sb.persona, key: s.sb.key, param: s.sb.param, hasParam: !!e.param, paramLabel: e.label || '',
+        onEp: ev => { const id = ev.target.value; setSb({ ep: id, param: (EP[id] && EP[id].def) || '', res: null, error: '' }); },
+        onPersona: ev => setSb({ persona: ev.target.value }), onKey: ev => setSb({ key: ev.target.value }), onParam: ev => setSb({ param: ev.target.value }),
+        send: () => this.send(), busy: s.sb.busy, sendLabel: s.sb.busy ? 'Sending…' : 'Send', curl: this.curl(s.sb.ep, s.sb.param),
+        hasError: !!s.sb.error, error: s.sb.error, hasRes: !!s.sb.res, res: s.sb.res || { status: '', cls: '', line: '', body: '' },
+      },
+      si: {
+        isKey: s.si.mode === 'key', isSeat: s.si.mode === 'seat', isOwner: s.si.mode === 'owner',
+        toKey: () => setSi({ mode: 'key', err: '', ok: '' }), toSeat: () => setSi({ mode: 'seat', err: '', ok: '' }), toOwner: () => setSi({ mode: 'owner', err: '', ok: '' }),
+        key: s.si.key, onKey: ev => setSi({ key: ev.target.value }), user: s.si.user, onUser: ev => setSi({ user: ev.target.value }), code: s.si.code, onCode: ev => setSi({ code: ev.target.value }), pw: s.si.pw, onPw: ev => setSi({ pw: ev.target.value }),
+        submit: () => this.signin(), busy: s.si.busy, submitLabel: s.si.busy ? 'Checking…' : 'Sign in', hasErr: !!s.si.err, err: s.si.err, hasOk: !!s.si.ok, ok: s.si.ok,
+      },
+      ac: {
+        signedIn, signedOut: !signedIn, busy: s.ac.busy, hasErr: !!s.ac.err, err: s.ac.err, limits: rows(s.ac.limits), usage: rows(s.ac.usage),
+        signout: () => { ss('anima.key', null); this.setState(x => ({ sb: { ...x.sb, key: '' }, ac: { busy: false, limits: null, usage: null, err: '' } })); },
+      },
+      su: {
+        name: s.su.name, email: s.su.email, org: s.su.org, plan: s.su.plan, use: s.su.use,
+        onName: ev => setSu({ name: ev.target.value }), onEmail: ev => setSu({ email: ev.target.value }), onOrg: ev => setSu({ org: ev.target.value }), onPlan: ev => setSu({ plan: ev.target.value }), onUse: ev => setSu({ use: ev.target.value }),
+        submit: () => this.signup(), busy: s.su.busy, submitLabel: s.su.busy ? 'Sending…' : 'Send request', hasErr: !!s.su.err, err: s.su.err, offline: s.su.offline, sent: s.su.sent, showForm: !s.su.sent,
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

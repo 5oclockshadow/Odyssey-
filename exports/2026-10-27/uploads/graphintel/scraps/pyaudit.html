@@ -1,0 +1,114 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Audit runner</title>
+<style>body{font:12px/1.45 ui-monospace,Menlo,monospace;margin:10px;background:#111;color:#ddd}pre{white-space:pre-wrap;margin:0}h3{margin:0 0 8px}iframe{position:absolute;left:-9999px;top:0;border:0;height:900px}</style></head>
+<body><h3 id="h">loading…</h3><pre id="o"></pre>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script type="text/plain" id="pycode">
+import sys, os, io, json, types, time, contextlib, importlib
+
+def stub_dspy():
+    try:
+        import dspy  # noqa: F401
+        return
+    except Exception:
+        pass
+    d = types.ModuleType("dspy")
+    class Signature:
+        @classmethod
+        def with_instructions(cls, s):
+            return cls
+    class Module:
+        def __init__(self, *a, **k):
+            pass
+        def __call__(self, **k):
+            raise RuntimeError("no model in the browser runner")
+    d.Signature, d.ReAct, d.Predict = Signature, Module, Module
+    d.InputField = d.OutputField = lambda *a, **k: None
+    d.LM = lambda *a, **k: None
+    d.configure = lambda **k: None
+    sys.modules["dspy"] = d
+
+def emit(tag, text):
+    for line in str(text).splitlines():
+        print(f"[{tag}] {line}")
+
+stub_dspy()
+os.environ.update(TESTER_LOOP="off", TESTER_LIVE="off")
+if "/repo/apps/tester" not in sys.path:
+    sys.path.insert(0, "/repo/apps/tester")
+for m in [m for m in list(sys.modules) if m in ("brain", "ingest", "checks", "agent", "serve", "qa", "plan", "cycle", "report")]:
+    del sys.modules[m]
+
+if MODE in ("all", "tests"):
+    import pytest
+    os.chdir("/repo/apps/tester")
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+        args = ["-q", "-p", "no:cacheprovider", "-p", "no:anyio", "--tb=short", "-W", "ignore::DeprecationWarning"] + (["-k", KFILTER] if KFILTER else [])
+        try:
+            code = pytest.main(args)
+        except BaseException:
+            import traceback
+            print(traceback.format_exc())
+            code = 99
+    emit("pytest", buf.getvalue()[-14000:])
+    emit("pytest", f"EXIT {int(code)}")
+
+if MODE in ("all", "audit"):
+    import yaml
+    import ingest, checks, agent
+    from brain import Brain
+    cfg = yaml.safe_load(open("/repo/apps/tester/tester.yaml"))
+    b = Brain("/tmp/audit.json")
+    t = time.time()
+    r = ingest.ingest(b, "/repo", cfg)
+    ingest.selfmodel(b, cfg, agent.TOOL_INFO, checks.CHECKS)
+    emit("audit", f"read {len(r['changed'])} files in {time.time() - t:.1f}s · {json.dumps(b.stats())}")
+    p = checks.plan(b, cfg, names=list(checks.STATIC))
+    found, status = checks.run(p, b, "/repo", cfg)
+    emit("audit", json.dumps(status))
+    for f in sorted(found, key=lambda f: (f["severity"] != "error", f["check"], f["file"], f["line"])):
+        if f["severity"] == "error" or SHOWWARN:
+            emit("finding", f"{f['severity']} {f['check']} {f['title']}")
+    emit("audit", "by severity " + json.dumps({s: sum(1 for f in found if f["severity"] == s) for s in ("error", "warn")}))
+    emit("audit", f"TOTAL {len(found)}")
+    PAGES = checks.pages_for(b, cfg)
+</script>
+<script>
+const out = document.getElementById('o'), H = document.getElementById('h');
+const say = s => { out.textContent += s + '\n'; console.log(s); };
+const TEXT = /\.(py|js|mjs|html|ya?ml|json|jsonl|md|txt|toml|conf|sh|css|example|csv)$|Dockerfile|LICENSE|\.gitignore|\.dockerignore/;
+async function jsAudit(files) {
+  let bad = 0;
+  for (const rel of files) {
+    if (!/\.(m?js|html)$/.test(rel)) continue;
+    const txt = await (await fetch('../' + rel.split('/').map(encodeURIComponent).join('/') + '?' + Date.now())).text();
+    const blocks = /\.m?js$/.test(rel) ? [[txt, 1]] : [...txt.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].filter(m => !/\ssrc=/.test(m[1]) && m[2].trim() && (() => { const t = ((m[1].match(/\btype\s*=\s*["']?([^"'\s>]+)/i) || [])[1] || '').toLowerCase(); return ['', 'text/javascript', 'application/javascript', 'text/x-dc'].includes(t); })()).map(m => [m[2], txt.slice(0, m.index).split('\n').length]);
+    for (const [code, line] of blocks) {
+      if (/^\s*(import|export)\s/m.test(code)) continue;
+      try { new Function(code); } catch (e) { bad++; say('[js] ' + rel + ':' + line + ' ' + e.message); }
+    }
+  }
+  say('[js] syntax errors: ' + bad);
+}
+(async () => {
+  const t0 = performance.now(), q = new URLSearchParams(location.hash.slice(1));
+  const MODE = q.get('mode') || 'all';
+  const py = await loadPyodide();
+  await py.loadPackage(['micropip', 'pyyaml', 'pydantic', 'pytest', 'ssl', 'sqlite3']);
+  try { await py.pyimport('micropip').install(['fastapi==0.115.6', 'starlette==0.41.3', 'anyio==4.7.0', 'sniffio', 'idna', 'httpx==0.28.1', 'httpcore==1.0.7', 'h11==0.14.0', 'certifi', 'pyflakes==3.2.0'], false, false); } catch (e) { say('[runner] packages not installed: ' + String(e).slice(-600)); }
+  const man = await (await fetch('manifest.json?' + Date.now())).json();
+  let n = 0, miss = [];
+  await Promise.all(man.files.map(async rel => {
+    const r = await fetch('../' + rel.split('/').map(encodeURIComponent).join('/') + '?' + Date.now());
+    if (!r.ok) { miss.push(rel); return; }
+    const p = '/repo/' + rel; py.FS.mkdirTree(p.slice(0, p.lastIndexOf('/')) || '/repo');
+    if (TEXT.test(rel)) py.FS.writeFile(p, await r.text()); else py.FS.writeFile(p, new Uint8Array(await r.arrayBuffer()));
+    n++;
+  }));
+  say('[runner] ' + n + ' files' + (miss.length ? ' · not served: ' + miss.join(', ') : ''));
+  py.globals.set('MODE', MODE); py.globals.set('KFILTER', q.get('k') || ''); py.globals.set('SHOWWARN', q.get('warn') === '1');
+  await py.runPythonAsync(document.getElementById('pycode').textContent);
+  if (MODE === 'all' || MODE === 'audit') await jsAudit(man.files);
+  H.textContent = 'done in ' + Math.round((performance.now() - t0) / 1000) + 's'; say('[runner] DONE');
+})().catch(e => { say('[runner] ERROR ' + (e && e.message || e)); H.textContent = 'error'; });
+</script></body></html>

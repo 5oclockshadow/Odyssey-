@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html { color-scheme: dark; } html, body { margin: 0; background: #0f1017; color: #eceef4; font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+button, input, select { font: inherit; color: inherit; }
+a { color: #b5abfc; text-decoration: none; } a:hover { color: #d2cefd; }
+:focus { outline: none; } :focus-visible { outline: 2px solid #9184d9; outline-offset: 2px; }
+::-webkit-scrollbar { width: 10px; height: 10px; } ::-webkit-scrollbar-thumb { background: #2a2d3e; border-radius: 8px; border: 2px solid #0f1017; } ::-webkit-scrollbar-track { background: transparent; }
+input::placeholder { color: #666a7d; }
+@keyframes mg-pulse { 0%, 100% { opacity: 0.3; transform: scale(0.82); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes mg-sheen { 0% { background-position: -30% 0; } 100% { background-position: 130% 0; } }
+@keyframes mg-breathe { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes mg-pop { 0% { transform: scale(0.4); opacity: 0.2; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+</style>
+</helmet>
+
+<div data-screen-label="Test console" style="position: relative; min-height: 100vh; overflow: hidden;">
+  <div aria-hidden="true" style="position: absolute; inset: 0 0 auto 0; height: 460px; background: radial-gradient(130% 120% at 12% -10%, rgba(145,132,217,0.16), rgba(127,207,182,0.05) 42%, transparent 66%); pointer-events: none;"></div>
+  <div style="position: relative; max-width: 1540px; margin: 0 auto; padding: 0 22px 96px;">
+
+  <header style="position: sticky; top: 0; z-index: 30; margin: 0 -22px; padding: 17px 22px 15px; background: rgba(15,16,23,0.82); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(236,238,244,0.08); display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1 1 320px;">
+      <div style="width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(140deg, #9184d9, #5f55a8); display: grid; place-items: center; flex: none; box-shadow: 0 6px 18px rgba(145,132,217,0.35);"><span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 16px; color: #fff;">✓</span></div>
+      <div style="display: grid; gap: 2px; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 10px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: #868aa8;">FULL-STACK TEST CONSOLE</span><span style="{{ livePill }}"><span style="{{ liveDot }}"></span>{{ liveText }}</span></div>
+        <h1 style="margin: 0; font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; font-weight: 600;">Every suite, every layer, one graph</h1>
+      </div>
+    </div>
+    <div style="display: grid; gap: 8px; justify-items: end;">
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button type="button" onClick="{{ runAll }}" style="{{ runAllStyle }}"><span style="{{ runAllDot }}"></span>{{ runAllLabel }}</button>
+        <button type="button" onClick="{{ runFailing }}" style="{{ failStyle }}">Re-run failures{{ failCount }}</button>
+        <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ stop }}" style="height: 37px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(232,149,111,0.5); background: rgba(232,149,111,0.1); color: #e8956f; font-size: 12.5px; cursor: pointer;">Stop</button></sc-if>
+        <button type="button" onClick="{{ reset }}" title="Clear results" style="width: 37px; height: 37px; border-radius: 10px; border: 1px solid rgba(236,238,244,0.12); background: transparent; color: #9397ab; font-size: 14px; cursor: pointer;">⟲</button>
+      </div>
+      <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; color: #e8956f; max-width: 460px; text-align: right;">{{ err }}</div></sc-if>
+    </div>
+  </header>
+  <div style="height: 2px; margin: 0 -22px; overflow: hidden;"><sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><div style="height: 2px; background: linear-gradient(90deg, transparent, #9184d9 45%, #b5abfc 55%, transparent); background-size: 35% 100%; background-repeat: no-repeat; animation: mg-sheen 1.05s linear infinite;"></div></sc-if></div>
+
+  <section aria-label="Telemetry" style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 13px; margin-top: 20px;">
+    <div style="display: grid; gap: 14px; justify-items: center; align-content: center; flex: 1 1 210px; padding: 20px; border-radius: 17px; background: linear-gradient(180deg, #191b29, #15161f); border: 1px solid rgba(236,238,244,0.08);">
+      <div style="{{ health.ring }}"><div style="width: 92px; height: 92px; border-radius: 50%; background: #171825; display: grid; place-items: center;"><div style="display: grid; justify-items: center; gap: 1px;"><span style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: {{ health.col }};">{{ health.pct }}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.14em; color: #75798c;">PASS RATE</span></div></div></div>
+      <div style="display: flex; gap: 7px; flex-wrap: wrap; justify-content: center;"><sc-for list="{{ health.chips }}" as="c" hint-placeholder-count="3"><span style="{{ c.style }}">{{ c.label }}</span></sc-for></div>
+      <span style="font-size: 12px; color: #9397ab;">{{ health.ran }}</span>
+    </div>
+
+    <div style="display: grid; grid-template-rows: auto 1fr; gap: 10px; flex: 3 1 340px; padding: 16px 18px; border-radius: 17px; background: linear-gradient(180deg, #191b29, #15161f); border: 1px solid rgba(236,238,244,0.08); min-width: 0;">
+      <div style="display: flex; align-items: center; gap: 10px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: #868aa8;">LIVE TEST MATRIX</span><span style="font-size: 11.5px; color: #75798c;">{{ matrixHint }}</span><span style="flex: 1;"></span><div style="display: flex; gap: 11px;"><sc-for list="{{ legend }}" as="l" hint-placeholder-count="4"><span style="display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: #8488a0;"><span style="{{ l.dot }}"></span>{{ l.label }}</span></sc-for></div></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 14px; align-content: flex-start;">
+        <sc-for list="{{ matrix }}" as="m" hint-placeholder-count="10">
+        <div onClick="{{ m.pick }}" style="{{ m.block }}">
+          <div style="display: flex; align-items: center; gap: 6px; max-width: 100%;"><span style="{{ m.dot }}"></span><span style="font-size: 11px; font-weight: 500; color: #c2c5d6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ m.title }}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; color: #70748a;">{{ m.count }}</span></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 3px; max-width: 100%;"><sc-for list="{{ m.cells }}" as="c" hint-placeholder-count="12"><span onClick="{{ c.pick }}" title="{{ c.title }}" style="{{ c.style }}"></span></sc-for></div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: grid; gap: 11px; flex: 1 1 280px; padding: 16px 18px; border-radius: 17px; background: linear-gradient(180deg, #191b29, #15161f); border: 1px solid rgba(236,238,244,0.08);">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="4"><div style="display: grid; gap: 3px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em; color: #75798c;">{{ t.label }}</span><span style="font-size: 21px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.05; color: {{ t.color }};">{{ t.value }}</span><span style="font-size: 10.5px; color: #8488a0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.note }}</span></div></sc-for>
+      </div>
+      <div style="height: 1px; background: rgba(236,238,244,0.07);"></div>
+      <div style="display: flex; align-items: center; justify-content: space-between;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em; color: #75798c;">RUN HISTORY</span><span style="font-size: 11px; color: #9397ab;">{{ spark.sub }}</span></div>
+      <sc-if value="{{ spark.has }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 100 34" preserveAspectRatio="none" style="width: 100%; height: 44px; overflow: visible;"><defs><linearGradient id="spk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fcfb6" stop-opacity="0.32"></stop><stop offset="1" stop-color="#7fcfb6" stop-opacity="0"></stop></linearGradient></defs><polygon points="{{ spark.area }}" fill="url(#spk)"></polygon><polyline points="{{ spark.points }}" fill="none" stroke="#7fcfb6" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline></svg></sc-if>
+      <sc-if value="{{ spark.empty }}" hint-placeholder-val="{{ true }}"><div style="height: 44px; display: grid; place-items: center; border: 1px dashed rgba(236,238,244,0.1); border-radius: 9px; font-size: 11px; color: #70748a;">runs appear here</div></sc-if>
+    </div>
+  </section>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; align-items: flex-start;">
+    <aside aria-label="Suites" style="display: grid; gap: 13px; position: sticky; top: 92px; flex: 1 1 280px; max-width: 342px;">
+      <sc-for list="{{ rail }}" as="L" hint-placeholder-count="4">
+      <div style="display: grid; gap: 6px;">
+        <div style="display: flex; align-items: center; gap: 8px; padding: 0 2px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.15em; color: #6d7089;">{{ L.name }}</span><span style="height: 1px; flex: 1; background: rgba(236,238,244,0.08);"></span></div>
+        <sc-for list="{{ L.suites }}" as="s" hint-placeholder-count="3">
+        <div onClick="{{ s.pick }}" style="{{ s.row }}">
+          <div style="display: flex; align-items: center; gap: 9px;">
+            <span style="{{ s.dot }}"></span>
+            <span style="font-size: 12.5px; font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ s.title }}</span>
+            <sc-if value="{{ s.heavy }}" hint-placeholder-val="{{ false }}"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 8px; letter-spacing: 0.06em; color: #c79be0; border: 1px solid rgba(199,155,224,0.4); border-radius: 4px; padding: 1px 4px;">HEAVY</span></sc-if>
+            <button type="button" onClick="{{ s.run }}" title="Run this suite" style="{{ s.runBtn }}">▶</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="height: 4px; flex: 1; border-radius: 3px; background: rgba(236,238,244,0.08); overflow: hidden;"><div style="{{ s.bar }}"></div></div>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #8488a0; white-space: nowrap;">{{ s.count }}</span>
+          </div>
+        </div>
+        </sc-for>
+      </div>
+      </sc-for>
+    </aside>
+
+    <main style="display: grid; gap: 14px; min-width: 0; flex: 999 1 440px;">
+      <nav style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #191b29; border: 1px solid rgba(236,238,244,0.08); width: fit-content; max-width: 100%; overflow: auto;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><button type="button" onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button></sc-for>
+      </nav>
+
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ false }}">
+      <section style="display: grid; gap: 11px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 11px;">
+          <sc-for list="{{ cards }}" as="c" hint-placeholder-count="10">
+          <div onClick="{{ c.pick }}" style="{{ c.card }}">
+            <div style="display: flex; align-items: center; gap: 8px;"><span style="{{ c.dot }}"></span><span style="font-size: 13.5px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ c.title }}</span><span style="{{ c.badge }}">{{ c.verdict }}</span></div>
+            <p style="margin: 0; font-size: 11.5px; color: #8e92a8; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ c.blurb }}</p>
+            <div style="display: flex; align-items: center; gap: 9px;">
+              <span style="font-size: 25px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; color: {{ c.rateCol }};">{{ c.rate }}</span>
+              <div style="display: grid; gap: 3px; flex: 1;"><div style="height: 5px; border-radius: 3px; background: rgba(236,238,244,0.08); overflow: hidden;"><div style="{{ c.bar }}"></div></div><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #8488a0;">{{ c.count }}</span></div>
+              <button type="button" onClick="{{ c.run }}" style="{{ c.runBtn }}">Run</button>
+            </div>
+          </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isResults }}" hint-placeholder-val="{{ true }}">
+      <section style="display: grid; gap: 13px;">
+        <div style="display: grid; gap: 12px; padding: 17px; border-radius: 15px; background: linear-gradient(180deg, #191b29, #16171f); border: 1px solid rgba(236,238,244,0.08);">
+          <div style="display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;">
+            <div style="display: grid; gap: 5px; flex: 1; min-width: 220px;">
+              <div style="display: flex; align-items: center; gap: 9px;"><span style="{{ focus.dot }}"></span><h2 style="margin: 0; font-size: 18px; font-weight: 600;">{{ focus.title }}</h2><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #75798c;">{{ focus.file }}</span></div>
+              <p style="margin: 0; font-size: 12.5px; color: #9397ab; line-height: 1.5;">{{ focus.blurb }}</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; align-items: center;"><span style="font-size: 9.5px; color: #6d7089; font-family: 'IBM Plex Mono', monospace;">COVERS</span><sc-for list="{{ focus.covers }}" as="c" hint-placeholder-count="3"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a9adc4; background: #0f1017; border: 1px solid rgba(236,238,244,0.1); border-radius: 5px; padding: 2px 6px;">{{ c }}</span></sc-for></div>
+            </div>
+            <button type="button" onClick="{{ focus.run }}" style="{{ focus.runStyle }}">{{ focus.runLabel }}</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="height: 6px; flex: 1; border-radius: 4px; background: rgba(236,238,244,0.08); overflow: hidden;"><div style="{{ focus.prog }}"></div></div>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #9397ab; white-space: nowrap;">{{ focus.progText }}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; gap: 2px; padding: 3px; border-radius: 9px; background: #191b29; border: 1px solid rgba(236,238,244,0.1);"><sc-for list="{{ vfilters }}" as="v" hint-placeholder-count="3"><button type="button" onClick="{{ v.pick }}" style="{{ v.style }}">{{ v.label }}</button></sc-for></div>
+          <sc-if value="{{ hasGroups }}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 5px; flex-wrap: wrap; flex: 1; min-width: 0;"><sc-for list="{{ groups }}" as="g" hint-placeholder-count="4"><button type="button" onClick="{{ g.pick }}" style="{{ g.style }}">{{ g.label }}</button></sc-for></div></sc-if>
+          <input value="{{ query }}" onInput="{{ onQuery }}" placeholder="Search tests…" style="height: 34px; width: 190px; padding: 0 12px; border-radius: 9px; border: 1px solid rgba(236,238,244,0.12); background: #0f1017; color: #eceef4; font-size: 12.5px;" />
+        </div>
+
+        <div style="display: grid; gap: 1px; border-radius: 13px; overflow: hidden; border: 1px solid rgba(236,238,244,0.08); background: rgba(236,238,244,0.07);">
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+          <div onClick="{{ r.toggle }}" style="{{ r.row }}">
+            <div style="display: grid; grid-template-columns: 54px 22px minmax(0,1fr) auto; gap: 11px; align-items: baseline;">
+              <span style="{{ r.badge }}">{{ r.verdict }}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6d7089; text-align: right;">{{ r.id }}</span>
+              <span style="font-size: 13px; line-height: 1.4; min-width: 0;">{{ r.name }}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #75798c; white-space: nowrap;">{{ r.meta }}</span>
+            </div>
+            <sc-if value="{{ r.showEv }}" hint-placeholder-val="{{ false }}"><pre style="{{ r.evStyle }}">{{ r.evidence }}</pre></sc-if>
+          </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ rowsEmpty }}" hint-placeholder-val="{{ true }}"><div style="padding: 34px; text-align: center; font-size: 13px; color: #75798c; border: 1px dashed rgba(236,238,244,0.12); border-radius: 13px;">{{ emptyText }}</div></sc-if>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isGraph }}" hint-placeholder-val="{{ false }}">
+      <section style="display: grid; gap: 12px; padding: 17px; border-radius: 15px; background: linear-gradient(180deg, #191b29, #16171f); border: 1px solid rgba(236,238,244,0.08);">
+        <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Codebase · suites · health</h2><span style="font-size: 12px; color: #75798c;">Source files left, suites right, wired by coverage. Click a suite to open it.</span></div>
+        <div style="border-radius: 11px; overflow: hidden; background: #0f1017; border: 1px solid rgba(236,238,244,0.06);"><canvas ref="{{ graphRef }}" onClick="{{ onGraphClick }}" style="width: 100%; display: block; cursor: pointer;"></canvas></div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isCrud }}" hint-placeholder-val="{{ false }}">
+      <section style="display: grid; gap: 12px;">
+        <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">CRUD coverage</h2><span style="font-size: 12px; color: #75798c;">{{ crudNote }}</span></div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(214px, 1fr)); gap: 11px;">
+          <sc-for list="{{ crud }}" as="c" hint-placeholder-count="4">
+          <div style="display: grid; gap: 11px; padding: 17px; border-radius: 15px; background: linear-gradient(180deg, #191b29, #16171f); border: 1px solid rgba(236,238,244,0.08);">
+            <div style="display: flex; align-items: center; gap: 9px;"><span style="{{ c.tag }}">{{ c.letter }}</span><span style="font-size: 14px; font-weight: 600;">{{ c.label }}</span></div>
+            <span style="font-size: 29px; font-weight: 600; letter-spacing: -0.01em; line-height: 1;">{{ c.total }}<span style="font-size: 13px; color: #75798c; font-weight: 400;"> tests</span></span>
+            <div style="height: 6px; border-radius: 4px; background: rgba(236,238,244,0.08); overflow: hidden; display: flex;"><div style="{{ c.passBar }}"></div><div style="{{ c.failBar }}"></div></div>
+            <span style="font-size: 11.5px; color: #9397ab;">{{ c.detail }}</span>
+          </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isFiles }}" hint-placeholder-val="{{ false }}">
+      <section style="display: grid; gap: 12px;">
+        <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Coverage by file</h2><span style="font-size: 12px; color: #75798c;">{{ filesNote }}</span></div>
+        <sc-for list="{{ fileLayers }}" as="L" hint-placeholder-count="4">
+        <div style="display: grid; gap: 7px;">
+          <div style="display: flex; align-items: center; gap: 8px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: #6d7089;">{{ L.name }}</span><span style="height: 1px; flex: 1; background: rgba(236,238,244,0.08);"></span></div>
+          <div style="display: grid; gap: 1px; border-radius: 11px; overflow: hidden; border: 1px solid rgba(236,238,244,0.08); background: rgba(236,238,244,0.07);">
+            <sc-for list="{{ L.items }}" as="f" hint-placeholder-count="5">
+            <div style="background: #191b29; display: grid; grid-template-columns: 14px minmax(0,210px) minmax(0,1fr) auto; gap: 11px; align-items: center; padding: 9px 13px;">
+              <span style="{{ f.dot }}"></span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #cfd1de; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ f.file }}</span>
+              <span style="font-size: 11.5px; color: #8488a0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ f.suites }}</span>
+              <span style="{{ f.tag }}">{{ f.level }}</span>
+            </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-for>
+      </section>
+      </sc-if>
+    </main>
+  </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1540}}">
+const MONO = "'IBM Plex Mono', monospace";
+const C = { pass: '#7fcfb6', slow: '#e5c46f', fail: '#e8956f', mut: '#9397ab', faint: '#75798c', brand: '#9184d9', sel: '#5d5294', selbg: '#2b2741' };
+const VCOL = { pass: C.pass, fail: C.fail, slow: C.slow, partial: C.slow, none: C.faint, active: C.brand };
+const VLAB = { pass: 'PASS', fail: 'FAIL', slow: 'SLOW', idle: '—' };
+const SLOW = 400;
+const CRUD_HUE = { create: '#b39ddb', read: '#7fb2e5', update: '#e6c36a', delete: '#e8956f' };
+const CRUD_LAB = { create: 'Create', read: 'Read', update: 'Update', delete: 'Delete' };
+const LORDER = ['Core reasoning', 'Atlas', 'Backend', 'Integration'];
+const dot = (c, s = 9) => ({ width: s, height: s, borderRadius: '50%', background: c, flex: 'none' });
+const short = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+
+class Component extends DCLogic {
+  state = { suites: {}, res: {}, running: false, focus: 'engine', vfilter: 'all', group: 'all', query: '', lane: 'overview', lastRunAt: 0, runLabel: '', err: '', open: {}, activeKey: '', history: [] };
+  gref = React.createRef();
+
+  async componentDidMount() {
+    try { this.R = await import('./test-suites.js'); } catch (e) { this.setState({ err: 'Registry failed to load: ' + e.message }); return; }
+    this.cov = this.R.coverage();
+    try { const h = JSON.parse(localStorage.getItem('tc-history') || '[]'); if (Array.isArray(h)) this.setState({ history: h }); } catch (e) {}
+    this.forceUpdate();
+    for (const spec of this.R.SPECS) { if (spec.heavy) continue; try { const L = await this.R.loadSuite(spec); this.setSuite(spec.id, { status: 'ready', tests: L.tests, claims: L.claims, batch: L.batch, people: L.people }); } catch (e) { this.setSuite(spec.id, { status: 'error', err: e.message, tests: [] }); } }
+    this.scheduleDraw();
+  }
+  componentWillUnmount() { this.dead = true; }
+
+  setSuite(id, patch) { this.setState(s => ({ suites: { ...s.suites, [id]: { ...(s.suites[id] || {}), ...patch } } })); }
+  spec(id) { return this.R.SPECS.find(s => s.id === id); }
+  suite(id) { return this.state.suites[id] || { status: 'idle', tests: null }; }
+
+  async ensure(spec) { const su = this.suite(spec.id); if (su.status === 'ready') return su; this.setSuite(spec.id, { status: 'loading' }); try { const L = await this.R.loadSuite(spec); const n = { status: 'ready', tests: L.tests, claims: L.claims, batch: L.batch, people: L.people }; this.setSuite(spec.id, n); return { ...su, ...n }; } catch (e) { this.setSuite(spec.id, { status: 'error', err: e.message, tests: [] }); throw e; } }
+
+  emit(sid, row) { if (this.dead) return; const k = sid + '#' + row.id; const slow = row.slow != null ? !!row.slow : (row.pass && row.ms > SLOW); this.setState(s => ({ res: { ...s.res, [k]: { _id: row.id, name: row.name, group: row.group, pass: !!row.pass, evidence: row.evidence || '', ms: row.ms || 0, value: row.value, slow } } })); this.scheduleDraw(); }
+  resFor(sid) { const out = []; for (const k in this.state.res) if (k.indexOf(sid + '#') === 0) out.push(this.state.res[k]); return out; }
+  snapshot() { const all = Object.values(this.state.res); if (!all.length) return; const ok = all.filter(r => r.pass).length, rate = Math.round(ok / all.length * 100); this.setState(s => { const last = s.history[s.history.length - 1]; if (last && last.rate === rate && last.total === all.length) return {}; const h = [...s.history, { at: Date.now(), rate, total: all.length, fail: all.length - ok }].slice(-24); try { localStorage.setItem('tc-history', JSON.stringify(h)); } catch (e) {} return { history: h }; }); }
+
+  async runList(sid, tests) { const title = this.spec(sid).title; for (const t of tests) { if (this.halt || this.dead) break; const k = sid + '#' + t.id; this.setState({ runLabel: '[' + title + '] ' + t.name, activeKey: k }); const r = await t.run(); if (this.dead) break; this.emit(sid, { id: t.id, name: t.name, group: t.group, ...r }); await new Promise(res => setTimeout(res, 0)); } }
+
+  runSuite = async sid => { if (this.state.running) return; const spec = this.spec(sid); this.halt = false; this.setState({ running: true, err: '', focus: sid, lane: 'results', runLabel: 'Loading ' + spec.title + '…' }); try { const L = await this.ensure(spec); if (L.tests) await this.runList(sid, L.tests); else if (L.batch) { this.setState({ runLabel: 'Running ' + spec.title + '…', activeKey: sid + '#*' }); await L.batch(row => this.emit(sid, row)); } this.setState({ lastRunAt: Date.now() }); this.snapshot(); } catch (e) { this.setState({ err: spec.title + ': ' + e.message }); } finally { if (!this.dead) this.setState({ running: false, runLabel: '', activeKey: '' }); this.scheduleDraw(); } };
+
+  runAll = async () => { if (this.state.running) return; this.halt = false; this.setState({ running: true, err: '', lane: 'overview' }); try { for (const spec of this.R.SPECS) { if (spec.heavy || this.halt || this.dead) continue; const L = await this.ensure(spec); if (L.tests) await this.runList(spec.id, L.tests); else if (L.batch) await L.batch(row => this.emit(spec.id, row)); } this.setState({ lastRunAt: Date.now() }); this.snapshot(); } catch (e) { this.setState({ err: e.message }); } finally { if (!this.dead) this.setState({ running: false, runLabel: '', activeKey: '' }); this.scheduleDraw(); } };
+
+  runFailing = async () => { if (this.state.running) return; const fails = Object.keys(this.state.res).filter(k => !this.state.res[k].pass); if (!fails.length) return; this.halt = false; this.setState({ running: true, err: '' }); const by = {}; for (const k of fails) { const i = k.indexOf('#'); const sid = k.slice(0, i), id = this.state.res[k]._id; (by[sid] = by[sid] || []).push(String(id)); } try { for (const sid of Object.keys(by)) { if (this.halt || this.dead) break; const spec = this.spec(sid); const L = await this.ensure(spec); const want = new Set(by[sid]); if (L.tests) await this.runList(sid, L.tests.filter(t => want.has(String(t.id)))); else if (L.batch) await L.batch(row => { if (want.has(String(row.id))) this.emit(sid, row); }, by[sid]); } this.setState({ lastRunAt: Date.now() }); this.snapshot(); } finally { if (!this.dead) this.setState({ running: false, runLabel: '', activeKey: '' }); this.scheduleDraw(); } };
+
+  stop = () => { this.halt = true; this.forceUpdate(); };
+  reset = () => { this.setState({ res: {}, lastRunAt: 0, open: {} }); this.scheduleDraw(); };
+  setLane = l => { this.setState({ lane: l }); if (l === 'graph') { this.scheduleDraw(); setTimeout(() => this.scheduleDraw(), 60); } };
+  pickCell = (sid, id) => this.setState(st => ({ focus: sid, lane: 'results', open: { ...st.open, [sid + '#' + id]: true } }));
+
+  verdict(sid) { const su = this.suite(sid), spec = this.spec(sid); const total = su.tests ? su.tests.length : (su.people ? su.people.length : (spec.hint || 0)); const rs = this.resFor(sid); const done = rs.length, fail = rs.filter(r => !r.pass).length, slow = rs.filter(r => r.pass && r.slow).length, pass = rs.filter(r => r.pass && !r.slow).length; let v = 'none'; if (fail) v = 'fail'; else if (done && slow) v = 'slow'; else if (done) v = 'pass'; return { total, done, fail, slow, pass, v, status: su.status }; }
+  fileHealth(f) { const e = this.cov.byFile[f]; if (!e) return 'none'; let fail = false, slow = false, ok = false; for (const sid of e.suites) { const v = this.verdict(sid); if (v.done) { if (v.fail) fail = true; else if (v.slow) slow = true; else ok = true; } } return fail ? 'fail' : slow ? 'slow' : ok ? 'pass' : 'none'; }
+  testsOf(sid) { const su = this.suite(sid); if (su.tests) return su.tests; if (su.people) return su.people.map(p => ({ id: p.id, name: p.name, group: p.cat })); const r = this.resFor(sid); return r.map(x => ({ id: x._id, name: x.name, group: x.group || 'general' })); }
+
+  scheduleDraw() { if (this._raf) return; this._raf = requestAnimationFrame(() => { this._raf = 0; this.draw(); }); }
+  draw() {
+    const cv = this.gref.current; if (!cv || !this.R) return;
+    const W = cv.clientWidth || 900, dpr = Math.min(2, window.devicePixelRatio || 1);
+    const flatF = []; for (const layer of Object.keys(this.R.FILES)) { flatF.push({ sep: layer }); for (const f of this.R.FILES[layer]) flatF.push({ f }); }
+    const suites = this.R.SPECS;
+    const rowH = 15, padT = 18, padB = 14;
+    const H = Math.max(padT + flatF.length * rowH + padB, padT + suites.length * 30 + padB);
+    cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + 'px';
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    const xFile = Math.min(300, W * 0.34), xSuite = W * 0.72;
+    const fy = {}; let y = padT;
+    for (const row of flatF) { if (row.sep) { ctx.fillStyle = '#5a5d73'; ctx.font = '600 9px ' + MONO; ctx.textAlign = 'left'; ctx.fillText(row.sep.toUpperCase(), 6, y + 8); y += rowH; } else { fy[row.f] = y + 5; y += rowH; } }
+    const sy = {}; const sStep = (H - padT - padB) / suites.length; suites.forEach((s, i) => { sy[s.id] = padT + sStep * (i + 0.5); });
+    for (const s of suites) { const v = this.verdict(s.id); const col = VCOL[v.v]; ctx.strokeStyle = col; ctx.globalAlpha = v.v === 'fail' ? 0.5 : v.v === 'none' ? 0.1 : 0.22; ctx.lineWidth = v.v === 'fail' ? 1.3 : 1; for (const f of s.covers) { if (fy[f] == null) continue; ctx.beginPath(); ctx.moveTo(xFile + 4, fy[f]); ctx.bezierCurveTo((xFile + xSuite) / 2, fy[f], (xFile + xSuite) / 2, sy[s.id], xSuite - 7, sy[s.id]); ctx.stroke(); } }
+    ctx.globalAlpha = 1;
+    this._hits = [];
+    for (const row of flatF) { if (row.sep) continue; const f = row.f, h = this.fileHealth(f); ctx.fillStyle = VCOL[h]; ctx.beginPath(); ctx.arc(xFile, fy[f], 3.2, 0, 7); ctx.fill(); ctx.fillStyle = h === 'none' ? '#70748a' : '#c2c5d6'; ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'right'; ctx.fillText(short(f, 30), xFile - 9, fy[f] + 3.5); }
+    for (const s of suites) { const v = this.verdict(s.id), col = VCOL[v.v], yy = sy[s.id]; ctx.beginPath(); ctx.arc(xSuite, yy, 7, 0, 7); ctx.fillStyle = '#171825'; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = col; ctx.stroke(); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(xSuite, yy, 3, 0, 7); ctx.fill(); ctx.fillStyle = s.id === this.state.focus ? '#fff' : '#c2c5d6'; ctx.font = (s.id === this.state.focus ? '600 ' : '') + '11.5px Inter, sans-serif'; ctx.textAlign = 'left'; ctx.fillText(short(s.title, 30), xSuite + 13, yy + 4); this._hits.push({ id: s.id, x: xSuite, y: yy }); }
+  }
+  onGraphClick = e => { const cv = this.gref.current; if (!cv || !this._hits) return; const rect = cv.getBoundingClientRect(), x = e.clientX - rect.left, y = e.clientY - rect.top; let best = null, bd = 1e9; for (const h of this._hits) { const d = Math.hypot(h.x - x, h.y - y); if (d < bd) { bd = d; best = h; } } if (best && bd < 120) this.setState({ focus: best.id, lane: 'results' }); };
+
+  renderVals() {
+    const R = this.R, s = this.state;
+    if (!R) return { livePill: {}, liveDot: {}, liveText: 'IDLE', health: { ring: {}, col: '#eceef4', pct: '—', chips: [], ran: 'loading…' }, tiles: [], matrix: [], matrixHint: '', legend: [], rail: [], tabs: [], cards: [], spark: { has: false, empty: true, sub: '' }, isOverview: false, isResults: true, isGraph: false, isCrud: false, isFiles: false, rowsEmpty: true, emptyText: 'Loading the test registry…', focus: { covers: [], title: '', file: '', blurb: '', runLabel: '', progText: '', dot: {}, prog: {}, runStyle: {} }, vfilters: [], groups: [], hasGroups: false, rows: [], crud: [], crudNote: '', fileLayers: [], filesNote: '', query: '', running: false, runLabel: '', err: '', hasErr: false, runAll: () => {}, runAllLabel: 'Run everything', runAllDot: {}, runAllStyle: {}, runFailing: () => {}, failCount: '', failStyle: {}, stop: () => {}, reset: () => {}, onQuery: () => {}, graphRef: this.gref, onGraphClick: () => {} };
+    const specs = R.SPECS, allRes = Object.values(s.res);
+    const totalTests = specs.reduce((a, sp) => { const su = this.suite(sp.id); return a + (su.tests ? su.tests.length : (su.people ? su.people.length : (sp.hint || 0))); }, 0);
+    const passN = allRes.filter(r => r.pass && !r.slow).length, slowN = allRes.filter(r => r.pass && r.slow).length, failN = allRes.filter(r => !r.pass).length, ran = allRes.length;
+    const okN = passN + slowN, rate = ran ? Math.round(okN / ran * 100) : 0;
+    const degOk = ran ? (okN / ran) * 360 : 0;
+    const dur = allRes.reduce((a, r) => a + (r.ms || 0), 0);
+    const slowest = allRes.slice().sort((a, b) => b.ms - a.ms)[0];
+    const suitesReady = specs.filter(sp => this.suite(sp.id).status === 'ready').length;
+    const suitesFail = specs.filter(sp => this.verdict(sp.id).fail > 0).length;
+    const rCol = !ran ? '#eceef4' : rate >= 95 ? C.pass : rate >= 80 ? C.slow : C.fail;
+
+    const chipS = c => ({ fontFamily: MONO, fontSize: 10.5, color: c, border: '1px solid ' + c, borderRadius: 20, padding: '3px 9px', whiteSpace: 'nowrap' });
+    const ringBg = ran ? 'conic-gradient(' + C.pass + ' 0 ' + degOk + 'deg, ' + C.fail + ' ' + degOk + 'deg 360deg)' : 'conic-gradient(rgba(236,238,244,0.08) 0 360deg)';
+    const health = { ring: { width: 118, height: 118, borderRadius: '50%', background: ringBg, display: 'grid', placeItems: 'center', flex: 'none', boxShadow: ran ? '0 0 36px rgba(127,207,182,0.12)' : 'none' }, col: rCol, pct: ran ? rate + '%' : '—',
+      chips: ran ? [{ style: chipS(C.pass), label: passN + ' pass' }, ...(slowN ? [{ style: chipS(C.slow), label: slowN + ' slow' }] : []), { style: chipS(failN ? C.fail : C.faint), label: failN + ' fail' }] : [{ style: chipS(C.faint), label: 'not run yet' }],
+      ran: ran ? ran + ' of ' + totalTests + ' tests run' : totalTests + ' tests ready' };
+
+    const tiles = [
+      { label: 'TESTS RUN', value: ran ? String(ran) : '0', color: '#eceef4', note: 'of ' + totalTests + ' · ' + specs.length + ' suites' },
+      { label: 'FAILURES', value: String(failN), color: failN ? C.fail : (ran ? C.pass : '#eceef4'), note: failN ? 'need attention' : ran ? 'all green' : 'none yet' },
+      { label: 'DURATION', value: dur >= 1000 ? (dur / 1000).toFixed(1) + 's' : dur + 'ms', color: '#eceef4', note: slowest ? 'slowest ' + slowest.ms + 'ms' : 'wall time' },
+      { label: 'COVERAGE', value: this.cov.unit + '/' + this.cov.total, color: this.cov.none ? C.slow : C.pass, note: this.cov.none + ' gaps · ' + this.cov.integration + ' e2e-only' },
+    ];
+
+    const legend = [['pass', 'pass'], ['slow', 'slow'], ['fail', 'fail'], ['none', 'idle']].map(([k, label]) => ({ label, dot: { width: 9, height: 9, borderRadius: 3, background: VCOL[k], flex: 'none' } }));
+
+    const cellStyle = v => ({ width: 11, height: 11, borderRadius: 3, flex: 'none', cursor: 'pointer', background: v === 'none' ? 'rgba(236,238,244,0.07)' : VCOL[v], boxShadow: v === 'fail' ? '0 0 6px rgba(232,149,111,0.6)' : 'none', animation: v === 'active' ? 'mg-pulse 0.9s infinite' : 'none' });
+    const matrix = specs.map(sp => { const v = this.verdict(sp.id), su = this.suite(sp.id); const tests = this.testsOf(sp.id); const cells = tests.length ? tests.map(t => { const r = s.res[sp.id + '#' + t.id]; const k = sp.id + '#' + t.id; const cv = s.activeKey === k || (s.activeKey === sp.id + '#*' && !r && s.running) ? 'active' : !r ? 'none' : !r.pass ? 'fail' : r.slow ? 'slow' : 'pass'; return { style: cellStyle(cv), title: t.name + (r ? ' — ' + short(r.evidence, 90) : ''), pick: e => { e.stopPropagation(); this.pickCell(sp.id, t.id); } }; }) : Array.from({ length: Math.min(sp.hint || (sp.heavy ? 8 : 6), 14) }, () => ({ style: cellStyle('none'), title: sp.heavy ? 'heavy — run to load' : 'not loaded', pick: e => e.stopPropagation() }));
+      return { title: short(sp.title, 22), count: v.done ? v.done + '/' + (v.total || '?') : String(v.total || cells.length), dot: dot(VCOL[v.v], 8), pick: () => this.setState({ focus: sp.id, lane: 'results' }), block: { display: 'grid', gap: 6, padding: '8px 9px', borderRadius: 10, background: s.focus === sp.id ? '#20223a' : 'rgba(236,238,244,0.03)', border: '1px solid ' + (s.focus === sp.id ? 'rgba(145,132,217,0.45)' : 'rgba(236,238,244,0.06)'), cursor: 'pointer', minWidth: 0 }, cells }; });
+
+    const rail = LORDER.map(name => ({ name, suites: specs.filter(sp => sp.layer === name).map(sp => {
+      const v = this.verdict(sp.id), su = this.suite(sp.id), on = s.focus === sp.id;
+      const barW = v.total ? Math.round(v.done / v.total * 100) : 0, barCol = v.fail ? C.fail : v.slow ? C.slow : v.done ? C.pass : C.brand;
+      const count = su.status === 'loading' ? '…' : su.status === 'error' ? 'err' : v.done ? (v.fail ? v.fail + '✗ ' : '') + (v.done - v.fail) + '/' + v.total : v.total + (su.tests || su.people ? '' : '~');
+      return { title: sp.title, heavy: !!sp.heavy, pick: () => this.setState({ focus: sp.id, lane: 'results', group: 'all', vfilter: 'all' }), run: e => { e.stopPropagation(); this.runSuite(sp.id); },
+        dot: su.status === 'error' ? dot(C.fail) : dot(VCOL[v.v], v.done ? 9 : 7), count,
+        runBtn: { width: 24, height: 24, flex: 'none', borderRadius: 7, border: '1px solid rgba(236,238,244,0.14)', background: on ? 'rgba(145,132,217,0.18)' : 'transparent', color: '#b2b6ca', fontSize: 9, cursor: 'pointer' },
+        bar: { width: barW + '%', height: '100%', background: barCol, borderRadius: 3, transition: 'width .25s' },
+        row: { display: 'grid', gap: 7, padding: '10px 11px', borderRadius: 12, cursor: 'pointer', background: on ? '#20223a' : '#191b29', border: '1px solid ' + (on ? 'rgba(145,132,217,0.5)' : 'rgba(236,238,244,0.07)') } };
+    }) })).filter(l => l.suites.length);
+
+    const tabsDef = [['overview', 'Overview'], ['results', 'Results'], ['graph', 'Graph'], ['crud', 'CRUD'], ['files', 'Gaps']];
+    const tabs = tabsDef.map(([id, label]) => ({ label, pick: () => this.setLane(id), style: { height: 32, padding: '0 16px', borderRadius: 8, border: 0, background: s.lane === id ? C.selbg : 'transparent', color: s.lane === id ? '#e7e5fe' : C.mut, fontSize: 12.5, fontWeight: s.lane === id ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap' } }));
+
+    // overview cards
+    const cards = specs.map(sp => { const v = this.verdict(sp.id), su = this.suite(sp.id); const r = v.done ? Math.round((v.pass + v.slow) / v.done * 100) : 0; const rc = !v.done ? '#565a6e' : r >= 95 ? C.pass : r >= 80 ? C.slow : C.fail; const bc = v.fail ? C.fail : v.slow ? C.slow : v.done ? C.pass : C.brand; return {
+      title: sp.title, blurb: sp.blurb, verdict: su.status === 'error' ? 'ERROR' : v.done ? (v.fail ? v.fail + ' FAIL' : v.slow ? 'SLOW' : 'PASS') : su.status === 'loading' ? 'LOADING' : 'READY',
+      badge: { fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', color: v.fail || su.status === 'error' ? C.fail : v.slow ? C.slow : v.done ? C.pass : C.faint, border: '1px solid ' + (v.fail || su.status === 'error' ? C.fail : v.slow ? C.slow : v.done ? C.pass : 'rgba(236,238,244,0.2)'), borderRadius: 5, padding: '2px 6px', whiteSpace: 'nowrap', flex: 'none' },
+      dot: dot(su.status === 'error' ? C.fail : VCOL[v.v], 9), rate: v.done ? r + '%' : '—', rateCol: rc,
+      bar: { width: (v.total ? v.done / v.total * 100 : 0) + '%', height: '100%', background: bc, borderRadius: 3, transition: 'width .25s' },
+      count: v.done ? v.done + '/' + v.total + ' run' : v.total + ' tests',
+      pick: () => this.setState({ focus: sp.id, lane: 'results' }), run: e => { e.stopPropagation(); this.runSuite(sp.id); },
+      runBtn: { height: 28, padding: '0 12px', flex: 'none', borderRadius: 8, border: '1px solid ' + C.sel, background: C.selbg, color: '#e7e5fe', fontSize: 11.5, fontWeight: 500, cursor: 'pointer' },
+      card: { display: 'grid', gap: 10, alignContent: 'start', padding: 14, borderRadius: 14, background: s.focus === sp.id ? '#20223a' : 'linear-gradient(180deg, #191b29, #16171f)', border: '1px solid ' + (s.focus === sp.id ? 'rgba(145,132,217,0.5)' : 'rgba(236,238,244,0.08)'), cursor: 'pointer' } }; });
+
+    // sparkline
+    const hist = s.history; const N = hist.length;
+    let spark;
+    if (N >= 2) { const pts = hist.map((h, i) => { const x = (i / (N - 1)) * 100, yy = 32 - (h.rate / 100) * 30; return x.toFixed(1) + ',' + yy.toFixed(1); }); const last = hist[N - 1], prev = hist[N - 2]; const d = last.rate - prev.rate; spark = { has: true, empty: false, points: pts.join(' '), area: '0,34 ' + pts.join(' ') + ' 100,34', sub: last.rate + '% · ' + (d > 0 ? '▲ +' + d : d < 0 ? '▼ ' + d : '— flat') }; }
+    else spark = { has: false, empty: true, sub: N === 1 ? hist[0].rate + '% · first run' : 'no runs yet' };
+
+    // focused suite
+    const fspec = this.spec(s.focus), fsu = this.suite(s.focus), fv = this.verdict(s.focus);
+    const tests = this.testsOf(s.focus);
+    const groupSet = [...new Set(tests.map(t => t.group))];
+    const focus = {
+      dot: dot(VCOL[fv.v], 10), title: fspec.title, file: fspec.file, blurb: fspec.blurb, covers: fspec.covers,
+      run: () => this.runSuite(s.focus), runLabel: s.running ? 'Running…' : fsu.status === 'ready' || fspec.heavy ? 'Run suite' : 'Load & run',
+      runStyle: { height: 38, padding: '0 18px', borderRadius: 10, border: '1px solid ' + C.sel, background: s.running ? '#232532' : C.selbg, color: '#e7e5fe', fontSize: 13, fontWeight: 500, cursor: s.running ? 'default' : 'pointer', whiteSpace: 'nowrap', alignSelf: 'start' },
+      prog: { width: (fv.total ? Math.round(fv.done / fv.total * 100) : 0) + '%', height: '100%', background: fv.fail ? C.fail : fv.slow ? C.slow : C.pass, borderRadius: 4, transition: 'width .2s' },
+      progText: fsu.status === 'error' ? 'failed to load' : fv.done + ' / ' + fv.total + (fv.done ? ' · ' + fv.pass + '✓ ' + fv.slow + '~ ' + fv.fail + '✗' : ''),
+    };
+    const vfilters = [['all', 'All'], ['fail', 'Failing'], ['slow', 'Slow']].map(([id, label]) => ({ label, pick: () => this.setState({ vfilter: id }), style: { height: 28, padding: '0 12px', borderRadius: 7, border: 0, background: s.vfilter === id ? C.selbg : 'transparent', color: s.vfilter === id ? '#e7e5fe' : C.mut, fontSize: 12, cursor: 'pointer' } }));
+    const groups = ['all', ...groupSet].map(g => ({ label: g === 'all' ? 'All groups' : g, pick: () => this.setState({ group: g }), style: { height: 28, padding: '0 11px', borderRadius: 8, border: '1px solid ' + (s.group === g ? C.sel : 'rgba(236,238,244,0.12)'), background: s.group === g ? C.selbg : 'transparent', color: s.group === g ? '#e7e5fe' : C.mut, fontSize: 11.5, cursor: 'pointer', whiteSpace: 'nowrap' } }));
+
+    const q = s.query.toLowerCase();
+    const rows = tests.map(t => { const r = s.res[s.focus + '#' + t.id]; const v = !r ? 'idle' : !r.pass ? 'fail' : r.slow ? 'slow' : 'pass'; return { t, r, v }; })
+      .filter(x => s.group === 'all' || x.t.group === s.group)
+      .filter(x => s.vfilter === 'all' || (s.vfilter === 'fail' ? x.v === 'fail' : x.v === 'slow'))
+      .filter(x => !q || x.t.name.toLowerCase().includes(q) || (x.r && x.r.evidence.toLowerCase().includes(q)))
+      .slice(0, 400)
+      .map(({ t, r, v }) => { const col = VCOL[v] || C.faint; const isOpen = !!s.open[s.focus + '#' + t.id]; const showEv = r && r.evidence && (v === 'fail' || v === 'slow' || isOpen); return {
+        id: String(t.id), name: t.name, verdict: VLAB[v], toggle: () => this.setState(st => ({ open: { ...st.open, [s.focus + '#' + t.id]: !st.open[s.focus + '#' + t.id] } })),
+        badge: { fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.08em', color: col, border: '1px solid ' + col, borderRadius: 5, padding: '2px 0', textAlign: 'center', fontWeight: 500 },
+        meta: (t.group || '') + (r ? ' · ' + r.ms + 'ms' : ''),
+        showEv, evidence: r ? r.evidence : '', evStyle: { margin: '8px 0 0 87px', padding: '8px 10px', borderRadius: 8, background: '#0f1017', border: '1px solid ' + (v === 'fail' ? 'rgba(232,149,111,0.3)' : 'rgba(236,238,244,0.07)'), fontFamily: MONO, fontSize: 11, lineHeight: 1.55, color: v === 'fail' ? '#edb9a2' : '#a9adc4', whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: 220, overflow: 'auto' },
+        row: { background: '#191b29', padding: '11px 14px', cursor: r && r.evidence ? 'pointer' : 'default', borderLeft: '2px solid ' + (v === 'idle' ? 'transparent' : col) } }; });
+    const emptyText = fsu.status === 'error' ? 'This suite failed to load: ' + (fsu.err || '') : fsu.status === 'loading' ? 'Loading…' : !fv.done ? 'Press Run suite to execute ' + fv.total + ' tests.' : 'No tests match this filter.';
+
+    const tally = { create: { p: 0, f: 0 }, read: { p: 0, f: 0 }, update: { p: 0, f: 0 }, delete: { p: 0, f: 0 } };
+    for (const r of allRes) for (const op of R.crudOf(r.name + ' ' + (r.group || ''))) tally[op][r.pass ? 'p' : 'f']++;
+    const crud = ['create', 'read', 'update', 'delete'].map(op => { const t = tally[op], tot = t.p + t.f, pr = tot ? Math.round(t.p / tot * 100) : 0; return {
+      letter: op[0].toUpperCase(), label: CRUD_LAB[op], total: String(tot),
+      tag: { fontFamily: MONO, fontSize: 12, fontWeight: 600, color: CRUD_HUE[op], width: 26, height: 26, borderRadius: 7, border: '1px solid ' + CRUD_HUE[op], display: 'grid', placeItems: 'center' },
+      passBar: { width: (tot ? t.p / tot * 100 : 0) + '%', background: C.pass, height: '100%' }, failBar: { width: (tot ? t.f / tot * 100 : 0) + '%', background: C.fail, height: '100%' },
+      detail: tot ? pr + '% pass · ' + t.p + ' ok' + (t.f ? ', ' + t.f + ' failing' : '') : 'not run yet' }; });
+    const crudNote = ran ? 'Every run test, bucketed by the operation it exercises on the live engines and store.' : 'Run suites to classify their tests across create, read, update and delete.';
+
+    const LEVEL = { unit: ['tested', C.pass], integration: ['integration', C.slow], none: ['no suite', C.fail] };
+    const fileLayers = Object.keys(R.FILES).map(name => ({ name, items: R.FILES[name].map(f => { const e = this.cov.byFile[f], lvl = e.level, h = this.fileHealth(f); const [lt, lc] = LEVEL[lvl]; const names = e.suites.map(id => this.spec(id).title); return {
+      file: f, suites: names.length ? names.join(', ') : 'no suite covers this file', level: lt, dot: dot(h === 'none' ? C.faint : VCOL[h], 9),
+      tag: { fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.06em', color: lc, border: '1px solid ' + lc, borderRadius: 5, padding: '2px 7px', whiteSpace: 'nowrap' } }; }) }));
+    const filesNote = this.cov.none + ' files with no suite, ' + this.cov.integration + ' reached only by the heavy simulation, ' + this.cov.unit + ' under unit suites.';
+
+    return {
+      livePill: { display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.08em', color: s.running ? C.pass : C.faint, border: '1px solid ' + (s.running ? 'rgba(127,207,182,0.4)' : 'rgba(236,238,244,0.12)'), borderRadius: 20, padding: '2px 8px' },
+      liveDot: { width: 6, height: 6, borderRadius: '50%', background: s.running ? C.pass : C.faint, animation: s.running ? 'mg-breathe 1.1s infinite' : 'none' }, liveText: s.running ? 'RUNNING' : 'IDLE',
+      health, tiles, matrix, matrixHint: ran ? ran + ' / ' + totalTests : totalTests + ' ready', legend, cards, spark,
+      rail, tabs, query: s.query, onQuery: e => this.setState({ query: e.target.value }),
+      running: s.running, runLabel: s.runLabel, err: s.err, hasErr: !!s.err,
+      runAll: this.runAll, runAllLabel: s.running ? 'Running…' : 'Run everything', runAllDot: { width: 7, height: 7, borderRadius: '50%', background: s.running ? C.slow : C.pass, flex: 'none', animation: s.running ? 'mg-breathe 1s infinite' : 'none' },
+      runAllStyle: { height: 37, padding: '0 16px', borderRadius: 10, border: '1px solid ' + C.sel, background: s.running ? '#232532' : 'linear-gradient(180deg, #353056, #2b2741)', color: '#e7e5fe', fontSize: 13, fontWeight: 500, cursor: s.running ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: s.running ? 'none' : '0 4px 14px rgba(93,82,148,0.3)' },
+      runFailing: this.runFailing, failCount: failN ? ' (' + failN + ')' : '', failStyle: { height: 37, padding: '0 14px', borderRadius: 10, border: '1px solid rgba(236,238,244,0.14)', background: 'transparent', color: failN ? '#edb9a2' : C.mut, fontSize: 12.5, cursor: failN ? 'pointer' : 'default' },
+      stop: this.stop, reset: this.reset,
+      isOverview: s.lane === 'overview', isResults: s.lane === 'results', isGraph: s.lane === 'graph', isCrud: s.lane === 'crud', isFiles: s.lane === 'files',
+      focus, vfilters, groups, hasGroups: groupSet.length > 1, rows, rowsEmpty: rows.length === 0, emptyText,
+      graphRef: this.gref, onGraphClick: this.onGraphClick,
+      crud, crudNote, fileLayers, filesNote,
+    };
+  }
+}
+</script>
+</body>
+</html>

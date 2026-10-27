@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; background: #d9dce6; } * { box-sizing: border-box; } a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 2px; }</style>
+</helmet>
+<div data-screen-label="Emails" style="padding: 32px 16px 64px; font-family: 'Instrument Sans', Arial, sans-serif; display: grid; gap: 40px; justify-items: center;">
+  <div style="max-width: 600px; width: 100%; color: #32384f; font-size: 14px; line-height: 1.5;"><b>The welcome series.</b> Five emails queued when someone joins, on days 0, 2, 5, 10 and 14. Each is 600px wide with inline styles. Placeholders are marked.</div>
+  <sc-for list="{{ mails }}" as="m" hint-placeholder-count="5">
+    <div style="width: 100%; max-width: 600px; display: grid; gap: 8px;">
+      <div style="display: flex; gap: 10px; align-items: baseline; font-size: 13px; color: #32384f;"><b style="color: #d1237f;">Day {{ m.day }}</b><span>Subject: <b>{{ m.subject }}</b></span></div>
+      <div style="font-size: 12px; color: #5b6180;">Preview text: {{ m.pre }}</div>
+      <div style="background: #0b0e17; color: #eef1ff; border-radius: 14px; overflow: hidden;">
+        <div style="padding: 22px 32px; border-bottom: 1px solid #252c42; display: flex; align-items: center; gap: 10px;"><svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="#27d3ff" stroke-width="2.5"></circle><circle cx="23" cy="11" r="9" fill="none" stroke="#ff3ea5" stroke-width="2.5"></circle></svg><span style="font-family: 'Syne', Arial, sans-serif; font-weight: 800; font-size: 20px;">Map Graph</span></div>
+        <div style="padding: 34px 32px 10px; display: grid; gap: 16px;">
+          <div style="font-family: 'Syne', Arial, sans-serif; font-weight: 800; font-size: 34px; line-height: 1.02; letter-spacing: -0.02em;">{{ m.head }}</div>
+          <sc-for list="{{ m.body }}" as="p" hint-placeholder-count="2"><div style="font-size: 16px; line-height: 1.6; color: #c9d0ee;">{{ p }}</div></sc-for>
+          <sc-if value="{{ m.hasBox }}" hint-placeholder-val="{{ false }}"><div style="padding: 14px 16px; border: 1px solid #ff3ea5; border-radius: 12px; font-family: 'DM Mono', Menlo, monospace; font-size: 14px; color: #eef1ff; line-height: 1.5;">{{ m.box }}</div></sc-if>
+        </div>
+        <div style="padding: 14px 32px 34px;"><a href="#" style="display: inline-block; padding: 14px 28px; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 700; font-size: 16px; text-decoration: none;">{{ m.cta }}</a></div>
+        <div style="padding: 18px 32px; border-top: 1px solid #252c42; font-size: 12px; line-height: 1.6; color: #8f98bb;">You are receiving this because you joined the Map Graph waitlist. Sample names in these emails are invented.<br>Unsubscribe link: placeholder. Postal address: placeholder.</div>
+      </div>
+    </div>
+  </sc-for>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const M = [
+      { day: 0, subject: "You're on the list", pre: 'Your place, and how to move up.', head: "You're on the list.", body: ['Your place in the Map Graph queue is saved. Each friend who joins from your link moves you ahead by ten places.', 'Map Graph is two engines you can run side by side. Thoughts grows ideas from a seed. Atlas maps what you know, level by level, in the context you steer.'], box: 'Your link: https://example.com/?ref=YOURCODE (placeholder)', cta: 'Copy my invite link' },
+      { day: 2, subject: 'Shake out thoughts in plain words', pre: 'One sentence is enough.', head: 'Say it the way you would say it.', body: ['Once you have access, describe a shake in your own words. The engine reads the count, the wildness, where to aim and how densely to link, and shows you what it understood.', 'Every shake becomes a numbered revision. Step back to any of them, or withdraw the latest.'], box: '14 wild ideas around the weakest facts, tangled with links', cta: 'See how shaking works' },
+      { day: 5, subject: 'Map a field you know', pre: 'Drop a node. It finds its place.', head: 'Drop a node. It finds its place.', body: ['In Atlas, Ctrl+click and type a name. The map picks its type, the container it belongs in and the links it should have, and tells you why.', 'Then the node asks what is missing: who owns it, what it is made of, what it is for. A word is enough.'], box: 'This node asks: What does Truck 12 run on?', cta: 'Read the gestures' },
+      { day: 10, subject: 'Founding membership is open', pre: 'A say in what we build. No payment.', head: 'Help shape Map Graph.', body: ['Founding members are the first group we ask about what to build next. Registering interest takes no payment and commits you to nothing.', 'Terms and pricing are not final. This email will carry the real offer before it is sent.'], box: '', cta: 'Register interest' },
+      { day: 14, subject: 'Last call for founding places', pre: 'A last note about founding interest.', head: 'Last call.', body: ['If you want a say in what Map Graph becomes, register interest in founding membership before the list closes.', 'If it is not for you, nothing more is needed. You keep your place on the waitlist either way.'], box: '', cta: 'Register interest' },
+    ];
+    return { mails: M.map(m => ({ ...m, hasBox: !!m.box })) };
+  }
+}
+
+</script>
+</body>
+</html>

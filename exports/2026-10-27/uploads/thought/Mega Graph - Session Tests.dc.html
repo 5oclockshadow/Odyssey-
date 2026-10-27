@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html { color-scheme: dark; } html, body { margin: 0; background: #161826; color: #e9e9ed; font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+button, input, select { font: inherit; color: inherit; }
+a { color: #b5abfc; } a:hover { color: #d2cefd; }
+:focus { outline: none; } :focus-visible { outline: 2px solid #9184d9; outline-offset: 2px; }
+@keyframes mg-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+</style>
+</helmet>
+
+<div data-screen-label="Use cases" style="max-width: 1240px; margin: 0 auto; padding: 36px 22px 72px; display: grid; gap: 24px;">
+
+  <header style="display: grid; gap: 10px; max-width: 860px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.16em; color: #75798c;">MEGA GRAPH · {{ caseCount }} USE CASES, ANSWERS CHECKED</span>
+    <h1 style="margin: 0; font-size: 32px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 600;">Real people, the data they would bring, the question they would ask</h1>
+    <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #b2b6ca; text-wrap: pretty;">Each case loads a map shaped like that person's own records, usually 700 to 1,500 thoughts. The answer to their question is known in advance, either planted in the data or computed from it, so every run is graded: the app's own analysis must find it, and a Haiku or Sonnet agent working only through the app's tools must find it too and write it onto the map. Then the same map goes through every feature at that size. Facts about the world are real; numbers about people, money and results are simulated and labelled so.</p>
+  </header>
+
+  <section style="display: grid; gap: 12px; padding: 16px; border-radius: 13px; background: #1b1d2c; border: 1px solid rgba(233, 233, 237, 0.08);">
+    <div style="display: flex; flex-wrap: wrap; gap: 6px;"><sc-for list="{{ cats }}" as="k" hint-placeholder-count="6"><button type="button" onClick="{{ k.pick }}" style="{{ k.style }}">{{ k.label }}</button></sc-for></div>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+      <button type="button" onClick="{{ runOne }}" style="{{ runStyle }}">{{ runLabel }}</button>
+      <button type="button" onClick="{{ runCat }}" style="{{ ghostStyle }}">{{ runCatLabel }}</button>
+      <button type="button" onClick="{{ toggleNet }}" aria-pressed="{{ netPressed }}" style="{{ netStyle }}"><span style="{{ netDot }}"></span>Network</button>
+      <button type="button" onClick="{{ toggleLive }}" aria-pressed="{{ livePressed }}" title="{{ liveTitle }}" style="{{ liveStyle }}"><span style="{{ liveDot }}"></span>{{ liveLabel }}</button>
+      <button type="button" onClick="{{ toggleBat }}" aria-pressed="{{ batPressed }}" title="Plasticity, Q-table, shake, lenses, mind, sleep, evolution, planes, every view, save and reopen" style="{{ batStyle }}"><span style="{{ batDot }}"></span>Feature battery</button>
+      <button type="button" onClick="{{ toggleRetry }}" title="When an answer fails a check, the agent retries with the reason fed back (DSPy-style assertions)" style="{{ retryStyle }}"><span style="{{ retryDot }}"></span>{{ retryLabel }}</button>
+      <div style="display: flex; gap: 2px; padding: 2px; border-radius: 9px; border: 1px solid rgba(233, 233, 237, 0.12);"><sc-for list="{{ concs }}" as="c" hint-placeholder-count="4"><button type="button" onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div>
+      <span style="flex: 1;"></span>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #75798c;">{{ counts }}</span>
+    </div>
+    <div style="display: grid; gap: 4px; padding: 10px 12px; border-radius: 10px; background: #161826; border: 1px solid rgba(233, 233, 237, 0.06);">
+      <div style="display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #75798c;">AGENT PROGRAM</span><span style="font-size: 12.5px; font-weight: 500;">{{ prog.head }}</span><span style="flex: 1;"></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #75798c;">{{ prog.versions }}</span><button type="button" onClick="{{ resetProg }}" style="height: 24px; padding: 0 9px; border-radius: 6px; border: 1px solid rgba(233, 233, 237, 0.12); background: transparent; color: #9397ab; font-size: 11px; cursor: pointer;">Reset</button></div>
+      <div style="font-size: 12px; color: #9397ab; line-height: 1.5;">{{ prog.text }}</div>
+      <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; color: #e5c46f; line-height: 1.5;">{{ note }}</div></sc-if>
+    </div>
+    <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><div style="display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: #9397ab;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #7fcfb6; animation: mg-pulse 1.1s infinite;"></span>{{ step }}<button type="button" onClick="{{ stop }}" style="{{ ghostStyle }}">Stop after this case</button></div></sc-if>
+    <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div style="font-size: 12.5px; color: #e8956f;">{{ error }}</div></sc-if>
+  </section>
+
+  <section aria-label="Cases" style="display: grid; gap: 10px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 8px;">
+      <sc-for list="{{ cards }}" as="c" hint-placeholder-count="12">
+      <div onClick="{{ c.pick }}" style="{{ c.style }}">
+        <div style="display: flex; gap: 8px; align-items: baseline; justify-content: space-between;"><span style="font-size: 13px; font-weight: 600; line-height: 1.35;">{{ c.name }}</span><span style="{{ c.badge }}">{{ c.status }}</span></div>
+        <div style="font-size: 11.5px; color: #9397ab; line-height: 1.4;">{{ c.who }} · {{ c.mode }}</div>
+        <div style="font-size: 12px; color: #cfd1de; line-height: 1.45; font-style: italic;">“{{ c.goal }}”</div>
+        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #75798c; flex: 1;">{{ c.size }}</span><button type="button" onClick="{{ c.run }}" style="height: 26px; padding: 0 10px; border-radius: 7px; border: 1px solid rgba(233, 233, 237, 0.14); background: transparent; color: #b2b6ca; font-size: 11.5px; cursor: pointer;">Run</button><sc-if value="{{ c.canOpen }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ c.open }}" style="height: 26px; padding: 0 10px; border-radius: 7px; border: 1px solid #5d5294; background: #2b2741; color: #e7e5fe; font-size: 11.5px; font-weight: 500; cursor: pointer;">Open in app</button></sc-if></div>
+      </div>
+      </sc-for>
+    </div>
+    <div style="font-size: 12px; color: #75798c;">Open in app adds the case as its own topic. Your other topics and their history stay as they are.</div>
+  </section>
+
+  <sc-if value="{{ hasAreas }}" hint-placeholder-val="{{ false }}">
+  <section aria-label="Coverage" style="display: grid; gap: 10px;">
+    <h2 style="margin: 0; font-size: 17px; font-weight: 600;">Coverage by feature</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 8px;">
+      <sc-for list="{{ areas }}" as="a" hint-placeholder-count="12"><div style="{{ a.style }}"><div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;"><span style="font-size: 13px; font-weight: 500;">{{ a.name }}</span><span style="{{ a.scoreStyle }}">{{ a.score }}</span></div><div style="font-size: 11.5px; color: #9397ab; line-height: 1.4;">{{ a.note }}</div></div></sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ false }}">
+  <section aria-label="Transcript" style="display: grid; gap: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"><h2 style="margin: 0; font-size: 17px; font-weight: 600;">Transcript</h2><span style="font-size: 12px; color: #75798c;">{{ transcriptFor }}</span><span style="flex: 1;"></span><sc-for list="{{ filters }}" as="f" hint-placeholder-count="3"><button type="button" onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</button></sc-for></div>
+    <div style="display: grid; gap: 1px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(233, 233, 237, 0.08); background: rgba(233, 233, 237, 0.08);">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+      <div style="background: #161826; display: grid; gap: 5px; padding: 11px 13px;">
+        <div style="display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 10px; align-items: baseline;"><span style="{{ r.badge }}">{{ r.verdict }}</span><span style="font-size: 13.5px; line-height: 1.45;">{{ r.label }}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #75798c; white-space: nowrap;">{{ r.meta }}</span></div>
+        <sc-if value="{{ r.hasOut }}" hint-placeholder-val="{{ false }}"><pre style="margin: 0 0 0 72px; padding: 7px 9px; border-radius: 7px; background: #1b1d2c; font-family: 'IBM Plex Mono', monospace; font-size: 11px; line-height: 1.5; color: #b2b6ca; white-space: pre-wrap; word-break: break-word; max-height: 200px; overflow: auto;">{{ r.out }}</pre></sc-if>
+      </div>
+      </sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+  <section aria-label="Views" style="display: grid; gap: 10px;">
+    <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;"><h2 style="margin: 0; font-size: 17px; font-weight: 600;">Every view, drawn from the last map</h2><span style="font-size: 12px; color: #75798c;">{{ viewHint }}</span></div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 9px;">
+      <sc-for list="{{ thumbs }}" as="v" hint-placeholder-count="12"><figure style="margin: 0; display: grid; gap: 5px;"><div style="{{ v.box }}"><canvas ref="{{ v.ref }}" width="320" height="200" style="width: 100%; height: auto; display: block;"></canvas></div><figcaption style="display: flex; justify-content: space-between; gap: 6px; font-size: 11.5px;"><span style="color: #b2b6ca; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ v.label }}</span><span style="{{ v.markStyle }}">{{ v.mark }}</span></figcaption></figure></sc-for>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1240}}">
+const AREAS = { scale: 'Opening big maps', question: 'Their own question', ai: 'Agent finds the answer', graph: 'Graph editing', intel: 'Hubs, suggestions, tensions', learn: 'Plasticity and Q-table', shuffle: 'Shake and lens shuffle', mind: 'Free-running mind', reason: 'Challenge, verify, rewrite', sleep: 'Sleep and forgetting', evolve: 'Evolution', planes: 'Planes', trust: 'Redaction and audit', views: 'Every view', save: 'Save, reopen, export', docs: 'Documents', term: 'Terminal and sandbox', files: 'Files', patterns: 'Patterns', brain: 'Agent brain', mcp: 'Permissions', chat: 'Log trail', tools: 'Custom tools', net: 'Live sources' };
+const VERDICT = { pass: ['PASS', '#7fcfb6'], slow: ['SLOW', '#e5c46f'], fail: ['FAIL', '#e8956f'], note: ['NOTE', '#9397ab'], skip: ['SKIP', '#595d6c'] };
+const MODE = { thoughtmap: 'Imagine', thoughtgraph: 'Reason', mapmap: 'Survey', mapgraph: 'Trace', growgraph: 'Teach me', growmap: 'Plan', chemgraph: 'Discover' };
+const chip = (on, c) => ({ minHeight: 32, flex: 'none', whiteSpace: 'nowrap', padding: '0 13px', borderRadius: 8, border: '1px solid ' + (on ? c : 'rgba(233,233,237,0.12)'), background: 'transparent', color: on ? '#e9e9ed' : '#9397ab', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 });
+const dot = (c, s = 7) => ({ width: s, height: s, borderRadius: '50%', background: c, flex: 'none' });
+const GHOST = { minHeight: 32, flex: 'none', whiteSpace: 'nowrap', padding: '0 14px', borderRadius: 8, border: '1px solid rgba(233,233,237,0.12)', background: 'transparent', color: '#b2b6ca', cursor: 'pointer' };
+
+class Component extends DCLogic {
+  state = { who: 'med-step1', cat: 'Students', rows: [], board: {}, running: false, step: '', conc: 4, retries: 2, active: [], note: '', net: true, live: true, battery: true, filter: 'case', views: null, viewFor: '', error: '' };
+  refs = {};
+  async componentDidMount() {
+    try { this.T = await import('./mega-tests.js'); } catch (e) { this.setState({ error: 'The test kit did not load: ' + e.message }); return; }
+    this.off = this.T.M.on(() => { if (!this.state.running) this.forceUpdate(); });
+    this.forceUpdate();
+  }
+  componentWillUnmount() { this.dead = true; if (this.off) this.off(); }
+
+  run = async list => {
+    const T = this.T; if (!T || this.state.running || !list.length) return; this.halt = false;
+    const ids = new Set(list.map(p => p.id)), queue = list.slice(), fails = [], o = { net: this.state.net, live: this.state.live, battery: this.state.battery, retries: this.state.retries };
+    this.setState(s => ({ running: true, error: '', filter: 'case', active: [], rows: s.rows.filter(r => !ids.has(r.pid)), board: Object.fromEntries(Object.entries(s.board).filter(([k]) => !ids.has(k))) }));
+    // each case runs in its own container, so several can run at once; model calls still share one rate budget
+    const worker = async () => { while (queue.length && !this.halt && !this.dead) { const p = queue.shift(), t0 = performance.now(); this.setState(s => ({ active: [...s.active, p.name] }));
+      try { const res = await T.runPerson(p, o, row => { if (row.dspy) fails.push(row.dspy); if (!this.dead) this.setState(s => ({ rows: [...s.rows, row] })); }); const g = res.g; this.setState(s => ({ board: { ...s.board, [p.id]: { nodes: g ? g.nodes.length : 0, edges: g ? g.edges.length : 0, ms: Math.round(performance.now() - t0) } } })); if (g && o.battery) { this.lastG = g; this.setState({ viewFor: p.name }); } }
+      catch (e) { this.setState({ error: p.name + ' stopped: ' + e.message }); }
+      finally { if (!this.dead) this.setState(s => ({ active: s.active.filter(x => x !== p.name) })); } } };
+    try {
+      await Promise.all(Array.from({ length: Math.max(1, Math.min(this.state.conc, queue.length)) }, worker));
+      if (this.lastG) { await new Promise(r => setTimeout(r, 30)); this.drawThumbs(); }
+      if (o.live && fails.length && T.E.liveAvailable()) { this.setState({ active: ['optimizer: proposing a sharper instruction from ' + fails.length + ' failure' + (fails.length === 1 ? '' : 's')] }); const np = await T.DS.propose(fails); if (np) this.setState({ note: 'Program v' + np.v + ' proposed: ' + np.text.slice(0, 160) }); }
+      T.DS.choose();
+    } finally { if (!this.dead) this.setState({ running: false, active: [], step: '' }); }
+  };
+  drawThumbs() { if (!this.lastG || !this.T) return; const off = document.createElement('canvas'); off.width = 320; off.height = 200; const res = this.T.drawViews(this.lastG, name => (this.refs[name] && this.refs[name].current) || off, this.lastSel); this.setState({ views: Object.fromEntries(res.map(r => [r.name, r])) }); }
+  async openIn(id) { try { await this.T.M.openSession(id); location.href = 'Mega Graph.dc.html'; } catch (e) { this.setState({ error: e.message }); } }
+
+  renderVals() {
+    const s = this.state, T = this.T, P = T ? T.PEOPLE : [], CATS = T ? T.CATS : [], live = !!(T && T.E.liveAvailable()), rows = s.rows, cnt = v => rows.filter(r => r.verdict === v).length;
+    const sessions = T ? T.M.S.sessions : [], inCat = P.filter(p => s.cat === 'All' || p.cat === s.cat), sel = P.find(p => p.id === s.who);
+    const areas = {}; for (const r of rows) { const a = areas[r.area] = areas[r.area] || { pass: 0, slow: 0, fail: 0, note: 0, skip: 0 }; a[r.verdict]++; }
+    const show = rows.filter(r => s.filter === 'all' || (s.filter === 'problems' ? ['fail', 'slow'].includes(r.verdict) : r.pid === s.who));
+    const names = T ? Object.keys(T.VIEWS) : [], V = s.views || {}; names.forEach(n => { this.refs[n] = this.refs[n] || React.createRef(); });
+    return {
+      caseCount: String(P.length),
+      cats: ['All', ...CATS].map(k => { const n = k === 'All' ? P.length : P.filter(p => p.cat === k).length; return { label: k + ' · ' + n, pick: () => this.setState({ cat: k }), style: chip(s.cat === k, '#5d5294') }; }),
+      runOne: () => sel && this.run([sel]), runCat: () => this.run(inCat), stop: () => { this.halt = true; this.forceUpdate(); }, running: s.running, hasError: !!s.error, error: s.error,
+      runLabel: s.running ? 'Running…' : 'Run "' + (sel ? sel.name.split(',')[0] : '') + '"', runCatLabel: 'Run ' + (s.cat === 'All' ? 'all ' + P.length : s.cat.toLowerCase() + ' (' + inCat.length + ')'),
+      runStyle: { minHeight: 32, flex: 'none', whiteSpace: 'nowrap', padding: '0 14px', borderRadius: 8, border: '1px solid #5d5294', background: s.running ? '#232532' : '#2b2741', color: '#e7e5fe', fontWeight: 500, cursor: s.running ? 'default' : 'pointer' }, ghostStyle: GHOST,
+      netPressed: String(s.net), toggleNet: () => this.setState({ net: !s.net }), netDot: dot(s.net ? '#7fcfb6' : '#595d6c'), netStyle: chip(s.net, 'rgba(127,207,182,0.45)'),
+      livePressed: String(s.live && live), toggleLive: () => this.setState({ live: !s.live }), liveDot: dot(s.live && live ? '#7fcfb6' : '#595d6c'), liveStyle: chip(s.live && live, 'rgba(127,207,182,0.45)'), liveLabel: live ? 'Live AI agents' : 'Live AI: not in this viewer', liveTitle: live ? 'A Haiku or Sonnet agent answers each question through the app tools, up to 6 steps' : 'This viewer has no Live AI. Those steps are marked NOTE.',
+      batPressed: String(s.battery), toggleBat: () => this.setState({ battery: !s.battery }), batDot: dot(s.battery ? '#7fcfb6' : '#595d6c'), batStyle: chip(s.battery, 'rgba(127,207,182,0.45)'),
+      step: s.active.length ? (s.active.length > 1 ? s.active.length + ' running at once: ' : 'Running: ') + s.active.join(' · ') : s.step,
+      concs: [1, 2, 4, 6].map(n => ({ label: n === 1 ? 'One at a time' : n + ' at once', pick: () => this.setState({ conc: n }), style: { height: 28, padding: '0 10px', borderRadius: 7, border: 0, background: s.conc === n ? '#2b2741' : 'transparent', color: s.conc === n ? '#e7e5fe' : '#9397ab', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' } })),
+      retryLabel: s.retries ? 'Self-repair: up to ' + s.retries + ' retries' : 'Self-repair off', toggleRetry: () => this.setState({ retries: s.retries ? 0 : 2 }), retryStyle: chip(!!s.retries, 'rgba(127,207,182,0.45)'), retryDot: dot(s.retries ? '#7fcfb6' : '#595d6c'),
+      prog: (() => { const m = T ? T.DS.summary() : null; return m ? { head: 'Program v' + m.version + ' · ' + (m.passRate == null ? 'not scored yet' : Math.round(m.passRate * 100) + '% of ' + m.runs + ' runs passed') + ' · ' + m.demos + ' learned demos', text: m.instruction, versions: m.versions.map(v => 'v' + v.v + ' ' + v.rate + ' (' + v.n + ')').join(' · ') } : { head: '', text: '', versions: '' }; })(),
+      note: s.note, hasNote: !!s.note, resetProg: () => { if (confirm('Forget the learned instructions and demos?')) { T.DS.reset(); this.forceUpdate(); } },
+      counts: rows.length ? cnt('pass') + ' passed · ' + cnt('slow') + ' slow · ' + cnt('fail') + ' failed · ' + (cnt('note') + cnt('skip')) + ' need network or AI' : 'Nothing has run yet',
+      cards: inCat.map(p => { const mine = rows.filter(r => r.pid === p.id), b = s.board[p.id], f = mine.filter(r => r.verdict === 'fail').length, sl = mine.filter(r => r.verdict === 'slow').length, ps = mine.filter(r => r.verdict === 'pass').length, q = mine.find(r => r.area === 'ai') || mine.find(r => r.area === 'question'), on = s.who === p.id, st = !mine.length ? 'not run' : f ? f + ' failed' : sl ? sl + ' slow' : ps + ' passed', c = !mine.length ? '#75798c' : f ? '#e8956f' : sl ? '#e5c46f' : '#7fcfb6';
+        return { name: p.name, who: p.who, mode: MODE[p.mode] || p.mode, goal: p.goal, status: st, size: b ? b.nodes.toLocaleString() + ' thoughts · ' + b.edges.toLocaleString() + ' links · ' + (b.ms / 1000).toFixed(0) + ' s' : p.cat, canOpen: !!sessions.find(x => x.id === 'test-' + p.id), pick: () => this.setState({ who: p.id, filter: 'case' }), run: e => { e && e.stopPropagation && e.stopPropagation(); this.setState({ who: p.id }); this.run([p]); }, open: e => { e && e.stopPropagation && e.stopPropagation(); this.openIn('test-' + p.id); },
+          badge: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: c, border: '1px solid ' + c, borderRadius: 5, padding: '1px 6px', whiteSpace: 'nowrap', flex: 'none' }, style: { display: 'grid', gap: 7, alignContent: 'start', padding: 12, borderRadius: 11, background: on ? '#202236' : '#1b1d2c', border: '1px solid ' + (on ? p.c : 'rgba(233,233,237,0.08)'), cursor: 'pointer' } }; }),
+      hasAreas: Object.keys(areas).length > 0,
+      areas: Object.keys(AREAS).filter(k => areas[k]).map(k => { const a = areas[k], tot = a.pass + a.slow + a.fail + a.note + a.skip, bad = a.fail > 0, slow = a.slow > 0, ext = !a.pass && !a.fail && !a.slow, c = bad ? '#e8956f' : slow ? '#e5c46f' : ext ? '#9397ab' : '#7fcfb6'; return { name: AREAS[k], score: a.pass + '/' + tot, note: bad ? a.fail + ' failed' : slow ? a.slow + ' over budget' : ext ? 'needs network or Live AI' : a.note + a.skip ? a.pass + ' ran, ' + (a.note + a.skip) + ' need network or AI' : 'every step ran', scoreStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: c }, style: { display: 'grid', gap: 4, padding: '10px 12px', borderRadius: 10, background: '#1b1d2c', border: '1px solid ' + (bad ? 'rgba(232,149,111,0.45)' : slow ? 'rgba(229,196,111,0.4)' : ext ? 'rgba(233,233,237,0.1)' : 'rgba(127,207,182,0.3)') } }; }),
+      hasRows: rows.length > 0, transcriptFor: s.filter === 'case' && sel ? sel.name : s.filter === 'problems' ? 'failures and slow steps, every case' : 'every step, every case',
+      filters: [['case', 'Selected case'], ['problems', 'Problems only'], ['all', 'All steps']].map(([id, label]) => ({ label, pick: () => this.setState({ filter: id }), style: { height: 26, padding: '0 10px', borderRadius: 13, border: '1px solid ' + (s.filter === id ? '#5d5294' : 'rgba(233,233,237,0.12)'), background: s.filter === id ? '#2b2741' : 'transparent', color: s.filter === id ? '#e7e5fe' : '#9397ab', fontSize: 12, cursor: 'pointer' } })),
+      rows: show.slice(-300).map(r => { const [label, c] = VERDICT[r.verdict]; return { label: r.label, out: r.out || '', hasOut: !!r.out, verdict: label, meta: r.person + ' · ' + (AREAS[r.area] || r.area) + (r.ms != null ? ' · ' + r.ms + ' ms' + (r.budget ? ' of ' + r.budget : '') : ''), badge: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', color: c, border: '1px solid ' + c, borderRadius: 5, padding: '2px 0', textAlign: 'center' } }; }),
+      viewHint: s.viewFor ? names.length + ' canvas views of ' + s.viewFor + '\'s map; times are one frame each' : 'Run a case with the feature battery on to draw them',
+      thumbs: names.map(nm => { const v = V[nm]; return { label: nm, ref: this.refs[nm], mark: v ? (v.error ? 'threw' : v.ms.toFixed(0) + ' ms') : '—', markStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: v ? (v.error ? '#e8956f' : v.ms > 200 ? '#e5c46f' : '#7fcfb6') : '#75798c' }, box: { borderRadius: 9, overflow: 'hidden', border: '1px solid ' + (v && v.error ? 'rgba(232,149,111,0.5)' : 'rgba(233,233,237,0.08)'), background: '#1b1d2c' } }; }),
+    };
+  }
+}
+</script>
+</body>
+</html>

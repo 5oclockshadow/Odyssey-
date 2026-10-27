@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+</helmet>
+<div style="height: 100%; min-height: 560px; width: 100%; max-width: 100%; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; background: rgba(6,8,13,0.97); border: 1px solid rgba(214,236,255,0.1); color: rgb(214,236,255); font-family: 'Sora', system-ui, sans-serif;">
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 14px; border-bottom: 1px solid rgba(214,236,255,0.08);">
+    <div style="display: flex; flex-direction: column; gap: 2px; flex: none;">
+      <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: rgb(255,190,110);">TESTBENCH · {{ modeLabel }}</span>
+      <span style="font-weight: 600; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap;">Graph as agent, agent as graph</span>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 2px;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="8"><button onClick="{{ t.go }}" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; padding: 7px 11px; background: {{ t.bg }}; color: {{ t.fg }}; border: 0; border-bottom: 2px solid {{ t.line }}; cursor: pointer;" style-hover="color: rgb(255,190,110);">{{ t.label }}</button></sc-for>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap; min-width: 0;">
+      <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(214,236,255,0.7);">{{ summary }}</span>
+      <button onClick="{{ runArena }}" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.08em; padding: 7px 12px; background: rgba(255,190,110,0.12); color: rgb(255,190,110); border: 1px solid rgb(255,190,110); cursor: pointer;" style-hover="background: rgba(255,190,110,0.22);">{{ runLabel }}</button>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px;">
+    <sc-if value="{{ booting }}"><div style="font-family: 'Geist Mono', monospace; font-size: 12px; color: rgba(214,236,255,0.6); padding: 30px 0;">Booting the core: corpus, domains, strategies, arena and memory…</div></sc-if>
+
+    <sc-if value="{{ needArena }}"><div style="font-family: 'Geist Mono', monospace; font-size: 12px; color: rgba(214,236,255,0.6); padding: 20px 0;">No arena run yet. RUN ARENA scores every strategy on every probe: train, hyperedge, path and held-out dev.</div></sc-if>
+
+    <sc-if value="{{ showArena }}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px;">
+        <sc-for list="{{ arenaKpis }}" as="k" hint-placeholder-count="6">
+          <div title="{{ k.tip }}" style="display: flex; flex-direction: column; gap: 4px; padding: 9px 11px; border: 1px solid rgba(214,236,255,0.1); background: rgba(214,236,255,0.025); min-width: 0;">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.5);">{{ k.label }}</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 17px; color: {{ k.color }}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ k.value }}</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; color: rgba(214,236,255,0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ k.sub }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="overflow-x: auto; border: 1px solid rgba(214,236,255,0.08);">
+        <div style="display: grid; grid-template-columns: 30px minmax(170px, 1.8fr) 58px 58px 118px 54px 54px 58px 52px 78px 44px 52px 62px; min-width: 960px; font-family: 'Geist Mono', monospace; font-size: 11px;">
+          <sc-for list="{{ boardHead }}" as="h" hint-placeholder-count="13"><div style="padding: 7px 6px; font-size: 9.5px; letter-spacing: 0.14em; color: rgba(214,236,255,0.5); border-bottom: 1px solid rgba(214,236,255,0.1); text-align: {{ h.al }};" title="{{ h.tip }}">{{ h.label }}</div></sc-for>
+          <sc-for list="{{ board }}" as="r" hint-placeholder-count="6">
+            <div style="padding: 7px 6px; background: {{ r.bg }}; color: rgba(214,236,255,0.5);">{{ r.rank }}</div>
+            <div title="{{ r.tip }}" style="padding: 5px 6px; background: {{ r.bg }}; display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-family: 'Sora', system-ui, sans-serif; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ r.name }}</span><span style="display: flex; gap: 8px; font-size: 9.5px; letter-spacing: 0.08em;"><span style="color: {{ r.bc }};">{{ r.badge }}</span><span style="color: {{ r.rc }};">{{ r.role }}</span></span></div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right;">{{ r.train }}</div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right; color: rgb(255,190,110);">{{ r.dev }}</div>
+            <div title="{{ r.ciTip }}" style="padding: 7px 8px; background: {{ r.bg }}; display: flex; align-items: center;"><div style="position: relative; flex: 1; height: 8px; background: rgba(214,236,255,0.07);"><div style="position: absolute; top: 0; bottom: 0; left: {{ r.ciL }}%; width: {{ r.ciW }}%; background: rgba(255,190,110,0.35);"></div><div style="position: absolute; top: -2px; width: 3px; height: 12px; margin-left: -1px; left: {{ r.dot }}%; background: rgb(255,190,110);"></div></div></div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right; color: rgb(120,200,255);">{{ r.g }}</div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right; color: rgb(185,150,255);">{{ r.a }}</div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right; color: rgb(120,220,140);">{{ r.s }}</div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right;">{{ r.elo }}</div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right; color: rgba(214,236,255,0.7);">{{ r.wlt }}</div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right;">{{ r.loc }}</div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right; color: rgba(214,236,255,0.7);">{{ r.ms }}</div>
+            <div style="padding: 7px 6px; background: {{ r.bg }}; text-align: right; color: {{ r.fc }};">{{ r.fit }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <div style="flex: 2 1 440px; min-width: 0; border: 1px solid rgba(214,236,255,0.1); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgb(255,190,110);">HEAD-TO-HEAD · {{ h2h.title }}</span>
+          <span style="font-size: 13px; line-height: 1.5; text-wrap: pretty;">{{ h2h.line }}</span>
+          <div style="display: flex; gap: 2px; height: 26px; align-items: stretch;">
+            <sc-for list="{{ h2h.strip }}" as="s" hint-placeholder-count="20"><div title="{{ s.tip }}" style="flex: 1; min-width: 2px; background: {{ s.bg }};"></div></sc-for>
+          </div>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.55);">{{ h2h.legend }}</span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: {{ h2h.vc }};">{{ h2h.verdict }}</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <button onClick="{{ promote }}" style="font-family: 'Geist Mono', monospace; font-size: 11px; padding: 6px 11px; background: rgba(120,220,140,0.1); color: rgb(120,220,140); border: 1px solid rgba(120,220,140,0.6); cursor: pointer;" style-hover="background: rgba(120,220,140,0.2);">PROMOTE CHALLENGER</button>
+            <button onClick="{{ toPairDiff }}" style="font-family: 'Geist Mono', monospace; font-size: 11px; padding: 6px 11px; background: transparent; color: rgb(214,236,255); border: 1px solid rgba(214,236,255,0.3); cursor: pointer;" style-hover="border-color: rgb(255,190,110);">DIFF CHAMPION ↔ CHALLENGER</button>
+          </div>
+        </div>
+        <div style="flex: 1 1 300px; min-width: 0; border: 1px solid rgba(214,236,255,0.1); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">BY SPLIT · <span style="color: rgb(255,190,110);">champion</span> / <span style="color: rgb(120,200,255);">challenger</span></span>
+          <sc-for list="{{ splitBars }}" as="b" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: 86px minmax(0,1fr) 92px; gap: 8px; align-items: center; font-family: 'Geist Mono', monospace; font-size: 10.5px;">
+              <span style="color: rgba(214,236,255,0.6);">{{ b.label }}</span>
+              <div style="display: flex; flex-direction: column; gap: 3px;"><div style="height: 5px; background: rgba(214,236,255,0.07);"><div style="height: 100%; width: {{ b.w1 }}%; background: rgb(255,190,110);"></div></div><div style="height: 5px; background: rgba(214,236,255,0.07);"><div style="height: 100%; width: {{ b.w2 }}%; background: rgb(120,200,255);"></div></div></div>
+              <span style="text-align: right;">{{ b.v1 }} / {{ b.v2 }}</span>
+            </div>
+          </sc-for>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.5); text-wrap: pretty;">{{ arenaNote }}</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showMatrix }}">
+      <span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; color: rgba(214,236,255,0.6);">{{ mNote }}</span>
+      <div style="overflow: auto; border: 1px solid rgba(214,236,255,0.08); padding: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 2px; width: max-content;">
+          <div style="display: flex; gap: 2px; align-items: flex-end;"><div style="width: 168px; flex: none;"></div><sc-for list="{{ mGroups }}" as="g" hint-placeholder-count="4"><div style="width: {{ g.w }}px; flex: none; font-family: 'Geist Mono', monospace; font-size: 9.5px; letter-spacing: 0.08em; color: {{ g.c }}; border-bottom: 1px solid {{ g.c }}; padding-bottom: 3px; white-space: nowrap; overflow: hidden;">{{ g.label }}</div></sc-for><div style="width: 56px; flex: none; font-family: 'Geist Mono', monospace; font-size: 9.5px; color: rgba(214,236,255,0.5); text-align: right;">MEAN</div></div>
+          <div style="display: flex; gap: 2px;"><div style="width: 168px; flex: none;"></div><sc-for list="{{ mProbes }}" as="p" hint-placeholder-count="30"><div title="{{ p.tip }}" style="width: 14px; height: 30px; flex: none; font-family: 'Geist Mono', monospace; font-size: 8px; color: rgba(214,236,255,0.5); writing-mode: vertical-rl; transform: rotate(180deg); overflow: hidden;">{{ p.id }}</div></sc-for></div>
+          <sc-for list="{{ mRows }}" as="r" hint-placeholder-count="8">
+            <div style="display: flex; gap: 2px; align-items: center;">
+              <div title="{{ r.tip }}" style="width: 168px; flex: none; font-family: 'Geist Mono', monospace; font-size: 10.5px; color: {{ r.fg }}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ r.name }}</div>
+              <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="30"><div title="{{ c.tip }}" style="width: 14px; height: 14px; flex: none; background: {{ c.bg }};"></div></sc-for>
+              <div style="width: 56px; flex: none; text-align: right; font-family: 'Geist Mono', monospace; font-size: 10.5px; color: rgb(255,190,110);">{{ r.mean }}</div>
+            </div>
+          </sc-for>
+          <div style="display: flex; gap: 2px; align-items: center; margin-top: 6px;"><div style="width: 168px; flex: none; font-family: 'Geist Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: rgba(214,236,255,0.5);">PROBE DIFFICULTY</div><sc-for list="{{ mDiff }}" as="c" hint-placeholder-count="30"><div title="{{ c.tip }}" style="width: 14px; height: 9px; flex: none; background: {{ c.bg }};"></div></sc-for></div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 14px; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.6);">
+        <span>cell = recall@k of that strategy on that probe</span>
+        <span style="display: flex; align-items: center; gap: 6px;">0 <span style="width: 90px; height: 8px; background: linear-gradient(90deg, rgba(214,236,255,0.06), rgb(255,190,110));"></span> 1</span>
+        <span>difficulty = 1 − mean recall across strategies</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showDiffs }}">
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;">
+        <div style="flex: 1 1 260px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">PATCHES · PROGRAMS · PAIRS · GRAPH</span>
+          <sc-for list="{{ dList }}" as="d" hint-placeholder-count="4"><button onClick="{{ d.go }}" style="text-align: left; padding: 7px 9px; background: {{ d.bg }}; border: 1px solid {{ d.bd }}; color: rgb(214,236,255); cursor: pointer; display: flex; flex-direction: column; gap: 2px; font-family: 'Sora', system-ui, sans-serif;" style-hover="border-color: rgb(255,190,110);"><span style="font-family: 'Geist Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: {{ d.kc }};">{{ d.kind }}</span><span style="font-size: 12px;">{{ d.title }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.55);">{{ d.meta }}</span></button></sc-for>
+          <sc-if value="{{ dEmpty }}"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(214,236,255,0.5); padding: 6px 0; text-wrap: pretty;">No code patches yet. With the LM online the research loop writes them; until then compare any two strategies below.</span></sc-if>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55); margin-top: 8px;">COMPARE ANY TWO</span>
+          <select onChange="{{ pickA }}" value="{{ selA }}" style="font-family: 'Geist Mono', monospace; font-size: 11px; padding: 6px; background: rgb(9,11,18); color: rgb(214,236,255); border: 1px solid rgba(214,236,255,0.2);"><sc-for list="{{ stratOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o.id }}">{{ o.name }}</option></sc-for></select>
+          <select onChange="{{ pickB }}" value="{{ selB }}" style="font-family: 'Geist Mono', monospace; font-size: 11px; padding: 6px; background: rgb(9,11,18); color: rgb(214,236,255); border: 1px solid rgba(214,236,255,0.2);"><sc-for list="{{ stratOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o.id }}">{{ o.name }}</option></sc-for></select>
+        </div>
+        <div style="flex: 3 1 540px; min-width: 0; border: 1px solid rgba(214,236,255,0.1); display: flex; flex-direction: column;">
+          <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding: 9px 12px; border-bottom: 1px solid rgba(214,236,255,0.08);">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: rgb(214,236,255);">{{ dv.head }}</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: rgb(120,220,140);">+{{ dv.add }}</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: rgb(255,130,100);">−{{ dv.del }}</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(214,236,255,0.6);">{{ dv.meta }}</span>
+          </div>
+          <sc-if value="{{ dv.note }}"><div style="padding: 8px 12px; font-size: 12px; line-height: 1.5; color: rgba(214,236,255,0.78); border-bottom: 1px solid rgba(214,236,255,0.06); text-wrap: pretty;">{{ dv.note }}</div></sc-if>
+          <div style="overflow: auto; max-height: 620px; font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 1.6; padding: 4px 0;">
+            <sc-for list="{{ dv.lines }}" as="l" hint-placeholder-count="12"><div style="display: grid; grid-template-columns: 38px 38px 16px minmax(0,1fr); background: {{ l.bg }}; color: {{ l.fg }};"><span style="opacity: 0.45; text-align: right; padding-right: 6px;">{{ l.a }}</span><span style="opacity: 0.45; text-align: right; padding-right: 6px;">{{ l.b }}</span><span>{{ l.op }}</span><span style="white-space: pre-wrap; word-break: break-word; padding-right: 10px;">{{ l.s }}</span></div></sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showMath }}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 10px;">
+        <sc-for list="{{ mathCards }}" as="m" hint-placeholder-count="6">
+          <div style="border: 1px solid rgba(214,236,255,0.1); background: rgba(214,236,255,0.02); padding: 10px 12px; display: flex; flex-direction: column; gap: 7px; min-width: 0;">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgb(255,190,110);">{{ m.title }}</span>
+            <pre style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; line-height: 1.6; color: rgb(255,222,175); white-space: pre-wrap;">{{ m.f }}</pre>
+            <pre style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 1.6; color: rgba(214,236,255,0.86); white-space: pre-wrap; border-top: 1px dashed rgba(214,236,255,0.14); padding-top: 7px;">{{ m.live }}</pre>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showStack }}">
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;">
+        <div style="flex: 1 1 250px; max-width: 340px; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">DSPY CLUSTER · {{ stackCount }}</span>
+          <sc-for list="{{ stackList }}" as="s" hint-placeholder-count="13"><button onClick="{{ s.go }}" style="display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2px 8px; text-align: left; padding: 7px 9px; background: {{ s.bg }}; border: 1px solid {{ s.bd }}; color: rgb(214,236,255); cursor: pointer; font-family: 'Sora', system-ui, sans-serif;" style-hover="border-color: rgb(255,190,110);"><span style="font-size: 12.5px;">{{ s.node }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 9.5px; color: {{ s.sc }};">{{ s.status }}</span><span style="grid-column: 1 / -1; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.55);">{{ s.meta }}</span></button></sc-for>
+        </div>
+        <div style="flex: 3 1 540px; min-width: 0; border: 1px solid rgba(214,236,255,0.1); display: flex; flex-direction: column;">
+          <div style="display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; padding: 9px 12px; border-bottom: 1px solid rgba(214,236,255,0.08);">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: rgb(255,190,110);">{{ stackSel.file }}</span>
+            <span style="font-size: 13px; font-weight: 600;">{{ stackSel.node }}</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; color: rgba(214,236,255,0.6);">{{ stackSel.meta }}</span>
+          </div>
+          <pre style="margin: 0; padding: 12px; overflow: auto; max-height: 620px; font-family: 'Geist Mono', monospace; font-size: 11.5px; line-height: 1.6; color: rgba(214,236,255,0.9); white-space: pre;">{{ stackSel.code }}</pre>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPolicy }}">
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;">
+        <div style="flex: 2 1 460px; min-width: 0; border: 1px solid rgba(214,236,255,0.1); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgb(255,190,110);">Q-TABLE · STATE × TECHNIQUE</span>
+          <div style="display: grid; grid-template-columns: 120px repeat(4, minmax(0,1fr)); gap: 3px; font-family: 'Geist Mono', monospace;">
+            <sc-for list="{{ qHead }}" as="h" hint-placeholder-count="5"><div style="font-size: 9.5px; letter-spacing: 0.14em; color: rgba(214,236,255,0.5); padding: 4px 2px; text-align: {{ h.al }};">{{ h.label }}</div></sc-for>
+            <sc-for list="{{ qRows }}" as="r" hint-placeholder-count="3">
+              <div style="font-size: 11px; color: {{ r.fg }}; padding: 8px 2px; white-space: nowrap;">{{ r.s }}</div>
+              <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="4"><div title="{{ c.tip }}" style="padding: 7px 6px; text-align: center; background: {{ c.bg }}; border: 1px solid {{ c.bd }}; font-size: 12px; color: rgb(214,236,255);">{{ c.v }}<div style="font-size: 9.5px; color: rgba(214,236,255,0.55);">n={{ c.n }}</div></div></sc-for>
+            </sc-for>
+          </div>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(214,236,255,0.75); text-wrap: pretty;">{{ qChosen }}</span>
+        </div>
+        <div style="flex: 1 1 340px; min-width: 0; border: 1px solid rgba(214,236,255,0.1); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgb(255,190,110);">LAST UPDATE</span>
+          <pre style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11.5px; line-height: 1.65; color: rgb(255,222,175); white-space: pre-wrap;">{{ qLast }}</pre>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">RECENT UPDATES</span>
+          <sc-for list="{{ qLog }}" as="q" hint-placeholder-count="4"><div style="font-family: 'Geist Mono', monospace; font-size: 10.5px; line-height: 1.5; color: {{ q.c }};">{{ q.text }}</div></sc-for>
+        </div>
+      </div>
+      <div style="border: 1px solid rgba(214,236,255,0.1); padding: 10px 12px; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">RESEARCH ROUNDS · observe → gather → hypothesize → test → score → audit → plan</span>
+        <sc-for list="{{ rounds }}" as="r" hint-placeholder-count="5"><div style="display: grid; grid-template-columns: 64px 78px minmax(0,1fr); gap: 8px; font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 1.5;"><span style="color: rgba(214,236,255,0.5);">{{ r.t }}</span><span style="color: {{ r.c }};">{{ r.v }}</span><span style="color: rgba(214,236,255,0.82);">{{ r.text }}</span></div></sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showHistory }}">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;">
+        <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(214,236,255,0.65); margin-right: auto;">{{ hMeta }}</span>
+        <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45);">RANGE</span>
+        <sc-for list="{{ hRanges }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.go }}" style="font-family: 'Geist Mono', monospace; font-size: 10.5px; padding: 5px 9px; background: {{ r.bg }}; color: {{ r.fg }}; border: 1px solid {{ r.bd }}; cursor: pointer;">{{ r.label }}</button></sc-for>
+        <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.45); margin-left: 8px;">CURRICULUM</span>
+        <sc-for list="{{ hFocus }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.go }}" title="{{ f.tip }}" style="font-family: 'Geist Mono', monospace; font-size: 10.5px; padding: 5px 9px; background: {{ f.bg }}; color: {{ f.fg }}; border: 1px solid {{ f.bd }}; cursor: pointer;">{{ f.label }}</button></sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px;">
+        <sc-for list="{{ hKpis }}" as="k" hint-placeholder-count="6">
+          <div style="display: flex; flex-direction: column; gap: 3px; padding: 9px 11px; border: 1px solid rgba(214,236,255,0.1); background: rgba(214,236,255,0.025); min-width: 0;">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.5);">{{ k.label }}</span>
+            <div style="display: flex; align-items: baseline; gap: 8px; min-width: 0;"><span style="font-family: 'Geist Mono', monospace; font-size: 19px; color: {{ k.color }}; white-space: nowrap;">{{ k.value }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: {{ k.dc }}; white-space: nowrap;">{{ k.delta }}</span></div>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.55); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ k.sub }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: 'Geist Mono', monospace; font-size: 10.5px; color: rgba(214,236,255,0.62);">
+        <span><span style="color: rgb(255,106,26);">━</span> IQ · benchmark</span><span><span style="color: rgb(214,236,255);">━</span> DEV · held-out</span><span><span style="color: rgb(255,190,110);">┅</span> FRONTIER · best dev so far</span><span><span style="color: rgb(255,190,110);">●</span> record</span>
+      </div>
+      <div onMouseMove="{{ hMove }}" onMouseLeave="{{ hLeave }}" style="position: relative; height: 290px; flex: none; border: 1px solid rgba(214,236,255,0.08); background: linear-gradient(180deg, rgba(214,236,255,0.02), transparent);">
+        <sc-for list="{{ hBands }}" as="b" hint-placeholder-count="1"><div style="position: absolute; top: 0; bottom: 0; left: {{ b.x }}%; width: {{ b.w }}%; background: {{ b.bg }}; border-left: 1px dashed rgba(214,236,255,0.2);"><span style="position: absolute; top: 6px; left: 6px; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.5); white-space: nowrap;">{{ b.label }}</span></div></sc-for>
+        <sc-for list="{{ hYTicks }}" as="y" hint-placeholder-count="4"><div style="position: absolute; left: 0; right: 0; top: {{ y.y }}%; border-top: 1px solid rgba(214,236,255,0.05);"><span style="position: absolute; right: 6px; top: -14px; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.4);">{{ y.label }}</span></div></sc-for>
+        <svg viewBox="0 0 1000 300" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+          <polyline points="{{ hFrontier }}" fill="none" stroke="rgb(255,190,110)" stroke-width="1.2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"></polyline>
+          <polyline points="{{ hIq }}" fill="none" stroke="rgb(255,106,26)" stroke-width="1.6" vector-effect="non-scaling-stroke"></polyline>
+          <polyline points="{{ hDev }}" fill="none" stroke="rgb(214,236,255)" stroke-width="1.8" vector-effect="non-scaling-stroke"></polyline>
+        </svg>
+        <sc-for list="{{ hRecords }}" as="r" hint-placeholder-count="0"><div title="{{ r.tip }}" style="position: absolute; left: {{ r.x }}%; top: {{ r.y }}%; width: 9px; height: 9px; margin: -5px 0 0 -5px; border-radius: 50%; background: rgb(255,190,110); box-shadow: 0 0 10px rgba(255,190,110,0.9);"></div></sc-for>
+        <sc-if value="{{ hHover }}">
+          <div style="position: absolute; top: 0; bottom: 0; left: {{ hHover.x }}%; width: 1px; background: rgba(214,236,255,0.4); pointer-events: none;"></div>
+          <div style="position: absolute; top: 10px; left: {{ hHover.x }}%; transform: translateX({{ hHover.tx }}); padding: 8px 10px; background: rgba(9,11,18,0.96); border: 1px solid rgba(255,190,110,0.5); font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 1.55; pointer-events: none; white-space: nowrap;">
+            <div style="color: rgba(214,236,255,0.55);">{{ hHover.when }}</div>
+            <div>DEV <span style="color: rgb(214,236,255);">{{ hHover.dev }}</span> · IQ <span style="color: rgb(255,106,26);">{{ hHover.iq }}</span> · best {{ hHover.best }}</div>
+            <div style="color: rgba(214,236,255,0.72);">{{ hHover.dom }}</div>
+            <div style="color: rgba(214,236,255,0.72);">{{ hHover.graph }}</div>
+            <div style="color: rgb(255,190,110);">{{ hHover.code }}</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hEmpty }}"><div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: rgba(214,236,255,0.5);">Collecting history. The first points land within a few cycles and persist across reloads.</div></sc-if>
+      </div>
+      <div style="position: relative; height: 70px; flex: none; border: 1px solid rgba(214,236,255,0.08);">
+        <svg viewBox="0 0 1000 100" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+          <polygon points="{{ hEdgesArea }}" fill="rgba(214,236,255,0.07)"></polygon>
+          <polyline points="{{ hEdges }}" fill="none" stroke="rgba(214,236,255,0.75)" stroke-width="1.2" vector-effect="non-scaling-stroke"></polyline>
+          <polyline points="{{ hLearned }}" fill="none" stroke="rgb(255,106,26)" stroke-width="1.4" vector-effect="non-scaling-stroke"></polyline>
+          <polyline points="{{ hCap }}" fill="none" stroke="rgba(214,236,255,0.4)" stroke-width="1" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"></polyline>
+        </svg>
+        <span style="position: absolute; left: 6px; top: 4px; font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">GRAPH · edges · <span style="color: rgb(255,106,26);">learned</span> · ┄ budget</span>
+        <span style="position: absolute; right: 6px; top: 4px; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(214,236,255,0.65);">{{ hGraphNote }}</span>
+      </div>
+      <div style="position: relative; height: 36px; flex: none; border: 1px solid rgba(214,236,255,0.08); overflow: hidden;">
+        <sc-for list="{{ hSegs }}" as="g" hint-placeholder-count="2"><div title="{{ g.tip }}" style="position: absolute; top: 15px; bottom: 4px; left: {{ g.x }}%; width: {{ g.w }}%; background: {{ g.bg }}; border-left: 1px solid {{ g.bd }}; overflow: hidden;"><span style="font-family: 'Geist Mono', monospace; font-size: 9.5px; padding: 0 4px; color: {{ g.fg }}; white-space: nowrap;">{{ g.label }}</span></div></sc-for>
+        <span style="position: absolute; left: 6px; top: 2px; font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">ACTIVE CODE</span>
+      </div>
+      <div style="position: relative; height: 78px; flex: none; border: 1px solid rgba(214,236,255,0.08);">
+        <svg viewBox="0 0 1000 100" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+          <sc-for list="{{ hDomLines }}" as="d" hint-placeholder-count="3"><polyline points="{{ d.pts }}" fill="none" stroke="{{ d.c }}" stroke-width="1.4" vector-effect="non-scaling-stroke"></polyline></sc-for>
+        </svg>
+        <span style="position: absolute; left: 6px; top: 4px; font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">HELD-OUT DEV BY DOMAIN</span>
+        <div style="position: absolute; right: 6px; top: 4px; display: flex; gap: 12px; font-family: 'Geist Mono', monospace; font-size: 10px;"><sc-for list="{{ hDomLegend }}" as="d" hint-placeholder-count="3"><span style="color: {{ d.c }};">{{ d.label }} {{ d.now }} <span style="color: rgba(214,236,255,0.55);">{{ d.delta }}</span></span></sc-for></div>
+      </div>
+      <div style="position: relative; height: 112px; flex: none; border: 1px solid rgba(214,236,255,0.08);">
+        <sc-for list="{{ hRows }}" as="r" hint-placeholder-count="7"><span style="position: absolute; left: 6px; top: {{ r.top }}px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.14em; color: {{ r.c }}; opacity: 0.8;">{{ r.label }}</span></sc-for>
+        <sc-for list="{{ hMarks }}" as="m" hint-placeholder-count="0"><div title="{{ m.tip }}" style="position: absolute; left: {{ m.x }}%; top: {{ m.top }}px; width: 7px; height: 7px; margin-left: -3px; background: {{ m.bg }}; border: 1px solid {{ m.bd }}; box-sizing: border-box;"></div></sc-for>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <div style="flex: 2 1 380px; min-width: 0; border: 1px solid rgba(214,236,255,0.1); padding: 10px 12px; display: flex; flex-direction: column; gap: 5px;">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgb(255,190,110);">RECORDS · new best held-out dev</span>
+          <sc-for list="{{ hRecList }}" as="r" hint-placeholder-count="3"><div style="display: grid; grid-template-columns: 112px 62px minmax(0,1fr); gap: 8px; font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 1.5;"><span style="color: rgba(214,236,255,0.5);">{{ r.t }}</span><span style="color: rgb(120,220,140);">{{ r.d }}</span><span style="color: rgba(214,236,255,0.82);">{{ r.text }}</span></div></sc-for>
+          <sc-if value="{{ hNoRec }}"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(214,236,255,0.5);">No records beyond the first measurement yet.</span></sc-if>
+        </div>
+        <div style="flex: 1 1 300px; min-width: 0; border: 1px solid rgba(214,236,255,0.1); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(214,236,255,0.55);">MEMORY · persists across reloads</span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 1.55; color: rgba(214,236,255,0.8); text-wrap: pretty;">{{ hMemory }}</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <button onClick="{{ hSave }}" style="font-family: 'Geist Mono', monospace; font-size: 10.5px; padding: 5px 9px; background: transparent; color: rgb(214,236,255); border: 1px solid rgba(214,236,255,0.3); cursor: pointer;" style-hover="border-color: rgb(255,190,110);">SAVE NOW</button>
+            <button onClick="{{ hExport }}" style="font-family: 'Geist Mono', monospace; font-size: 10.5px; padding: 5px 9px; background: transparent; color: rgb(214,236,255); border: 1px solid rgba(214,236,255,0.3); cursor: pointer;" style-hover="border-color: rgb(255,190,110);">EXPORT JSON</button>
+            <button onClick="{{ hReset }}" style="font-family: 'Geist Mono', monospace; font-size: 10.5px; padding: 5px 9px; background: transparent; color: rgb(255,130,100); border: 1px solid rgba(255,130,100,0.5); cursor: pointer;">{{ hResetLabel }}</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showLog }}">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px;">
+        <sc-for list="{{ logKinds }}" as="k" hint-placeholder-count="8"><button onClick="{{ k.go }}" style="font-family: 'Geist Mono', monospace; font-size: 10.5px; padding: 5px 9px; background: {{ k.bg }}; color: {{ k.fg }}; border: 1px solid {{ k.bd }}; cursor: pointer;">{{ k.label }}</button></sc-for>
+        <input value="{{ logQ }}" onInput="{{ onLogQ }}" placeholder="filter text…" style="margin-left: auto; min-width: 200px; font-family: 'Geist Mono', monospace; font-size: 11px; padding: 6px 9px; background: rgb(9,11,18); color: rgb(214,236,255); border: 1px solid rgba(214,236,255,0.2);">
+      </div>
+      <span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; color: rgba(214,236,255,0.55);">{{ logNote }}</span>
+      <div style="border: 1px solid rgba(214,236,255,0.08); padding: 6px 8px; display: flex; flex-direction: column; gap: 1px;">
+        <sc-for list="{{ logLines }}" as="l" hint-placeholder-count="12"><div style="display: grid; grid-template-columns: 62px 76px minmax(0,1fr); gap: 8px; font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 1.5;"><span style="color: rgba(214,236,255,0.45);">{{ l.t }}</span><span style="color: {{ l.c }};">{{ l.kind }}</span><span style="color: rgba(214,236,255,0.86); word-break: break-word;">{{ l.text }}</span></div></sc-for>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280, &quot;height&quot;: 820}, &quot;core&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;object&quot;}, &quot;mode&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;tester&quot;, &quot;agent&quot;], &quot;default&quot;: &quot;tester&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;startTab&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;arena&quot;, &quot;matrix&quot;, &quot;diffs&quot;, &quot;math&quot;, &quot;stack&quot;, &quot;policy&quot;, &quot;history&quot;, &quot;log&quot;], &quot;default&quot;: &quot;arena&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { tab: null, tick: 0, running: false, dsel: null, selA: null, selB: null, ssel: 'signature', lkind: 'all', lq: '', hrange: 'all', hx: null, hreset: 0 };
+  componentDidMount() { this.sub(); }
+  componentDidUpdate() { this.sub(); }
+  componentWillUnmount() { this.unsub && this.unsub(); }
+  sub() {
+    const c = this.props.core; if (!c || c === this._c) return;
+    this.unsub && this.unsub(); this._c = c; let pend = false;
+    this.unsub = c.on(() => { if (pend) return; pend = true; setTimeout(() => { pend = false; this.setState(s => ({ tick: s.tick + 1 })); }, 350); });
+    if (c.testbench && !c.testbench.last) setTimeout(() => { try { if (!c.testbench.last) c.testbench.run(); } catch (e) {} this.setState(s => ({ tick: s.tick + 1 })); }, 900);
+    this.setState(s => ({ tick: s.tick + 1 }));
+  }
+  f3(v, d = 3) { return v == null || !isFinite(v) ? '—' : v.toFixed(d); }
+  sg(v, d = 3) { return v == null || !isFinite(v) ? '' : (v >= 0 ? '+' : '') + v.toFixed(d); }
+  avg(a) { let s = 0, n = 0; for (const v of a) if (v != null && isFinite(v)) { s += v; n++; } return n ? s / n : null; }
+  tm(sec) { return new Date(sec * 1000).toTimeString().slice(0, 8); }
+  dt(sec) { const d = new Date(sec * 1000); return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toTimeString().slice(0, 5); }
+
+  renderVals() {
+    const c = this.props.core, S = this.state, tab = S.tab || this.props.startTab || 'arena';
+    const TABS = [['arena', 'ARENA'], ['matrix', 'MATRIX'], ['diffs', 'CODE DIFFS'], ['math', 'MATH'], ['stack', 'DSPY STACK'], ['policy', 'Q-POLICY'], ['history', 'HISTORY'], ['log', 'LOG']];
+    const base = {
+      modeLabel: (this.props.mode || 'tester') === 'tester' ? 'OFFICIAL TESTING' : 'AGENT VIEW',
+      tabs: TABS.map(([k, l]) => ({ label: l, go: () => this.setState({ tab: k }), bg: tab === k ? 'rgba(255,190,110,0.1)' : 'transparent', fg: tab === k ? 'rgb(255,190,110)' : 'rgba(214,236,255,0.6)', line: tab === k ? 'rgb(255,190,110)' : 'transparent' })),
+      booting: !c || !c.testbench, runLabel: S.running ? 'RUNNING…' : 'RUN ARENA', summary: '',
+      runArena: () => { if (!c || !c.testbench) return; this.setState({ running: true }); setTimeout(() => { try { c.testbench.run({ promote: (this.props.mode || 'tester') === 'tester' }); } catch (e) { c.log('err', 'arena: ' + (e && e.message || e)); } this.setState(s => ({ running: false, tick: s.tick + 1 })); }, 30); }
+    };
+    if (base.booting) return base;
+    const R = c.testbench.last, needs = (tab === 'arena' || tab === 'matrix') && !R;
+    if (R) { const ch = R.rows.find(r => r.id === R.champion); base.summary = 'arena #' + c.testbench.runs + ' · champion ' + (ch ? ch.name + ' dev ' + this.f3(ch.dev) + ' · Elo ' + Math.round(ch.elo) : '—') + (R.sign ? ' · sign p ' + R.sign.p.toFixed(3) : '') + ' · ' + Math.round((Date.now() - R.t) / 1000) + 's ago'; }
+    Object.assign(base, { needArena: needs, showArena: tab === 'arena' && !!R, showMatrix: tab === 'matrix' && !!R, showDiffs: tab === 'diffs', showMath: tab === 'math', showStack: tab === 'stack', showPolicy: tab === 'policy', showHistory: tab === 'history', showLog: tab === 'log' });
+    if (base.showArena) Object.assign(base, this.arenaVals(c, R));
+    if (base.showMatrix) Object.assign(base, this.matrixVals(c, R));
+    if (base.showDiffs) Object.assign(base, this.diffVals(c, S));
+    if (base.showMath) Object.assign(base, this.mathVals(c));
+    if (base.showStack) Object.assign(base, this.stackVals(c, S));
+    if (base.showPolicy) Object.assign(base, this.policyVals(c));
+    if (base.showHistory) Object.assign(base, this.historyVals(c, S));
+    if (base.showLog) Object.assign(base, this.logVals(c, S));
+    return base;
+  }
+
+  arenaVals(c, R) {
+    const f = (v, d) => this.f3(v, d), champ = R.rows.find(r => r.id === R.champion), chall = R.rows.find(r => r.id === R.challenger), sign = R.sign;
+    const H = [['#', 'left'], ['STRATEGY', 'left'], ['TRAIN', 'right', 'mean recall over train, hyperedge and path probes'], ['DEV', 'right', 'mean recall on held-out probes'], ['90% CI', 'left', 'bootstrap, 400 resamples of dev probes'], ['GRAPH', 'right'], ['AI', 'right'], ['SAFETY', 'right'], ['ELO', 'right', 'K=16, mean of 12 seeded orderings'], ['W/L/T', 'right', 'pairwise per-probe outcomes'], ['LOC', 'right', 'non-comment lines of code'], ['MS', 'right', 'total runtime across probes'], ['FITNESS', 'right', '100·dev − 0.001·ms − 0.02·LOC']];
+    const board = R.rows.map((r, i) => {
+      const isC = r.id === R.champion, isX = r.id === R.challenger, ci0 = r.ci[0] || 0, ci1 = r.ci[1] || 0;
+      return { rank: i + 1, name: r.name, badge: r.by === 'claude' ? '✦ CLAUDE' : r.id === 'router' ? '⧉ COMPOSED' : 'BUILT-IN', bc: r.by === 'claude' ? 'rgb(255,106,26)' : 'rgba(214,236,255,0.45)', role: isC ? 'CHAMPION' : isX ? 'CHALLENGER' : '', rc: isC ? 'rgb(255,190,110)' : 'rgb(120,200,255)',
+        train: f(r.train), dev: f(r.dev), ciL: (ci0 * 100).toFixed(1), ciW: Math.max(0.8, (ci1 - ci0) * 100).toFixed(1), dot: ((r.dev || 0) * 100).toFixed(1), ciTip: '90% CI ' + f(r.ci[0]) + ' – ' + f(r.ci[1]),
+        g: f(r.dd[0], 2), a: f(r.dd[1], 2), s: f(r.dd[2], 2), elo: Math.round(r.elo), wlt: r.w + '/' + r.l + '/' + r.t, loc: r.loc, ms: Math.round(r.ms), fit: r.fit.toFixed(1), fc: r.fit >= 0 ? 'rgb(120,220,140)' : 'rgb(255,130,100)',
+        bg: isC ? 'rgba(255,190,110,0.09)' : isX ? 'rgba(120,200,255,0.07)' : (i % 2 ? 'rgba(214,236,255,0.015)' : 'transparent'), tip: r.tagline + (r.err ? ' · ERROR ' + r.err : '') };
+    });
+    const better = chall && (chall.dev || 0) > (champ.dev || 0) + 1e-6, safe = chall && (chall.train || 0) >= (champ.train || 0) - 0.02, h2hOk = sign && sign.w >= sign.l;
+    const strip = chall ? R.probes.map((p, k) => { const d = chall.r[k] - champ.r[k]; return { bg: !isFinite(d) ? 'rgba(214,236,255,0.03)' : d > 1e-9 ? 'rgba(120,220,140,' + (0.3 + 0.7 * Math.min(1, d)).toFixed(2) + ')' : d < -1e-9 ? 'rgba(255,130,100,' + (0.3 + 0.7 * Math.min(1, -d)).toFixed(2) + ')' : 'rgba(214,236,255,0.08)', tip: p.id + ' (' + p.split + ', ' + p.dom + ') · ' + chall.name + ' ' + f(chall.r[k], 2) + ' vs ' + champ.name + ' ' + f(champ.r[k], 2) + ' · ' + p.text }; }) : [];
+    const sp = [['train', 'TRAIN'], ['hyper', 'HYPEREDGE'], ['path', 'PATH'], ['dev', 'HELD-OUT DEV']];
+    const promos = c.testbench.promotions || [];
+    return {
+      boardHead: H.map(h => ({ label: h[0], al: h[1], tip: h[2] || '' })), board,
+      arenaKpis: [
+        { label: 'CHAMPION', value: champ.name, color: 'rgb(255,190,110)', sub: 'dev ' + f(champ.dev) + ' · CI ' + f(champ.ci[0], 2) + '–' + f(champ.ci[1], 2) + ' · Elo ' + Math.round(champ.elo), tip: champ.tagline },
+        { label: 'CHALLENGER', value: chall ? chall.name : '—', color: 'rgb(120,200,255)', sub: chall ? 'dev ' + f(chall.dev) + ' (' + this.sg((chall.dev || 0) - (champ.dev || 0)) + ') · Elo ' + Math.round(chall.elo) : 'no other strategy', tip: chall ? chall.tagline : '' },
+        { label: 'SIGN TEST', value: sign ? sign.w + '–' + sign.l : '—', color: 'rgb(214,236,255)', sub: sign ? 'p = ' + sign.p.toFixed(4) + ' · ' + sign.ties + ' ties dropped' : '', tip: 'exact two-sided binomial test on per-probe wins and losses' },
+        { label: 'PROBES', value: R.probes.length + ' × ' + R.rows.length, color: 'rgb(214,236,255)', sub: sp.map(s => R.probes.filter(p => p.split === s[0]).length + ' ' + s[0]).join(' · '), tip: 'every strategy runs every probe' },
+        { label: 'RUN', value: Math.round(R.ms) + 'ms', color: 'rgb(214,236,255)', sub: 'cache ' + R.cache.hits + ' hits / ' + R.cache.misses + ' misses · ' + Math.round(R.cache.rate * 100) + '%', tip: 'Redis-style LRU keyed by strategy | probe | graph version' },
+        { label: 'PROMOTIONS', value: String(promos.length), color: 'rgb(120,220,140)', sub: promos[0] ? promos[0].from + ' → ' + promos[0].to : 'the tester promotes only clear wins', tip: 'dev higher, train drop ≤ 0.02, wins ≥ losses' }
+      ],
+      h2h: chall ? { title: chall.name + ' vs ' + champ.name, line: chall.name + ' wins ' + sign.w + ' probes, loses ' + sign.l + ', ties ' + sign.ties + '. Exact two-sided sign test p = ' + sign.p.toFixed(4) + '. Dev ' + f(chall.dev) + ' vs ' + f(champ.dev) + ', train ' + f(chall.train) + ' vs ' + f(champ.train) + '.', strip, legend: 'one bar per probe, left to right: ' + sp.map(s => s[1].toLowerCase()).join(' · ') + ' · green = challenger better, red = worse', verdict: better && safe && h2hOk ? 'VERDICT · PROMOTE: higher dev, train holds, wins the head-to-head' : 'VERDICT · HOLD: ' + [better ? null : 'dev not higher', safe ? null : 'train drops more than 0.02', h2hOk ? null : 'loses the head-to-head'].filter(Boolean).join(', '), vc: better && safe && h2hOk ? 'rgb(120,220,140)' : 'rgb(255,190,110)' } : { title: '—', line: 'Only one strategy in the pool.', strip: [], legend: '', verdict: '', vc: 'rgb(214,236,255)' },
+      splitBars: sp.map(([k, l]) => ({ label: l, w1: ((champ.split[k] || 0) * 100).toFixed(1), w2: chall ? ((chall.split[k] || 0) * 100).toFixed(1) : '0', v1: f(champ.split[k], 2), v2: chall ? f(chall.split[k], 2) : '—' })),
+      arenaNote: 'Recall@' + c.params.k + ' per probe. Held-out dev probes never feed Hebbian learning or edge gates, so dev is the score that decides promotion.',
+      promote: () => { if (!chall) return; c.useStrategy(chall.id); c.log('tester', 'PROMOTE (manual) · ' + chall.name + ' replaces ' + champ.name + ' · dev ' + f(champ.dev) + ' → ' + f(chall.dev)); c.testbench.run(); this.setState(s => ({ tick: s.tick + 1 })); },
+      toPairDiff: () => { if (chall) this.setState({ tab: 'diffs', dsel: 'pair', selA: champ.id, selB: chall.id }); }
+    };
+  }
+
+  matrixVals(c, R) {
+    const SPL = { train: ['TRAIN', 'rgb(214,236,255)'], hyper: ['HYPEREDGE', 'rgb(185,150,255)'], path: ['PATH', 'rgb(120,200,255)'], dev: ['HELD-OUT DEV', 'rgb(255,190,110)'] }, groups = [];
+    R.probes.forEach(p => { const g = groups[groups.length - 1]; if (g && g.split === p.split) g.n++; else groups.push({ split: p.split, n: 1 }); });
+    const col = v => !isFinite(v) ? 'rgba(214,236,255,0.03)' : v <= 0 ? 'rgba(214,236,255,0.07)' : 'rgba(255,190,110,' + (0.16 + 0.84 * v).toFixed(2) + ')';
+    return {
+      mNote: R.rows.length + ' strategies × ' + R.probes.length + ' probes = ' + R.rows.length * R.probes.length + ' runs · rows ranked by dev · hover any cell for the probe and score',
+      mGroups: groups.map(g => ({ label: SPL[g.split][0] + ' · ' + g.n, c: SPL[g.split][1], w: g.n * 16 - 2 })),
+      mProbes: R.probes.map(p => ({ id: p.id, tip: p.id + ' · ' + p.split + ' · ' + p.dom + ' · ' + p.gold + ' gold · ' + p.text })),
+      mRows: R.rows.map(r => ({ name: r.name, fg: r.id === R.champion ? 'rgb(255,190,110)' : r.id === R.challenger ? 'rgb(120,200,255)' : 'rgba(214,236,255,0.85)', tip: r.tagline, mean: this.f3(this.avg(Array.from(r.r))), cells: R.probes.map((p, k) => ({ bg: col(r.r[k]), tip: r.name + ' · ' + p.id + ' (' + p.split + ', ' + p.dom + ') · recall ' + (isFinite(r.r[k]) ? r.r[k].toFixed(2) : 'n/a') + ' · ' + p.text })) })),
+      mDiff: R.probes.map((p, k) => { const v = this.avg(R.rows.map(r => r.r[k])); return { bg: v == null ? 'transparent' : 'rgba(255,106,26,' + (0.1 + 0.9 * (1 - v)).toFixed(2) + ')', tip: p.id + ' · mean recall ' + this.f3(v) + ' across strategies · ' + p.text }; })
+    };
+  }
+
+  diffVals(c, S) {
+    const A = c.testbench, f = v => this.f3(v), items = [], strats = c.strategies || [];
+    (c.codePatches || []).slice(0, 12).forEach((p, i) => items.push({ key: 'patch:' + i, kind: 'CODE PATCH · ' + (p.verdict ? 'SHIPPED' : 'REJECTED'), kc: p.verdict ? 'rgb(120,220,140)' : 'rgb(255,130,100)', title: (p.prevName || 'active') + ' → ' + (p.name || 'patch'), meta: (p.t || '') + ' · dev ' + f(p.before) + ' → ' + f(p.after) + (p.err ? ' · threw' : ''), a: p.prevSource || '', b: p.code || '', na: p.prevName || 'before', nb: p.name || 'after', note: (p.rationale || '') + (p.err ? ' · error: ' + p.err : '') }));
+    (A.potLog || []).slice(0, 8).forEach((p, i) => items.push({ key: 'pot:' + i, kind: 'PROGRAM OF THOUGHT · ' + (p.keep ? 'KEPT' : 'REVERTED'), kc: p.keep ? 'rgb(120,220,140)' : 'rgb(255,130,100)', title: 'pot(core, h) vs previous program', meta: new Date(p.t).toTimeString().slice(0, 8) + ' · Δdev ' + this.sg(p.ddev), a: (A.potLog[i + 1] || {}).code || '', b: p.code, na: 'previous pot', nb: 'this pot', note: p.summary }));
+    items.push({ key: 'pair', kind: 'STRATEGY PAIR', kc: 'rgb(255,190,110)', title: 'any two strategies', meta: 'pick A and B below' });
+    items.push({ key: 'graph', kind: 'GRAPH DIFF', kc: 'rgb(120,200,255)', title: 'learned graph vs corpus', meta: 'edges the agent added and removed' });
+    const sel = S.dsel || items[0].key, it = items.find(x => x.key === sel) || items[0];
+    const champ = A.last ? A.last.champion : c.activeStrategy, chall = A.last && A.last.challenger ? A.last.challenger : (strats[1] || {}).id;
+    const ida = S.selA || champ, idb = S.selB || chall || ida, sa = strats.find(s => s.id === ida) || strats[0] || {}, sb = strats.find(s => s.id === idb) || sa;
+    let dv;
+    const render = (d, head, meta, note) => ({ head, add: d.add, del: d.del, meta, note: note || '', lines: d.lines.slice(0, 1400).map(o => ({ op: o[0] === '@' ? '' : o[0], a: o[1] == null ? '' : o[1], b: o[2] == null ? '' : o[2], s: o[3], bg: o[0] === '+' ? 'rgba(120,220,140,0.1)' : o[0] === '-' ? 'rgba(255,130,100,0.1)' : o[0] === '@' ? 'rgba(214,236,255,0.04)' : 'transparent', fg: o[0] === '+' ? 'rgb(170,240,180)' : o[0] === '-' ? 'rgb(255,175,155)' : o[0] === '@' ? 'rgba(214,236,255,0.4)' : 'rgba(214,236,255,0.72)' })) });
+    if (it.key === 'graph') {
+      const snap = c.history ? c.history.snapshot() : { added: [], removed: [] }, lines = [];
+      snap.removed.forEach((e, i) => lines.push(['-', i + 1, null, e[0] + ' — ' + e[1] + '    (corpus edge pruned)']));
+      snap.added.forEach((e, i) => lines.push(['+', null, i + 1, e[0] + ' —' + e[2] + '→ ' + e[1] + '    w ' + e[3] + ' · ' + e[4]]));
+      dv = render({ lines, add: snap.added.length, del: snap.removed.length }, 'corpus.graph → learned.graph', c.E.length + ' edges live · budget ' + (c.EDGE_CAP || '—'), 'Every edge the agent kept passed its gate: IQ held or rose when it was added. Sources: pred = link prediction, llm = Claude, pot = program of thought, github = code-grounded.');
+    } else if (it.key === 'pair') {
+      const d = A.diff(sa.source || String(sa.fn), sb.source || String(sb.fn)), r = A.last ? A.last.rows : [], ra = r.find(x => x.id === sa.id), rb = r.find(x => x.id === sb.id);
+      dv = render(d, 'a/' + sa.id + '.js → b/' + sb.id + '.js', (ra && rb ? 'dev ' + f(ra.dev) + ' → ' + f(rb.dev) + ' · Elo ' + Math.round(ra.elo) + ' → ' + Math.round(rb.elo) + ' · ' : '') + d.a + ' → ' + d.b + ' lines', sa.tagline + '  ⟶  ' + sb.tagline);
+    } else {
+      const d = A.diff(it.a, it.b);
+      dv = render(d, 'a/' + it.na + ' → b/' + it.nb, it.meta, it.note);
+    }
+    return {
+      dList: items.map(x => ({ ...x, go: () => this.setState({ dsel: x.key }), bg: x.key === it.key ? 'rgba(255,190,110,0.08)' : 'transparent', bd: x.key === it.key ? 'rgba(255,190,110,0.6)' : 'rgba(214,236,255,0.12)' })),
+      dEmpty: !(c.codePatches || []).length && !(A.potLog || []).length, dv,
+      stratOpts: strats.map(s => ({ id: s.id, name: s.name + (s.by === 'claude' ? ' ✦' : '') })), selA: sa.id || '', selB: sb.id || '',
+      pickA: e => this.setState({ selA: e.target.value, dsel: 'pair' }), pickB: e => this.setState({ selB: e.target.value, dsel: 'pair' })
+    };
+  }
+
+  mathVals(c) {
+    const M = c.testbench.math(), p = M.params, f = v => this.f3(v), r = M.run, q = M.q, ch = M.arena && M.arena.champ, cx = M.arena && M.arena.chall, sg = M.arena && M.arena.sign;
+    const stats = c.stats || {}, pt = c.codePatches || [];
+    return { mathCards: [
+      { title: 'RECALL@K · the score', f: 'recall = |gold ∩ top-k| / |gold|\nconfidence = 0.6·Σ top-k act / k + 0.4·max act', live: r ? 'query  ' + r.q + '\nseeds  ' + r.seeds.join(', ') + '\ntop-' + r.top.length + '  ' + r.top.join(', ') + '\ngold   ' + (r.gold.join(', ') || '—') + '\nhits   ' + (r.hits.join(', ') || 'none') + '\n= ' + r.hits.length + '/' + (r.gold.length || '—') + ' = ' + f(r.score) + ' · confidence ' + f(r.conf) : 'waiting for the first probe' },
+      { title: 'SPREADING ACTIVATION', f: 'a₀(seed) = 1\na_{t+1}(v) = ½·a_t(v) + Σ_{u∈N(v)} a_t(u)·decay·τ(type)·w_uv / √(deg u + 1)\n            + hyper·Σ_{h ∋ u,v} a_t(u)\na_{t+1} ← a_{t+1} / max a_{t+1}', live: 'decay ' + p.decay + ' · hops ' + p.hops + ' · hyper ' + p.hyper + ' · k ' + p.k + '\nτ: isa 1 · uses 0.8 · analog 0.6 · pred 0.7 · llm 0.7' },
+      { title: 'HEBBIAN PLASTICITY', f: 'both ends relevant:        w ← w + η·(2 − w)/2\nco-retrieved, irrelevant:  w ← w − 0.35·η·w\notherwise:                 w ← w + 0.004·(w₀ − w)\nw ∈ [0.05, 2]', live: 'η ' + M.hebb.eta + ' · mean w ' + M.hebb.mean.toFixed(3) + ' over ' + M.hebb.n + ' edges\nstrengthened ' + M.hebb.up + ' · weakened ' + M.hebb.down + ' · at rest ' + (M.hebb.n - M.hebb.up - M.hebb.down) },
+      { title: 'FITNESS · LEANLOC', f: 'F = 100·Δdev − 0.001·ms − 0.02·LOC', live: q ? 'last: ' + (q.label || q.a) + '\nF = 100·' + q.ddev.toFixed(3) + ' − 0.001·' + Math.round(q.ms) + ' − 0.02·' + q.loc + '\n  = ' + (100 * q.ddev).toFixed(2) + ' − ' + (0.001 * q.ms).toFixed(2) + ' − ' + (0.02 * q.loc).toFixed(2) + ' = ' + (100 * q.ddev - 0.001 * q.ms - 0.02 * q.loc).toFixed(3) : 'no experiment scored yet' },
+      { title: 'Q-LEARNING · research policy', f: 'Q(s,a) ← Q(s,a) + α·[r + γ·max_a′ Q(s′,a′) − Q(s,a)]\nr = F + 0.5 if kept, F − 0.25 if rejected', live: q ? 's = ' + q.s + ' · a = ' + q.a + ' · s′ = ' + q.s2 + '\nQ ← ' + q.old.toFixed(3) + ' + ' + M.qp.alpha + '·(' + q.r.toFixed(3) + ' + ' + M.qp.gamma + '·' + q.mx.toFixed(3) + ' − ' + q.old.toFixed(3) + ')\n  = ' + q.nw.toFixed(3) + '   (TD error ' + q.td.toFixed(3) + ')' : 'no update yet · α ' + M.qp.alpha + ' · γ ' + M.qp.gamma },
+      { title: 'ε-GREEDY', f: 'ε = max(0.05, ε₀ / √(1 + n/8))\nwith prob. ε pick a random technique, else argmax Q(s,·)', live: M.chosen && M.chosen.a ? 'round ' + M.chosen.round + ' · state ' + M.chosen.s + ' → ' + M.chosen.a + '\n' + M.chosen.why : 'ε₀ ' + M.qp.eps0 },
+      { title: 'BM25 · lexical retrieval', f: 'score(q,d) = Σ_t IDF(t)·f(t,d)·(k1+1) / (f(t,d) + k1·(1 − b + b·|d|/avgdl))\nIDF(t) = ln(1 + (N − n_t + 0.5)/(n_t + 0.5))', live: 'k1 ' + M.bm25.k1 + ' · b ' + M.bm25.b + ' · N ' + M.bm25.N + ' · avgdl ' + M.bm25.avgdl.toFixed(1) + ' · vocab ' + M.bm25.vocab + '\nrarest  ' + M.bm25.rare.map(t => t[0] + ' ' + t[1].toFixed(2)).join(' · ') + '\ncommon  ' + M.bm25.common.map(t => t[0] + ' ' + t[1].toFixed(2)).join(' · ') },
+      { title: 'ELO · arena rating', f: 'E_a = 1 / (1 + 10^((R_b − R_a)/400))\nR_a ← R_a + K·(S_a − E_a),  K = 16, R₀ = 1000\nmean over 12 seeded probe orderings', live: ch ? ch.name + ' ' + Math.round(ch.elo) + ' · W/L/T ' + ch.w + '/' + ch.l + '/' + ch.t + (cx ? '\n' + cx.name + ' ' + Math.round(cx.elo) + ' · W/L/T ' + cx.w + '/' + cx.l + '/' + cx.t : '') : 'run the arena' },
+      { title: 'SIGN TEST · champion vs challenger', f: 'n = wins + losses (ties dropped)\np = min(1, 2·Σ_{i=0}^{min(w,l)} C(n,i) / 2ⁿ)', live: sg ? 'wins ' + sg.w + ' · losses ' + sg.l + ' · ties ' + sg.ties + ' · n ' + sg.n + '\np = ' + sg.p.toFixed(4) + (sg.p < 0.05 ? '  significant at 0.05' : '  not significant at 0.05') : 'run the arena' },
+      { title: 'BOOTSTRAP CI · held-out dev', f: '400 resamples of dev probes with replacement\nCI₉₀ = [5th, 95th] percentile of the resampled mean', live: ch ? ch.name + '  ' + f(ch.dev) + '  [' + f(ch.ci[0]) + ', ' + f(ch.ci[1]) + ']' + (cx ? '\n' + cx.name + '  ' + f(cx.dev) + '  [' + f(cx.ci[0]) + ', ' + f(cx.ci[1]) + ']' : '') + '\n' + (c._int ? c._int.dev.length : '?') + ' held-out probes: wide intervals are honest' : 'run the arena' },
+      { title: 'GATES', f: 'edge kept     iff IQ′ ≥ IQ + 0.001\ncode shipped  iff dev′ ≥ dev − 10⁻⁶ and no exception\npromotion     iff dev_x > dev_c, train drop ≤ 0.02, wins ≥ losses', live: 'edges added ' + ((stats.predAdded || 0) + (stats.llmLinks || 0)) + ' · rejected ' + (stats.rejected || 0) + ' · pruned ' + (stats.pruned || 0) + '\ncode patches ' + pt.filter(x => x.verdict).length + ' shipped / ' + pt.length + ' · promotions ' + (c.testbench.promotions || []).length },
+      { title: 'CACHE · Redis-style', f: 'key = strategy | probe | graph version\nGET hit → reuse recall and ms · SET EX 900 s · LRU evict at max', live: M.cache.keys + ' keys / ' + M.cache.max + ' · ' + M.cache.hits + ' hits · ' + M.cache.misses + ' misses · ' + M.cache.evicted + ' evicted\nhit rate ' + Math.round(M.cache.rate * 100) + '%' }
+    ] };
+  }
+
+  stackVals(c, S) {
+    const L = c.testbench.stack(), sel = L.find(x => x.id === S.ssel) || L[0];
+    return {
+      stackCount: L.length + ' artifacts · ' + L.filter(x => x.inGraph).length + ' in the graph',
+      stackList: L.map(x => ({ node: x.node, status: x.inGraph ? 'IN GRAPH · deg ' + x.deg : 'NOT IN GRAPH', sc: x.inGraph ? 'rgb(120,220,140)' : 'rgb(255,130,100)', meta: x.file + ' · ' + x.comm, go: () => this.setState({ ssel: x.id }), bg: x.id === sel.id ? 'rgba(255,190,110,0.08)' : 'transparent', bd: x.id === sel.id ? 'rgba(255,190,110,0.6)' : 'rgba(214,236,255,0.12)' })),
+      stackSel: { file: sel.file, node: sel.node, code: sel.code, meta: sel.lang + ' · ' + sel.code.split('\n').length + ' lines · generated from live state · node #' + sel.idx + ' in ' + sel.comm }
+    };
+  }
+
+  policyVals(c) {
+    const P = c.qpolicy, Q = P.table(), V = P.visits(), acts = P.acts, cur = P.state(), ch = P.chosen(), last = P.last();
+    let mx = 0.001; Object.keys(Q).forEach(s => acts.forEach(a => { mx = Math.max(mx, Math.abs(Q[s][a])); }));
+    const states = Object.keys(Q).sort();
+    const science = (c.science && c.science.history) || [];
+    return {
+      qHead: [{ label: 'STATE', al: 'left' }].concat(acts.map(a => ({ label: a.toUpperCase(), al: 'center' }))),
+      qRows: states.map(s => ({ s: s + (s === cur ? '  ◂ now' : ''), fg: s === cur ? 'rgb(255,190,110)' : 'rgba(214,236,255,0.75)', cells: acts.map(a => { const v = Q[s][a], n = V[s + '|' + a] || 0, isCh = ch && ch.s === s && ch.a === a; return { v: v.toFixed(3), n, tip: 'Q(' + s + ', ' + a + ') = ' + v.toFixed(4) + ' after ' + n + ' updates', bg: v >= 0 ? 'rgba(255,190,110,' + (0.04 + 0.5 * v / mx).toFixed(2) + ')' : 'rgba(255,130,100,' + (0.04 + 0.5 * -v / mx).toFixed(2) + ')', bd: isCh ? 'rgb(255,190,110)' : 'rgba(214,236,255,0.08)' }; }) })),
+      qChosen: ch && ch.a ? 'Round ' + ch.round + ': in state ' + ch.s + ' the policy chose ' + ch.a.toUpperCase() + ' (' + ch.why + '). States are the train–dev gap (tight or gap) × the weakest domain.' : 'The policy picks a technique at the start of each research round.',
+      qLast: last ? 'Q(' + last.s + ', ' + last.a + ')\n  ← ' + last.old.toFixed(3) + ' + ' + P.params.alpha + '·(' + last.r.toFixed(3) + ' + ' + P.params.gamma + '·' + last.mx.toFixed(3) + ' − ' + last.old.toFixed(3) + ')\n  = ' + last.nw.toFixed(3) + '\nr = 100·' + last.ddev.toFixed(3) + ' − 0.001·' + Math.round(last.ms) + ' − 0.02·' + last.loc + (last.keep ? ' + 0.5' : ' − 0.25') + ' = ' + last.r.toFixed(3) + '\n' + (last.label || '') : 'No update yet. The first lands when a research round reaches AUDIT.',
+      qLog: P.log().slice(0, 8).map(u => ({ text: new Date(u.t).toTimeString().slice(0, 8) + '  ' + u.a.padEnd(8) + ' r ' + (u.r >= 0 ? '+' : '') + u.r.toFixed(2) + '  Q ' + u.old.toFixed(2) + '→' + u.nw.toFixed(2) + '  ' + (u.keep ? 'kept' : 'rejected'), c: u.keep ? 'rgb(170,240,180)' : 'rgba(255,175,155,0.9)' })),
+      rounds: science.slice(0, 10).map(h => ({ t: h.t, v: h.ok ? 'ACCEPTED' : 'REJECTED', c: h.ok ? 'rgb(120,220,140)' : 'rgb(255,130,100)', text: h.detail || h.label }))
+    };
+  }
+
+  historyVals(c, S) {
+    const H = c.history;
+    if (!H) return { hMeta: 'history module not loaded', hKpis: [], hRanges: [], hFocus: [], hBands: [], hYTicks: [], hRecords: [], hEmpty: true, hSegs: [], hDomLines: [], hDomLegend: [], hRows: [], hMarks: [], hRecList: [], hNoRec: true };
+    const L = H.ledger, f = (v, d) => this.f3(v, d), DIDS = ['graph', 'ai', 'safety'], DOMS = H.domains || [];
+    const dc = id => (DOMS.find(d => d.id === id) || {}).color || 'rgb(214,236,255)', dn = id => (DOMS.find(d => d.id === id) || {}).short || id.toUpperCase();
+    const range = S.hrange || 'all';
+    let P = L.pts; if (range === 'session') P = P.filter(p => p[1] === H.session); else if (range === 'recent') P = P.slice(-240);
+    const n = P.length, stride = Math.max(1, Math.ceil(n / 600)), D = [];
+    for (let i = 0; i < n; i += stride) D.push([i, P[i]]); if (n && D[D.length - 1][0] !== n - 1) D.push([n - 1, P[n - 1]]);
+    const X = i => (n > 1 ? i / (n - 1) * 1000 : 500);
+    let lo = 1, hi = 0; P.forEach(p => { [p[3], p[4]].forEach(v => { if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }); });
+    if (lo > hi) { lo = 0; hi = 1; } const pad = Math.max(0.02, (hi - lo) * 0.12); lo = Math.max(0, lo - pad); hi = Math.min(1, hi + pad); if (hi - lo < 0.06) hi = Math.min(1, lo + 0.06);
+    const Y = v => 290 - (v - lo) / (hi - lo) * 270;
+    const line = k => D.filter(([, p]) => p[k] != null).map(([i, p]) => X(i).toFixed(1) + ',' + Y(p[k]).toFixed(1)).join(' ');
+    const bestAt = new Map(); let b = -1; L.pts.forEach(p => { if (p[4] != null && p[4] > b) b = p[4]; bestAt.set(p, b); });
+    const tIdx = t => { if (!n) return 0; if (t <= P[0][0]) return 0; if (t >= P[n - 1][0]) return n - 1; let a = 0, z = n - 1; while (z - a > 1) { const m = (a + z) >> 1; if (P[m][0] < t) a = m; else z = m; } return z; };
+    const t0 = n ? P[0][0] : 0, t1 = n ? P[n - 1][0] : 0, EV = L.ev.filter(e => n && e.t >= t0 - 2 && e.t <= t1 + 5);
+    const step = (hi - lo) > 0.4 ? 0.1 : (hi - lo) > 0.2 ? 0.05 : 0.02, ticks = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) ticks.push({ y: (Y(v) / 3).toFixed(2), label: v.toFixed(2) });
+    const bands = []; let s0 = 0; for (let i = 1; i <= n; i++) if (i === n || P[i][1] !== P[s0][1]) { const ses = L.sessions.find(x => x.id === P[s0][1]); bands.push({ x: (X(s0) / 10).toFixed(2), w: Math.max(0.3, (X(i === n ? n - 1 : i) - X(s0)) / 10).toFixed(2), bg: bands.length % 2 ? 'rgba(214,236,255,0.022)' : 'transparent', label: 'S' + P[s0][1] + ' · ' + (ses ? this.dt(ses.t / 1000) : this.dt(P[s0][0])) }); s0 = i; }
+    let hHover = null;
+    if (S.hx != null && n) { const i = Math.round(S.hx * (n - 1)), p = P[i], x = X(i) / 10; hHover = { x: x.toFixed(2), tx: x > 62 ? 'calc(-100% - 10px)' : '10px', when: this.dt(p[0]) + ' · session ' + p[1] + ' · cycle ' + p[2], dev: f(p[4]), iq: f(p[3]), best: f(bestAt.get(p)), dom: DIDS.map((d, k) => dn(d) + ' ' + f(p[5 + k], 2)).join(' · '), graph: p[8] + ' edges · ' + p[9] + ' learned · ' + p[11] + ' files · ' + p[12] + ' code links', code: 'code: ' + (L.sn[p[10]] || '—') }; }
+    let emax = c.EDGE_CAP || 0; P.forEach(p => { emax = Math.max(emax, p[8]); }); emax = emax * 1.08 || 1;
+    const YE = v => 100 - v / emax * 90 - 5, eLine = D.map(([i, p]) => X(i).toFixed(1) + ',' + YE(p[8]).toFixed(1)).join(' ');
+    const SEGC = ['255,106,26', '120,200,255', '255,190,110', '185,150,255', '120,220,140', '255,150,100', '170,220,255'], segs = []; let a = 0;
+    for (let i = 1; i <= n; i++) if (i === n || P[i][10] !== P[a][10]) { const nm = L.sn[P[a][10]] || '—', ci = SEGC[(P[a][10] || 0) % SEGC.length], x0 = X(a) / 10, x1 = (i === n ? X(n - 1) : X(i)) / 10, w = Math.max(0.3, x1 - x0); segs.push({ x: x0.toFixed(2), w: w.toFixed(2), bg: 'rgba(' + ci + ',0.18)', bd: 'rgba(' + ci + ',0.9)', fg: 'rgb(' + ci + ')', label: w > 7 ? nm : '', tip: nm + ' · ' + this.tm(P[a][0]) + '–' + this.tm(P[i - 1][0]) }); a = i; }
+    const KINDS = [['graph', 'GRAPH PATCH', 'rgb(120,200,255)'], ['pot', 'PROGRAM OF THOUGHT', 'rgb(255,190,110)'], ['code', 'CODE REWRITE', 'rgb(255,106,26)'], ['strategy', 'STRATEGY ROUND', 'rgb(185,150,255)'], ['swap', 'CODE SWAP', 'rgb(170,220,255)'], ['compact', 'COMPACTION', 'rgba(214,236,255,0.7)'], ['ingest', 'CODE LINK', 'rgb(120,220,140)']];
+    const marks = []; EV.slice(-500).forEach(e => { const r = KINDS.findIndex(k => k[0] === e.k); if (r < 0) return; const col = KINDS[r][2]; marks.push({ x: (X(tIdx(e.t)) / 10).toFixed(2), top: 6 + r * 15, bg: e.ok ? col : 'transparent', bd: col, tip: this.tm(e.t) + ' · ' + KINDS[r][1] + ' · ' + (e.ok ? 'kept' : 'rejected') + (e.d ? ' · Δdev ' + this.sg(e.d) : '') + ' · ' + e.l + (e.x ? ' · ' + e.x : '') }); });
+    const all = L.pts, first = all[0], last = all[all.length - 1], bestEver = all.reduce((m, p) => (p[4] != null && p[4] > m ? p[4] : m), -1);
+    const exps = L.ev.filter(e => ['graph', 'pot', 'code', 'strategy'].indexOf(e.k) >= 0), kept = exps.filter(e => e.ok).length, gh = c.gh ? c.gh.stats : {};
+    const fr = c.history.frontier, top = fr && fr.rows[0], learnedNow = c.E.filter(e => e.src !== 'corpus').length;
+    const firstR = P[0], lastR = P[n - 1];
+    const recs = L.ev.map((e, i) => [e, i]).filter(([e]) => e.k === 'record').slice(-8).reverse().map(([e, i]) => { let cause = null; for (let j = i - 1; j >= 0 && j >= i - 12; j--) if (['graph', 'pot', 'code', 'strategy', 'swap', 'ingest', 'compact'].indexOf(L.ev[j].k) >= 0) { cause = L.ev[j]; break; } return { t: this.dt(e.t), d: this.sg(e.d), text: 'dev → ' + f(e.v) + (cause ? ' · after ' + cause.l : '') }; });
+    const ago = H.savedAt ? Math.round((Date.now() - H.savedAt) / 1000) + 's ago' : 'not yet this session';
+    return {
+      hMeta: L.sessions.length + ' sessions · since ' + (L.sessions[0] ? this.dt(L.sessions[0].t / 1000) : '—') + ' · ' + all.length + ' points · ' + L.ev.length + ' events · saved ' + ago,
+      hRanges: [['all', 'ALL'], ['session', 'SESSION'], ['recent', 'LAST 240']].map(([k, l]) => ({ label: l, go: () => this.setState({ hrange: k, hx: null }), bg: range === k ? 'rgba(255,190,110,0.12)' : 'transparent', fg: range === k ? 'rgb(255,190,110)' : 'rgba(214,236,255,0.7)', bd: range === k ? 'rgb(255,190,110)' : 'rgba(214,236,255,0.2)' })),
+      hFocus: [['all', 'ALL'], ['graph', 'GRAPH'], ['ai', 'AI'], ['safety', 'SAFETY']].map(([k, l]) => { const on = (H.focus || 'all') === k; return { label: l, tip: k === 'all' ? 'no extra probes' : 'adds a ' + l + ' training probe every other cycle and steers the research prompts', go: () => { H.setFocus(k); this.setState(s => ({ tick: s.tick + 1 })); }, bg: on ? 'rgba(120,220,140,0.12)' : 'transparent', fg: on ? 'rgb(120,220,140)' : 'rgba(214,236,255,0.7)', bd: on ? 'rgb(120,220,140)' : 'rgba(214,236,255,0.2)' }; }),
+      hKpis: [
+        { label: 'HELD-OUT DEV', value: f(last && last[4]), color: 'rgb(214,236,255)', delta: first && last ? this.sg(last[4] - first[4]) : '', dc: first && last && last[4] >= first[4] ? 'rgb(120,220,140)' : 'rgb(255,130,100)', sub: 'first ' + f(first && first[4]) + ' · best ' + f(bestEver) },
+        { label: 'IQ · BENCHMARK', value: f(last && last[3]), color: 'rgb(255,106,26)', delta: first && last ? this.sg(last[3] - first[3]) : '', dc: first && last && last[3] >= first[3] ? 'rgb(120,220,140)' : 'rgb(255,130,100)', sub: 'first ' + f(first && first[3]) + ' · ' + (c._int ? c._int.bench.length : '?') + ' probes' },
+        { label: 'GRAPH', value: c.E.length + '/' + (c.EDGE_CAP || '—'), color: 'rgb(214,236,255)', delta: '+' + learnedNow + ' learned', dc: 'rgb(255,190,110)', sub: c.nc + ' concepts · ' + H.restored.added + ' edges restored from memory' },
+        { label: 'EXPERIMENTS', value: kept + '/' + exps.length, color: 'rgb(255,190,110)', delta: exps.length ? Math.round(kept / exps.length * 100) + '% kept' : '', dc: 'rgba(214,236,255,0.6)', sub: ['graph', 'pot', 'code', 'strategy'].map(k => k + ' ' + exps.filter(e => e.k === k).length).join(' · ') },
+        { label: 'BEST CODE', value: top ? top.name : '—', color: 'rgb(255,190,110)', delta: top ? f(top.dev) : '', dc: 'rgba(214,236,255,0.7)', sub: c.strategies.length + ' strategies · ' + c.strategies.filter(s => s.by === 'claude').length + ' Claude-authored' },
+        { label: 'INGESTED', value: (gh.pulled || 0) + '/' + (gh.total || 0), color: 'rgb(120,220,140)', delta: (gh.linked || 0) + ' links', dc: 'rgba(214,236,255,0.7)', sub: (gh.scoured || 0) + ' repos · ' + Math.round((gh.bytes || 0) / 1024) + 'kb read' }
+      ],
+      hBands: bands, hYTicks: ticks, hIq: line(3), hDev: line(4), hFrontier: D.map(([i, p]) => X(i).toFixed(1) + ',' + Y(Math.max(lo, bestAt.get(p))).toFixed(1)).join(' '),
+      hRecords: EV.filter(e => e.k === 'record').map(e => ({ x: (X(tIdx(e.t)) / 10).toFixed(2), y: (Y(e.v) / 3).toFixed(2), tip: this.tm(e.t) + ' · new best dev ' + f(e.v) + ' (' + this.sg(e.d) + ')' })),
+      hHover, hEmpty: n < 2,
+      hMove: e => { const r = e.currentTarget.getBoundingClientRect(), now = performance.now(); if (this._hxT && now - this._hxT < 40) return; this._hxT = now; this.setState({ hx: Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) }); },
+      hLeave: () => this.setState({ hx: null }),
+      hEdges: eLine, hEdgesArea: n ? X(D[0][0]).toFixed(1) + ',100 ' + eLine + ' ' + X(D[D.length - 1][0]).toFixed(1) + ',100' : '', hLearned: D.map(([i, p]) => X(i).toFixed(1) + ',' + YE(p[9]).toFixed(1)).join(' '), hCap: c.EDGE_CAP ? '0,' + YE(c.EDGE_CAP).toFixed(1) + ' 1000,' + YE(c.EDGE_CAP).toFixed(1) : '',
+      hGraphNote: lastR ? lastR[8] + ' edges · ' + lastR[9] + ' learned · budget ' + (c.EDGE_CAP || '—') : '',
+      hSegs: segs,
+      hDomLines: DIDS.map((d, k) => ({ c: dc(d), pts: D.filter(([, p]) => p[5 + k] != null).map(([i, p]) => X(i).toFixed(1) + ',' + (100 - p[5 + k] * 88 - 6).toFixed(1)).join(' ') })),
+      hDomLegend: DIDS.map((d, k) => ({ c: dc(d), label: dn(d), now: f(lastR && lastR[5 + k], 2), delta: firstR && lastR && firstR[5 + k] != null && lastR[5 + k] != null ? this.sg(lastR[5 + k] - firstR[5 + k], 2) : '' })),
+      hRows: KINDS.map((k, r) => ({ label: k[1], c: k[2], top: 5 + r * 15 })), hMarks: marks,
+      hRecList: recs, hNoRec: !recs.length,
+      hMemory: 'Restored at boot: +' + H.restored.added + ' learned edges, −' + H.restored.removed + ' corpus edges, ' + H.restored.strategies + ' strategies' + (H.restored.caps ? ', ' + H.restored.caps + ' abilities' : '') + (c.qpolicy ? ', the Q-table' : '') + '. Active code ' + c.activeStrategy + '. Curriculum ' + (H.focus || 'all domains') + '. ' + (H.writer ? 'This console writes memory every 15 s and on close.' : 'This console reads memory; the agent console writes it.'),
+      hSave: () => { H.save(); this.setState(s => ({ tick: s.tick + 1 })); },
+      hExport: () => { const blob = new Blob([H.exportJSON()], { type: 'application/json' }), url = URL.createObjectURL(blob), el = document.createElement('a'); el.href = url; el.download = 'graph-intelligence-history.json'; document.body.appendChild(el); el.click(); el.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000); },
+      hReset: () => { if (S.hreset && Date.now() - S.hreset < 4000) { H.reset(); this.setState({ hreset: 0 }); } else this.setState({ hreset: Date.now() }); },
+      hResetLabel: S.hreset && Date.now() - S.hreset < 4000 ? 'CLICK AGAIN TO RESET' : 'RESET MEMORY'
+    };
+  }
+
+  logVals(c, S) {
+    const KC = { run: 'rgb(214,236,255)', evolve: 'rgb(255,190,110)', research: 'rgb(255,106,26)', tester: 'rgb(120,200,255)', github: 'rgb(120,220,140)', sys: 'rgba(214,236,255,0.6)', err: 'rgb(255,130,100)', insight: 'rgb(185,150,255)' };
+    const logs = c.logs || [], counts = {}; logs.forEach(l => { counts[l.kind] = (counts[l.kind] || 0) + 1; });
+    const kinds = ['all'].concat(Object.keys(counts).sort((a, b) => counts[b] - counts[a])), q = (S.lq || '').toLowerCase().trim();
+    const shown = []; for (let i = logs.length - 1; i >= 0 && shown.length < 500; i--) { const l = logs[i]; if (S.lkind !== 'all' && l.kind !== S.lkind) continue; if (q && (l.text || '').toLowerCase().indexOf(q) < 0) continue; shown.push(l); }
+    return {
+      logKinds: kinds.map(k => ({ label: k.toUpperCase() + ' ' + (k === 'all' ? logs.length : counts[k]), go: () => this.setState({ lkind: k }), bg: S.lkind === k ? 'rgba(255,190,110,0.12)' : 'transparent', fg: S.lkind === k ? 'rgb(255,190,110)' : (KC[k] || 'rgba(214,236,255,0.7)'), bd: S.lkind === k ? 'rgb(255,190,110)' : 'rgba(214,236,255,0.18)' })),
+      logQ: S.lq, onLogQ: e => this.setState({ lq: e.target.value }),
+      logNote: 'newest first · showing ' + shown.length + ' of ' + logs.length + ' lines kept (the core keeps the last 2,500)',
+      logLines: shown.map(l => ({ t: l.t, kind: l.kind, c: KC[l.kind] || 'rgba(214,236,255,0.7)', text: l.text }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+<script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="atlas-corpus.js"></script>
+<script src="lab-engine.js"></script>
+<style>
+html, body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); }
+a { color: var(--color-accent); } a:hover { color: var(--color-accent-300); }
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(120% 80% at 60% 40%, var(--color-neutral-900) 0%, var(--color-bg) 70%);">
+  <header class="nav" style="flex-wrap: wrap; gap: var(--space-4); padding: var(--space-4) var(--space-6);">
+    <div style="display: flex; align-items: baseline; gap: var(--space-3); margin-right: auto;">
+      <span class="nav-brand" style="margin-right: 0;">Graph Lab</span>
+      <span style="font-size: 12px; color: var(--color-neutral-400);">The agent is the graph · {{ nodeCount }} concepts · 8 modules</span>
+    </div>
+    <div class="seg" role="radiogroup" aria-label="Graph form">
+      <sc-for list="{{ forms }}" as="f" hint-placeholder-count="5">
+        <label class="seg-opt">
+          <input type="radio" name="form" checked="{{ f.on }}" onChange="{{ f.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">
+          <span>{{ f.label }}</span>
+          <sc-if value="{{ f.isTool }}"><i class="ph ph-lightning" style="font-size: 12px;"></i></sc-if>
+        </label>
+      </sc-for>
+    </div>
+    <button class="btn btn-secondary" onClick="{{ openExport }}"><i class="ph ph-export"></i>Export agent</button>
+  </header>
+
+  <main style="flex: 1; display: flex; flex-wrap: wrap; gap: var(--space-4); padding: 0 var(--space-6) var(--space-6); align-items: stretch;">
+    <aside style="flex: 1 1 280px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: var(--space-4);">
+      <form onSubmit="{{ submit }}" style="display: flex; flex-direction: column; gap: var(--space-2);">
+        <label for="q" style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent);">Query</label>
+        <textarea id="q" class="input" rows="2" value="{{ q }}" onChange="{{ onQ }}" onKeyDown="{{ onKey }}" placeholder="Ask the graph…" style="min-height: 64px; resize: vertical;"></textarea>
+        <div style="display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap;">
+          <button type="submit" class="btn btn-primary" disabled="{{ running }}"><i class="ph ph-play"></i>{{ runLabel }}</button>
+          <div class="seg" style="margin-left: auto;">
+            <label class="seg-opt" style="padding: 5px 10px; font-size: 12px;"><input type="radio" name="lm" checked="{{ lmExtractive }}" onChange="{{ pickExtractive }}" style="position: absolute; opacity: 0;">Extractive</label>
+            <label class="seg-opt" style="padding: 5px 10px; font-size: 12px;"><input type="radio" name="lm" checked="{{ lmClaude }}" onChange="{{ pickClaude }}" style="position: absolute; opacity: 0;">Claude LM</label>
+          </div>
+        </div>
+      </form>
+      <div style="display: flex; flex-direction: column; gap: var(--space-1);">
+        <sc-for list="{{ examples }}" as="ex" hint-placeholder-count="4">
+          <button class="btn btn-ghost" onClick="{{ ex.use }}" style="justify-content: flex-start; text-align: left; font-size: 12.5px; padding: 4px 6px; color: var(--color-accent-300); white-space: normal;">{{ ex.q }}</button>
+        </sc-for>
+      </div>
+      <section style="display: flex; flex-direction: column; gap: 0;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; padding-bottom: var(--space-2);">
+          <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent);">Agent graph · trace</span>
+          <span style="font-size: 11px; color: var(--color-neutral-400);">{{ traceMeta }}</span>
+        </div>
+        <sc-for list="{{ trace }}" as="s" hint-placeholder-count="8">
+          <div style="display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: var(--space-3); padding: 6px 0; opacity: {{ s.opacity }};">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 4px;">
+              <span style="width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--color-accent); background: {{ s.dot }}; box-shadow: {{ s.glow }};"></span>
+              <span style="flex: 1; width: 1px; background: linear-gradient(var(--color-neutral-700), transparent);"></span>
+            </div>
+            <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+              <div style="display: flex; gap: var(--space-2); align-items: baseline; flex-wrap: wrap;">
+                <span style="font-size: 13px; font-weight: 500;">{{ s.id }}</span>
+                <span style="font-size: 11px; color: var(--color-accent-300);">{{ s.cls }}</span>
+              </div>
+              <span style="font-size: 11px; color: var(--color-neutral-400); font-family: ui-monospace, Menlo, monospace;">{{ s.sig }}</span>
+              <sc-if value="{{ s.hasOut }}"><span style="font-size: 12px; color: var(--color-neutral-200); text-wrap: pretty; line-height: 1.45;">{{ s.out }}</span></sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </section>
+    </aside>
+
+    <section style="flex: 3 1 480px; min-width: 0; min-height: 560px; position: relative; border-radius: var(--radius-lg); overflow: hidden; background: radial-gradient(90% 90% at 50% 45%, color-mix(in srgb, var(--color-accent) 7%, transparent), transparent 70%);">
+      <div ref="{{ stageRef }}" style="position: absolute; inset: 0;"></div>
+      <div style="position: absolute; left: var(--space-4); top: var(--space-4); right: var(--space-4); display: flex; flex-direction: column; gap: 4px; pointer-events: none; max-width: 460px;">
+        <span style="font-size: 20px; font-weight: 500;">{{ formLabel }}</span>
+        <span style="font-size: 13px; color: var(--color-neutral-300); text-wrap: pretty;">{{ formCap }}</span>
+      </div>
+      <div style="position: absolute; left: var(--space-4); bottom: var(--space-4); right: var(--space-4); display: flex; gap: var(--space-4); align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--color-neutral-300);">
+        <sc-if value="{{ isSimplicial }}">
+          <label style="display: flex; align-items: center; gap: var(--space-2);">ε <input type="range" min="0.12" max="0.42" step="0.01" value="{{ eps }}" onInput="{{ onEps }}" style="width: 140px; accent-color: var(--color-accent);"><span style="font-variant-numeric: tabular-nums;">{{ epsLabel }}</span></label>
+        </sc-if>
+        <span style="font-variant-numeric: tabular-nums;">{{ statLine }}</span>
+        <span style="margin-left: auto; color: var(--color-neutral-400);">Drag to orbit · scroll to zoom · click a node</span>
+      </div>
+    </section>
+
+    <aside style="flex: 1 1 260px; max-width: 340px; min-width: 0; display: flex; flex-direction: column; gap: var(--space-4);">
+      <sc-if value="{{ hasAnswer }}">
+        <div class="card elev-sm" style="gap: var(--space-3);">
+          <span class="card-kicker">Answer · via {{ toolLabel }}</span>
+          <sc-for list="{{ answer }}" as="a">
+            <p style="margin: 0; font-size: 13px; line-height: 1.5; text-wrap: pretty;">{{ a.text }} <span style="color: var(--color-accent-300); font-size: 11px;">{{ a.cite }}</span></p>
+          </sc-for>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-1);">
+            <sc-for list="{{ subTags }}" as="t"><button class="tag tag-neutral" onClick="{{ t.pick }}" style="border: 0; cursor: pointer; font: inherit; font-size: 11px;">{{ t.n }} {{ t.name }}</button></sc-for>
+          </div>
+          <sc-if value="{{ hasScore }}"><span class="card-meta">{{ scoreLine }}</span></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ hasSel }}">
+        <div class="card" style="gap: var(--space-2);">
+          <span class="card-kicker">{{ sel.kind }}</span>
+          <span class="card-title">{{ sel.name }}</span>
+          <p class="card-body" style="text-wrap: pretty;">{{ sel.def }}</p>
+          <span class="card-meta">{{ sel.meta }}</span>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-1);">
+            <sc-for list="{{ sel.nb }}" as="t"><button class="tag tag-neutral" onClick="{{ t.pick }}" style="border: 0; cursor: pointer; font: inherit; font-size: 11px;">{{ t.name }}</button></sc-for>
+          </div>
+          <button class="btn btn-ghost" onClick="{{ askSel }}" style="align-self: flex-start; font-size: 12px;"><i class="ph ph-arrow-bend-down-right"></i>Seed a query here</button>
+        </div>
+      </sc-if>
+      <div class="card" style="gap: var(--space-2);">
+        <span class="card-kicker">Compile</span>
+        <p class="card-body">BootstrapFewShot-style search over spreading weights against {{ trainCount }} training questions; recall@10 against gold concepts.</p>
+        <sc-if value="{{ hasCompiled }}">
+          <div style="display: grid; grid-template-columns: auto 1fr; gap: 4px var(--space-3); font-size: 12px; font-variant-numeric: tabular-nums;">
+            <span style="color: var(--color-neutral-400);">train</span><span>{{ cmp.train }}</span>
+            <span style="color: var(--color-neutral-400);">dev</span><span>{{ cmp.dev }}</span>
+            <span style="color: var(--color-neutral-400);">params</span><span>{{ cmp.params }}</span>
+            <span style="color: var(--color-neutral-400);">demos</span><span>{{ cmp.demos }}</span>
+          </div>
+        </sc-if>
+        <div style="display: flex; gap: var(--space-2);">
+          <button class="btn btn-primary" onClick="{{ compile }}" disabled="{{ running }}"><i class="ph ph-graph"></i>{{ compileLabel }}</button>
+          <sc-if value="{{ hasCompiled }}"><button class="btn btn-ghost" onClick="{{ resetParams }}">Reset</button></sc-if>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <sc-if value="{{ exportOpen }}">
+    <div class="dialog-backdrop" onClick="{{ closeExport }}" style="position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: var(--space-6);">
+      <div class="dialog" onClick="{{ stop }}" style="width: min(920px, 100%); max-height: 86vh; display: flex; flex-direction: column; gap: var(--space-3);">
+        <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+          <span class="dialog-title" style="margin-right: auto;">Export agent</span>
+          <div class="seg">
+            <label class="seg-opt"><input type="radio" name="ex" checked="{{ tabPy }}" onChange="{{ pickPy }}" style="position: absolute; opacity: 0;">Python · DSPy</label>
+            <label class="seg-opt"><input type="radio" name="ex" checked="{{ tabJs }}" onChange="{{ pickJs }}" style="position: absolute; opacity: 0;">JavaScript</label>
+          </div>
+          <button class="btn btn-secondary" onClick="{{ copy }}"><i class="ph ph-copy"></i>{{ copyLabel }}</button>
+          <button class="btn btn-secondary" onClick="{{ download }}"><i class="ph ph-download-simple"></i>Download</button>
+          <button class="btn btn-icon btn-ghost" onClick="{{ closeExport }}" aria-label="Close"><i class="ph ph-x"></i></button>
+        </div>
+        <span style="font-size: 12px; color: var(--color-neutral-400);">{{ exportNote }}</span>
+        <pre style="margin: 0; flex: 1; overflow: auto; padding: var(--space-4); background: var(--color-bg); border-radius: var(--radius-md); font: 12px/1.55 ui-monospace, Menlo, monospace; color: var(--color-neutral-200); white-space: pre; tab-size: 4;">{{ exportCode }}</pre>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultForm&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;force&quot;, &quot;hyper&quot;, &quot;simplicial&quot;, &quot;tesseract&quot;, &quot;hyperbolic&quot;], &quot;default&quot;: &quot;force&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;lmMode&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;extractive&quot;, &quot;claude&quot;], &quot;default&quot;: &quot;extractive&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, form: null, q: 'What modules make up an agent?', running: false, step: -1, run: null, answer: null, sel: -1, stats: null, eps: 0.26, cmp: null, params: null, exportOpen: false, tab: 'py', copied: false, lm: null, compiling: false };
+  stageRef = React.createRef();
+
+  componentDidMount() {
+    const boot = () => {
+      if (!window.LabEngine || !window.AtlasCorpus || !this.stageRef.current) return setTimeout(boot, 50);
+      this.G = LabEngine.graph(AtlasCorpus);
+      this.agent = LabEngine.agent(this.G);
+      this.lab = LabEngine.lab(this.stageRef.current, this.G, {
+        onSelect: i => this.setState({ sel: i }),
+        onStats: s => this.setState({ stats: s }),
+        onTool: f => this.setForm(f)
+      });
+      const f = this.props.defaultForm ?? 'force';
+      this.lab.setForm(f);
+      this.setState({ ready: true, form: f, stats: this.lab.stats() });
+    };
+    boot();
+  }
+  componentWillUnmount() { this.lab && this.lab.destroy(); }
+
+  setForm(f) { if (!this.lab) return; this.lab.setForm(f); this.setState({ form: f }); }
+
+  run(q) {
+    if (!this.agent || this.state.running) return;
+    q = (q ?? this.state.q).trim(); if (!q) return;
+    const p = this.state.params || this.agent.defaults;
+    const r = this.agent.run(q, p);
+    const lm = this.state.lm ?? this.props.lmMode ?? 'extractive';
+    this.setState({ q, running: true, step: -1, run: r, answer: null });
+    this.lab.play(r, k => {
+      this.setState({ step: k });
+      if (k === 5) {
+        if (lm === 'claude' && window.claude && window.claude.complete) this.claudeAnswer(r);
+        else this.setState({ answer: r.answer });
+      }
+      if (k === 8) this.setState({ running: false });
+    });
+  }
+
+  async claudeAnswer(r) {
+    const N = this.G.nodes;
+    const ctx = r.sub.map((i, k) => `[${k + 1}] ${N[i].name}: ${N[i].def}`).join('\n');
+    this.setState({ answer: [{ text: 'Generating from the subgraph…', cites: [] }] });
+    try {
+      const out = await window.claude.complete(`Answer the question using only these graph nodes. Write 3 short sentences, each ending with citations like [2]. No preamble.\n\nNodes:\n${ctx}\n\nQuestion: ${r.q}`);
+      const sents = out.split(/(?<=\])\s+|\n+/).map(s => s.trim()).filter(Boolean).slice(0, 5).map(s => {
+        const cites = [...s.matchAll(/\[(\d+)\]/g)].map(m => +m[1]);
+        return { text: s.replace(/\s*\[\d+\]/g, '').trim(), cites };
+      });
+      this.setState({ answer: sents.length ? sents : r.answer });
+    } catch (e) { this.setState({ answer: r.answer }); }
+  }
+
+  doCompile() {
+    if (!this.agent) return;
+    this.setState({ compiling: true });
+    setTimeout(() => { const c = this.agent.compile(); this.setState({ cmp: c, params: c.params, compiling: false }); }, 30);
+  }
+
+  renderVals() {
+    const S = this.state, G = this.G, FORMS = window.LabEngine ? LabEngine.FORMS : [];
+    const prog = window.AtlasCorpus ? AtlasCorpus.program : [];
+    const form = FORMS.find(f => f.id === S.form) || FORMS[0] || { label: '', cap: '' };
+    const r = S.run;
+    const trace = prog.map((p, k) => {
+      const done = r && S.step > k, active = r && S.step === k;
+      return { id: p.id, cls: p.cls, sig: p.sig, hasOut: !!(r && S.step >= k), out: r ? r.steps[k].out : '',
+        opacity: !r || done || active ? 1 : 0.45,
+        dot: done || active ? 'var(--color-accent)' : 'transparent',
+        glow: active ? '0 0 10px var(--color-accent)' : 'none' };
+    });
+    const pick = i => () => { this.lab && this.lab.focus(i); this.setState({ sel: i }); };
+    let sel = {};
+    if (G && S.sel >= 0) {
+      const d = G.nodes[S.sel];
+      const nb = G.adj[S.sel].slice(0, 14).map(([j]) => ({ name: G.nodes[j].name, pick: pick(j) }));
+      const hy = G.inHyper[S.sel].map(k => G.hyper[k].name);
+      sel = d.hub
+        ? { kind: 'Agent module · ' + d.cls, name: d.name, def: d.sig, meta: 'Bound to concept: ' + d.inst, nb }
+        : { kind: AtlasCorpus.communities[d.comm][0], name: d.name, def: d.def, meta: [d.year, d.parent ? 'belongs to ' + d.parent : null, hy.length ? 'in ' + hy.join(', ') : null].filter(Boolean).join(' · '), nb };
+    }
+    const st = S.stats;
+    let statLine = '';
+    if (st) statLine = S.form === 'simplicial' ? `${st.V} vertices · ${st.E} edges · ${st.T} triangles · β₀ ${st.b0}` : S.form === 'hyper' ? `${st.H} hyperedges over ${st.V} nodes` : S.form === 'tesseract' ? '16 communities → 16 hypercube vertices · xw + yw rotation' : S.form === 'hyperbolic' ? 'Belongs-to tree · radius = tanh(0.62 · depth)' : `${st.V} concepts · ${G ? G.edges.length : 0} edges incl. agent wiring`;
+    const lm = S.lm ?? this.props.lmMode ?? 'extractive';
+    const cm = S.cmp;
+    const params = S.params || (this.agent && this.agent.defaults);
+    const code = !G ? '' : S.tab === 'py' ? LabEngine.exportPython(G, params, cm && cm.demos) : LabEngine.exportJS(params);
+    return {
+      nodeCount: G ? G.nc : 119,
+      forms: FORMS.map(f => ({ label: f.label, on: S.form === f.id, isTool: r && r.form === f.id, pick: () => this.setForm(f.id) })),
+      q: S.q, onQ: e => this.setState({ q: e.target.value }),
+      onKey: e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.run(); } },
+      submit: e => { e.preventDefault(); this.run(); },
+      running: S.running || !S.ready, runLabel: S.running ? 'Running…' : 'Run agent',
+      lmExtractive: lm === 'extractive', lmClaude: lm === 'claude',
+      pickExtractive: () => this.setState({ lm: 'extractive' }), pickClaude: () => this.setState({ lm: 'claude' }),
+      examples: (window.AtlasCorpus ? AtlasCorpus.examples.slice(0, 5) : []).map(q => ({ q, use: () => this.run(q) })),
+      trace, traceMeta: r ? (S.step >= 8 ? 'done' : `step ${Math.max(0, S.step) + 1}/8`) : 'idle',
+      stageRef: this.stageRef,
+      formLabel: form.label, formCap: form.cap,
+      isSimplicial: S.form === 'simplicial', eps: S.eps, epsLabel: S.eps.toFixed(2),
+      onEps: e => { const v = +e.target.value; this.lab && this.lab.setEps(v); this.setState({ eps: v }); },
+      statLine,
+      hasAnswer: !!S.answer, toolLabel: r ? (FORMS.find(f => f.id === r.form) || {}).label + ' tool' : '',
+      answer: (S.answer || []).map(a => ({ text: a.text, cite: a.cites.map(c => '[' + c + ']').join('') })),
+      subTags: r && S.answer ? r.sub.map((i, k) => ({ n: k + 1, name: G.nodes[i].name, pick: pick(i) })) : [],
+      hasScore: !!(r && r.score != null), scoreLine: r && r.score != null ? `recall@${r.params.k} ${r.score.toFixed(2)} against ${r.gold.gold.length} gold concepts` : '',
+      hasSel: S.sel >= 0 && !!G, sel,
+      askSel: () => { if (!G || S.sel < 0) return; const d = G.nodes[S.sel]; const q = d.hub ? 'What does the ' + d.name + ' module do?' : 'What is ' + d.name + ' related to?'; this.run(q); },
+      trainCount: window.AtlasCorpus ? AtlasCorpus.train.length : 9,
+      hasCompiled: !!cm,
+      cmp: cm ? { train: `${cm.trainBefore.toFixed(2)} → ${cm.trainAfter.toFixed(2)}`, dev: `${cm.devBefore.toFixed(2)} → ${cm.devAfter.toFixed(2)}`, params: `decay ${cm.params.decay} · hops ${cm.params.hops} · hyper ${cm.params.w.hyper} · analog ${cm.params.w.analog} · tool boost ${cm.params.boost}`, demos: `${cm.demos.length} of ${AtlasCorpus.train.length} traces kept · ${cm.tried} configs` } : {},
+      compile: () => this.doCompile(), compileLabel: S.compiling ? 'Compiling…' : cm ? 'Recompile' : 'Compile agent',
+      resetParams: () => this.setState({ cmp: null, params: null }),
+      openExport: () => this.setState({ exportOpen: true, copied: false }), closeExport: () => this.setState({ exportOpen: false }),
+      stop: e => e.stopPropagation(),
+      tabPy: S.tab === 'py', tabJs: S.tab === 'js', pickPy: () => this.setState({ tab: 'py', copied: false }), pickJs: () => this.setState({ tab: 'js', copied: false }),
+      exportCode: code,
+      exportNote: S.tab === 'py' ? `graph_agent.py · the same graph, tools and spreading weights${cm ? ' (compiled)' : ''} as a DSPy module, with trainset, metric and BootstrapFewShot` : 'Runs in the browser with lab-engine.js and atlas-corpus.js; no model needed for extractive answers',
+      copyLabel: S.copied ? 'Copied' : 'Copy',
+      copy: () => { navigator.clipboard && navigator.clipboard.writeText(code); this.setState({ copied: true }); },
+      download: () => { const b = new Blob([code], { type: 'text/plain' }), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = S.tab === 'py' ? 'graph_agent.py' : 'graph_agent.html'; a.click(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

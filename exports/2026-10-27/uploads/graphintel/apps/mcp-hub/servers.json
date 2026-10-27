@@ -1,0 +1,19 @@
+{
+ "servers": {
+  "filesystem": {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "/repo", "/data/files"], "env": [], "enabled": true, "source": "seed",
+   "note": "/repo is a read-only copy of your source; /data/files is your scratch space", "deny": []},
+  "github": {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"], "env": ["GITHUB_PERSONAL_ACCESS_TOKEN"], "enabled": true, "source": "seed",
+   "note": "read the repository, issues and pull requests; code changes go through plan_upgrade, not through this server",
+   "deny": ["create_or_update_file", "push_files", "create_branch", "create_pull_request", "fork_repository", "merge_pull_request"]},
+  "slack": {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-slack"], "env": ["SLACK_BOT_TOKEN", "SLACK_TEAM_ID"], "enabled": true, "source": "seed",
+   "note": "read channels and history; posting goes through publish(), which holds the mindful gate",
+   "deny": ["slack_post_message", "slack_reply_to_thread", "slack_add_reaction"]},
+  "wolframalpha": {"command": "uvx", "args": ["mcp-wolfram-alpha"], "env": ["WOLFRAM_API_KEY"], "enabled": true, "source": "seed",
+   "note": "computation and facts; the package name is unverified, check with tools_list and replace through the market if it fails", "deny": []},
+  "apify": {"command": "npx", "args": ["-y", "@apify/actors-mcp-server"], "env": ["APIFY_TOKEN"], "enabled": true, "source": "seed",
+   "note": "run Apify actors: scrapers and crawlers for sources a plain fetch cannot reach", "deny": []},
+  "fetch": {"command": "uvx", "args": ["mcp-server-fetch"], "env": [], "enabled": true, "source": "seed", "note": "fetch a URL as markdown", "deny": []},
+  "sequential_thinking": {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"], "env": [], "enabled": true, "source": "seed",
+   "note": "structured step-by-step reasoning for hard problems", "deny": []}
+ }
+}

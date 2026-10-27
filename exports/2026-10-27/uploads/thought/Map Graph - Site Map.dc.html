@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; text-decoration: none; } a:hover { color: #fff; } a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; } main a[style*="padding"] { display: inline-block; max-width: 100%; text-align: center; overflow-wrap: anywhere; }</style>
+</helmet>
+<div data-screen-label="Site map" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.5;">
+  <dc-import name="Map Graph Nav" current="" hint-size="100%,64px"></dc-import>
+  <main style="max-width: 1180px; margin: 0 auto; padding: clamp(32px, 5vw, 64px) clamp(16px, 4vw, 40px); display: grid; gap: 52px;">
+    <header style="display: grid; gap: 12px;"><h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(38px, 6vw, 72px); line-height: 0.97; letter-spacing: -0.03em;">Site map and content plan</h1><p style="margin: 0; color: #b9c1e0; font-size: 18px; max-width: 700px;">Every page, what it is for, the one action it asks for, and how a visitor moves through the funnel.</p></header>
+
+    <section style="display: grid; gap: 18px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 28px;">Structure</h2>
+      <div style="display: grid; gap: 14px; padding: 24px; border: 1px solid #252c42; border-radius: 18px; background: #101626;">
+        <div style="display: flex; justify-content: center;"><a href="{{ homeHref }}" style="padding: 12px 28px; border-radius: 12px; background: #27d3ff; color: #0b0e17; font-weight: 600; font-family: 'Syne', sans-serif; font-size: 18px;">Home (landing and waitlist)</a></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"><sc-for list="{{ main }}" as="p" hint-placeholder-count="5"><a href="{{ p.href }}" style="padding: 10px 18px; border: 1px solid #3a4468; border-radius: 12px; background: #131827; color: #eef1ff;">{{ p.label }}</a></sc-for></div>
+        <div style="text-align: center; color: #9aa3c4; font-size: 13px; letter-spacing: 0.1em;">FUNNEL</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center;"><sc-for list="{{ funnel }}" as="p" hint-placeholder-count="4"><span style="display: inline-flex; align-items: center; gap: 8px;"><a href="{{ p.href }}" style="padding: 10px 18px; border: 1px solid #ff3ea5; border-radius: 12px; background: #131827; color: #eef1ff;">{{ p.label }}</a><span style="color: #ff3ea5;">{{ p.arrow }}</span></span></sc-for></div>
+        <div style="text-align: center; color: #9aa3c4; font-size: 13px;">Home form, then Join (survey), then Thank you (position and invite link), then Founding (interest, no payment).</div>
+      </div></section>
+
+    <section style="display: grid; gap: 14px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 28px;">Content plan</h2>
+      <div style="display: grid; border: 1px solid #252c42; border-radius: 14px; overflow: hidden;"><div style="display: grid; grid-template-columns: 130px minmax(0, 1.4fr) minmax(0, 1.2fr) 150px; gap: 14px; padding: 10px 18px; background: #131827; font-size: 12px; letter-spacing: 0.1em; color: #9aa3c4;"><span>PAGE</span><span>GOAL</span><span>KEY MESSAGE</span><span>ACTION</span></div>
+        <sc-for list="{{ plan }}" as="p" hint-placeholder-count="9"><div style="display: grid; grid-template-columns: 130px minmax(0, 1.4fr) minmax(0, 1.2fr) 150px; gap: 14px; padding: 12px 18px; border-top: 1px solid #252c42;"><a href="{{ p.href }}" style="font-weight: 600;">{{ p.label }}</a><span style="color: #c9d0ee;">{{ p.goal }}</span><span style="color: #b9c1e0;">{{ p.msg }}</span><span style="color: #27d3ff;">{{ p.cta }}</span></div></sc-for></div></section>
+
+    <section style="display: grid; gap: 14px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 28px;">Email series</h2>
+      <div style="display: grid; border: 1px solid #252c42; border-radius: 14px; overflow: hidden;"><sc-for list="{{ drip }}" as="d" hint-placeholder-count="5"><div style="display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1.4fr); gap: 14px; padding: 12px 18px; border-top: 1px solid #252c42; background: #131827;"><b style="color: #ff3ea5;">Day {{ d.day }}</b><span>{{ d.subject }}</span><span style="color: #b9c1e0;">{{ d.goal }}</span></div></sc-for></div></section>
+
+    <section style="display: grid; gap: 14px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 28px;">Backend</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;"><sc-for list="{{ api }}" as="g" hint-placeholder-count="3"><div style="padding: 18px; border: 1px solid #252c42; border-radius: 14px; background: #131827; display: grid; gap: 6px;"><b style="color: #27d3ff;">{{ g.t }}</b><span style="font-family: 'DM Mono', monospace; font-size: 13px; color: #c9d0ee; line-height: 1.7;">{{ g.d }}</span></div></sc-for></div></section>
+
+    <section style="display: grid; gap: 14px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 28px;">Launch materials</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;"><sc-for list="{{ assets }}" as="a" hint-placeholder-count="5"><a href="{{ a.href }}" style="padding: 10px 18px; border: 1px solid #3a4468; border-radius: 999px; color: #eef1ff;">{{ a.label }}</a></sc-for></div></section>
+  </main>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { C: null };
+  async componentDidMount() { this.setState({ C: await import('./tandem-core.js') }); }
+  renderVals() {
+    const C = this.state.C; if (!C) return { homeHref: '#', main: [], funnel: [], plan: [], drip: [], api: [], assets: [] };
+    const h = id => C.pageUrl(id), pg = id => C.PAGES.find(p => p.id === id);
+    const fun = ['home', 'join', 'thanks', 'founding'];
+    return { homeHref: h('home'), main: ['product', 'access', 'docs', 'about', 'contact'].map(id => ({ label: pg(id).label, href: h(id) })), funnel: fun.map((id, i) => ({ label: pg(id).label, href: h(id), arrow: i < fun.length - 1 ? '→' : '' })),
+      plan: C.PAGES.filter(p => p.id !== 'sitemap').map(p => ({ label: p.label, href: h(p.id), goal: p.goal, msg: p.msg, cta: p.cta })), drip: C.DRIP_PLAN,
+      api: [{ t: 'Funnel', d: 'POST /api/waitlist\nGET /api/waitlist/:code\nPOST /api/waitlist/:code/survey\nPOST /api/upgrade' }, { t: 'Site', d: 'POST /api/contact\nPOST /api/events\nGET /api/health' }, { t: 'Admin', d: 'GET /api/stats\nGET /api/admin/signups.csv\n(Bearer ADMIN_TOKEN)' }, { t: 'Storage', d: 'signups, upgrades, contacts, events, email_queue, rate_limits (SQLite, server/schema.sql)' }, { t: 'Email', d: 'Five-message drip queued at signup; server/worker.js sends due messages' }, { t: 'Run it', d: 'cd server, npm install, npm start. Without a server the pages use the same handler in the browser.' }],
+      assets: [{ label: 'Studio: both engines, switch or split', href: encodeURI('Map Graph Studio.dc.html') }, { label: 'Pamphlet', href: encodeURI('Map Graph - Pamphlet.dc.html') }, { label: 'Emails', href: encodeURI('Map Graph - Emails.dc.html') }, { label: 'Social set', href: encodeURI('Map Graph - Social.dc.html') }, { label: 'Promo video', href: encodeURI('Map Graph - Promo.dc.html') }, { label: 'Atlas preview', href: encodeURI('Thought Graph - Atlas.dc.html') }, { label: 'Thoughts preview', href: encodeURI('Thought Graph - Studio.dc.html') }, { label: 'Engine tests', href: encodeURI('Thought Graph - Bag Tests.dc.html') }] };
+  }
+}
+
+</script>
+</body>
+</html>

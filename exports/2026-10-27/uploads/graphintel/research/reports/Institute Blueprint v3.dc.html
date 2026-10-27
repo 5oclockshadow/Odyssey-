@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-300); text-decoration-color: var(--color-accent-700); text-underline-offset: 3px; }
+    a:hover { color: var(--color-accent-200); text-decoration-color: var(--color-accent); }
+    code { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; color: var(--color-accent-200); }
+  </style>
+</helmet>
+
+<article style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);padding:0 0 120px;">
+<div style="max-width:1080px;padding:56px clamp(20px,5vw,72px) 0;display:flex;flex-direction:column;gap:72px;">
+
+<header data-screen-label="Masthead" style="display:grid;gap:18px;max-width:880px;">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">
+    <span>Institute blueprint · v3</span><span style="color:var(--color-neutral-600);">/</span><span>Pipelines, funnels, market, moat</span><span style="color:var(--color-neutral-600);">/</span><span>15 October 2026</span>
+  </div>
+  <h1 style="font-size:clamp(38px,5vw,54px);line-height:1.05;letter-spacing:-0.02em;font-weight:500;margin:0;">An institute staffed by the agents it studies</h1>
+  <p style="font-size:clamp(18px,2vw,22px);line-height:1.4;margin:0;color:var(--color-neutral-300);max-width:800px;">Every worker at Anima is a Bridago agent, and every Bridago agent is a subject of the experiment. The institute runs on what it researches, measures itself while it works, and sells what survives. This version makes it operational: who the agents are, how work moves through them, how one owner oversees the overseers, and how the output reaches buyers as the GPU build-out corrects.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <span class="tag tag-accent">4 pipelines · 3 funnels</span>
+    <span class="tag tag-neutral">Live market sources, 15 Oct 2026</span>
+    <span class="tag tag-outline"><span>Companion C to <a href="Seeded Substrate Plan v4.dc.html">the Seeded Substrate paper</a></span></span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:14px;font-size:14px;"><a href="Seeded Substrate Plan v4.dc.html">Core paper: Plan v4</a><a href="Cheap Brain Evidence.dc.html">Companion A: evidence</a><a href="AI Era Bubble.dc.html">Companion B: the AI-era bubble</a><a href="Institute Blueprint v2.dc.html">Blueprint v2</a></div>
+</header>
+
+<section data-screen-label="01 Premise" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">01 · The premise, made literal</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Workers and subjects are the same agents</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Each agent is one Bridago instance: the Rex graph, the Jarvis Signature, and a substrate from the ladder. When the Theorist proposes a question on a 1–3B substrate, that round is both work and a data point for H0. The institute does not need a separate testbed; its working day is the testbed.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;">
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">Every round is labelled</div><p class="card-body" style="margin:0;">Role, substrate rung, seed version, seed condition. A round is a row in the results table as well as a piece of work.</p></div>
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">Work is split across rungs</div><p class="card-body" style="margin:0;">A fixed share of each role's rounds runs on a smaller rung in shadow. The comparison is free; the work was going to happen anyway.</p></div>
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">Agents can be demoted</div><p class="card-body" style="margin:0;">If a role's shadow rung matches the holder on the frozen split, the role moves down a rung. Cost falls as evidence accumulates.</p></div>
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">The owner oversees overseers</div><p class="card-body" style="margin:0;">Agents watch the work; <code>oversight.py</code> watches the agents; you watch one ranked list.</p></div>
+  </div>
+</section>
+
+<section data-screen-label="02 Roster" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">02 · The roster</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Ten agents, one brain, three layers</h2>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:980px;">
+      <thead><tr><th>Layer</th><th>Agent</th><th>Standing intake</th><th>Tools</th><th>Starting rung</th><th>Watched by</th></tr></thead>
+      <tbody>
+        <tr><td>Work</td><td>Scout</td><td>Read feeds, papers and repos; write sources and claims</td><td>fetch, parse, graph write</td><td>1–3B</td><td>Critic, Overseer</td></tr>
+        <tr><td>Work</td><td>Theorist</td><td>Cluster claims; write questions with falsifiers</td><td>graph read/write</td><td>8B</td><td>Critic</td></tr>
+        <tr><td>Work</td><td>Experimenter</td><td>Turn questions into harness cells; run; write rows</td><td>sandbox, harness</td><td>8B</td><td>Critic, Overseer</td></tr>
+        <tr><td>Work</td><td>Builder</td><td>Turn findings into repos, apps and APIs</td><td>sandbox, ship, GitHub</td><td>30B</td><td>Maintainer</td></tr>
+        <tr><td>Work</td><td>SEXTANT</td><td>Visitors, clients, contact; the institute's voice</td><td>published graph only</td><td>8B</td><td>Publisher, Overseer</td></tr>
+        <tr><td>Check</td><td>Critic</td><td>Re-run results with controls; attack every claim</td><td>harness, shuffle</td><td>30B</td><td>Overseer</td></tr>
+        <tr><td>Check</td><td>Publisher</td><td>Propose public batches and posts through the mindful gate</td><td>publish, mindful</td><td>1–3B</td><td>Owner</td></tr>
+        <tr><td>Check</td><td>Maintainer (OPS)</td><td>Incidents, repairs, upgrades, app health</td><td>heal, upgrades, docker</td><td>8B</td><td>Overseer</td></tr>
+        <tr><td>Oversee</td><td>Overseer</td><td>Watch every agent's cadence and failure share; rank fires</td><td>read-only on everything</td><td>No model: rules (<code>oversight.py</code>)</td><td>Owner</td></tr>
+        <tr><td>Oversee</td><td>Registrar</td><td>Keep the staff register; propose promotions and demotions</td><td>register, frozen split</td><td>No model: rules</td><td>Owner</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:780px;">The oversight layer deliberately has no model. Anything that decides whether the agents are working must not be one of the agents under study. Starting rungs are a proposal; the register moves them.</p>
+</section>
+
+<section data-screen-label="03 Oversight" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">03 · Overseeing the overseers</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">A thousand small fires, seven on screen</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Now in the codebase: <code>apps/engine/oversight.py</code>, served at <code>GET /owner/fires</code>, rendered by the <a href="../../apps/ops/src/Overseer.dc.html">Overseer</a> page, covered by four tests. It gathers every source of work for you into one ranked list.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px;">
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">Sources</div><p class="card-body" style="margin:0;">Items waiting on you, open incidents, unhealthy apps, agents gone silent or noisy, shadows that beat their holder, spend within 10% of the cap.</p></div>
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">Ranking</div><p class="card-body" style="margin:0;">Base score by kind (spend 80, incident 70, noisy agent 65, unhealthy app 60, silent agent 55, upgrade 50, shadow 45, post 30), plus one per hour waiting up to 20.</p></div>
+    <div class="card" style="display:grid;gap:8px;align-content:start;"><div class="card-kicker">Budget</div><p class="card-body" style="margin:0;">Only the top seven show as "look now", with an estimated minute count. Everything else sits in "later" with the reason. Same-kind fires batch, so one click can approve ten drafts.</p></div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:820px;">
+      <thead><tr><th>Watcher state</th><th>Rule</th><th>Fire</th></tr></thead>
+      <tbody>
+        <tr><td>ok</td><td>Ran within twice its expected interval; under 30% failures</td><td>None</td></tr>
+        <tr><td>silent</td><td>No round for more than twice its interval (Scout 6 h, Theorist 12 h, Critic 24 h, Publisher 48 h, Maintainer 72 h)</td><td>"Scout is silent", action: wake</td></tr>
+        <tr><td>noisy</td><td>Three or more rounds in 24 h and over 30% failed</td><td>"Theorist is noisy", action: pause</td></tr>
+        <tr><td>idle</td><td>No schedule (SEXTANT answers on demand)</td><td>None</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section data-screen-label="04 Pipelines" style="display:grid;gap:22px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">04 · Pipelines</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Four pipelines, each with a gate and a clock</h2>
+  </div>
+  <div style="display:grid;gap:14px;">
+    <div class="card" style="display:grid;gap:12px;">
+      <div class="card-kicker">A · Research: claim → finding</div>
+      <div style="overflow-x:auto;"><table class="table" style="min-width:860px;"><thead><tr><th>Stage</th><th>Agent</th><th>Exit test</th><th>Clock</th></tr></thead><tbody>
+        <tr><td>Ingest</td><td>Scout</td><td>Source node with URL, date and quote span</td><td>6 h</td></tr>
+        <tr><td>Question</td><td>Theorist</td><td>Falsifier attached; links to at least two claims</td><td>12 h</td></tr>
+        <tr><td>Cell</td><td>Experimenter</td><td>Harness cell runs on a 4-node seed in CI</td><td>24 h</td></tr>
+        <tr><td>Result</td><td>Experimenter</td><td>Row written with generator seed; shuffled control beside it</td><td>per run</td></tr>
+        <tr><td>Attack</td><td>Critic</td><td>Re-run passes; single-fact share reported</td><td>24 h</td></tr>
+        <tr><td>Shadow → promote</td><td>Registrar → owner</td><td>Beats holder on the frozen split for 7 days</td><td>weekly</td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="card" style="display:grid;gap:12px;">
+      <div class="card-kicker">B · Build: finding → repo / API</div>
+      <div style="overflow-x:auto;"><table class="table" style="min-width:860px;"><thead><tr><th>Stage</th><th>Agent</th><th>Exit test</th><th>Clock</th></tr></thead><tbody>
+        <tr><td>Spec</td><td>Builder</td><td>README states the finding it packages and the hypothesis it depends on</td><td>1 day</td></tr>
+        <tr><td>Code</td><td>Builder</td><td>Tests pass in <code>docker-compose.test.yml</code>; no network, no model in tests</td><td>2–5 days</td></tr>
+        <tr><td>Review</td><td>Critic + Maintainer</td><td>Lint, licence, secrets scan, dependency audit</td><td>1 day</td></tr>
+        <tr><td>Ship</td><td>Owner click</td><td>Public repo (open line) or metered API behind auth (paid line)</td><td>—</td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="card" style="display:grid;gap:12px;">
+      <div class="card-kicker">C · Publish: finding → public graph and posts</div>
+      <p class="card-body" style="margin:0;">Publisher proposes a batch with sources → owner approves in the Overseer → nodes turn from grey to labelled on the Anima site → mindful gate schedules posts (caps, quiet hours, spacing, duplicates, disclosure) → SEXTANT can now cite it to visitors.</p>
+    </div>
+    <div class="card" style="display:grid;gap:12px;">
+      <div class="card-kicker">D · Client: question → private graph → report</div>
+      <p class="card-body" style="margin:0;">Contact form → SEXTANT qualifies (scope, data, deadline) → owner accepts → a private Rex graph is seeded for the client → work pipeline A runs on it → report and graph delivered → anonymised structure (never content) feeds seed science.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="05 Funnels" style="display:grid;gap:22px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">05 · Funnels</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Three funnels that share one top</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">The top of all three is the open repos and the 30B-to-LSTM chart. The stage figures below are targets to measure against, not data.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;">
+    <div class="card" style="display:grid;gap:10px;align-content:start;"><div class="card-kicker">Developer</div>
+      <ol style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px;line-height:1.5;color:var(--color-neutral-200);"><li>Finds a repo (star)</li><li>Runs it locally (clone, <code>docker compose up</code>)</li><li>Visits the site, runs a graph query</li><li>Member sign-in</li><li>Pro for controls and raw tables</li><li>Metered API key</li></ol>
+      <p class="card-meta" style="margin:0;">Measured at: stars, clones, site sessions, sign-ups, API keys.</p></div>
+    <div class="card" style="display:grid;gap:10px;align-content:start;"><div class="card-kicker">Enterprise</div>
+      <ol style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px;line-height:1.5;color:var(--color-neutral-200);"><li>Reads the cost chart or a findings note</li><li>Contact; SEXTANT qualifies</li><li>Paid study (pipeline D)</li><li>Design partner on a domain seed</li><li>Bridago licence + CPU appliance</li></ol>
+      <p class="card-meta" style="margin:0;">Measured at: qualified contacts, studies sold, partners, licences.</p></div>
+    <div class="card" style="display:grid;gap:10px;align-content:start;"><div class="card-kicker">Research</div>
+      <ol style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px;line-height:1.5;color:var(--color-neutral-200);"><li>Reads Plan v4 or the report</li><li>Reproduces a cell from the open harness</li><li>Submits a replication</li><li>Joins the outside-replication programme</li></ol>
+      <p class="card-meta" style="margin:0;">Measured at: reproductions, replications, citations.</p></div>
+  </div>
+</section>
+
+<section data-screen-label="06 Market" style="display:grid;gap:22px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">06 · Market research</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">The correction favours the cheap brain</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Sources checked 15 October 2026. Figures are the sources' own; their methods vary.</p>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:900px;">
+      <thead><tr><th>Signal</th><th>Figure</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Capex exposure</td><td>Over $3.5T of AI infrastructure spend exposed to impairment by 2030; over 80% of neoclouds may cease independent operation</td><td><a href="https://www.fierce-network.com/cloud/gartner-warns-ai-data-center-capex-unsustainable-35t-write-down-risk-looms">Gartner via Fierce, 15 Oct</a></td></tr>
+        <tr><td>Revenue gap</td><td>$8.5T revenue needed through 2030 to cover capex at 12% ROIC; Gartner forecasts no more than $3.6T</td><td><a href="https://aiweekly.co/alerts/gartner-35t-ai-infrastructure-spend-faces-impairment-by-2030">AI Weekly, 14 Oct</a></td></tr>
+        <tr><td>Overheating</td><td>Chicago Fed's Goolsbee: AI build-out inflation is spreading to land, power and construction</td><td><a href="https://startupfortune.com/feds-goolsbee-warns-the-ai-spending-boom-is-now-pushing-broad-inflation/">Startup Fortune, 15 Oct</a></td></tr>
+        <tr><td>Value gap</td><td>Gartner: enterprises struggle to get value and consumers are reluctant to pay; the problem is monetising demand, not demand itself</td><td><a href="https://www.fierce-network.com/cloud/gartner-warns-ai-data-center-capex-unsustainable-35t-write-down-risk-looms">Gartner via Fierce, 15 Oct</a></td></tr>
+        <tr><td>GraphRAG cost</td><td>FalkorDB reports a fivefold speed-up over traditional RAG and up to 40% lower infrastructure cost (vendor figure)</td><td><a href="https://medium.com/@wasowski.jarek/i-compared-5-ai-agent-memory-systems-across-6-dimensions-none-wins-6a658335ed0a">Wasowski, 2026</a></td></tr>
+        <tr><td>Graph as the AI layer</td><td>Knowledge graph market $1.90B (2026) to $9.88B (2032), driven by grounding for LLMs</td><td><a href="https://www.marketsandmarkets.com/Market-Reports/knowledge-graph-market-217920811.html">MarketsandMarkets</a></td></tr>
+        <tr><td>Incumbents reposition</td><td>Neo4j positions itself as the knowledge layer for AI, with an agent product and an MCP server</td><td><a href="https://www.getgalaxy.io/articles/top-knowledge-graph-platforms-enterprise-data-intelligence-2026">Galaxy</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card elev-sm" style="display:grid;gap:8px;max-width:840px;">
+    <div class="card-kicker">Reading <span class="tag tag-neutral" style="font-size:10px;padding:1px 8px;margin-left:6px;">inferred</span></div>
+    <p style="margin:0;font-size:15px;line-height:1.6;">Buyers are struggling to get value from AI spend, and the capacity behind that spend is financed on assumptions Gartner calls unsustainable. A correction rewards whoever delivers the same quality for less compute. Graph vendors sell storage and retrieval; small-model vendors sell compression. Nobody we found sells the claim that a seeded graph makes the model size not matter, with a public experiment behind it. That claim is the niche.</p>
+  </div>
+</section>
+
+<section data-screen-label="07 Moat" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">07 · Moat</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Open the code, keep the seeds and the record</h2>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:860px;">
+      <thead><tr><th>Layer</th><th>Open or kept</th><th>Why it is hard to copy</th></tr></thead>
+      <tbody>
+        <tr><td>Harness, seed format, viewers, tooling</td><td>Open</td><td>It is not; it is the distribution. Every copy runs our benchmark.</td></tr>
+        <tr><td>Curated domain seeds</td><td>Kept, licensed</td><td>Hand-reviewed constraints and energy; H7 predicts these carry the value</td></tr>
+        <tr><td>The register and round record</td><td>Kept; summaries public</td><td>Months of labelled rounds across rungs: a dataset no one else is generating</td></tr>
+        <tr><td>GEPA-compiled programs per rung</td><td>Kept, served by API</td><td>Compiled on trajectories only we have</td></tr>
+        <tr><td>The public result</td><td>Open</td><td>First credible 30B-to-LSTM chart sets the reference everyone else is measured against</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section data-screen-label="08 Coming out" style="display:grid;gap:16px;max-width:820px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">08 · Coming-out party</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">One hundred repos, proposed by the institute</h2>
+  <p style="margin:0;font-size:16px;line-height:1.65;">Pipeline B's first job: the Builder proposes 100 repos, each packaging something already in the codebase or the research, and each marked open, open-core or paid API. The list, the release waves and the quality bar are in <a href="../../marketing/Coming Out 100 Repos.dc.html">Coming Out · 100 Repos</a>.</p>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);">A drop of 100 thin repos would read as spam and cost credibility. The bar: every repo has tests in CI, a Docker run, a README that names the finding it packages, and links back to the site. Repos that do not meet it wait for a later wave.</p>
+</section>
+
+</div>
+</article>
+</x-dc>
+</body>
+</html>

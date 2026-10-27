@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); font-size: 13px; text-wrap: pretty; }
+    a { color: var(--color-accent); text-decoration: none; } a:hover { color: var(--color-accent-300); text-decoration: underline; text-underline-offset: 3px; }
+    input::placeholder, textarea::placeholder { color: var(--color-neutral-600); }
+  </style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#161826"/><text x="50" y="63" text-anchor="middle" font-family="monospace" font-size="36" fill="#9184d9">&gt;_</text></svg></template>
+</helmet>
+
+<div data-screen-label="Owner workspace" style="min-height:100vh;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:13px;">
+
+<header style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-6);flex-wrap:wrap;">
+  <span style="font-weight:500;font-size:15px;">The Threshold Institute</span>
+  <span style="color:var(--color-neutral-600);">/</span><span style="color:var(--color-neutral-400);">Owner</span>
+  <span style="color:var(--color-neutral-600);">/</span><span style="color:var(--color-neutral-400);">{{ date }}</span>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap;">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-neutral-400);">{{ clock }}</span>
+    <span class="tag tag-neutral" style="white-space:nowrap;">{{ connLabel }}</span>
+    <a href="{{ phoenix }}" target="_blank" class="btn btn-ghost" style="font-size:12px;">Traces ↗</a>
+    <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}"><button class="btn btn-secondary" style="font-size:12px;" onClick="{{ logout }}">Sign out</button></sc-if>
+  </div>
+</header>
+<div style="height:1px;margin:0 var(--space-6);background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent);"></div>
+
+<sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+  <div style="margin:var(--space-4) var(--space-6) 0;padding:var(--space-2) var(--space-3);background:var(--color-surface);border-radius:var(--radius-md);font-size:12px;color:var(--color-neutral-400);display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;">
+    <span class="tag tag-neutral">offline</span>
+    <span>No engine answered at <span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-300);">{{ base }}</span>. Replaying <span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-300);">apps/engine/fixtures/day.json</span>. Actions are echoed, not sent.</span>
+  </div>
+</sc-if>
+<sc-if value="{{ failed }}" hint-placeholder-val="{{ false }}">
+  <div style="margin:var(--space-4) var(--space-6) 0;padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-md);font-size:12px;color:var(--color-neutral-400);">No engine at <span style="font-family:ui-monospace,Menlo,monospace;">{{ base }}</span> and no fixture. Run <span style="font-family:ui-monospace,Menlo,monospace;">docker compose up</span> and open /terminal.</div>
+</sc-if>
+
+<sc-if value="{{ needsLogin }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:380px;margin:var(--space-8) var(--space-6);padding:var(--space-6);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);display:grid;gap:var(--space-3);">
+    <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">Owner</span>
+    <h5 style="margin:0;">Sign in</h5>
+    <div class="field"><label>Password</label><input class="input" type="password" value="{{ pw }}" onChange="{{ setPw }}" onKeyDown="{{ pwKey }}" autocomplete="current-password"></div>
+    <div style="display:flex;gap:var(--space-3);align-items:center;flex-wrap:wrap;"><button class="btn btn-primary" onClick="{{ login }}">Sign in</button><span style="font-size:12px;color:var(--color-neutral-400);">{{ loginError }}</span></div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasDay }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-wrap:wrap;flex:1;">
+
+  <nav style="flex:0 0 184px;display:flex;flex-direction:column;gap:2px;padding:var(--space-4) var(--space-3) var(--space-4) var(--space-6);">
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="7">
+      <button onClick="{{ n.go }}" style="{{ n.style }}"><span>{{ n.label }}</span><span style="{{ n.countStyle }}">{{ n.count }}</span></button>
+    </sc-for>
+  </nav>
+
+  <main style="flex:1 1 520px;min-width:0;padding:var(--space-6);display:grid;gap:var(--space-6);align-content:start;">
+
+    <sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;gap:var(--space-8);">
+        <sc-if value="{{ hasNeeds }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;gap:var(--space-2);padding:var(--space-4);background:var(--color-surface);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
+            <div style="display:flex;align-items:baseline;gap:var(--space-3);"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">Needs you</span><span style="font-size:11px;color:var(--color-neutral-500);">{{ needsCount }}</span></div>
+            <sc-for list="{{ needs }}" as="x" hint-placeholder-count="2">
+              <div style="display:grid;grid-template-columns:44px 64px minmax(0,1fr) auto;gap:var(--space-3);padding:var(--space-2) 0;align-items:baseline;">
+                <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--color-neutral-500);">{{ x.t }}</span>
+                <span style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-500);">{{ x.kind }}</span>
+                <span style="font-weight:500;min-width:0;overflow-wrap:anywhere;">{{ x.title }}</span>
+                <span style="display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:flex-end;"><sc-for list="{{ x.actions }}" as="a" hint-placeholder-count="2"><button class="{{ a.cls }}" style="font-size:12px;padding:3px 10px;white-space:nowrap;" onClick="{{ a.run }}">{{ a.label }}</button></sc-for></span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-for list="{{ phases }}" as="p" hint-placeholder-count="8">
+          <div style="display:grid;gap:var(--space-2);">
+            <div style="display:flex;align-items:baseline;gap:var(--space-4);padding-bottom:var(--space-2);background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+              <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-neutral-500);min-width:44px;">{{ p.at }}</span>
+              <span style="{{ p.titleStyle }}">{{ p.title }}</span>
+              <span style="font-size:11px;color:var(--color-neutral-500);margin-left:auto;white-space:nowrap;">{{ p.meta }}</span>
+            </div>
+            <sc-if value="{{ p.showItems }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;"><sc-for list="{{ p.items }}" as="x" hint-placeholder-count="2">
+                <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:var(--space-3);padding:var(--space-2) 0;align-items:start;">
+                  <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--color-neutral-500);padding-top:2px;">{{ x.t }}</span>
+                  <div style="display:grid;gap:var(--space-1);min-width:0;">
+                    <div style="display:grid;grid-template-columns:64px minmax(0,1fr);gap:var(--space-3);align-items:baseline;"><span style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-500);">{{ x.kind }}</span><span style="{{ x.titleStyle }}">{{ x.title }}</span></div>
+                    <div style="font-size:12px;line-height:1.5;color:var(--color-neutral-400);padding-left:calc(64px + var(--space-3));">{{ x.detail }}</div>
+                    <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;padding-left:calc(64px + var(--space-3));"><sc-for list="{{ x.tags }}" as="tg" hint-placeholder-count="1"><span style="font-size:11px;color:var(--color-neutral-500);font-family:ui-monospace,Menlo,monospace;">{{ tg }}</span></sc-for><sc-for list="{{ x.actions }}" as="a" hint-placeholder-count="0"><button class="{{ a.cls }}" style="font-size:12px;padding:3px 10px;white-space:nowrap;" onClick="{{ a.run }}">{{ a.label }}</button></sc-for></div>
+                  </div>
+                </div>
+              </sc-for></div>
+            </sc-if>
+            <sc-if value="{{ p.showPlanned }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--color-neutral-500);line-height:1.5;padding-left:calc(44px + var(--space-4));">{{ p.planned }}</div></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isEntries }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-4);">
+        <div style="display:grid;gap:var(--space-1);"><h4 style="margin:0;">{{ viewTitle }}</h4><span style="font-size:12px;color:var(--color-neutral-500);line-height:1.5;max-width:640px;">{{ viewNote }}</span></div>
+        <sc-for list="{{ entries }}" as="x" hint-placeholder-count="2">
+          <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:var(--space-3);padding:var(--space-3) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;align-items:start;">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--color-neutral-500);padding-top:2px;">{{ x.t }}</span>
+            <div style="display:grid;gap:var(--space-2);min-width:0;">
+              <span style="{{ x.titleStyle }}">{{ x.title }}</span>
+              <span style="font-size:12px;line-height:1.5;color:var(--color-neutral-400);">{{ x.detail }}</span>
+              <sc-if value="{{ x.hasSteps }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:2px;"><sc-for list="{{ x.steps }}" as="s" hint-placeholder-count="0">
+                <div style="display:grid;grid-template-columns:44px 64px minmax(0,1fr);gap:var(--space-2);font-size:12px;line-height:1.5;"><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-500);">{{ s.t }}</span><span style="color:var(--color-accent-300);">{{ s.s }}</span><span style="color:var(--color-neutral-300);min-width:0;overflow-wrap:anywhere;">{{ s.d }}</span></div>
+              </sc-for></div></sc-if>
+              <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;"><sc-for list="{{ x.tags }}" as="tg" hint-placeholder-count="1"><span style="font-size:11px;color:var(--color-neutral-500);font-family:ui-monospace,Menlo,monospace;">{{ tg }}</span></sc-for><sc-for list="{{ x.actions }}" as="a" hint-placeholder-count="0"><button class="{{ a.cls }}" style="font-size:12px;padding:3px 10px;white-space:nowrap;" onClick="{{ a.run }}">{{ a.label }}</button></sc-for></div>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noEntries }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--color-neutral-500);">{{ emptyNote }}</span></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isShips }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-4);">
+        <div style="display:grid;gap:var(--space-1);"><h4 style="margin:0;">Ships</h4><span style="font-size:12px;color:var(--color-neutral-500);line-height:1.5;max-width:640px;">Apps the agent wrote, tested in agent-dind and running in web-dind. Every five minutes the queue ships, crashes relaunch and health is re-checked. Each is served at /a/&lt;port&gt;/ on the site.</span></div>
+        <sc-for list="{{ apps }}" as="a" hint-placeholder-count="1">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-3);padding:var(--space-3) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;align-items:center;">
+            <div style="display:grid;gap:3px;min-width:0;"><div style="display:flex;gap:var(--space-3);align-items:baseline;flex-wrap:wrap;"><span style="font-weight:500;font-size:14px;">{{ a.name }}</span><span class="{{ a.cls }}">{{ a.status }}</span></div><span style="font-size:12px;color:var(--color-neutral-500);font-family:ui-monospace,Menlo,monospace;">{{ a.meta }}</span></div>
+            <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:flex-end;"><a href="{{ a.href }}" target="_blank" class="btn btn-secondary" style="font-size:12px;padding:3px 10px;">Open</a><button class="btn btn-secondary" style="font-size:12px;padding:3px 10px;" onClick="{{ a.relaunch }}">Relaunch</button><button class="btn btn-ghost" style="font-size:12px;padding:3px 10px;" onClick="{{ a.remove }}">Remove</button></div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noApps }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--color-neutral-500);">None yet. The agent's ship_app tool, or a folder under state/apps/queue, puts one here.</span></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSandbox }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-4);max-width:760px;">
+        <div style="display:grid;gap:var(--space-1);"><h4 style="margin:0;">Sandbox</h4><span style="font-size:12px;color:var(--color-neutral-500);line-height:1.5;">Runs in a fresh container in agent-dind with no network, in any language. The same door the agent uses.</span></div>
+        <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;"><sc-for list="{{ langs }}" as="l" hint-placeholder-count="8"><button class="{{ l.cls }}" style="font-size:12px;padding:3px 10px;" onClick="{{ l.pick }}">{{ l.name }}</button></sc-for></div>
+        <textarea value="{{ code }}" onChange="{{ setCode }}" spellcheck="false" style="min-height:180px;resize:vertical;background:var(--color-surface);border:0;border-radius:var(--radius-md);padding:var(--space-3);color:var(--color-text);font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;"></textarea>
+        <div style="display:flex;gap:var(--space-3);align-items:center;"><button class="btn btn-primary" onClick="{{ runCode }}">Run</button><span style="font-size:12px;color:var(--color-neutral-500);">{{ runState }}</span></div>
+        <pre style="margin:0;padding:var(--space-3);border-radius:var(--radius-md);background:var(--color-surface);font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;color:var(--color-neutral-300);white-space:pre-wrap;min-height:48px;">{{ out }}</pre>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isResearch }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-4);max-width:760px;">
+        <div style="display:grid;gap:var(--space-1);"><h4 style="margin:0;">Research</h4><span style="font-size:12px;color:var(--color-neutral-500);line-height:1.5;">Topics live in institute.yaml and are re-ranked each night by what lowered the energy. Adding one writes the file and queues a round now.</span></div>
+        <div style="display:flex;gap:var(--space-3);"><input class="input" style="flex:1;min-width:0;" value="{{ topic }}" onChange="{{ setTopic }}" onKeyDown="{{ topicKey }}" placeholder="a topic, with what you want sourced"><button class="btn btn-primary" onClick="{{ addTopic }}">Add</button></div>
+        <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">Tomorrow's plan</span>
+        <div style="display:grid;gap:var(--space-1);"><sc-for list="{{ plan }}" as="t" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:24px minmax(0,1fr);font-size:13px;line-height:1.5;color:var(--color-neutral-300);"><span style="color:var(--color-neutral-500);">{{ t.n }}</span><span>{{ t.text }}</span></div></sc-for></div>
+        <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);margin-top:var(--space-2);">Today, by energy change</span>
+        <div style="display:grid;gap:var(--space-1);"><sc-for list="{{ today }}" as="t" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:var(--space-3);font-size:12px;"><span style="color:var(--color-neutral-400);min-width:0;overflow-wrap:anywhere;">{{ t.topic }}</span><span style="font-family:ui-monospace,Menlo,monospace;text-align:right;color:var(--color-neutral-300);">{{ t.d }}</span></div></sc-for></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isGraph }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-8);max-width:820px;">
+        <div style="display:grid;gap:var(--space-3);">
+          <h4 style="margin:0;">Graph</h4>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:var(--space-3);"><sc-for list="{{ vitals }}" as="v" hint-placeholder-count="4"><div style="display:grid;gap:3px;padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-md);"><span style="font-size:22px;font-weight:500;line-height:1;">{{ v.value }}</span><span style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-500);">{{ v.label }}</span></div></sc-for></div>
+          <div style="display:flex;align-items:flex-end;gap:2px;height:44px;"><sc-for list="{{ bars }}" as="b" hint-placeholder-count="12"><div style="{{ b.style }}"></div></sc-for></div>
+          <span style="font-size:11px;color:var(--color-neutral-500);">{{ energyLabel }} today · ΔE per round since 00:00 · below zero is more consistent</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--space-8);">
+          <div style="display:grid;gap:var(--space-1);align-content:start;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);margin-bottom:var(--space-1);">Weakest · re-examined first</span><sc-for list="{{ weakest }}" as="e" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:minmax(0,1fr) 36px;gap:var(--space-2);font-size:12px;"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="color:var(--color-accent-300);">{{ e.relation }}</span> <span style="color:var(--color-neutral-400);">{{ e.membersText }}</span></span><span style="font-family:ui-monospace,Menlo,monospace;text-align:right;color:var(--color-neutral-500);">{{ e.wText }}</span></div></sc-for></div>
+          <div style="display:grid;gap:var(--space-1);align-content:start;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);margin-bottom:var(--space-1);">Strongest</span><sc-for list="{{ strongest }}" as="e" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:minmax(0,1fr) 36px;gap:var(--space-2);font-size:12px;"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="color:var(--color-accent-300);">{{ e.relation }}</span> <span style="color:var(--color-neutral-400);">{{ e.membersText }}</span></span><span style="font-family:ui-monospace,Menlo,monospace;text-align:right;color:var(--color-neutral-500);">{{ e.wText }}</span></div></sc-for></div>
+          <div style="display:grid;gap:var(--space-1);align-content:start;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);margin-bottom:var(--space-1);">Hot paths · spans in the graph</span><sc-for list="{{ traces }}" as="t" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2);font-size:12px;"><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-neutral-300);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ t.name }}</span><span style="color:var(--color-neutral-500);white-space:nowrap;">{{ t.meta }}</span></div></sc-for></div>
+          <div style="display:grid;gap:var(--space-1);align-content:start;"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);margin-bottom:var(--space-1);">Policy · Q-table</span><sc-for list="{{ q }}" as="r" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto 40px;gap:var(--space-2);font-size:12px;"><span style="color:var(--color-neutral-400);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.state }}</span><span style="color:var(--color-accent-300);">{{ r.action }}</span><span style="font-family:ui-monospace,Menlo,monospace;text-align:right;color:var(--color-neutral-300);">{{ r.vText }}</span></div></sc-for></div>
+        </div>
+        <sc-if value="{{ hasReflection }}" hint-placeholder-val="{{ true }}"><div style="display:grid;gap:var(--space-2);"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">Last reflection · {{ reflectionTime }}</span><p style="margin:0;font-size:13px;line-height:1.6;color:var(--color-neutral-300);max-width:680px;">{{ reflectionText }}</p><span style="font-size:11px;color:var(--color-neutral-500);">{{ reflectionMeta }}</span><div><button class="btn btn-secondary" style="font-size:12px;" onClick="{{ reflectNow }}">Reflect now</button></div></div></sc-if>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+</sc-if>
+
+<footer style="margin-top:auto;padding:var(--space-4) var(--space-6) var(--space-6);display:grid;gap:var(--space-2);background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat top / 100% 1px;">
+  <sc-for list="{{ log }}" as="l" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:44px 64px minmax(0,1fr);gap:var(--space-2);font-size:12px;font-family:ui-monospace,Menlo,monospace;line-height:1.5;"><span style="color:var(--color-neutral-500);">{{ l.t }}</span><span style="{{ l.whoStyle }}">{{ l.who }}</span><span style="white-space:pre-wrap;color:var(--color-neutral-300);min-width:0;overflow-wrap:anywhere;">{{ l.text }}</span></div></sc-for>
+  <div style="display:flex;gap:var(--space-3);align-items:center;"><span style="font-family:ui-monospace,Menlo,monospace;color:var(--color-accent);font-size:14px;">&gt;</span><input value="{{ cmd }}" onChange="{{ setCmd }}" onKeyDown="{{ cmdKey }}" placeholder="{{ placeholder }}" style="flex:1;min-width:0;background:transparent;border:0;color:var(--color-text);font-family:ui-monospace,Menlo,monospace;font-size:13px;padding:var(--space-2) 0;caret-color:var(--color-accent);"><button class="btn btn-ghost" style="font-size:12px;" onClick="{{ send }}">Send</button></div>
+  <span style="font-size:11px;color:var(--color-neutral-600);font-family:ui-monospace,Menlo,monospace;">/approve /decline /retry /mute &lt;id&gt; · /relaunch &lt;app&gt; · /topic &lt;text&gt; · /ingest &lt;text&gt; · /run &lt;language&gt; &lt;code&gt; · /reflect · /night · anything else is one chat round</span>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;engineUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;/api&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Engine&quot;}, &quot;phoenixUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;http://localhost:6006&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Engine&quot;}, &quot;refreshSeconds&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 60, &quot;min&quot;: 10, &quot;max&quot;: 600, &quot;unit&quot;: &quot;s&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Engine&quot;}, &quot;focus&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;View&quot;}}">
+const hhmm = (d) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+const LANGS = { python: 'print(sum(range(10)))', node: 'console.log([1,2,3].map(x => x * 2))', typescript: 'const n: number = 7; console.log(n * 6)', go: 'package main\nimport "fmt"\nfunc main() { fmt.Println("go") }', rust: 'fn main() { println!("rust"); }', bash: 'echo "$(date -u +%H:%M) from agent-dind"', ruby: 'puts (1..5).reduce(:*)', c: '#include <stdio.h>\nint main(){ printf("c\\n"); return 0; }' };
+const VIEWS = [['today', 'Today'], ['incidents', 'Incidents'], ['upgrades', 'Upgrades'], ['ships', 'Ships'], ['sandbox', 'Sandbox'], ['research', 'Research'], ['publish', 'Publish'], ['graph', 'Graph']];
+const NOTES = {
+  incidents: ['Incidents', 'Every error anywhere becomes an incident node. The graph locates it, one repair round writes a diff, the sandbox runs the tests, then a pull request or a live fix. Failed repairs can be retried or muted.', 'No incidents in the last 24 hours.'],
+  upgrades: ['Upgrades', "Changes SEXTANT proposes to its own code or configuration. It can read all of its source and edit none of it. Approving a diff runs the whole test suite in the sandbox and opens a pull request; approving a plan opens an issue. Merging and redeploying stay with you.", 'No proposals waiting.'],
+  publish: ['Publish', "Drafts wait in the outbox. Approving posts through the channel's API; declining files the draft. Publishing stays on human approval for the first 30 days.", 'No drafts waiting.']
+};
+
+class Component extends DCLogic {
+  state = { view: 'today', day: null, status: 'loading', needsLogin: false, offline: false, pw: '', loginError: '', cmd: '', log: [], now: new Date(), topic: '', lang: 'python', code: LANGS.python, out: '', running: false };
+
+  base() { return String(this.props.engineUrl ?? '/api').replace(/\/$/, ''); }
+  componentDidMount() {
+    try { const v = localStorage.getItem('ti.owner.view'); if (v) this.setState({ view: v }); } catch (e) {}
+    this.load();
+    this.timer = setInterval(() => this.load(true), Math.max(10, Number(this.props.refreshSeconds ?? 60)) * 1000);
+    this.clock = setInterval(() => this.setState({ now: new Date() }), 20000);
+  }
+  componentWillUnmount() { clearInterval(this.timer); clearInterval(this.clock); }
+  go(v) { this.setState({ view: v }); try { localStorage.setItem('ti.owner.view', v); } catch (e) {} }
+
+  async load(quiet) {
+    try {
+      const r = await fetch(this.base() + '/owner/day', { credentials: 'include' });
+      if (r.status === 401) { this.setState({ needsLogin: true, status: 'locked', offline: false, day: null }); return; }
+      if (!r.ok) throw new Error('engine ' + r.status);
+      this.setState({ day: await r.json(), status: 'live', needsLogin: false, offline: false });
+    } catch (e) {
+      if (quiet && this.state.day) return;
+      try {
+        const f = await fetch(this.props.fixtureUrl ?? '../../engine/fixtures/day.json').catch(() => fetch('fixtures/day.json'));
+        if (!f.ok) throw new Error('no fixture');
+        this.setState({ day: await f.json(), status: 'offline', offline: true, needsLogin: false });
+      } catch { this.setState({ status: 'error', day: null }); }
+    }
+  }
+  async login() {
+    const r = await fetch(this.base() + '/auth/login', { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: this.state.pw }) });
+    if (r.ok) { this.setState({ pw: '', loginError: '', needsLogin: false, status: 'loading' }); this.load(); }
+    else { const j = await r.json().catch(() => ({})); this.setState({ loginError: j.detail || `login failed (${r.status})` }); }
+  }
+  async logout() {
+    await fetch(this.base() + '/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
+    this.setState({ needsLogin: true, day: null, status: 'locked', log: [] });
+  }
+  say(who, text) { this.setState(s => ({ log: [...s.log.slice(-5), { t: hhmm(new Date()), who, text: String(text) }] })); }
+  async post(url, body) {
+    if (this.state.offline) { this.say('terminal', `offline · would POST ${this.base()}${url}`); return null; }
+    const r = await fetch(this.base() + url, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    return r.json().catch(() => ({ status: r.status }));
+  }
+  async act(id, action) {
+    const j = await this.post('/owner/act', { id, action });
+    if (j) { this.say('engine', `${action} ${id} → ${JSON.stringify(j)}`); this.load(true); }
+  }
+  async addTopic() {
+    const text = this.state.topic.trim(); if (!text) return;
+    const j = await this.post('/owner/topic', { text });
+    if (j) { this.say('engine', JSON.stringify(j)); this.setState({ topic: '' }); this.load(true); }
+  }
+  async runCode() {
+    this.setState({ running: true, out: '' });
+    const j = await this.post('/owner/sandbox', { language: this.state.lang, code: this.state.code });
+    this.setState({ running: false, out: j ? (j.stdout !== undefined ? `exit ${j.exit}\n${j.stdout}${j.stderr}` : JSON.stringify(j)) : '(offline: nothing ran)' });
+  }
+  async send() {
+    const cmd = this.state.cmd.trim(); if (!cmd) return;
+    this.setState({ cmd: '' }); this.say('you', cmd);
+    if (!cmd.startsWith('/')) { const j = await this.post('/round', { text: cmd, kind: 'chat' }); if (j) this.say('SEXTANT', j.answer || JSON.stringify(j)); return; }
+    const [c, arg] = cmd.split(/\s+/); const rest = cmd.slice(c.length).trim();
+    if (c === '/night') { const n = this.state.day?.night; this.say('terminal', n ? `${n.from}–${n.to} · ${n.rounds} rounds · ΔE ${n.delta} · ${n.fixed} fixed · ${n.shipped} shipped · ${n.drafted} drafted` : 'no day loaded'); return; }
+    if (c === '/topic') { this.setState({ topic: rest }); return this.addTopic(); }
+    if (c === '/ingest') { const j = await this.post('/round', { text: rest, kind: 'ingest' }); if (j) this.say('engine', JSON.stringify(j)); return; }
+    if (c === '/run') { const l = rest.split(/\s+/)[0]; const j = await this.post('/owner/sandbox', { language: l, code: rest.slice(l.length).trim() }); if (j) this.say('engine', j.stdout !== undefined ? `exit ${j.exit}\n${j.stdout}${j.stderr}` : JSON.stringify(j)); return; }
+    const map = { '/approve': [arg, 'approve'], '/decline': [arg, 'decline'], '/retry': [arg, 'retry'], '/mute': [arg, 'mute'], '/relaunch': [arg && `app:${arg}`, 'relaunch'], '/reflect': ['day:reflect', 'reflect'] };
+    if (!map[c] || !map[c][0]) { this.say('terminal', 'unknown command, or missing id'); return; }
+    return this.act(map[c][0], map[c][1]);
+  }
+  item(x) {
+    const waiting = x.status === 'waiting';
+    const actions = (x.actions || []).map(a => ({ ...a, cls: a.id === 'approve' || a.id === 'open' ? 'btn btn-primary' : 'btn btn-secondary', run: () => a.id === 'open' ? window.open(a.href || (x.detail || '').match(/\/a\/\d+\//)?.[0], '_blank') : this.act(x.id, a.id) }));
+    return { ...x, actions, hasSteps: (x.steps || []).length > 0, detail: String(x.detail || '').slice(0, 260),
+      titleStyle: `font-size:13px;font-weight:500;min-width:0;overflow-wrap:anywhere;color:${waiting ? 'var(--color-accent-300)' : 'var(--color-text)'};` };
+  }
+
+  renderVals() {
+    const { day: d, status, offline, needsLogin, now, view } = this.state;
+    const focus = !!this.props.focus, live = status === 'live';
+    const stream = d?.stream || [];
+    const phases = (d?.phases || []).map(p => {
+      const items = stream.filter(x => x.phase === p.id).map(x => this.item(x));
+      const hidden = focus && p.state === 'done';
+      return { ...p, items, showItems: items.length > 0 && !hidden, showPlanned: items.length === 0 || hidden, planned: hidden ? `${items.length} entries hidden by focus` : p.planned,
+        titleStyle: `font-size:15px;font-weight:500;color:${p.state === 'current' ? 'var(--color-accent)' : p.state === 'ahead' ? 'var(--color-neutral-500)' : 'var(--color-text)'};`,
+        meta: p.state === 'current' ? 'now' : p.state === 'ahead' ? 'ahead' : `${p.count} ${p.count === 1 ? 'entry' : 'entries'}` };
+    });
+    const needs = (d?.needs_you || []).map(x => this.item(x));
+    const counts = { today: needs.length, incidents: (d?.incidents || []).filter(i => i.status === 'waiting' || i.status === 'repairing').length, upgrades: (d?.upgrades || []).filter(u => u.status === 'waiting').length, ships: (d?.apps || []).length, sandbox: 0, research: (d?.research_today || []).length, publish: (d?.posts || []).length, graph: 0 };
+    const nav = VIEWS.map(([id, label]) => ({ label, count: counts[id] || '', go: () => this.go(id),
+      style: `all:unset;box-sizing:border-box;display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:6px 10px;border-radius:var(--radius-md);cursor:pointer;font-size:13px;color:${view === id ? 'var(--color-text)' : 'var(--color-neutral-400)'};background:${view === id ? 'var(--color-surface)' : 'transparent'};`,
+      countStyle: `font-size:11px;font-family:ui-monospace,Menlo,monospace;color:${id === 'today' || id === 'incidents' ? 'var(--color-accent)' : 'var(--color-neutral-500)'};` }));
+    const listKinds = { incidents: x => x.kind === 'incident', upgrades: x => x.kind === 'upgrade', publish: x => x.kind === 'post' };
+    const note = NOTES[view];
+    const entries = note ? stream.filter(listKinds[view]).map(x => this.item(x)).reverse() : [];
+    const v = d?.vitals || {}, series = v.series || [], refl = d?.reflection;
+    const plan = (refl?.plan || []).map((t, i) => ({ n: i + 1, text: t }));
+    return {
+      date: d?.date || '', clock: live ? hhmm(now) : d?.now ? `${d.now.slice(11, 16)} · replay` : hhmm(now), base: this.base(), phoenix: this.props.phoenixUrl ?? v.phoenix ?? 'http://localhost:6006',
+      connLabel: live ? `live · ${v.model || 'engine'}` : offline ? 'offline · fixture' : status === 'locked' ? 'locked' : status === 'error' ? 'no engine' : 'connecting…',
+      authed: live, offline, failed: status === 'error', needsLogin, hasDay: !!d, nav,
+      isToday: view === 'today', isEntries: !!note, isShips: view === 'ships', isSandbox: view === 'sandbox', isResearch: view === 'research', isGraph: view === 'graph',
+      hasNeeds: needs.length > 0, needs, needsCount: `${needs.length} waiting · ${d?.phase || ''} phase`, phases,
+      entries, noEntries: !!note && entries.length === 0, viewTitle: note?.[0] || '', viewNote: note?.[1] || '', emptyNote: note?.[2] || '',
+      apps: (d?.apps || []).map(a => ({ name: a.name, href: a.url, meta: `${a.language} · :${a.port} · ${a.restarts || 0} restarts · ${String(a.published || '').slice(0, 16).replace('T', ' ')}`, status: a.healthy ? 'healthy' : 'unhealthy', cls: a.healthy ? 'tag tag-accent' : 'tag tag-neutral',
+        relaunch: () => this.act(`app:${a.name}`, 'relaunch'), remove: () => this.act(`app:${a.name}`, 'remove') })),
+      noApps: !!d && (d.apps || []).length === 0,
+      langs: Object.keys(LANGS).map(n => ({ name: n, cls: this.state.lang === n ? 'btn btn-primary' : 'btn btn-secondary', pick: () => this.setState({ lang: n, code: LANGS[n] }) })),
+      code: this.state.code, setCode: (e) => this.setState({ code: e.target.value }), runCode: () => this.runCode(), runState: this.state.running ? 'running in agent-dind…' : '', out: this.state.out,
+      topic: this.state.topic, setTopic: (e) => this.setState({ topic: e.target.value }), topicKey: (e) => { if (e.key === 'Enter') this.addTopic(); }, addTopic: () => this.addTopic(),
+      plan, today: (d?.research_today || []).slice().sort((a, b) => a.delta - b.delta).map(t => ({ topic: t.topic, d: (t.delta > 0 ? '+' : '') + Number(t.delta).toFixed(2) })),
+      vitals: [{ label: 'nodes', value: (v.nodes ?? 0).toLocaleString() }, { label: 'hyperedges', value: (v.edges ?? 0).toLocaleString() }, { label: 'types', value: v.types ?? 0 }, { label: 'pending rounds', value: v.pending ?? 0 }],
+      energyLabel: `ΔE ${(v.energy ?? 0) > 0 ? '+' : ''}${(v.energy ?? 0).toFixed(2)}`,
+      bars: series.map(x => ({ style: `flex:1;min-width:3px;height:${Math.max(2, Math.round(Math.min(1, Math.abs(x) / 0.1) * 44))}px;border-radius:1px;background:${x < 0 ? 'var(--color-accent-500)' : x > 0 ? 'var(--color-neutral-600)' : 'var(--color-neutral-800)'};` })),
+      weakest: (d?.weakest || []).map(e => ({ ...e, membersText: (e.members || []).join(' · '), wText: Number(e.w).toFixed(2) })),
+      strongest: (d?.strongest || []).map(e => ({ ...e, membersText: (e.members || []).join(' · '), wText: Number(e.w).toFixed(2) })),
+      traces: (d?.traces || []).map(t => ({ ...t, meta: `${t.calls} calls · ${t.errors} err · ${t.ms >= 1000 ? (t.ms / 1000).toFixed(1) + ' s' : t.ms + ' ms'}` })),
+      q: (d?.q || []).map(r => ({ ...r, vText: (r.v > 0 ? '+' : '') + Number(r.v).toFixed(2) })),
+      hasReflection: !!refl, reflectionTime: refl ? refl.ts.slice(0, 16).replace('T', ' ') : '', reflectionText: refl?.answer || '',
+      reflectionMeta: refl ? `${refl.pruned ?? 0} telemetry nodes pruned · tomorrow: ${(refl.plan || []).length} topics` : '', reflectNow: () => this.act('day:reflect', 'reflect'),
+      log: this.state.log.map(l => ({ ...l, whoStyle: `color:${l.who === 'you' ? 'var(--color-text)' : l.who === 'SEXTANT' ? 'var(--color-accent)' : 'var(--color-neutral-500)'};` })),
+      cmd: this.state.cmd, setCmd: (e) => this.setState({ cmd: e.target.value }), cmdKey: (e) => { if (e.key === 'Enter') this.send(); }, send: () => this.send(),
+      placeholder: live ? 'ask SEXTANT, or /approve <id>' : 'offline · commands are echoed',
+      pw: this.state.pw, setPw: (e) => this.setState({ pw: e.target.value }), pwKey: (e) => { if (e.key === 'Enter') this.login(); }, login: () => this.login(), logout: () => this.logout(), loginError: this.state.loginError,
+    };
+  }
+}
+</script>
+</body>
+</html>

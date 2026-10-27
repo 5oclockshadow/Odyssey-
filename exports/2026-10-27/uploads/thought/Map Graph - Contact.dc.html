@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; } button, input, select, textarea { font-family: 'Instrument Sans', sans-serif; } button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; } ::placeholder { color: #6d7699; }</style>
+</helmet>
+<div data-screen-label="Contact" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.55;">
+  <dc-import name="Map Graph Nav" current="contact" hint-size="100%,64px"></dc-import>
+  <main style="max-width: 720px; margin: 0 auto; padding: clamp(40px, 7vw, 88px) clamp(16px, 4vw, 32px); display: grid; gap: 28px;">
+    <h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(40px, 6vw, 72px); line-height: 0.97; letter-spacing: -0.03em;">Write to us.</h1>
+    <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}"><div style="padding: 22px; border: 1px solid #27d3ff; border-radius: 16px; background: #131827;"><div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 24px; color: #27d3ff;">Message received.</div><div style="color: #b9c1e0;">We read everything. Replies go to the address you gave.</div></div></sc-if>
+    <sc-if value="{{ open }}" hint-placeholder-val="{{ true }}"><form onSubmit="{{ submit }}" style="display: grid; gap: 16px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <label style="display: grid; gap: 6px;"><span style="font-weight: 600;">Name</span><input value="{{ name }}" onChange="{{ onName }}" style="padding: 12px 14px; border-radius: 12px; border: 1px solid #3a4468; background: #131827; color: #eef1ff; font-size: 16px;"><span style="color: #ff7ab8; font-size: 13px;">{{ errName }}</span></label>
+        <label style="display: grid; gap: 6px;"><span style="font-weight: 600;">Email</span><input type="email" value="{{ email }}" onChange="{{ onEmail }}" style="padding: 12px 14px; border-radius: 12px; border: 1px solid #3a4468; background: #131827; color: #eef1ff; font-size: 16px;"><span style="color: #ff7ab8; font-size: 13px;">{{ errEmail }}</span></label>
+      </div>
+      <label style="display: grid; gap: 6px;"><span style="font-weight: 600;">Topic</span><select value="{{ topic }}" onChange="{{ onTopic }}" style="padding: 12px 14px; border-radius: 12px; border: 1px solid #3a4468; background: #131827; color: #eef1ff; font-size: 16px;"><option value="general">General</option><option value="press">Press</option><option value="partnership">Partnership</option><option value="support">Support</option><option value="security">Security</option></select></label>
+      <label style="display: grid; gap: 6px;"><span style="font-weight: 600;">Message</span><textarea rows="6" value="{{ message }}" onChange="{{ onMessage }}" style="padding: 12px 14px; border-radius: 12px; border: 1px solid #3a4468; background: #131827; color: #eef1ff; font-size: 16px; line-height: 1.5;"></textarea><span style="color: #ff7ab8; font-size: 13px;">{{ errMessage }}</span></label>
+      <button type="submit" style="width: fit-content; padding: 14px 30px; border: 0; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 600; font-size: 16px; cursor: pointer;">{{ label }}</button>
+    </form></sc-if>
+  </main>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { name: '', email: '', topic: 'general', message: '', errors: {}, busy: false, done: false };
+  async componentDidMount() { this.API = await import('./tandem-api.js'); this.API.track('page_view', 'contact'); }
+  submit = async e => { e.preventDefault(); const s = this.state; if (s.busy) return; this.setState({ busy: true, errors: {} }); const r = await this.API.api('POST', '/api/contact', { name: s.name, email: s.email, topic: s.topic, message: s.message }); if (r.status >= 400) { this.setState({ busy: false, errors: r.json.errors || { message: 'Something went wrong. Try again.' } }); return; } this.API.track('contact_submit', 'contact', { topic: s.topic }); this.setState({ busy: false, done: true }); };
+  renderVals() { const s = this.state; return { name: s.name, email: s.email, topic: s.topic, message: s.message, onName: e => this.setState({ name: e.target.value }), onEmail: e => this.setState({ email: e.target.value }), onTopic: e => this.setState({ topic: e.target.value }), onMessage: e => this.setState({ message: e.target.value }), errName: s.errors.name || '', errEmail: s.errors.email || '', errMessage: s.errors.message || '', submit: this.submit, label: s.busy ? 'Sending…' : 'Send message', done: s.done, open: !s.done }; }
+}
+
+</script>
+</body>
+</html>

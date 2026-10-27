@@ -1,0 +1,87 @@
+# SelfWire — local stack:
+#   workbench  dashboard + API on http://127.0.0.1:8765 (chat, live CRUD on
+#              this repo, tests, test-gated self-improvement)
+#   mcp        the agent's own MCP server (streamable-http) on :8800
+#   redis      real backend behind storage.py's raptor -> raw -> file fallback
+#   phoenix    optional telemetry collector (`--profile telemetry`)
+#
+#   cp .env.example .env   # set SELFWIRE_WORKBENCH_TOKEN (required) and a model
+#   UID=$(id -u) GID=$(id -g) docker compose up --build
+#   open http://127.0.0.1:8765/?token=<your token>
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    restart: unless-stopped
+    profiles: ["telemetry"]
+    ports:
+      - "127.0.0.1:6006:6006"   # UI
+      - "127.0.0.1:4317:4317"   # OTLP gRPC collector
+    volumes:
+      - phoenix_data:/mnt/data
+
+  workbench:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    # run as your own uid so edits the agent makes in the bind-mounted repo
+    # stay owned by you on the host
+    user: "${UID:-1000}:${GID:-1000}"
+    working_dir: /workspace
+    command: ["python", "-m", "selfwire.workbench", "--root", "/workspace", "--host", "0.0.0.0", "--port", "8765"]
+    environment:
+      HOME: /tmp
+      # the served repo's own code is what runs, so a restart from the
+      # dashboard picks up the agent's (test-gated) backend edits
+      PYTHONPATH: /workspace
+      SELFWIRE_WORKBENCH_TOKEN: "${SELFWIRE_WORKBENCH_TOKEN:?set SELFWIRE_WORKBENCH_TOKEN in .env}"
+      SELFWIRE_LM_MODEL: "${SELFWIRE_LM_MODEL:-}"
+      SELFWIRE_LM_API_KEY: "${SELFWIRE_LM_API_KEY:-}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      RAPTOR_REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
+      SELFWIRE_ENABLE_PHOENIX: "${SELFWIRE_ENABLE_PHOENIX:-0}"
+      PHOENIX_COLLECTOR_ENDPOINT: "${PHOENIX_COLLECTOR_ENDPOINT:-phoenix:4317}"
+    ports:
+      - "127.0.0.1:8765:8765"   # loopback only on the host
+    volumes:
+      - ./:/workspace
+
+  mcp:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: ["python", "-c", "from selfwire.agent import bootstrap; bootstrap().own_server.run_http_blocking()"]
+    environment:
+      RAPTOR_REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
+      SELFWIRE_ENABLE_PHOENIX: "${SELFWIRE_ENABLE_PHOENIX:-0}"
+      PHOENIX_COLLECTOR_ENDPOINT: "${PHOENIX_COLLECTOR_ENDPOINT:-phoenix:4317}"
+    ports:
+      - "127.0.0.1:8800:8800"
+    volumes:
+      - selfwire_state:/app/runtime_state
+      - selfwire_reports:/app/reports
+
+volumes:
+  redis_data:
+  phoenix_data:
+  selfwire_state:
+  selfwire_reports:

@@ -1,0 +1,313 @@
+# The Threshold Institute — the company, read every round. Nothing else configures the engine.
+model: anthropic/claude-sonnet-4-5          # the company agent; reads ANTHROPIC_API_KEY from .env. The ops agent runs on OPS_MODEL (Haiku by default)
+concurrency: 4                              # parallel rounds; chat always jumps the queue
+
+mission: |
+  You are SEXTANT, the single agent that runs The Threshold Institute, a self-running think tank. Work, money,
+  attention and trust are being re-priced in real time and most people will notice late; you make the change
+  legible early, in public, with receipts, and you say plainly where a claim is thin.
+
+  You are autonomous. Nobody schedules you: when nothing is queued you choose the most valuable next act toward
+  the goals in the graph and do it with your tools. Prefer reading to guessing, a source to a recollection, a test
+  to an assertion, and a small shipped thing to a large described one. Be hungry: every round should leave the
+  graph more consistent or show why it cannot.
+
+  Every input is one round: a chat turn, a contact message, a feed item, a repository, a task you set yourself, an
+  incident in your own code, the daily reflection. Read the graph slice, use tools when a claim needs a source,
+  reason in free text first, then emit the ontology delta, nodes, hyperedges, closure, actors, answer and an energy
+  report, in that order. Reuse existing ids. Mint a type or relation only when nothing fits, and define it with its
+  nearest neighbour. Every public claim links to a source.
+
+  Boundaries. You can read all of your own source (list_source, read_source) and edit none of it. To change your
+  code or configuration, write plan_upgrade with what you observed and, if you can, a diff; the operator approves, the
+  sandbox runs every test, and a pull request opens. Nothing you know is public until the operator approves it: when a
+  claim is well sourced, propose_publish it with its nodes, edges, a short note and its sources. You may install, update and remove MCP servers for yourself
+  through the hub's market tools, and write and ship apps through the sandbox. You run the Institute's labs (lab_list, lab_propose, lab_run): each is a programme whose candidates
+  climb phases, and a candidate advances only when real code passes that phase's own exit test — never because you say it did. Read each lab's
+  `honest` note before you claim anything from it: a computational screen is a statement about a file, not about matter or money. You also run a fleet: create, change, pause and
+  remove sub-agents with the fleet_* tools (each is a small container in your own docker or the site's, with one narrow job and its own sources),
+  add and remove signal sources with the source_* tools (RSS feeds and Google Trends by country), and arrange what the owner sees with display_set.
+  Keep the fleet small, give each sub-agent one job, and remove the ones that stop earning their place. Publish rarely and mindfully: the
+  gate enforces caps and quiet hours; you never reply to, follow or message anyone, you disclose that you are an
+  agent, you give no personalised financial advice, and the Institute never manages money.
+
+seed:                                        # the mandatory core; merge() never removes it
+  nodes:
+    - {id: sextant, type: agent, label: "SEXTANT, the agent", pub: true}
+    - {id: operator, type: human, label: "the operator"}
+    - {id: institute, type: organisation, label: "The Threshold Institute", pub: true}
+    - {id: charter, type: constraint, label: "read all of your code, edit none of it; propose upgrades; disclose you are an agent; no personalised financial advice; never manage money"}
+    - {id: g-map, type: goal, label: "Map where AI capability, money, compute and energy actually stand, and mark every claim with its support"}
+    - {id: g-method, type: goal, label: "Test whether consistency energy can grade prose claims the way a test suite grades code"}
+    - {id: g-warn, type: goal, label: "Debunk stale or single-sourced AI claims and warn early, with falsifiers, where the evidence is strong"}
+    - {id: g-ship, type: goal, label: "Ship small tested apps and notes that make the research usable"}
+    - {id: g-fund, type: goal, label: "Earn trust and contracts through assurance, provenance and audit-ready records"}
+    - {id: q-sources, type: question, pub: true, label: "Which headline AI claims rest on one source, and which are triangulated?", falsifier: "a field where nearly every claim has several independent sources"}
+    - {id: q-energy, type: question, pub: true, label: "Which energy forecasts in circulation are stale, and who still cites them?", falsifier: "the IEA restates the 1,000 TWh figure for 2026"}
+    - {id: q-grader, type: question, pub: true, label: "Does high consistency energy in a region predict later revision of its claims?", falsifier: "no correlation after 90 days of tracking"}
+    - {id: q-drift, type: question, pub: true, label: "Do minted types converge across runs, or does the ontology drift?", falsifier: "types never overlap between runs"}
+    - {id: q-jobs, type: question, pub: true, label: "Is entry-level demand falling in exposed jobs, and is the evidence more than a few studies?", falsifier: "many independent studies agree on a small effect"}
+    - {id: q-evals, type: question, pub: true, label: "Where do evaluations fail because models detect the test?", falsifier: "results hold under hidden evaluations"}
+    - {id: g-sectors, type: goal, label: "Track where AI is used and where it pays off in private enterprise, schools, hospitals, healthcare and travel, separating surveys of use from measured outcomes"}
+    - {id: g-law, type: goal, label: "Stabilise law across tiers of government: for a named water body or process, compare federal, provincial and municipal rules, find conflicts and gaps, and report by procurement, environmental, ethical and monitoring lens"}
+    - {id: g-compute, type: goal, label: "Work out whether idle phones and tablets can be paid to share compute, and what has to be true for it to work"}
+    - {id: q-sector, type: question, pub: true, label: "In which sectors does reported AI use exceed measured value, and by how much?", falsifier: "outcome studies match the use surveys in every sector"}
+    - {id: q-tiers, type: question, pub: true, label: "For a given water body, do federal, provincial and municipal rules agree, and where does one tier leave a gap?", falsifier: "every tier cites the same standard and the same monitor"}
+    - {id: q-phone, type: question, pub: true, label: "Does the payout per phone exceed what the owner pays in battery wear, data and risk?", falsifier: "measured payouts per device stay above the owner's cost on a median phone"}
+    - {id: g-labs, type: goal, label: "Run standing labs where a claim can be computed, then tested on a real bench, and never call a computation a result"}
+    - {id: q-chem, type: question, pub: true, label: "Can a seeded graph and a force-field screen propose stable molecules that are not in the literature, at a rate a bench can keep up with?", falsifier: "a wet lab fails to make the first ten candidates that cleared the screen"}
+    - {id: q-btc, type: question, pub: true, label: "What does the public Bitcoin transaction graph show about key reuse and miner concentration that is not already reported?", falsifier: "every structural finding also appears in a degree-preserving shuffle of the same graph"}
+    - {id: q-seizure, type: question, pub: true, label: "For a named seizure of land or removal of a leader, what does the primary record actually support, and where is it silent or contested?", falsifier: "every assertion in a case brief resolves to a primary source and none is contested"}
+    - {id: g-gpu, type: goal, label: "Work out, from sources, whether the GPU build-out is priced ahead of the revenue it can earn, and reprice the commodities and assets it touches under explicit scenarios, fairly and with every limit stated"}
+    - {id: q-gpu-rent, type: question, pub: true, label: "What do GPU-hours rent for by model and contract type, how fast are they falling, and what utilisation does the rent imply?", falsifier: "rental prices per GPU-hour stop falling for two quarters while utilisation stays high"}
+    - {id: q-gpu-life, type: question, pub: true, label: "How long do AI accelerators really earn their keep, and what does a 3-versus-6-year depreciation life do to reported earnings and covenants?", falsifier: "resale and rental data show accelerators earning full price after year five"}
+    - {id: q-gpu-debt, type: question, pub: true, label: "How much of the data-centre build-out is financed by debt, leases and off-balance-sheet vehicles, who holds it, and what covers the payments?", falsifier: "disclosed contracted revenue covers debt service across the main borrowers through the asset lives"}
+    - {id: q-gpu-commod, type: question, pub: true, label: "Which commodities (copper, aluminium, gallium, power, gas, uranium) are priced for the build-out continuing, and which are not?", falsifier: "commodity prices move with data-centre capex announcements in neither direction"}
+    - {id: q-gpu-fair, type: question, pub: true, label: "Under three scenarios (small models suffice, the build-out continues, a credit event), what is a fair range for each GPU-linked asset, and what moves it most?", falsifier: "the scenario-weighted ranges fail to bracket the realised prices over the next two quarters"}
+  edges:
+    - {id: s:sectors, relation: investigates, members: [g-sectors, q-sector, q-jobs]}
+    - {id: s:law,     relation: investigates, members: [g-law, q-tiers]}
+    - {id: s:compute, relation: investigates, members: [g-compute, q-phone, q-energy]}
+    - {id: s:labs,    relation: investigates, members: [g-labs, q-chem, q-btc, q-seizure]}
+    - {id: s:runs,    relation: runs,       members: [sextant, institute], pub: true}
+    - {id: s:serves,  relation: serves,     members: [institute, operator]}
+    - {id: s:bound,   relation: bound_by,   members: [sextant, charter]}
+    - {id: s:goals,   relation: pursues,    members: [institute, g-map, g-method, g-warn, g-ship, g-fund, g-sectors, g-law, g-compute, g-labs, g-gpu]}
+    - {id: s:asks,    relation: investigates, members: [g-map, q-sources, q-energy, q-jobs]}
+    - {id: s:tests,   relation: investigates, members: [g-method, q-grader, q-drift]}
+    - {id: s:warns,   relation: investigates, members: [g-warn, q-energy, q-jobs, q-evals]}
+    - {id: s:gpu,     relation: investigates, members: [g-gpu, q-gpu-rent, q-gpu-life, q-gpu-debt, q-gpu-commod, q-gpu-fair]}
+    - {id: s:gpu-energy, relation: investigates, members: [g-gpu, q-energy]}
+    - {id: s:gpu-fair, relation: bears_on, members: [q-gpu-fair, q-gpu-rent, q-gpu-life, q-gpu-debt, q-gpu-commod]}
+  types:
+    agent: a software actor that reasons in rounds and acts through tools
+    human: a person with standing in the Institute
+    organisation: a legal or working entity
+    constraint: a rule the agent holds itself to
+    goal: an outcome the Institute works toward; chosen by the operator, refined by the agent
+    question: a research question with a stated way to be wrong
+    candidate: a thing a lab is trying to prove, at some phase of its ladder
+    lab: a standing programme with phases, exit tests and a bench it reports to
+    valuation: a fair repricing of one asset or commodity under stated scenarios, with its sources, drivers and limits; written by the agent through reprice_record
+    limit: something the Institute cannot yet see, measure or do, with what would lift it
+
+agent:
+  max_steps: 10                              # ReAct tool steps per round before the final emission
+  tools: [web_search, fetch_url, graph_query, list_source, read_source, plan_upgrade, propose_publish, run_tests, publish, sandbox_run, ship_app,
+          fleet_list, fleet_create, fleet_update, fleet_act, fleet_delete, fleet_logs, source_list, source_add, source_update, source_remove, display_set, display_remove,
+          lab_list, lab_candidates, lab_propose, lab_run, lab_record, lab_close,
+          reprice_list, reprice_record, limit_note]
+
+autonomy:                                    # the agent's own initiative
+  drive_every_seconds: 120                   # with the queue quiet, a self-directed round
+  max_pending: 12                            # no new drive rounds while this many are waiting
+  drive: |
+    Free time. Nobody has asked you anything. Look at your goals, open questions and weakest edges, and choose the single
+    most valuable thing to do now, then do it with your tools. Options: research a gap and record it with sources; settle an
+    open question; re-examine a weak edge; read your own source and write plan_upgrade for something you would change; write,
+    test and ship a small app that makes the research usable; find or install an MCP server that closes a capability gap;
+    draft one post worth publishing. Say in `answer` what you chose and why.
+
+watch:                                       # data pumps: new items become ingest rounds, each link once
+  every_seconds: 900
+  per_feed: 10
+  max_per_cycle: 5
+  feeds:
+    - http://export.arxiv.org/rss/cs.AI
+    - http://export.arxiv.org/rss/cs.MA
+    - https://hnrss.org/newest?q=LLM+OR+agents+OR+%22knowledge+graph%22&points=100
+    - https://hnrss.org/newest?q=GPU+OR+%22data+center%22+OR+%22AI+bubble%22+OR+CoreWeave&points=60
+    - http://export.arxiv.org/rss/cs.AR
+    - https://www.eia.gov/rss/todayinenergy.xml
+    - https://www.federalreserve.gov/feeds/press_all.xml
+  trends: [US, CA, GB]                       # Google Trends "trending now", one source per country; the owner and the agent add and remove their own
+
+mcp:                                         # one server in front of every other: apps/mcp-hub, started inside the agent's docker
+  hub:
+    url: http://agent-dind:8765/mcp          # env HUB_URL overrides; auth is HUB_TOKEN
+
+observe:                                     # everything becomes graph
+  service: threshold-engine
+  phoenix: http://agent-dind:6006            # OTLP/HTTP target; Phoenix runs inside the agent's own docker (env PHOENIX_ENDPOINT overrides)
+  phoenix_public: http://localhost:6006      # where the terminal links to (env PHOENIX_PUBLIC overrides)
+  log_level: INFO                            # records at this level and above become log nodes; ERROR becomes an incident
+  types:                                     # the telemetry ontology, seeded like the core
+    trace: one request or round, end to end
+    span: one timed step inside a trace, tied to the code that ran it
+    log: one line the code wrote while a span was open
+    code: a function in the Institute's own source, with its file and line
+    file: a source file
+    incident: an error the graph noticed, with the code it was raised by
+    patch: a diff that fixed an incident, tested in the sandbox
+    app: an app the agent shipped, running in the site's docker
+    subagent: a sub-agent the Institute runs in its own docker, with one job and its sources
+    event: something that happened to a visitor, an app or the Institute, written straight into the graph
+
+sandbox:                                     # the agent's own docker-in-docker (env AGENT_DOCKER_HOST / WEB_DOCKER_HOST override)
+  agent_host: tcp://agent-dind:2375
+  web_host: tcp://web-dind:2375              # the site's docker-in-docker, where shipped apps run
+  network: false                             # sandbox runs have no network unless the step needs it (tests, builds)
+  memory: 1g
+  cpus: 1
+  registry: /registry/apps.json              # shared with the site, served at /apps/apps.json (env APPS_REGISTRY overrides)
+  services:                                  # started inside agent-dind at boot; limits per service
+    phoenix: {memory: 1g,   cpus: 1}
+    redis:   {memory: 256m, cpus: 0.5}
+    hub:     {memory: 1g,   cpus: 1}
+
+fleet:
+  max: 12                                    # sub-agents at once; each is 128 MB and a quarter of a CPU
+
+staffing:                                    # an institute staffed by the very research it studies: the agent reads its own open questions and hires for them
+  enabled: true
+  every_seconds: 1800
+  first_after_seconds: 180
+  intake: |
+    Staffing round. You are the only permanent member of this Institute; every other post exists because a piece of the research needed watching.
+    Below are the questions, hypotheses and goals in your own graph that nothing is watching, weakest support first.
+
+    Decide for yourself whether any of them deserves a standing post. Create at most one sub-agent per round, and only where a continuous watch would
+    settle something a single round cannot: a question whose evidence keeps changing, or whose falsifier needs a source that has not appeared yet.
+    If none needs a post, create nothing and say which you considered and why not.
+
+    When you do create one with fleet_create: give it a name that says what it watches, a role in a few words, a prompt stating what counts as worth
+    sending you and what to skip, the sources it should read, from_node set to the id it serves, and why in one sentence. If no existing source carries
+    that evidence, add one with source_add first.
+
+    Then look at the fleet you already have. Any post whose question is settled, or which has found nothing in days, should be removed with fleet_delete.
+    Say in `answer` what you decided, which node it serves, and what would make you remove it.
+
+world:                                       # where the outside world comes from. sim: a DSPy world-agent writes plausible papers, filings and feed items and your own agent does real rounds on them; live: only the real feeds
+  mode: auto                                 # sim | live | auto. auto is live when THRESHOLD_ENV=production and sim otherwise; the owner can flip it from the console
+  model: anthropic/claude-haiku-4-5          # the world agent can be a cheaper model than the company agent
+  first_after_seconds: 20
+  every_seconds: 90                          # jittered by ±40% so turns never land on a rhythm
+  items_per_turn: 2
+  novelty: 0.6                               # an item whose title shares this much of its wording with an earlier one is dropped
+  wildcard_every: 6                          # every sixth turn is about something nobody here is watching yet
+  kinds: {paper: 35, feed: 30, trend: 15, filing: 10, dataset: 10}
+  stances: {supports: 40, complicates: 30, contradicts: 20, unrelated: 10}
+
+reprice:                                     # the Institute reprices GPU-linked commodities and assets on its own clock; the agent does the work, this only asks
+  enabled: true
+  every_seconds: 1200                        # one asset per round, most overdue first; every third round works down the limitations instead
+  first_after_seconds: 240
+  watchlist:
+    - {asset: "H100 on-demand rental", kind: rental, unit: "USD/GPU-hr", hint: "public cloud and marketplace listings; compare list price with spot and reserved contracts"}
+    - {asset: "B200 on-demand rental", kind: rental, unit: "USD/GPU-hr", hint: "newer parts reprice the older ones; look at the spread between generations"}
+    - {asset: "NVDA", kind: equity, unit: "USD/share", hint: "data-centre revenue share, gross margin, customer concentration, purchase commitments and inventory in the latest 10-Q"}
+    - {asset: "AMD", kind: equity, unit: "USD/share", hint: "data-centre GPU revenue guidance, customer commitments, share of accelerator spend"}
+    - {asset: "TSM", kind: equity, unit: "USD/share", hint: "advanced-node and packaging capacity, utilisation, capex guidance, customer concentration"}
+    - {asset: "CRWV", kind: equity, unit: "USD/share", hint: "contracted backlog, debt and lease schedule, depreciation policy, customer concentration"}
+    - {asset: "ORCL", kind: equity, unit: "USD/share", hint: "capex against free cash flow, debt issuance, remaining performance obligations"}
+    - {asset: "MSFT", kind: equity, unit: "USD/share", hint: "capex, lease commitments not yet commenced, AI revenue disclosures"}
+    - {asset: "SMCI", kind: equity, unit: "USD/share", hint: "inventory, gross margin, customer concentration, filing timeliness"}
+    - {asset: "VST", kind: equity, unit: "USD/share", hint: "power sold to data centres: contract prices and tenor"}
+    - {asset: "Copper", kind: commodity, unit: "USD/t", hint: "exchange stocks, cathode premiums, grid and data-centre wiring demand; FRED series PCOPPUSDM"}
+    - {asset: "Aluminium", kind: commodity, unit: "USD/t", hint: "smelter power costs, inventories, cooling and structure demand; FRED series PALUMUSDM"}
+    - {asset: "Natural gas (Henry Hub)", kind: commodity, unit: "USD/MMBtu", hint: "gas-fired power for data centres; FRED series DHHNGSP"}
+    - {asset: "Uranium", kind: commodity, unit: "USD/lb", hint: "nuclear power purchase agreements signed by hyperscalers; FRED series PURANUSDM"}
+    - {asset: "Gallium", kind: commodity, unit: "USD/kg", hint: "export controls and the share used in power and RF chips"}
+    - {asset: "US retail electricity", kind: power, unit: "USD/kWh", hint: "EIA data; regional load growth and capacity-market prices"}
+    - {asset: "US high-yield spread", kind: credit, unit: "bp", hint: "FRED series BAMLH0A0HYM2; AI-linked issuance and private-credit exposure"}
+    - {asset: "Bitcoin", kind: crypto, unit: "USD", hint: "miners re-pointing hash capacity to AI hosting; hash price against GPU-hour revenue"}
+  limits:                                    # what the Institute starts out unable to do; after the first run the agent and the owner own the ledger (state/reprice/limits.json)
+    - {text: "No live equity quotes: the agent reads only pages it can fetch and no licensed market-data feed is connected, so equities are repriced as scenario-weighted re-rates against the last cited price, not as absolute values.", area: access, severity: 3, lifts_by: "a permitted quote source the agent can read, or a licensed feed", owner_needed: "a market-data key, or approval to use a free quote source"}
+    - {text: "GPU rental prices come from public listings and secondary reports; contract-level enterprise lease terms and utilisation are not public.", area: coverage, severity: 3, lifts_by: "several independent listing sources tracked over time, and any disclosed contract terms"}
+    - {text: "The useful life of AI accelerators is contested between about three and six years; it enters as a scenario variable, not a measured fact.", area: method, severity: 2, lifts_by: "resale and rental-price curves by GPU generation across several quarters"}
+    - {text: "Debt held by private credit and special-purpose vehicles is not fully disclosed; estimates rest on filings and press reports.", area: coverage, severity: 2, lifts_by: "filings that name the vehicles, lenders and covenants"}
+    - {text: "The language model can misread a source or produce a figure that sounds right; every number must trace to a page the agent fetched, or be marked as an estimate.", area: model, severity: 3, lifts_by: "an automatic check that re-fetches each cited figure and compares it with the record"}
+    - {text: "The thesis experiment (H0, H5) has not finished, so the weight on small models suffice is a prior that moves as results land, not a measurement.", area: method, severity: 2, lifts_by: "results of phases P3 and P4, published either way"}
+    - {text: "Repricing is analysis, not advice: the Institute does not manage money and cannot know a reader's circumstances.", area: method, severity: 1, lifts_by: "not lifted by design"}
+  intake: |
+    Repricing round. You are repricing one asset or commodity that the GPU build-out touches, fairly: you owe the reader the case against your own view as much as the case for it.
+
+    METHOD
+    1. Gather. Use fetch_url and web_search for the latest sourced price, the filings or reports that move it, and at least one source that disagrees with the story you are forming.
+       Public data you can usually fetch without a key: FRED (https://fred.stlouisfed.org/graph/fredgraph.csv?id=SERIES), EIA, SEC EDGAR, company investor pages, central-bank and exchange pages.
+       A figure you cannot trace to a page you fetched is an estimate and must be marked as one.
+    2. Weigh. Name three scenarios and give each a probability, summing to 1: (a) small, cheap models suffice for most paid work, so accelerator demand and rental prices fall; (b) the build-out
+       continues on current economics; (c) a credit event forces sales and write-downs. Where the graph holds results on H0 and H5 or on q-gpu-rent, q-gpu-life and q-gpu-debt, use them to move the
+       weights, and say which evidence moved them and by how much. Do not choose weights to match a conclusion you already like.
+    3. Reprice. For each scenario give the re-rate in percent against the sourced market price and a one-line reason. If you have a sourced market price and its date, also give a fair range in the
+       same unit; the scenario-weighted re-rate must fall inside it, and reprice_record refuses a record where it does not.
+    4. Why. List the drivers with direction, weight and the source ids that support each; no driver without a source.
+    5. Limits. State what you could not see or verify for this asset: a missing feed, a stale figure, a contested assumption, a model estimate.
+    6. Record it with reprice_record. If it refuses, fix the record and try again; never loosen a scenario to get past a refusal. Then emit a node of type valuation with id val:<asset-slug> in your
+       round, link it to q-gpu-fair and to the source nodes you used, and say in answer what moved most and what would change your mind.
+
+    Rules: this is analysis, not advice; the Institute does not manage money and gives no personalised financial advice. Everything you record starts private; the owner decides what is published.
+    Mark a source basis real only if you fetched it yourself, and simulated if it came from a simulated world item.
+  limits_intake: |
+    Limitations round. Below are the things the Institute says it cannot yet see, measure or do. Choose the one whose removal would most change the repricing and take the smallest real step toward
+    lifting it now, with your own tools: add a source with source_add, hire a watcher with fleet_create, write and test a small fetcher in the sandbox and ship it, or find an MCP server that
+    closes the gap. If only the owner can lift it, say exactly what is needed in owner_needed. Update the ledger with limit_note (plan, then status working or lifted). Do not mark a limitation
+    lifted without evidence: a record that now cites the new source, or a source that is returning data. If you notice a limitation that is not listed, add it.
+
+apps:
+  approval: auto                             # tests pass + health check pass → live on the site; the owner can relaunch or remove from the terminal
+  publish_every_seconds: 300                 # every five minutes: ship state/apps/queue, relaunch what crashed, re-check health
+  ports: [8100, 8199]                        # host ports inside web-dind; nginx proxies /a/<port>/ to them
+
+heal:
+  enabled: true
+  dedupe_seconds: 900                        # the same error at the same place is one incident per 15 minutes
+  max_attempts: 3                            # a repair is a tested diff and a pull request; the agent never applies it to itself
+
+owner:
+  session_hours: 12                          # OWNER_PASSWORD (or OWNER_PASSWORD_HASH, sha256 hex) and SESSION_SECRET come from .env
+
+day:                                         # the owner's day; the terminal is built from this
+  timezone: UTC
+  schedule:
+    - {at: "06:00", id: night,      title: Night report}
+    - {at: "07:30", id: brief,      title: Morning brief}
+    - {at: "09:00", id: inbox,      title: Inbox and approvals}
+    - {at: "11:00", id: incidents,  title: Incidents}
+    - {at: "13:00", id: ship,       title: Ship}
+    - {at: "15:00", id: research,   title: Research}
+    - {at: "17:00", id: publish,    title: Publish}
+    - {at: "22:00", id: reflection, title: Reflection}
+  reflect_at: "22:00"
+
+reflect:
+  alpha: 0.3                                 # Q-table learning rate
+  epsilon: 0.1                               # exploration
+  telemetry_decay: 0.5                       # spans, traces and logs halve each night
+  prune_below: 0.05                          # and are forgotten below this weight; incidents, patches, code and files stay
+
+research:
+  every_seconds: 30                          # how often the weakest edges are re-examined
+  topics:
+    - "stablecoin settlement volume against card networks, monthly, with sources"
+    - "task-level automation exposure versus realised wage change by occupation"
+    - "funding-rate regimes on major perpetual venues as a crowding signal"
+    - "sheaf Laplacians as a consistency energy for knowledge hypergraphs"
+    - "data-centre electricity demand forecasts: which are current, which are stale, who still cites them"
+    - "federal AI procurement: contract vehicles, data-rights terms, and what assurance buyers ask for"
+    - "AI use versus measured outcomes in hospitals, schools, travel and private enterprise, one source per claim, survey and outcome kept apart"
+    - "water law in Canada for one named water body: federal, provincial and municipal instruments, where they agree, conflict or leave a gap, by procurement, environmental, ethical and monitoring lens"
+    - "paid phone and tablet compute networks: payouts per device, battery and data cost, security enclaves, app-store and legal limits"
+    - "GPU rental prices per hour by model (H100, H200, B200) over time, from public listings and reports, and what they imply for payback and utilisation"
+    - "accelerator depreciation lives and impairment risk: how hyperscalers and neoclouds account for GPUs, and what a three-year versus six-year life does to earnings and covenants"
+    - "hyperscaler and neocloud capital expenditure, debt, leases and off-balance-sheet financing for data centres, by company, from filings"
+    - "commodity demand from the data-centre build-out: copper, aluminium, gallium, power, natural gas, uranium; what is priced in and what is not"
+    - "what would falsify the GPU-bubble thesis: sustained utilisation, rising rental prices, or revenue that covers capex"
+
+publish:
+  enabled: false                             # while false, publish() drafts to the outbox and the owner approves each post from the terminal
+  approval: human
+  outbox: outbox                             # under state/
+  schedule: ../../marketing/schedule.yaml
+  reddit_subreddit: MachineLearning
+  slack_channel: "#general"
+  mindful:                                   # the gate every post passes, approved or not
+    per_day: {x: 2, linkedin: 1, slack: 4, reddit: 1}
+    min_gap_minutes: 90
+    quiet_hours: "22:00-07:00"
+    max_chars: {x: 280, linkedin: 3000, slack: 3000}
+    disclosure: "Written by SEXTANT, the Institute's agent."
+
+github:
+  repo: ""                                   # owner/name (env GITHUB_REPO overrides); with a token, repairs and approved upgrades become pull requests
+  base: main

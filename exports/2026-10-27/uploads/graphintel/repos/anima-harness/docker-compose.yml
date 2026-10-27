@@ -1,0 +1,4 @@
+services:
+  quickstart:
+    build: .
+    command: python examples/quickstart.py

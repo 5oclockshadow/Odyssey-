@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <script src="testkit.js"></script>
+  <script src="../ops/src/connectome.js"></script>
+  <style>
+    html, body { margin: 0; background: #161826; }
+    a { color: #9184d9; }
+    a:hover { color: #d2cefd; }
+  </style>
+</helmet>
+<div data-screen-label="Test Dashboard" style="min-height:100vh;display:flex;flex-direction:column;gap:12px;padding-bottom:16px;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:14px;">
+  <header class="nav" style="flex-wrap:wrap;gap:8px 14px;padding:10px 14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-right:auto;flex-wrap:wrap;min-width:0;">
+      <span class="nav-brand" style="margin-right:0;">Bridago · Tester</span>
+      <span class="{{ resultCls }}">{{ resultLabel }}</span>
+      <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 62%,transparent);overflow-wrap:anywhere;">{{ statusLine }}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 72%,transparent);">Clean passes {{ passes }}/3</span>
+      <div class="seg" role="radiogroup" aria-label="Screen sizes">
+        <label class="seg-opt"><input type="radio" name="tk-sizes" checked="{{ sizesQuick }}" onChange="{{ pickQuick }}">Phone + laptop</label>
+        <label class="seg-opt"><input type="radio" name="tk-sizes" checked="{{ sizesAll }}" onChange="{{ pickAll }}">All six sizes</label>
+      </div>
+      <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-secondary" onClick="{{ stop }}"><i class="ph ph-stop" aria-hidden="true"></i>Stop</button></sc-if>
+      <sc-if value="{{ idle }}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-primary" onClick="{{ runAll }}"><i class="ph ph-play" aria-hidden="true"></i>Run everything</button></sc-if>
+    </div>
+  </header>
+
+  <main style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,540px),1fr));gap:12px;padding:0 12px;align-items:start;">
+    <section aria-label="Live app view" class="card elev-sm" style="gap:10px;padding:12px;min-width:0;">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+        <h2 style="margin:0;font-size:16px;margin-right:auto;">Live app view</h2>
+        <select class="input" aria-label="Page" value="{{ livePage }}" onChange="{{ onPage }}" style="width:auto;max-width:100%;min-height:32px;font-size:13px;">
+          <sc-for list="{{ pageOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o.value }}" selected="{{ o.on }}">{{ o.label }}</option></sc-for>
+        </select>
+        <div class="seg" role="radiogroup" aria-label="Live width">
+          <sc-for list="{{ widthOpts }}" as="w" hint-placeholder-count="3"><label class="seg-opt" style="padding:6px 10px;font-size:12.5px;"><input type="radio" name="tk-live-w" checked="{{ w.on }}" onChange="{{ w.pick }}">{{ w.label }}</label></sc-for>
+        </div>
+      </div>
+      <div ref="{{ liveBox }}" style="position:relative;height:clamp(320px,56vh,620px);overflow:hidden;border-radius:var(--radius-md);background:#0f1018;box-shadow:var(--shadow-sm);">
+        <iframe ref="{{ liveRef }}" title="Live app view" style="position:absolute;left:0;top:0;border:0;background:#161826;transform-origin:0 0;{{ liveSt }}"></iframe>
+        <div style="position:absolute;left:10px;bottom:10px;right:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;">
+          <span class="tag tag-neutral" style="max-width:100%;overflow-wrap:anywhere;">{{ liveLabel }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Suites" class="card elev-sm" style="gap:12px;padding:12px;min-width:0;">
+      <h2 style="margin:0;font-size:16px;">Suites</h2>
+      <div style="display:grid;gap:2px;">
+        <sc-for list="{{ suites }}" as="s" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 10px;align-items:center;padding:8px 4px;">
+            <div style="display:grid;gap:2px;min-width:0;"><span style="font-size:14px;">{{ s.name }}</span><span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 58%,transparent);overflow-wrap:anywhere;">{{ s.line }}</span></div>
+            <span class="{{ s.cls }}">{{ s.state }}</span>
+            <button type="button" class="btn btn-ghost" onClick="{{ s.run }}" disabled="{{ running }}">Run</button>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:8px;"><h2 style="margin:0;font-size:16px;">Failures</h2><span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 58%,transparent);">{{ failCount }}</span></div>
+      <div style="display:grid;gap:2px;max-height:360px;overflow:auto;">
+        <sc-for list="{{ fails }}" as="f" hint-placeholder-count="0">
+          <button type="button" onClick="{{ f.open }}" style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:baseline;width:100%;padding:7px 4px;border:0;border-radius:var(--radius-md);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);">
+            <span class="tag tag-outline" style="justify-content:center;">{{ f.word }}</span>
+            <span style="font-size:13px;line-height:1.45;overflow-wrap:anywhere;">{{ f.text }}</span>
+          </button>
+        </sc-for>
+        <sc-if value="{{ noFails }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;color:color-mix(in srgb,var(--color-text) 62%,transparent);padding:4px;">{{ noFailsLine }}</span></sc-if>
+      </div>
+    </section>
+
+    <section aria-label="Graph" class="card elev-sm" style="gap:10px;padding:12px;min-width:0;">
+      <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;"><h2 style="margin:0;font-size:16px;margin-right:auto;">The project as one graph</h2><span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 58%,transparent);">{{ graphLine }}</span></div>
+      <div ref="{{ graphRef }}" style="position:relative;height:440px;border-radius:var(--radius-md);overflow:hidden;background:#161826;box-shadow:var(--shadow-sm);"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;">
+        <sc-for list="{{ legend }}" as="l" hint-placeholder-count="8"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:color-mix(in srgb,var(--color-text) 72%,transparent);"><span style="{{ l.dot }}"></span>{{ l.label }}</span></sc-for>
+      </div>
+    </section>
+
+    <section aria-label="Details and report" class="card elev-sm" style="gap:10px;padding:12px;min-width:0;">
+      <div class="seg" role="radiogroup" aria-label="Panel" style="align-self:flex-start;">
+        <label class="seg-opt"><input type="radio" name="tk-tab" checked="{{ tabSel }}" onChange="{{ toSel }}">Selected</label>
+        <label class="seg-opt"><input type="radio" name="tk-tab" checked="{{ tabReport }}" onChange="{{ toReport }}">Report</label>
+        <label class="seg-opt"><input type="radio" name="tk-tab" checked="{{ tabLog }}" onChange="{{ toLog }}">Log</label>
+      </div>
+      <sc-if value="{{ tabSel }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;gap:8px;">
+          <span class="card-kicker">{{ selKind }}</span>
+          <span class="card-title" style="font-size:15px;overflow-wrap:anywhere;">{{ selTitle }}</span>
+          <sc-for list="{{ selGroups }}" as="g" hint-placeholder-count="0">
+            <div style="display:grid;gap:3px;"><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 56%,transparent);">{{ g.head }}</span>
+              <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="0"><button type="button" onClick="{{ i.go }}" style="display:flex;align-items:baseline;gap:8px;padding:3px 4px;border:0;border-radius:var(--radius-sm);background:transparent;color:inherit;font:inherit;font-size:13px;text-align:left;cursor:pointer;overflow-wrap:anywhere;" style-hover="background:color-mix(in srgb,var(--color-text) 6%,transparent);"><span style="{{ i.dot }}"></span>{{ i.label }}</button></sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ tabReport }}" hint-placeholder-val="{{ false }}">
+        <pre style="margin:0;white-space:pre-wrap;font:12.5px/1.55 ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 88%,transparent);max-height:440px;overflow:auto;">{{ report }}</pre>
+        <button type="button" class="btn btn-secondary" style="align-self:flex-start;" onClick="{{ copyReport }}"><i class="ph ph-copy" aria-hidden="true"></i>Copy report</button>
+      </sc-if>
+      <sc-if value="{{ tabLog }}" hint-placeholder-val="{{ false }}">
+        <pre style="margin:0;white-space:pre-wrap;font:12px/1.5 ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 75%,transparent);max-height:440px;overflow:auto;">{{ logText }}</pre>
+      </sc-if>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = 'tk_dash_v1';
+const PAL = { agent: '#e9e9ed', tool: '#e3c27a', module: '#94a6c9', work: '#9184d9', question: '#e0a07e', claim: '#8fcfb0', thought: '#f0e2c0', source: '#c9a6e8' };
+const LEG = [['agent', 'Agents'], ['tool', 'Tools'], ['module', 'Code, pages, routes, services'], ['work', 'Tests and checks'], ['question', 'Findings'], ['claim', 'Fixes'], ['thought', 'Lessons'], ['source', 'Data']];
+const THEME = { bg: '#161826', fog: 0.03, shell: '#5d5294', shellOpacity: 0.07, halo: 0.07, haloSize: 2, flow: '#d2cefd', spark: '#f5f4ff', labelBg: 'rgba(35,37,50,.88)', labelInk: '#cfd3e5', labelSel: '#f3f5fe', labelLine: '#3f424d', lanes: PAL };
+const QUICK = [390, 1440], ALL = [320, 390, 768, 1024, 1440, 1920];
+const SUITES = [['tests', 'Own tests', 'pytest for TESTER, in Python in this tab'], ['audit', 'Code audit', 'TESTER reads every file into its graph and runs its static checks'], ['js', 'JavaScript', 'every script and page script parses'], ['ui', 'Pages', 'every page at each size, then its tabs and views, in the live view']];
+const FIXED = [
+  'apps/ops/fixtures/owner-snapshot.json was cut off mid-string (invalid JSON); completed.',
+  'Console, Tmpltz, Unphz, Anima: componentDidUpdate read a previous state the runtime never passes; crashed on load and on every click.',
+  'Anima App: a double comma left a hole in the skins list; four design actions crashed. Colour swatches had no name.',
+  'Institute: nine matrix cells had no name. Anima: a citation link with no text.',
+  'apps/engine/test_engine.py: a test never checked its second publish; an unused variable.',
+  'TESTER: false alarms on about: and blob: URLs, bundler manifests, Dockerfiles built outside compose; globs crossed folders; pyflakes lint added.',
+  'Anima App: a saved skin index past the end of the list crashed "Compact lists"; the phone now zooms to fit a phone screen and its tab bar shrinks instead of overflowing.',
+  'Walkthrough v1: route rows were a fixed three-column grid; they wrap on a phone. Anima Field Notebook: the phone frame fits a phone screen.',
+  'Console and Agent space: desktop workspaces now scroll sideways inside the page instead of widening it; space.html rebuilt from Space.',
+  'Owner Console: the New sub-agent panel was 68px wider than a laptop screen. Institute: header links wrap. Landscape 2026: long table notes wrap.',
+  'TESTER: canvas pages skip overflow checks; code shown as text is not a rendering bug; new rules for the two runtime traps found here (componentDidUpdate second parameter, holes in arrays).'
+];
+const WORD = { scroll: 'scroll', offscreen: 'offscreen', rendering: 'console', console: 'console', request: 'request', a11y: 'a11y', blank: 'console', harness: 'cmd' };
+const short = p => p.replace(/^apps\//, '').replace(/\.dc\.html$/, '');
+
+class Component extends DCLogic {
+  liveRef = React.createRef();
+  liveBox = React.createRef();
+  graphRef = React.createRef();
+  state = { files: [], pages: [], py: 'idle', status: 'Loading the file list…', suites: {}, fails: [], warns: 0, graph: null, sel: 'agent:tester', tab: 'sel', running: false, passes: 0, history: [], log: [], livePage: 'apps/ops/src/Explorer.dc.html', liveW: 1440, liveLabel: 'Explorer · laptop', boxW: 600, boxH: 480, sizes: 'quick', last: null };
+
+  componentDidMount() {
+    try { document.title = 'Tester · Bridago'; document.documentElement.lang = 'en'; } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) this.setState({ suites: s.suites || {}, fails: s.fails || [], warns: s.warns || 0, passes: s.passes || 0, history: s.history || [], last: s.ts || null, sizes: s.sizes || 'quick' }); } catch (e) {}
+    if (!window.THREE && !window.__threeLoading) { window.__threeLoading = true; const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js'; sc.onload = () => this.forceUpdate(); document.head.appendChild(sc); }
+    this.ro = new ResizeObserver(() => { const b = this.liveBox.current; if (b) this.setState({ boxW: b.clientWidth, boxH: b.clientHeight }); }); if (this.liveBox.current) this.ro.observe(this.liveBox.current);
+    this.boot();
+  }
+  componentWillUnmount() { this.stopFlag = true; if (this.ro) this.ro.disconnect(); if (this.ctl) this.ctl.dispose(); clearTimeout(this._w); }
+  componentDidUpdate() {
+    const f = this.liveRef.current;
+    if (f && !this.state.running && this._shown !== this.state.livePage) { this._shown = this.state.livePage; f.src = TestKit.root + this.state.livePage.split('/').map(encodeURIComponent).join('/'); }
+    this.mountGraph();
+  }
+  log(t) { this.setState(s => ({ log: s.log.concat(new Date().toLocaleTimeString() + '  ' + t).slice(-300) })); }
+  async boot() {
+    if (!window.TestKit) { this._w = setTimeout(() => this.boot(), 200); return; }
+    try {
+      const files = await TestKit.manifest('');
+      const pages = files.filter(f => /\.html$/.test(f) && !/^apps\/web\/dist\//.test(f));
+      this.setState({ files, pages, status: files.length + ' files · ' + pages.length + ' pages · starting Python' });
+      this.py = TestKit.python(files, m => this.log(m)).then(() => { this.setState({ py: 'ready', status: files.length + ' files · ' + pages.length + ' pages · Python ready' }); return this.audit(true); }, e => { this.setState({ py: 'failed', status: 'Python did not start: ' + e.message }); });
+    } catch (e) { this.setState({ status: 'Could not read the file list: ' + e.message }); }
+  }
+  mountGraph() {
+    const el = this.graphRef.current, g = this.state.graph;
+    if (!el || !g) return;
+    if (!this.ctl) {
+      if (!window.Connectome || !window.THREE) { if (!this._gw) this._gw = setTimeout(() => { this._gw = null; this.forceUpdate(); }, 250); return; }
+      this.ctl = window.Connectome.mount(el, { onPick: k => k && this.setState({ sel: k, tab: 'sel' }), theme: THEME, behaviour: { labels: 'agents', idleResume: 10 }, font: '500 11px Inter, system-ui, sans-serif' });
+      if (!this.ctl) return;
+    }
+    if (this._g !== g) { this._g = g; this.ctl.setData(g); this._sel = null; }
+    if (this._sel !== this.state.sel) { this._sel = this.state.sel; this.ctl.select(this.state.sel, this.related(this.state.sel)); }
+  }
+  related(k) { const adj = this.adj || {}; return new Set([k].concat((adj[k] || []).map(x => x.k))); }
+  setGraph(g) {
+    const adj = {}, nodes = {};
+    g.nodes.forEach(n => { nodes[n.key] = n; adj[n.key] = []; });
+    g.edges.forEach(e => { if (adj[e.a] && adj[e.b]) { adj[e.a].push({ k: e.b, rel: e.rel, out: true }); adj[e.b].push({ k: e.a, rel: e.rel, out: false }); } });
+    this.adj = adj; this.nodes = nodes; this.setState({ graph: g });
+  }
+  suite(id, patch) { this.setState(s => ({ suites: { ...s.suites, [id]: { ...(s.suites[id] || {}), ...patch } } })); }
+  addFails(list) { list.forEach(f => console.log('[tk] FAIL ' + f.word + ' ' + f.text)); this.setState(s => ({ fails: s.fails.concat(list) })); }
+  async ready() { if (this.state.py !== 'ready') { this.log('waiting for Python'); await this.py; } if (this.state.py !== 'ready') throw new Error('Python is not available in this tab'); }
+
+  async tests() {
+    this.suite('tests', { st: 'running', line: 'pytest -q in apps/tester' });
+    try {
+      await this.ready(); await TestKit.sync(this.state.files, m => this.log(m));
+      const r = await TestKit.runPython('tests'), n = k => +((r.tail.match(new RegExp('(\\d+) ' + k)) || [])[1] || 0);
+      const p = n('passed'), f = n('failed') + n('error'), sk = n('skipped');
+      this.suite('tests', { st: f || r.code ? 'failed' : 'passed', line: p + ' passed, ' + f + ' failed, ' + sk + ' skipped · ' + r.seconds + 's', p, f, sk, secs: r.seconds });
+      this.addFails(r.lines.filter(l => /^(FAILED|ERROR)/.test(l)).map(l => ({ word: 'cmd', text: 'apps/tester · ' + l.replace(/^(FAILED|ERROR) /, ''), key: '' })));
+      this.log('tests: ' + p + ' passed, ' + f + ' failed, ' + sk + ' skipped');
+    } catch (e) { this.suite('tests', { st: 'failed', line: e.message }); this.addFails([{ word: 'cmd', text: 'the tests could not run: ' + e.message }]); }
+  }
+  async audit(quiet) {
+    if (!quiet) this.suite('audit', { st: 'running', line: 'reading every file into the graph' });
+    try {
+      await this.ready(); if (!quiet) await TestKit.sync(this.state.files);
+      const r = await TestKit.runPython('audit');
+      this.setGraph(r.graph);
+      const err = r.findings.filter(f => f.severity === 'error'), warn = r.findings.length - err.length;
+      if (!quiet) {
+        this.suite('audit', { st: err.length ? 'failed' : 'passed', line: r.stats.nodes + ' nodes, ' + r.stats.edges + ' edges · ' + err.length + ' errors, ' + warn + ' warnings · ' + r.seconds + 's', f: err.length, secs: r.seconds });
+        this.addFails(err.map(f => ({ word: f.check === 'secrets' ? 'secret' : f.check === 'routes' ? 'api' : 'cmd', text: f.title, key: 'finding:' + f.key })));
+        this.setState(s => ({ warns: s.warns + warn }));
+      }
+      this.log('graph: ' + r.stats.nodes + ' nodes, ' + r.stats.edges + ' edges' + (quiet ? '' : ' · ' + err.length + ' errors'));
+    } catch (e) { if (!quiet) { this.suite('audit', { st: 'failed', line: e.message }); this.addFails([{ word: 'cmd', text: 'the audit could not run: ' + e.message }]); } }
+  }
+  async js() {
+    this.suite('js', { st: 'running', line: 'parsing scripts' });
+    const t0 = performance.now(), bad = await TestKit.jsSuite(this.state.files), secs = Math.round((performance.now() - t0) / 100) / 10;
+    this.suite('js', { st: bad.length ? 'failed' : 'passed', line: bad.length + ' syntax problems · ' + secs + 's', f: bad.length, secs });
+    this.addFails(bad.map(b => ({ word: 'console', text: b.file + ':' + b.line + ' ' + b.msg, key: 'file:' + b.file })));
+  }
+  async ui() {
+    const widths = this.state.sizes === 'all' ? ALL : QUICK, t0 = performance.now(); let steps = 0, bad = 0;
+    this.suite('ui', { st: 'running', line: this.state.pages.length + ' pages × ' + widths.length + ' sizes' });
+    const res = await TestKit.uiSuite({ frame: this.liveRef.current, pages: this.state.pages, widths, stop: () => this.stopFlag,
+      onOpen: (p, w) => this.setState({ liveW: w, liveLabel: short(p) + ' · ' + w + 'px' }),
+      onStep: r => { steps++; if (r.fails.length) { bad++; this.addFails(r.fails.map(([k, m]) => ({ word: WORD[k] || k, text: short(r.page) + ' @' + r.width + (r.step ? ' after "' + r.step + '"' : '') + ': ' + m, key: 'file:' + r.page, page: r.page, width: r.width }))); } this.setState({ liveLabel: short(r.page) + ' · ' + r.width + 'px' + (r.step ? ' · ' + r.step : '') }); } });
+    const secs = Math.round((performance.now() - t0) / 1000);
+    this.suite('ui', { st: bad ? 'failed' : this.stopFlag ? 'stopped' : 'passed', line: res.length + ' checks (' + steps + ' with clicks) · ' + bad + ' failed · ' + secs + 's', f: bad, secs });
+    this._shown = null; this.setState({ liveW: 1440, liveLabel: short(this.state.livePage) + ' · laptop' });
+  }
+  async run(ids) {
+    if (this.state.running) return;
+    this.stopFlag = false; this.setState({ running: true, fails: ids.length > 1 ? [] : this.state.fails.filter(f => !ids.some(id => this.owns(id, f))), warns: ids.length > 1 ? 0 : this.state.warns });
+    for (const id of ids) { if (this.stopFlag) break; this.log('suite ' + id); await this[id](); console.log('[tk] suite ' + id + ': ' + JSON.stringify(this.state.suites[id] || {})); }
+    const full = ids.length === SUITES.length && !this.stopFlag, clean = !this.state.fails.length;
+    this.setState(s => {
+      const passes = full ? (clean ? s.passes + 1 : 0) : s.passes, history = full ? s.history.concat({ ts: Date.now(), fails: s.fails.length, secs: SUITES.reduce((a, [k]) => a + ((s.suites[k] || {}).secs || 0), 0) }).slice(-12) : s.history;
+      try { localStorage.setItem(KEY, JSON.stringify({ suites: s.suites, fails: s.fails.slice(0, 400), warns: s.warns, passes, history, ts: Date.now(), sizes: s.sizes })); } catch (e) {}
+      return { running: false, passes, history, last: Date.now() };
+    });
+  }
+  owns(id, f) { return id === 'tests' ? /^apps\/tester · /.test(f.text) : id === 'ui' ? !!f.page : id === 'js' ? f.word === 'console' && !f.page : f.key && f.key.startsWith('finding:'); }
+  report() {
+    const s = this.state, t = s.suites.tests || {}, done = SUITES.every(([k]) => s.suites[k] && s.suites[k].st && s.suites[k].st !== 'running');
+    return ['PROJECT: Python services (FastAPI) and Design Component pages, tests: pytest -q in apps/engine, apps/mcp-hub, apps/ops and apps/tester, plus TESTER\'s checks; start: docker compose up -d',
+      'OWN TESTS: ' + (t.st ? 'apps/tester ' + (t.p || 0) + ' passed, ' + (t.f || 0) + ' failed, ' + (t.sk || 0) + ' skipped in this tab; engine, mcp-hub and ops suites run in the tester container (no shell here)' : 'not run yet'),
+      'CHECKER: ' + (done ? (s.fails.length ? 'FAILED' : 'PASSED') : 'not run yet') + ', ' + s.fails.length + ' failures, ' + s.warns + ' warnings',
+      'FIXED:', ...FIXED.map(x => '  - ' + x),
+      'NOT FIXED:', ...(s.fails.length ? s.fails.slice(0, 60).map(f => '  FAIL ' + f.word + ' ' + f.text) : ['  none']),
+      'MANUAL CHECKS: not done; they need a person (Step 7, 1–12)',
+      'CLEAN PASSES: ' + s.passes + '/3' + (s.history.length ? ' · last runs: ' + s.history.slice(-3).map(h => h.fails + ' failures in ' + h.secs + 's').join('; ') : ''),
+      'NEW CODE NEEDS APPROVAL: yes'].join('\n');
+  }
+  renderVals() {
+    const s = this.state, done = SUITES.filter(([k]) => s.suites[k] && ['passed', 'failed'].includes(s.suites[k].st)).length, sc = Math.min(1, (s.boxW || 600) / s.liveW);
+    const node = this.nodes && this.nodes[s.sel], groups = {};
+    ((this.adj || {})[s.sel] || []).forEach(x => { const n = this.nodes[x.k]; if (!n) return; const h = (x.out ? '' : 'by ') + (x.rel || 'linked').replace(/_/g, ' '); (groups[h] = groups[h] || []).push({ label: n.label, dot: 'width:7px;height:7px;border-radius:50%;flex:none;display:inline-block;background:' + (PAL[n.lane] || '#9397ab') + ';', go: () => this.setState({ sel: x.k }) }); });
+    return {
+      liveRef: this.liveRef, liveBox: this.liveBox, graphRef: this.graphRef,
+      resultLabel: done < SUITES.length ? 'RESULT: —' : s.fails.length ? 'RESULT: FAILED' : 'RESULT: PASSED', resultCls: done < SUITES.length ? 'tag tag-neutral' : s.fails.length ? 'tag tag-outline' : 'tag tag-accent',
+      statusLine: s.running ? 'Running… ' + s.status : s.status, passes: s.passes, running: s.running, idle: !s.running,
+      sizesQuick: s.sizes === 'quick', sizesAll: s.sizes === 'all', pickQuick: () => this.setState({ sizes: 'quick' }), pickAll: () => this.setState({ sizes: 'all' }),
+      runAll: () => this.run(SUITES.map(x => x[0])), stop: () => { this.stopFlag = true; this.log('stopping after the current check'); },
+      livePage: s.livePage, onPage: e => { this._shown = null; this.setState({ livePage: e.target.value, liveLabel: short(e.target.value) + ' · ' + s.liveW + 'px' }); },
+      pageOpts: (s.pages.length ? s.pages : [s.livePage]).map(p => ({ value: p, label: short(p), on: p === s.livePage })),
+      widthOpts: [[390, 'Phone'], [820, 'Tablet'], [1440, 'Laptop']].map(([w, label]) => ({ label, on: s.liveW === w, pick: () => this.setState({ liveW: w, liveLabel: short(s.livePage) + ' · ' + w + 'px' }) })),
+      liveSt: 'width:' + s.liveW + 'px;height:' + Math.round((s.boxH || 480) / sc) + 'px;transform:scale(' + sc + ');', liveLabel: s.liveLabel,
+      suites: SUITES.map(([id, name, what]) => { const x = s.suites[id] || {}; return { name, line: x.line || what, state: x.st || 'idle', cls: x.st === 'passed' ? 'tag tag-accent' : x.st === 'failed' ? 'tag tag-outline' : 'tag tag-neutral', run: () => this.run([id]) }; }),
+      failCount: s.fails.length ? s.fails.length + ' · ' + s.warns + ' warnings' : s.warns ? s.warns + ' warnings' : '',
+      fails: s.fails.slice(0, 300).map(f => ({ word: f.word, text: f.text, open: () => { if (f.page) { this._shown = null; this.setState({ livePage: f.page, liveW: Math.min(1440, f.width || 1440), liveLabel: short(f.page) + ' · ' + (f.width || 1440) + 'px' }); } if (f.key && this.nodes && this.nodes[f.key]) this.setState({ sel: f.key, tab: 'sel' }); } })),
+      noFails: !s.fails.length, noFailsLine: done ? 'Nothing failed.' : 'Run everything to check the whole repository.',
+      graphLine: s.graph ? s.graph.nodes.length + ' nodes · ' + s.graph.edges.length + ' edges' : s.py === 'ready' ? 'building…' : 'waiting for Python',
+      legend: LEG.map(([k, label]) => ({ label, dot: 'width:8px;height:8px;border-radius:50%;flex:none;display:inline-block;background:' + PAL[k] + ';' })),
+      tabSel: s.tab === 'sel', tabReport: s.tab === 'report', tabLog: s.tab === 'log', toSel: () => this.setState({ tab: 'sel' }), toReport: () => this.setState({ tab: 'report' }), toLog: () => this.setState({ tab: 'log' }),
+      selKind: node ? (node.tip || node.lane) : 'Nothing selected', selTitle: node ? node.label : 'Click a dot in the graph, or a failure.',
+      selGroups: Object.keys(groups).sort().map(h => ({ head: h + ' (' + groups[h].length + ')', items: groups[h].slice(0, 40) })),
+      report: this.report(), copyReport: () => { try { navigator.clipboard.writeText(this.report()); this.log('report copied'); } catch (e) {} },
+      logText: s.log.slice(-120).join('\n') || 'Nothing yet.'
+    };
+  }
+}
+</script>
+</body>
+</html>

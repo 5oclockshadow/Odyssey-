@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; height: 100%; background: #0b0e17; overflow: hidden; } * { box-sizing: border-box; } button:focus-visible, a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 2px; } iframe { border: 0; background: #0b0e17; } @keyframes mg-in { from { opacity: 0; transform: scale(0.992); } to { opacity: 1; transform: none; } } @keyframes mg-breathe { 0%, 100% { opacity: 0.5; transform: scale(0.94); } 50% { opacity: 1; transform: scale(1.06); } } header button { transition: background 0.2s, color 0.2s; } header button:hover { filter: brightness(1.15); } @media (max-width: 760px) { header kbd, header > span:last-child { display: none !important; } } @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }</style>
+</helmet>
+<div data-screen-label="Map Graph Studio" style="position: fixed; inset: 0; display: grid; grid-template-rows: 52px minmax(0, 1fr); background: radial-gradient(900px 120px at 20% 0, #162040 0, #0b0e17 70%); color: #eef1ff; font-family: 'Instrument Sans', sans-serif; font-size: 14px;">
+  <header style="position: relative; display: flex; align-items: center; gap: 16px; padding: 0 18px; border-bottom: 1px solid #252c42; background: rgba(11,14,23,0.72); backdrop-filter: blur(10px);"><span aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: linear-gradient(90deg, #27d3ff00, #27d3ff99 30%, #ff3ea599 70%, #ff3ea500);"></span>
+    <a href="Map Graph - Home.dc.html" title="Map Graph site" style="display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0; color: #eef1ff; text-decoration: none; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px;"><svg width="28" height="18" viewBox="0 0 34 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="#27d3ff" stroke-width="2.6"></circle><circle cx="23" cy="11" r="9" fill="none" stroke="#ff3ea5" stroke-width="2.6"></circle></svg>Map Graph</a>
+    <div role="tablist" aria-label="Engine" style="display: inline-flex; align-items: stretch; height: 34px; border: 1px solid #3a4468; border-radius: 999px; overflow: hidden; background: #111628; box-shadow: 0 2px 14px rgba(39,211,255,0.08);">
+      <button type="button" role="tab" aria-selected="{{ onT }}" onClick="{{ goT }}" style="{{ tStyle }}" title="Thoughts (Alt+1)"><span style="{{ tDot }}"></span>Thoughts<span style="opacity: 0.7; font-size: 12px;">{{ tInfo }}</span></button>
+      <button type="button" onClick="{{ swap }}" style="width: 36px; border: 0; border-left: 1px solid #3a4468; border-right: 1px solid #3a4468; background: transparent; color: #eef1ff; cursor: pointer; font-size: 16px;" title="Swap engines (` key)" aria-label="Swap engines">⇄</button>
+      <button type="button" role="tab" aria-selected="{{ onA }}" onClick="{{ goA }}" style="{{ aStyle }}" title="Atlas (Alt+2)"><span style="{{ aDot }}"></span>Atlas<span style="opacity: 0.7; font-size: 12px;">{{ aInfo }}</span></button>
+    </div>
+    <button type="button" role="tab" aria-selected="{{ onS }}" onClick="{{ goS }}" style="{{ sStyle }}" title="Both side by side (Alt+3)">Split</button>
+    <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #8b94bb;"><kbd style="font-family: inherit; font-size: 11px; padding: 2px 7px; border: 1px solid #3a4468; border-radius: 6px; background: #111628; color: #c9d0ee;">`</kbd>swap<kbd style="font-family: inherit; font-size: 11px; padding: 2px 7px; border: 1px solid #3a4468; border-radius: 6px; background: #111628; color: #c9d0ee; margin-left: 8px;">Alt 1 · 2 · 3</kbd>mode</span>
+  </header>
+  <div style="position: relative; min-height: 0;">
+    <div aria-hidden="true" style="{{ splashStyle }}"><svg width="64" height="40" viewBox="0 0 34 22" style="animation: mg-breathe 1.6s ease-in-out infinite;"><circle cx="11" cy="11" r="9" fill="none" stroke="#27d3ff" stroke-width="1.6"></circle><circle cx="23" cy="11" r="9" fill="none" stroke="#ff3ea5" stroke-width="1.6"></circle></svg></div>
+    <div aria-hidden="true" style="{{ dividerStyle }}"></div>
+    <iframe title="Thoughts" src="Thought Graph - Studio.dc.html" onLoad="{{ onFrame }}" style="{{ thoughtsStyle }}"></iframe>
+    <iframe title="Atlas" src="Thought Graph - Atlas.dc.html" onLoad="{{ onFrame }}" style="{{ atlasStyle }}"></iframe>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { mode: 'thoughts', loaded: 0 };
+  async componentDidMount() {
+    try { const m = localStorage.getItem('mg-studio-mode'); if (m) this.setState({ mode: m }); } catch (e) { /* ignore */ }
+    this.TW = await import('./twin-runtime.js'); this.TW.join('host', () => ({ size: 0, unit: 'host' }));
+    this.keyFn = e => this.onKey(e); window.addEventListener('keydown', this.keyFn);
+    this.poll = setInterval(() => { if (!this.dead) this.forceUpdate(); }, 2500);
+    this.splashT = setTimeout(() => { if (!this.dead) this.setState(s => ({ loaded: Math.max(s.loaded, 2) })); }, 6000); // never leave the splash up if a frame is slow or cached
+  }
+  componentWillUnmount() { this.dead = true; clearInterval(this.poll); clearTimeout(this.splashT); window.removeEventListener('keydown', this.keyFn); }
+  onKey = e => {
+    const tag = ((e.target || {}).tagName || '');
+    if (e.altKey) { const k = { '1': 'thoughts', '2': 'atlas', '3': 'split' }[e.key]; if (k) { e.preventDefault(); this.set(k); } return; }
+    if (e.key === '`' && !/INPUT|TEXTAREA|SELECT/.test(tag)) { e.preventDefault(); this.swap(); }
+  };
+  set = m => { try { localStorage.setItem('mg-studio-mode', m); } catch (e) { /* ignore */ } this.setState({ mode: m }); };
+  swap = () => this.set(this.state.mode === 'thoughts' ? 'atlas' : 'thoughts');
+  // Links between the twins switch the tab instead of opening a window, and the shortcuts work from inside either app.
+  onFrame = e => {
+    this.setState(st => ({ loaded: st.loaded + 1 }));
+    let d = null; try { d = e.target.contentDocument; } catch (x) { return; } if (!d) return;
+    d.addEventListener('click', ev => { const a = ev.target.closest && ev.target.closest('a[href]'); if (!a) return; const h = decodeURIComponent(a.getAttribute('href') || ''); if (/Atlas\.dc\.html/.test(h)) { ev.preventDefault(); this.set('atlas'); } else if (/Thought Graph - Studio\.dc\.html/.test(h)) { ev.preventDefault(); this.set('thoughts'); } }, true);
+    d.addEventListener('keydown', this.onKey);
+  };
+  renderVals() {
+    const m = this.state.mode, TW = this.TW, th = TW && TW.sister('thoughts'), at = TW && TW.sister('atlas');
+    const seg = on => ({ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '0 16px', border: 0, cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: on ? 600 : 500, background: on ? '#eef1ff' : 'transparent', color: on ? '#0b0e17' : '#c9d0ee' });
+    const dot = (p, c) => ({ width: 8, height: 8, borderRadius: '50%', background: p && p.auto ? c : '#3a4468' });
+    const info = p => p ? p.size + (p.auto ? ' · auto' : '') + (p.live ? ' · live' : '') : '';
+    const base = { position: 'absolute', top: 0, height: '100%', background: '#0b0e17' }, hide = { ...base, left: 0, width: '100%', display: 'none' };
+    const frame = (on, left, width) => (on ? { ...base, left, width, display: 'block', animation: 'mg-in 0.28s ease-out' } : hide);
+    const split = m === 'split';
+    const splitOn = m === 'split'; return { splashStyle: { position: 'absolute', inset: 0, zIndex: 3, display: 'grid', placeItems: 'center', background: '#0b0e17', pointerEvents: 'none', opacity: this.state.loaded >= 2 ? 0 : 1, transition: 'opacity 0.5s ease' }, dividerStyle: { position: 'absolute', top: 0, bottom: 0, left: '50%', width: 1, zIndex: 2, pointerEvents: 'none', display: splitOn ? 'block' : 'none', background: 'linear-gradient(180deg, #27d3ff00, #27d3ffaa, #ff3ea5aa, #ff3ea500)' }, onT: m === 'thoughts', onA: m === 'atlas', onS: split, goT: () => this.set('thoughts'), goA: () => this.set('atlas'), goS: () => this.set('split'), swap: this.swap,
+      tStyle: seg(m === 'thoughts'), aStyle: seg(m === 'atlas'), sStyle: { height: 32, padding: '0 16px', borderRadius: 999, border: '1px solid ' + (split ? '#ffffff' : '#3a4468'), cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: split ? 600 : 500, background: split ? '#eef1ff' : 'transparent', color: split ? '#0b0e17' : '#c9d0ee' },
+      tDot: dot(th, '#27d3ff'), aDot: dot(at, '#ff3ea5'), tInfo: info(th), aInfo: info(at),
+      thoughtsStyle: frame(m === 'thoughts' || split, 0, split ? '50%' : '100%'), atlasStyle: frame(m === 'atlas' || split, split ? '50%' : 0, split ? '50%' : '100%'), onFrame: this.onFrame };
+  }
+}
+
+</script>
+</body>
+</html>

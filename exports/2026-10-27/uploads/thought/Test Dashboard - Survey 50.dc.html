@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+  html{color-scheme:dark;} html,body{margin:0;height:100%;background:#05060b;color:#eceef4;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  *,*::before,*::after{box-sizing:border-box;}
+  button,input{font:inherit;color:inherit;}
+  a{color:#b5abfc;text-decoration:none;} a:hover{color:#d2cefd;}
+  :focus{outline:none;} :focus-visible{outline:2px solid #9184d9;outline-offset:2px;}
+  input[type=range]{accent-color:#9184d9;} input[type=checkbox]{accent-color:#9184d9;}
+  ::-webkit-scrollbar{width:11px;height:11px;} ::-webkit-scrollbar-thumb{background:#1c1e28;border-radius:8px;border:2px solid #05060b;} ::-webkit-scrollbar-track{background:transparent;}
+  .sv-card{transition:transform .14s ease, border-color .14s ease, box-shadow .14s ease;}
+  .sv-card:hover{transform:translateY(-2px); border-color:rgba(145,132,217,0.55)!important; box-shadow:0 12px 30px rgba(0,0,0,0.55);}
+  @keyframes sv-breathe{0%,100%{opacity:0.45;}50%{opacity:1;}}
+  </style>
+</helmet>
+
+<div data-screen-label="Survey 50" style="position:fixed; inset:0; overflow:hidden; background:radial-gradient(120% 70% at 50% -5%, #110f1c, #05060b 62%); color:#eceef4; display:flex; flex-direction:column;">
+
+  <sc-if value="{{ isSurvey }}" hint-placeholder-val="{{ true }}">
+  <div style="position:absolute; inset:0; display:flex; flex-direction:column; overflow:hidden;">
+    <header style="flex:none; display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; justify-content:space-between; padding:14px clamp(14px,2vw,26px); border-bottom:1px solid rgba(236,238,244,0.08); background:rgba(8,9,15,0.7); backdrop-filter:blur(12px); z-index:5;">
+      <div style="display:flex; align-items:center; gap:13px;">
+        <div style="width:38px; height:38px; border-radius:11px; background:radial-gradient(130% 130% at 30% 20%, #b5abfc, #5f55a8 70%); display:grid; place-items:center; flex:none; box-shadow:0 8px 22px rgba(145,132,217,0.4);"><div style="width:16px; height:16px; border-radius:50%; border:2px solid #0b0c12; background:radial-gradient(circle at 35% 30%, #fff, #8fe0c8);"></div></div>
+        <div style="display:grid; gap:2px;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; color:#868aa8;">SURVEY · {{ count }} CONNECTOMES</span>
+          <h1 style="margin:0; font-size:clamp(18px,2.2vw,25px); line-height:1.05; letter-spacing:-0.02em; font-weight:700;">Fifty brains, one view</h1>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <input value="{{ query }}" onInput="{{ onQuery }}" placeholder="Filter examples…" style="height:36px; width:190px; max-width:44vw; padding:0 13px; border-radius:10px; border:1px solid rgba(236,238,244,0.12); background:#0c0d15; color:#eceef4; font-size:12.5px;" />
+        <div style="display:flex; align-items:center; gap:9px; padding:0 13px; height:36px; border-radius:10px; border:1px solid rgba(236,238,244,0.1); background:#0c0d15;"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.12em;color:#75798c;">GLOW</span><input type="range" min="0.4" max="1.8" step="0.05" value="{{ glow }}" onInput="{{ onGlow }}" style="width:84px;" /></div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#9397ab;cursor:pointer;"><input type="checkbox" checked="{{ motion }}" onChange="{{ toggleMotion }}" />motion</label>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#5c5f73;">{{ sumNeurons }} neurons · {{ sumAxons }} axons total</span>
+      </div>
+    </header>
+
+    <div ref="{{ scrollRef }}" style="flex:1; min-height:0; overflow:auto; padding:clamp(14px,2vw,24px);">
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(clamp(208px,22vw,286px),1fr)); gap:13px;">
+        <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="50">
+        <div class="sv-card" onClick="{{ t.onOpen }}" style="border-radius:13px; overflow:hidden; border:1px solid rgba(236,238,244,0.08); background:#0b0c13; cursor:pointer;">
+          <div style="position:relative; height:158px; background:#04040a; overflow:hidden;">
+            <canvas ref="{{ t.ref }}" style="width:100%; height:100%; display:block;"></canvas>
+            <span style="position:absolute; top:8px; left:9px; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.08em; color:rgba(236,238,244,0.66); background:rgba(0,0,0,0.3); border:1px solid rgba(236,238,244,0.12); border-radius:5px; padding:1px 6px;">{{ t.num }}</span>
+          </div>
+          <div style="padding:10px 12px 11px; display:grid; gap:6px;">
+            <span style="font-size:13px; font-weight:600; letter-spacing:-0.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.name }}</span>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#75798c;">{{ t.scale }}</span>
+              <div style="display:flex; gap:5px; align-items:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#7fcfb6;">{{ t.passed }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:{{ t.failColor }};">{{ t.failed }}</span></div>
+            </div>
+          </div>
+        </div>
+        </sc-for>
+      </div>
+      <p style="margin:22px 2px 8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#4e5165;">Each example is a live project connectome · file = neuron · load = axon · 4th axis = how wired-in · click any to step inside. Only on-screen tiles animate.</p>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isFocus }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute; inset:0; display:grid; grid-template-rows:auto 1fr; overflow:hidden; background:#04040a;">
+    <header style="display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; justify-content:space-between; padding:11px clamp(12px,1.6vw,20px); border-bottom:1px solid rgba(236,238,244,0.08); background:rgba(8,9,15,0.82); backdrop-filter:blur(12px); z-index:6;">
+      <div style="display:flex; align-items:center; gap:12px; min-width:0;">
+        <button type="button" onClick="{{ back }}" style="height:36px; padding:0 14px; border-radius:10px; border:1px solid rgba(236,238,244,0.14); background:rgba(14,15,22,0.7); color:#c7cad8; font-size:12.5px; cursor:pointer;">← Survey</button>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.06em; font-weight:600; color:#eceef4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ focus.name }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#6d7089; white-space:nowrap;">TEST DASHBOARD</span>
+        <span style="display:inline-flex; align-items:center; gap:5px; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.06em; color:#7fcfb6; border:1px solid rgba(127,207,182,0.4); border-radius:20px; padding:2px 8px;"><span style="width:6px;height:6px;border-radius:50%;background:#7fcfb6;animation:sv-breathe 1.1s infinite;"></span>LIVE</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#6d7089; white-space:nowrap;">{{ focus.build }}</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap; justify-content:flex-end;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:12px;"><span style="color:#7fcfb6;">{{ focus.passed }}</span> <span style="color:#6d7089;">passed</span> <span style="color:#e8706f;">{{ focus.failed }}</span> <span style="color:#6d7089;">failed</span></span>
+        <button type="button" onClick="{{ runAll }}" style="height:36px;padding:0 15px;border-radius:10px;border:1px solid #5d5294;background:linear-gradient(180deg,#353056,#2b2741);color:#e7e5fe;font-size:12.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;"><span style="width:7px;height:7px;border-radius:50%;background:{{ runDotColor }};"></span>{{ runLabel }}</button>
+        <div style="display:flex; align-items:center; gap:8px; padding:0 12px; height:36px; border-radius:10px; border:1px solid rgba(236,238,244,0.1); background:#0c0d15;"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.12em;color:#75798c;">GLOW</span><input type="range" min="0.4" max="1.8" step="0.05" value="{{ glow }}" onInput="{{ onGlow }}" style="width:76px;" /></div>
+        <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:#9397ab;cursor:pointer;"><input type="checkbox" checked="{{ motion }}" onChange="{{ toggleMotion }}" />motion</label>
+      </div>
+    </header>
+
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) clamp(300px,27vw,360px); min-height:0;">
+      <div style="position:relative; display:grid; grid-template-rows:auto 1fr auto; min-height:0; min-width:0;">
+        <div style="padding:12px clamp(12px,1.6vw,22px) 4px;">
+          <div style="display:flex; flex-wrap:wrap; gap:7px; align-items:center;"><sc-for list="{{ kindPills }}" as="p" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#a9adc4;border:1px solid rgba(236,238,244,0.1);border-radius:16px;padding:3px 9px;"><span style="{{ p.dot }}"></span>{{ p.label }}</span></sc-for><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5c5f73;margin-left:4px;">{{ focus.breadcrumb }}</span></div>
+          <h2 style="margin:12px 0 4px; font-size:21px; font-weight:700; letter-spacing:-0.02em;">Connectome</h2>
+          <p style="margin:0; max-width:620px; font-size:12px; line-height:1.5; color:#9397ab;">Each file is a neuron and each load is an axon. Learned links glow; test runs and findings fire. The fourth axis is how strongly each neuron is wired in. <span style="color:#6d7089;">Drag to turn · scroll to zoom · double-click to reset · click a neuron to inspect it.</span></p>
+        </div>
+        <div style="position:relative; min-height:0; min-width:0;">
+          <canvas ref="{{ focusRef }}" onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" onPointerLeave="{{ onLeave }}" onWheel="{{ onWheel }}" onDoubleClick="{{ onReset }}" style="position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; cursor:grab;"></canvas>
+          <div ref="{{ tipRef }}" style="position:absolute; left:0; top:0; display:none; pointer-events:none; transform:translate(-50%,-115%); background:rgba(10,11,17,0.94); border:1px solid rgba(236,238,244,0.14); border-radius:9px; padding:8px 10px; font-size:11.5px; line-height:1.45; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,0.5); z-index:4;"></div>
+        </div>
+        <div style="display:flex; gap:4px; padding:8px clamp(12px,1.6vw,22px) 12px; border-top:1px solid rgba(236,238,244,0.06);"><sc-for list="{{ bottomTabs }}" as="b" hint-placeholder-count="4"><button type="button" onClick="{{ b.pick }}" style="{{ b.style }}">{{ b.label }}</button></sc-for><span style="flex:1;"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5c5f73;align-self:center;">{{ focus.runline }}</span></div>
+      </div>
+
+      <aside style="border-left:1px solid rgba(236,238,244,0.08); background:rgba(9,10,16,0.6); display:grid; grid-template-rows:auto 1fr; min-height:0;">
+        <nav style="display:flex; gap:2px; padding:9px 12px; border-bottom:1px solid rgba(236,238,244,0.07); overflow:auto;"><sc-for list="{{ rightTabs }}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{ r.pick }}" style="{{ r.style }}">{{ r.label }}</button></sc-for></nav>
+        <div style="overflow:auto; min-height:0;">
+
+          <sc-if value="{{ isInspector }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid; gap:0;">
+            <div style="padding:14px 16px; display:grid; gap:9px; border-bottom:1px solid rgba(236,238,244,0.07);">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.14em;color:#75798c;">PROJECT</span>
+              <sc-for list="{{ focus.stats }}" as="s" hint-placeholder-count="5"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;"><span style="font-size:11.5px;color:#8e92a8;">{{ s.k }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#cfd1de;text-align:right;">{{ s.v }}</span></div></sc-for>
+            </div>
+            <div style="padding:14px 16px; display:grid; gap:8px;">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.14em;color:#75798c;">SUITES</span>
+              <sc-for list="{{ focus.suites }}" as="u" hint-placeholder-count="6"><div style="display:grid; gap:5px; padding:9px 11px; border-radius:10px; background:#0e0f17; border:1px solid rgba(236,238,244,0.07);"><div style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span style="font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ u.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6d7089;">{{ u.time }}</span></div><div style="display:flex; align-items:center; gap:8px;"><div style="height:3px;flex:1;border-radius:2px;background:rgba(236,238,244,0.08);overflow:hidden;"><div style="{{ u.bar }}"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#7fcfb6;">{{ u.passed }}</span><sc-if value="{{ u.hasFail }}" hint-placeholder-val="{{ false }}"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e8706f;">{{ u.failed }}</span></sc-if></div></div></sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isFindings }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; gap:0;">
+            <div style="padding:12px 14px; display:flex; flex-wrap:wrap; gap:5px; border-bottom:1px solid rgba(236,238,244,0.07);"><sc-for list="{{ findCats }}" as="c" hint-placeholder-count="10"><button type="button" onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div>
+            <div style="display:grid; gap:1px; background:rgba(236,238,244,0.06);"><sc-for list="{{ findings }}" as="f" hint-placeholder-count="8"><div onClick="{{ f.pick }}" style="background:#0b0c13; padding:11px 14px; display:grid; gap:4px; cursor:pointer; border-left:2px solid {{ f.sevColor }};"><div style="display:flex; gap:7px; align-items:center; flex-wrap:wrap;"><span style="{{ f.sevStyle }}">{{ f.sev }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:{{ f.catColor }};">{{ f.cat }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6d7089;">{{ f.where }}</span></div><span style="font-size:11.5px;color:#c7cad8;line-height:1.4;">{{ f.msg }}</span><span style="font-size:10.5px;color:#75798c;line-height:1.4;">{{ f.fix }}</span></div></sc-for></div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isFile }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:15px 16px; display:grid; gap:11px;">
+            <sc-if value="{{ sel.has }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; gap:11px;">
+              <div style="display:flex; align-items:center; gap:9px;"><span style="{{ sel.dot }}"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ sel.name }}</span></div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;"><span style="{{ sel.kindTag }}">{{ sel.kind }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#9397ab;border:1px solid rgba(236,238,244,0.14);border-radius:5px;padding:2px 7px;">{{ sel.lines }}</span></div>
+              <div style="height:1px;background:rgba(236,238,244,0.08);"></div>
+              <sc-for list="{{ sel.rows }}" as="r" hint-placeholder-count="3"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;"><span style="font-size:11.5px;color:#8e92a8;">{{ r.k }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#cfd1de;">{{ r.v }}</span></div></sc-for>
+            </div>
+            </sc-if>
+            <sc-if value="{{ sel.empty }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:12px;color:#75798c;line-height:1.5;">Click a neuron in the connectome to inspect the file — its kind, size, how many files it loads and how many load it.</p></sc-if>
+          </div>
+          </sc-if>
+
+        </div>
+      </aside>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;glow&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0.4,&quot;max&quot;:1.8,&quot;step&quot;:0.05,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Look&quot;}}">
+const MONO = "'IBM Plex Mono', monospace";
+const NAMES = ['Broadcaster','JARVIS','Thought Graph','Atlas Field Kit','Canadian Law Graph','GENALPHA','SEDEK Reasoner','RexUltra V5','Taskmap Board','Fleet Decisions','DSPy Agent Graph','Sentinel Hub EO','Copernicus Browser','Keel Workstation','Environmental Dashboard','YouTube Operator','Audio/Video Pipeline','Mobile App Concept','UI Mockups','Claude Design','Graph Intelligence','Advanced Viz Methods','Map Graph Studio','Mega Console','Grow Graph','Chem Discovery','Waitlist API','Tandem Core','Neurite Kit','Family Planner','Suite Runner','Promo Scene','Twin Runtime','Trust Ledger','Lens Studio','Shaker','Constellation','Orbit Deck','Strata','Sphere Lab','Playground','Drafting Table','Site Map','Early Access','Founding Docs','Pitch Engine','Prospect Finder','Evidence Vault','Survey Runner','Night Registry'];
+const KINDS = ['page','module','test','server','data','doc'];
+const KIND_COL = { page:'#6fcf8a', module:'#5bc8d6', test:'#e6c36a', server:'#e8956f', data:'#b58bf0', doc:'#6aa6e8' };
+const PALETTES = [
+  { bg0:'#0b0a16', bg1:'#05040a', hues:['200,195,255','150,200,255','255,255,255','180,160,255'], axon:'120,120,205' },
+  { bg0:'#030a12', bg1:'#01050a', hues:['90,220,255','120,255,230','205,255,255','255,255,255'], axon:'70,165,205' },
+  { bg0:'#120406', bg1:'#070101', hues:['255,125,95','255,185,95','255,90,125','255,235,185'], axon:'205,105,75' },
+  { bg0:'#02100c', bg1:'#010604', hues:['85,255,180','165,255,125','235,255,165','255,255,255'], axon:'75,205,145' },
+  { bg0:'#0a0618', bg1:'#04020c', hues:['125,125,255','205,125,255','255,125,235','255,255,255'], axon:'145,115,225' },
+  { bg0:'#0e0a04', bg1:'#060300', hues:['255,205,95','255,165,65','255,235,155','255,255,230'], axon:'215,165,85' },
+  { bg0:'#06080f', bg1:'#02030a', hues:['155,185,255','205,215,255','255,255,255','125,155,235'], axon:'115,135,205' },
+  { bg0:'#100616', bg1:'#07030c', hues:['235,125,205','255,165,225','185,145,255','255,255,255'], axon:'205,125,195' },
+  { bg0:'#04120f', bg1:'#020806', hues:['125,235,215','185,255,225','95,205,255','255,255,255'], axon:'95,195,185' },
+  { bg0:'#0c0c10', bg1:'#050507', hues:['205,210,225','235,240,250','165,175,200','255,255,255'], axon:'145,150,170' },
+  { bg0:'#0a0714', bg1:'#05030b', hues:['255,215,125','155,205,255','205,145,255','255,255,255'], axon:'155,145,215' },
+  { bg0:'#030c14', bg1:'#01060b', hues:['95,205,255','135,235,255','255,255,255','205,250,255'], axon:'85,175,225' },
+];
+const FIND_CATS = ['clipped','scroll','offscreen','tap','request','a11y','text','console','theme','registry','render','secret'];
+const FIND_COL = { clipped:'#e6c36a', scroll:'#e8956f', offscreen:'#e8956f', tap:'#b58bf0', request:'#6aa6e8', a11y:'#6fcf8a', text:'#e6c36a', console:'#e8706f', theme:'#b5abfc', registry:'#e8706f', render:'#e8706f', secret:'#e8706f' };
+const SUITE_POOL = ['Files, links and secrets','Pages and sites','Apps','Consoles','Graphs on screen','Research and documents','Design explorations','Fit: phones and tablets','Deep links and views','Reasoning engine','Agentic tester: prospects','System: settings and tabs','Demos, lens and search'];
+
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function rot(a,b,ang){ const c=Math.cos(ang), s=Math.sin(ang); return [a*c-b*s, a*s+b*c]; }
+function dist3(a,b){ return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]); }
+function comma(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+
+function buildOne(i){
+  const rng = mulberry32((1000+i*2654435761)>>>0); const rnd = () => rng();
+  const gss = () => { let u=rng()||1e-9, v=rng(); return Math.sqrt(-2*Math.log(u))*Math.cos(6.2831853*v); };
+  const pal = PALETTES[i % PALETTES.length];
+  const N = 68 + Math.floor(rnd()*rnd()*170);
+  const K = 4 + Math.floor(rnd()*4);
+  const centers = []; for (let k=0;k<K;k++){ const y=1-2*(k+0.5)/K; const r=Math.sqrt(Math.max(0,1-y*y)); const a=k*2.399963+rnd()*0.6; centers.push([r*Math.cos(a)*0.56, y*0.56, r*Math.sin(a)*0.56]); }
+  const nodes = [];
+  for (let n=0;n<N;n++){ const k=Math.floor(rnd()*K); const c=centers[k]; const rad=0.36*Math.cbrt(rnd()); const d=[gss(),gss(),gss()]; const dl=Math.hypot(d[0],d[1],d[2])||1; const kind=KINDS[Math.floor(rnd()*rnd()*KINDS.length)]; nodes.push({ p:[c[0]+d[0]/dl*rad, c[1]+d[1]/dl*rad, c[2]+d[2]/dl*rad], kind, cl:k, deg:0, hue:pal.hues[Math.floor(rnd()*pal.hues.length)], tw:rnd()*6.2831853, lines:40+Math.floor(rnd()*rnd()*900), fail:0 }); }
+  const links=[], eset=new Set();
+  const add=(a,b)=>{ if(a===b)return; const key=a<b?a*8192+b:b*8192+a; if(eset.has(key))return; eset.add(key); links.push([a,b, rnd()<0.22]); nodes[a].deg++; nodes[b].deg++; };
+  for (let a=0;a<N;a++){ const cand=[]; for (let b=0;b<N;b++) if (b!==a && nodes[b].cl===nodes[a].cl) cand.push([dist3(nodes[a].p,nodes[b].p), b]); cand.sort((x,y)=>x[0]-y[0]); const deg=2+Math.floor(rnd()*3); for (let q=0;q<Math.min(deg,cand.length);q++) add(a,cand[q][1]); }
+  const cross=Math.floor(N*0.4); for (let c2=0;c2<cross;c2++) add(Math.floor(rnd()*N), Math.floor(rnd()*N));
+  const nh=1+Math.floor(rnd()*3); for (let h=0;h<nh;h++){ const hub=Math.floor(rnd()*N); const extra=7+Math.floor(rnd()*15); for (let e=0;e<extra;e++) add(hub, Math.floor(rnd()*N)); }
+  let maxd=1; for (const nd of nodes) maxd=Math.max(maxd, nd.deg);
+  for (const nd of nodes){ nd.w=(nd.deg/maxd-0.42)*1.5; nd.hub=nd.deg>maxd*0.55; nd.r=1.1+(nd.deg/maxd)*4.4; }
+  const nf=Math.floor(N*(0.05+rnd()*0.12)); for (let f=0;f<nf;f++){ const id=Math.floor(rnd()*N); nodes[id].fail=rnd()<0.6?2:1; }
+  const dust=[]; const nd2=130+Math.floor(rnd()*120); for (let d=0;d<nd2;d++){ const rad=1.15*Math.cbrt(rnd()); const dir=[gss(),gss(),gss()]; const dl=Math.hypot(dir[0],dir[1],dir[2])||1; dust.push({ p:[dir[0]/dl*rad,dir[1]/dl*rad,dir[2]/dl*rad], b:0.18+rnd()*0.5, tw:rnd()*6.2831853 }); }
+  const axons=links.length, micro=N*(30+Math.floor(rnd()*70));
+  const failed=Math.floor(axons*(0.03+rnd()*0.22)), passed=N*16+Math.floor(rnd()*rnd()*1400);
+  const suites=[]; const ns=5+Math.floor(rnd()*3); const used=new Set();
+  for (let s=0;s<ns;s++){ let nm; do { nm=SUITE_POOL[Math.floor(rnd()*SUITE_POOL.length)]; } while(used.has(nm) && used.size<SUITE_POOL.length); used.add(nm); const p=20+Math.floor(rnd()*rnd()*700); const fl=rnd()<0.5?0:1+Math.floor(rnd()*rnd()*60); suites.push({ name:nm, passed:p, failed:fl, time:(Math.floor(rnd()*4))+':'+String(Math.floor(rnd()*60)).padStart(2,'0') }); }
+  return { name:NAMES[i], pal, nodes, links, dust, N, axons, micro, passed, failed, suites, lines:N*(80+Math.floor(rnd()*260)), ang:{ yaw:rnd()*6.2831853, pitch:-0.25+gss()*0.12, xw:rnd()*6.2831853, zw:rnd()*2 }, zoom:1 };
+}
+
+class Component extends DCLogic {
+  state = { lane:'survey', focusId:0, rightTab:'inspector', centerTab:'graph', selId:null, query:'', glow:1, motion:true, running:false, findCat:'all' };
+  examples = NAMES.map((_, i) => buildOne(i));
+  tileRefs = NAMES.map(() => React.createRef());
+  focusRef = React.createRef(); tipRef = React.createRef(); scrollRef = React.createRef();
+  sprites = new Map();
+
+  componentDidMount(){ this._onR = () => {}; window.addEventListener('resize', this._onR); this.last = performance.now(); this._raf = requestAnimationFrame(this.loop); }
+  componentWillUnmount(){ this.dead = true; if (this._raf) cancelAnimationFrame(this._raf); window.removeEventListener('resize', this._onR); }
+
+  sprite(rgb){ let s = this.sprites.get(rgb); if (s) return s; const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const g = x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,'rgba('+rgb+',1)'); g.addColorStop(0.22,'rgba('+rgb+',0.5)'); g.addColorStop(1,'rgba('+rgb+',0)'); x.fillStyle = g; x.fillRect(0,0,64,64); this.sprites.set(rgb, c); return c; }
+  size(cv, hi){ const W=cv.clientWidth, H=cv.clientHeight; if (!W||!H) return null; const dpr=Math.min(hi?1.6:1.15, window.devicePixelRatio||1); const tw=Math.round(W*dpr), th=Math.round(H*dpr); if (cv.width!==tw||cv.height!==th){ cv.width=tw; cv.height=th; } return { W, H, dpr }; }
+
+  loop = () => {
+    if (this.dead) return;
+    const now=performance.now(); let dt=(now-this.last)/1000; this.last=now; if (dt>0.05) dt=0.05;
+    const s=this.state; this.t=(this.t||0)+dt;
+    if (s.lane==='survey'){ for (let i=0;i<this.examples.length;i++){ const cv=this.tileRefs[i].current; if (!cv) continue; const r=cv.getBoundingClientRect(); if (r.bottom<-30||r.top>window.innerHeight+30||r.right<0||r.left>window.innerWidth) continue; const vp=this.size(cv,false); if (!vp) continue; this.stepEx(this.examples[i], dt); this.draw(cv.getContext('2d'), vp, this.examples[i], false); } }
+    else { const cv=this.focusRef.current; if (cv){ const vp=this.size(cv,true); if (vp){ this.stepEx(this.examples[s.focusId], dt); this.draw(cv.getContext('2d'), vp, this.examples[s.focusId], true); } } }
+    this._raf=requestAnimationFrame(this.loop);
+  };
+
+  stepEx(ex, dt){ if (this.state.motion){ const m=1; ex.ang.yaw += 0.035*m*dt; ex.ang.xw += 0.05*m*dt; ex.ang.zw += 0.08*m*dt; } if (ex.pulse){ ex.pulse -= dt; } }
+
+  ptProject(ex, vp, p, hi){ const { W, H } = vp; const cx=W/2, cy=H/2, U=Math.min(W,H)*(hi?0.42:0.46)*(hi?ex.zoom:1), P4=3.2, P3=3.0, a=ex.ang; let x=p[0], y=p[1], z=p[2], w=(p.length>3?p[3]:0), t; t=rot(x,w,a.xw); x=t[0]; w=t[1]; t=rot(z,w,a.zw); z=t[0]; w=t[1]; const s4=P4/(P4-w); x*=s4; y*=s4; z*=s4; t=rot(x,z,a.yaw); x=t[0]; z=t[1]; t=rot(y,z,a.pitch); y=t[0]; z=t[1]; const s3=P3/(P3-z); return { x:cx+x*s3*U, y:cy+y*s3*U, z, depth:s3*s4 }; }
+
+  draw(ctx, vp, ex, hi){
+    const { W, H, dpr } = vp; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const bg=ctx.createRadialGradient(W/2,H*0.42,0,W/2,H*0.42,Math.max(W,H)*0.7); bg.addColorStop(0,ex.pal.bg0); bg.addColorStop(1,ex.pal.bg1); ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    const t=this.t||0, glow=this.state.glow, nodes=ex.nodes, links=ex.links, sel=hi?this.state.selId:null;
+    const pr=new Array(nodes.length); for (let i=0;i<nodes.length;i++) pr[i]=this.ptProject(ex, vp, [nodes[i].p[0],nodes[i].p[1],nodes[i].p[2],nodes[i].w], hi);
+    let hset=null; if (hi && this.hoverId!=null){ hset=new Set([this.hoverId]); for (const l of links){ if (l[0]===this.hoverId) hset.add(l[1]); else if (l[1]===this.hoverId) hset.add(l[0]); } }
+    // dust
+    ctx.globalCompositeOperation='lighter'; const wsp=this.sprite('255,255,255'); const dustN=hi?ex.dust.length:Math.min(80,ex.dust.length);
+    for (let d=0;d<dustN;d++){ const du=ex.dust[d]; const q=this.ptProject(ex, vp, [du.p[0],du.p[1],du.p[2],0], hi); const b=du.b*(0.6+0.4*Math.sin(t*1.5+du.tw))*Math.min(1,q.depth*0.7); const r=(0.6+q.depth*0.9)*(hi?1.5:1)*dpr; ctx.globalAlpha=Math.max(0,b*0.5); ctx.drawImage(wsp, q.x-r, q.y-r, r*2, r*2); }
+    ctx.globalAlpha=1;
+    // axons
+    for (const l of links){ const pa=pr[l[0]], pb=pr[l[1]]; const dep=(pa.depth+pb.depth)/2; let al=(l[2]?0.17:0.055)*Math.min(1,dep*0.8)*glow; if (hset){ al*=(hset.has(l[0])&&hset.has(l[1]))?2.4:0.12; } const col=l[2]?ex.pal.hues[2]:ex.pal.axon; ctx.strokeStyle='rgba('+col+','+Math.min(0.8,al).toFixed(3)+')'; ctx.lineWidth=(l[2]?0.9:0.6)*Math.min(1.8,dep); ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y); ctx.stroke(); }
+    // neuron glows
+    const pulse=ex.pulse&&ex.pulse>0?ex.pulse:0;
+    for (let i=0;i<nodes.length;i++){ const nd=nodes[i], p=pr[i]; if (hi && hset && !hset.has(i)) continue; const tw=0.7+0.3*Math.sin(t*1.8+nd.tw); const act=pulse>0?Math.max(0,pulse-(i%7)*0.03):0; const r=nd.r*p.depth*(hi?1.5:1.0)*glow*(tw+act*1.2)*dpr*2.1; const a=Math.min(1,(0.28+p.depth*0.5))*(hi?1:0.92); ctx.globalAlpha=a; ctx.drawImage(this.sprite(nd.hue), p.x-r, p.y-r, r*2, r*2); if (nd.hub){ const rw=r*0.5; ctx.globalAlpha=Math.min(1,a*1.1); ctx.drawImage(wsp, p.x-rw, p.y-rw, rw*2, rw*2); } }
+    ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+    // cores + finding halos
+    for (let i=0;i<nodes.length;i++){ const nd=nodes[i], p=pr[i]; if (hi && hset && !hset.has(i)) continue; if (nd.hub || p.depth>1.15){ ctx.fillStyle='rgba(255,255,255,'+Math.min(0.95,0.5+p.depth*0.4).toFixed(3)+')'; ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(0.6,nd.r*p.depth*0.32*dpr),0,6.2832); ctx.fill(); }
+      if (nd.fail){ const col=nd.fail===2?'232,112,111':'230,190,100'; ctx.strokeStyle='rgba('+col+','+(0.5+0.4*Math.sin(t*3+nd.tw)).toFixed(3)+')'; ctx.lineWidth=1.3*dpr; ctx.beginPath(); ctx.arc(p.x,p.y,(nd.r*p.depth+3)*dpr,0,6.2832); ctx.stroke(); } }
+    if (hi){ this.fproj=pr;
+      if (this.hoverId!=null || sel!=null){ ctx.textAlign='left'; ctx.font=(12*dpr)+'px Inter, sans-serif'; const show=new Set(); if (this.hoverId!=null) show.add(this.hoverId); if (sel!=null) show.add(sel); for (const i of show){ const nd=nodes[i], p=pr[i]; const lab=ex.nodeName?ex.nodeName(i):nd.kind; ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.fillText('', p.x, p.y); const rr=(nd.r*p.depth+5)*dpr; ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=1.4*dpr; ctx.beginPath(); ctx.arc(p.x,p.y,rr,0,6.2832); ctx.stroke(); } } }
+  }
+
+  nodeLabel(ex, i){ const nd=ex.nodes[i]; const stem={page:'page',module:'module',test:'tests',server:'server',data:'data',doc:'doc'}[nd.kind]; return (ex.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,10))+'-'+stem+'-'+(i+1)+(nd.kind==='page'?'.html':(nd.kind==='data'?'.json':(nd.kind==='doc'?'.md':'.js'))); }
+  hit(mx,my){ let b=null, bd=1e9; const pr=this.fproj||[]; for (let i=0;i<pr.length;i++){ const d=Math.hypot(pr[i].x-mx, pr[i].y-my); if (d<bd){ bd=d; b=i; } } const ex=this.examples[this.state.focusId]; return (b!=null && bd < (ex.nodes[b].r*pr[b].depth+8)) ? b : null; }
+
+  openFocus = i => this.setState({ lane:'focus', focusId:i, selId:null, rightTab:'inspector', findCat:'all' });
+  back = () => { this.hoverId=null; this.setState({ lane:'survey', selId:null }); };
+  onDown = e => { const r=this.focusRef.current.getBoundingClientRect(); this.drag={ x:e.clientX, y:e.clientY, sx:e.clientX-r.left, sy:e.clientY-r.top, moved:false }; try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){ } };
+  onMove = e => { const cv=this.focusRef.current; if (!cv) return; const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top, ex=this.examples[this.state.focusId];
+    if (this.drag){ const dx=e.clientX-this.drag.x, dy=e.clientY-this.drag.y; if (Math.abs(dx)+Math.abs(dy)>3) this.drag.moved=true; if (e.shiftKey){ ex.ang.zw+=dx*0.008; ex.ang.xw+=dy*0.008; } else { ex.ang.yaw+=dx*0.008; ex.ang.pitch+=dy*0.008; } this.drag.x=e.clientX; this.drag.y=e.clientY; return; }
+    const dpr=Math.min(1.6, window.devicePixelRatio||1); const id=this.hit(mx*dpr, my*dpr); this.hoverId=id; const tip=this.tipRef.current;
+    if (tip){ if (id!=null){ const nd=ex.nodes[id], used=ex.links.reduce((a,l)=>a+((l[0]===id||l[1]===id)?1:0),0); tip.style.display='block'; tip.style.left=mx+'px'; tip.style.top=my+'px'; tip.innerHTML='<div style="font-family:'+MONO.replace(/"/g,"'")+';font-size:12px;color:#eceef4;margin-bottom:3px;">'+this.nodeLabel(ex,id)+'</div><div style="color:#9397ab;">'+nd.kind+' · '+nd.lines+' lines</div><div style="color:#9397ab;">deg '+nd.deg+' · wired '+(nd.w).toFixed(1)+(nd.fail?(nd.fail===2?' · <span style=\"color:#e8706f\">FAIL</span>':' · <span style=\"color:#e6c36a\">warn</span>'):'')+'</div>'; } else tip.style.display='none'; } };
+  onUp = e => { const dg=this.drag; this.drag=null; if (dg && !dg.moved){ const dpr=Math.min(1.6, window.devicePixelRatio||1); const id=this.hit(dg.sx*dpr, dg.sy*dpr); if (id!=null) this.setState({ selId:id, rightTab:'file' }); } };
+  onLeave = () => { if (!this.drag){ this.hoverId=null; const tip=this.tipRef.current; if (tip) tip.style.display='none'; } };
+  onWheel = e => { const ex=this.examples[this.state.focusId]; ex.zoom=Math.max(0.5, Math.min(3.2, ex.zoom*(e.deltaY<0?1.1:0.9))); };
+  onReset = () => { const ex=this.examples[this.state.focusId]; ex.zoom=1; ex.ang.pitch=-0.25; };
+  runAll = () => { const ex=this.examples[this.state.focusId]; ex.pulse=1.3; this.setState({ running:true }); clearTimeout(this._rt); this._rt=setTimeout(()=>{ if(!this.dead) this.setState({ running:false }); }, 1600); };
+  onGlow = e => this.setState({ glow:parseFloat(e.target.value) });
+  toggleMotion = () => this.setState(st=>({ motion:!st.motion }));
+  onQuery = e => this.setState({ query:e.target.value });
+  setFindCat = c => this.setState({ findCat:c });
+
+  genFindings(ex){
+    const rng=mulberry32(99+this.state.focusId*2654435761>>>0); const rnd=()=>rng();
+    const pages=ex.nodes.map((n,i)=>({n,i})).filter(x=>x.n.fail);
+    const samples=['Calgary Stampede','ON AIR','Panama visas','Local Wire','University of Alberta','Community Channel','Rhode Ad Desk','Work-ready','51/50','Weekly digest','Town Channel','Kestrel Mobile'];
+    const vps=['laptop','phone','tablet-p','laptop,phone','laptop,phone,tablet-p'];
+    const out=[];
+    for (const {n,i} of pages){ const cat=FIND_CATS[Math.floor(rnd()*FIND_CATS.length)]; const sev=n.fail===2?'FAIL':'warn'; const where=this.nodeLabel(ex,i).replace(/\.(html|js|json|md)$/,'')+' @'+vps[Math.floor(rnd()*vps.length)];
+      let msg='', fix='';
+      if (cat==='clipped'){ const k2=2+Math.floor(rnd()*60); msg=k2+' text(s) cut off: span "'+samples[Math.floor(rnd()*samples.length)]+'" clipped by its box'; fix='Text is cut off. Remove the fixed height or nowrap on that box.'; }
+      else if (cat==='scroll'){ const w2=1400+Math.floor(rnd()*620); msg='page is '+w2+'px wide on a 1366px screen; widest: div "'+samples[Math.floor(rnd()*samples.length)]+'" right='+w2; fix='Something is wider than the screen. Give it max-width:100% or let it wrap.'; }
+      else if (cat==='offscreen'){ msg=(1+Math.floor(rnd()*4))+' element(s) stick out of the screen'; fix='An element sits outside the viewport. Check fixed widths and negative margins.'; }
+      else if (cat==='tap'){ msg='tap target '+(26+Math.floor(rnd()*14))+'px — under the 44px minimum'; fix='Make the hit area at least 44×44px.'; }
+      else if (cat==='request'){ msg='slow load — '+(1.2+rnd()*3).toFixed(1)+'s to first paint'; fix='Defer or inline the blocking request.'; }
+      else if (cat==='a11y'){ msg='control has no accessible name'; fix='Add aria-label or visible text.'; }
+      else if (cat==='text'){ msg='low-contrast text on this surface'; fix='Raise contrast to at least 4.5:1.'; }
+      else if (cat==='console'){ msg='console error on load'; fix='Open the page and read the stack.'; }
+      else if (cat==='theme'){ msg='hard-coded color outside the theme'; fix='Use a token from the palette.'; }
+      else if (cat==='registry'){ msg='the registry links to a file that does not exist'; fix='Add the page to NAV.'; }
+      else if (cat==='render'){ msg='frame dropped during first render'; fix='Move heavy work off the first paint.'; }
+      else { msg='possible secret in source'; fix='Move it to an env var.'; }
+      out.push({ sev, cat, where, msg, fix, node:i });
+    }
+    return out;
+  }
+
+  renderVals(){
+    const s=this.state;
+    const tiles=this.examples.map((ex, i) => ({ ref:this.tileRefs[i], name:ex.name, num:(i+1<10?'0':'')+(i+1), scale:ex.N+' · '+comma(ex.axons), passed:comma(ex.passed)+' ✓', failed:ex.failed?comma(ex.failed)+' ✗':'clean', failColor:ex.failed?'#e8706f':'#7fcfb6', onOpen:()=>this.openFocus(i) }))
+      .filter(t => !s.query || t.name.toLowerCase().includes(s.query.toLowerCase()));
+    const sumN=this.examples.reduce((a,e)=>a+e.N,0), sumA=this.examples.reduce((a,e)=>a+e.axons,0);
+    const base={ isSurvey:s.lane==='survey', isFocus:s.lane==='focus', tiles, count:this.examples.length, query:s.query, onQuery:this.onQuery, glow:s.glow, onGlow:this.onGlow, motion:s.motion, toggleMotion:this.toggleMotion, sumNeurons:comma(sumN), sumAxons:comma(sumA), scrollRef:this.scrollRef, focusRef:this.focusRef, tipRef:this.tipRef };
+    if (s.lane!=='focus') return { ...base, back:this.back, runAll:()=>{}, runLabel:'Run all', runDotColor:'#7fcfb6', kindPills:[], bottomTabs:[], rightTabs:[], findCats:[], findings:[], focus:{ name:'', build:'', passed:'', failed:'', breadcrumb:'', runline:'', stats:[], suites:[] }, isInspector:true, isFindings:false, isFile:false, sel:{ has:false, empty:true, rows:[] } };
+
+    const ex=this.examples[s.focusId];
+    const kindPills=KINDS.map(k=>({ label:k, dot:{ width:7, height:7, borderRadius:'50%', background:KIND_COL[k], flex:'none' } }));
+    const btns=[['graph','Graph'],['suites','Suites'],['agent','Agent'],['focus','Focus']];
+    const bottomTabs=btns.map(([id,label])=>({ label, pick:()=>this.setState({ centerTab:id }), style:{ height:30, padding:'0 14px', borderRadius:8, border:0, background:s.centerTab===id?'#2b2741':'transparent', color:s.centerTab===id?'#e7e5fe':'#9397ab', fontSize:12, fontWeight:s.centerTab===id?600:400, cursor:'pointer' } }));
+    const rtabs=[['inspector','Inspector'],['findings','Findings'],['file','File']];
+    const rightTabs=rtabs.map(([id,label])=>({ label, pick:()=>this.setState({ rightTab:id }), style:{ height:30, padding:'0 13px', borderRadius:8, border:0, background:s.rightTab===id?'#2b2741':'transparent', color:s.rightTab===id?'#e7e5fe':'#9397ab', fontSize:12, fontWeight:s.rightTab===id?600:400, cursor:'pointer', whiteSpace:'nowrap' } }));
+
+    const stats=[ { k:'Files', v:comma(ex.N)+' · '+comma(ex.lines)+' lines' }, { k:'Axons', v:comma(ex.axons) }, { k:'Micro-checks', v:comma(ex.micro) }, { k:'Passed', v:comma(ex.passed) }, { k:'Failed', v:String(ex.failed) }, { k:'Clusters', v:String(new Set(ex.nodes.map(n=>n.cl)).size) } ];
+    const suites=ex.suites.map(u=>{ const tot=u.passed+u.failed, bc=u.failed?'#e8706f':'#7fcfb6'; return { name:u.name, time:u.time, passed:comma(u.passed), failed:String(u.failed), hasFail:u.failed>0, bar:{ width:(tot?Math.round(u.passed/tot*100):100)+'%', height:'100%', background:bc, borderRadius:2 } }; });
+
+    const all=this.genFindings(ex);
+    const catCounts={}; for (const f of all) catCounts[f.cat]=(catCounts[f.cat]||0)+1;
+    const cats=[['all','all '+all.length], ...Object.keys(catCounts).sort((a,b)=>catCounts[b]-catCounts[a]).map(c=>[c, c+' '+catCounts[c]])];
+    const findCats=cats.map(([id,label])=>({ label, pick:()=>this.setFindCat(id), style:{ fontFamily:MONO, fontSize:10, color:s.findCat===id?'#0b0c13':(FIND_COL[id]||'#a9adc4'), background:s.findCat===id?(id==='all'?'#b5abfc':(FIND_COL[id]||'#b5abfc')):'transparent', border:'1px solid '+(s.findCat===id?'transparent':'rgba(236,238,244,0.14)'), borderRadius:6, padding:'3px 8px', cursor:'pointer' } }));
+    const findings=all.filter(f=>s.findCat==='all'||f.cat===s.findCat).slice(0,60).map(f=>({ sev:f.sev, cat:f.cat, where:f.where, msg:f.msg, fix:f.fix, sevColor:f.sev==='FAIL'?'#e8706f':'#e6c36a', catColor:FIND_COL[f.cat]||'#9397ab', sevStyle:{ fontFamily:MONO, fontSize:9, letterSpacing:'0.06em', color:f.sev==='FAIL'?'#e8706f':'#e6c36a', border:'1px solid '+(f.sev==='FAIL'?'#e8706f':'#e6c36a'), borderRadius:4, padding:'1px 5px' }, pick:()=>this.setState({ selId:f.node, rightTab:'file' }) }));
+
+    let sel;
+    if (s.selId!=null){ const nd=ex.nodes[s.selId]; const used=ex.links.reduce((a,l)=>a+((l[0]===s.selId||l[1]===s.selId)?1:0),0); const loads=ex.links.reduce((a,l)=>a+(l[0]===s.selId?1:0),0); sel={ has:true, empty:false, name:this.nodeLabel(ex,s.selId), kind:nd.kind, lines:nd.lines+' lines', dot:{ width:11, height:11, borderRadius:'50%', background:KIND_COL[nd.kind], flex:'none', boxShadow:'0 0 10px '+KIND_COL[nd.kind] }, kindTag:{ fontFamily:MONO, fontSize:9.5, letterSpacing:'0.06em', color:KIND_COL[nd.kind], border:'1px solid '+KIND_COL[nd.kind], borderRadius:5, padding:'2px 7px' }, rows:[ { k:'loads', v:String(loads) }, { k:'used by', v:String(used-loads<0?used:used) }, { k:'wired in', v:nd.w.toFixed(2) }, { k:'degree', v:String(nd.deg) }, { k:'status', v:nd.fail===2?'FAIL':nd.fail===1?'warn':'ok' } ] }; }
+    else sel={ has:false, empty:true, rows:[] };
+
+    return { ...base, back:this.back, runAll:this.runAll, runLabel:s.running?'Running…':'Run all', runDotColor:s.running?'#e6c36a':'#7fcfb6',
+      kindPills, bottomTabs, rightTabs, findCats, findings,
+      isInspector:s.rightTab==='inspector', isFindings:s.rightTab==='findings', isFile:s.rightTab==='file', sel,
+      focus:{ name:ex.name, build:'build 2026.10.23 · '+(0x1000+s.focusId*7).toString(16), passed:comma(ex.passed), failed:comma(ex.failed), breadcrumb:ex.N+' neurons · '+comma(ex.axons)+' axons · 4D', runline:'last run · '+comma(ex.micro)+' micro · '+ex.failed+' failed', stats, suites } };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=DM+Serif+Display&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:wght@500;700&family=Instrument+Serif&family=Unbounded:wght@500;700&family=Archivo:wght@500;800&family=Playfair+Display:ital,wght@0,500;1,500&family=Sora:wght@500;700&family=Outfit:wght@400;700&display=swap">
+<style>body{margin:0;background:#e9e8e4}</style>
+</helmet>
+<div style="font-family:'Space Grotesk',sans-serif;color:#1b1b1b;">
+  <div style="position:sticky;top:0;z-index:10;background:#1b1b1b;color:#f3f2ee;display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;padding:14px 28px;">
+    <b style="font-size:16px;">100 styles</b>
+    <div style="display:flex;gap:0;border:1px solid #f3f2ee;border-radius:6px;overflow:hidden;">
+      <button onClick="{{ setUnphz }}" style="{{ unphzBtn }}">unphz</button>
+      <button onClick="{{ setTmpltz }}" style="{{ tmpltzBtn }}">tmpltz</button>
+    </div>
+    <span style="font-size:14px;color:#cfcec8;">{{ selText }}</span>
+    <span style="margin-left:auto;font-size:13px;color:#cfcec8;">Click a tile to pick it. Tell me its number.</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding:28px;">
+    <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="12">
+      <div onClick="{{ t.pick }}" style="{{ t.outline }}">
+        <div style="{{ t.card }}">
+          <div style="{{ t.deco }}"></div>
+          <span style="{{ t.nm }}">{{ t.name }}</span>
+          <span style="{{ t.hs }}">{{ t.head }}</span>
+          <span style="{{ t.sub }}">{{ t.line }}</span>
+          <span style="{{ t.btn }}">{{ t.cta }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 2px 0;font:500 12px 'DM Mono',monospace;color:#444;"><span>#{{ t.n }}</span><span>{{ t.meta }}</span></div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { name: 'unphz', sel: null };
+  renderVals() {
+    const P = [['#0c0c0c','#f2f2ee','#d4ff3a'],['#fbfaf6','#14213d','#2d4fd6'],['#e8452c','#fff7ee','#1c1210'],['#f4efe6','#1c1917','#c2410c'],['#0b1e2d','#e6f1f5','#5eead4'],
+      ['#f7e9d0','#2b1d12','#7a3b12'],['#111827','#f9fafb','#f472b6'],['#e9f5ec','#0f2a1c','#16a34a'],['#1a1033','#efe9ff','#a78bfa'],['#ffffff','#111111','#ff3b00'],
+      ['#f0f0f0','#222','#0057ff'],['#2b2b2b','#f5e9d3','#e2b04a'],['#fde7ef','#3b0d24','#d6246e'],['#0f172a','#e2e8f0','#38bdf8'],['#f5f1ff','#241a47','#6d28d9'],
+      ['#101010','#eaeaea','#ff5a1f'],['#e6efe9','#1d2b24','#2f7d5b'],['#faf3dd','#2f2a1f','#d9534f'],['#08121a','#d7e8ee','#f0c419'],['#efe6f7','#2a1838','#c026d3']];
+    const F = [['Space Grotesk',700],['DM Serif Display',400],['Syne',800],['Bricolage Grotesque',700],['Instrument Serif',400],['Unbounded',700],['Archivo',800],['Playfair Display',500],['Sora',700],['Outfit',700]];
+    const COPY = {
+      unphz: { head: ['Research that never waits.', 'Unphased. Always reading.', 'Read. Link. Approve.', 'A graph that shows its work.', 'Public only by approval.'], line: 'One agent, one graph, one owner.', cta: 'Follow the research' },
+      tmpltz: { head: ['Every finding, a template.', 'Research, templatized.', 'Typed, not free text.', 'Share the shape, keep the data.', 'Read. Graph. Template.'], line: 'Reusable structure from what it reads.', cta: 'Follow the research' }
+    };
+    const LN = ['left', 'center', 'split', 'terminal', 'poster'];
+    const c = COPY[this.state.name], tiles = [];
+    for (let i = 0; i < 100; i++) {
+      const p = P[i % 20], lay = Math.floor(i / 20), fi = (i * 3 + lay) % F.length, f = F[fi], mono = lay === 3;
+      const [bg, fg, ac] = p, fam = mono ? "'DM Mono',monospace" : `'${f[0]}',sans-serif`, w = mono ? 500 : f[1];
+      const head = c.head[(i + lay) % 5], base = 'position:relative;overflow:hidden;aspect-ratio:6/5;display:flex;flex-direction:column;gap:6px;padding:20px;box-sizing:border-box;background:' + bg + ';color:' + fg + ';';
+      let card = base, deco = 'position:absolute;', nm = `font:500 12px 'DM Mono',monospace;letter-spacing:0.06em;`, hs = `flex-shrink:0;font-family:${fam};font-weight:${w};`, sub = `flex-shrink:0;font-family:'Space Grotesk',sans-serif;font-size:12px;line-height:1.4;opacity:0.85;`, btn = `flex-shrink:0;white-space:nowrap;align-self:flex-start;font:700 12px 'Space Grotesk',sans-serif;padding:7px 12px;`;
+      if (lay === 0) { card += 'justify-content:flex-end;'; deco += `left:22px;top:22px;width:40px;height:4px;background:${ac};`; hs += 'font-size:30px;line-height:1;letter-spacing:-0.035em;'; btn += `background:${ac};color:${bg};`; nm += 'position:absolute;right:22px;top:16px;'; }
+      else if (lay === 1) { card += 'justify-content:center;align-items:center;text-align:center;'; deco += `left:50%;top:18px;width:10px;height:10px;border-radius:50%;margin-left:-5px;background:${ac};`; hs += 'font-size:28px;line-height:1.05;letter-spacing:-0.02em;'; btn += `border:1px solid ${ac};color:${fg};border-radius:999px;align-self:center;`; nm += 'order:-1;'; }
+      else if (lay === 2) { card += 'justify-content:center;padding-right:42%;'; deco += `right:0;top:0;bottom:0;width:38%;background:${ac};`; hs += 'font-size:22px;line-height:1;letter-spacing:-0.03em;'; btn += `background:${fg};color:${bg};font-size:11px;padding:6px 9px;`; }
+      else if (lay === 3) { card += 'justify-content:flex-end;'; deco += `inset:10px;border:1px solid ${ac};pointer-events:none;`; hs += 'font-size:17px;line-height:1.25;text-transform:none;'; sub += `color:${ac};opacity:1;`; btn += `border:1px solid ${ac};color:${ac};font-family:'DM Mono',monospace;`; nm += `color:${ac};`; }
+      else { card += 'justify-content:flex-start;padding-bottom:30px;'; deco += `left:0;right:0;bottom:0;height:14px;background:${ac};`; hs += 'font-size:28px;line-height:0.95;letter-spacing:-0.045em;text-transform:uppercase;'; btn += `background:${fg};color:${bg};`; }
+      const id = i + 1, on = this.state.sel === id;
+      tiles.push({ n: String(id).padStart(3, '0'), name: this.state.name, head: lay === 3 ? '> ' + head : head, line: c.line, cta: c.cta, meta: `${LN[lay]} · ${mono ? 'DM Mono' : f[0]}`, card, deco, nm, hs, sub, btn,
+        outline: `cursor:pointer;outline:${on ? '3px solid #1b1b1b' : '3px solid transparent'};outline-offset:4px;`, pick: () => this.setState({ sel: id }) });
+    }
+    const on = 'background:#f3f2ee;color:#1b1b1b;', off = 'background:transparent;color:#f3f2ee;', b = 'border:0;padding:7px 16px;font:600 13px Space Grotesk,sans-serif;cursor:pointer;';
+    return { tiles, setUnphz: () => this.setState({ name: 'unphz' }), setTmpltz: () => this.setState({ name: 'tmpltz' }),
+      unphzBtn: b + (this.state.name === 'unphz' ? on : off), tmpltzBtn: b + (this.state.name === 'tmpltz' ? on : off),
+      selText: this.state.sel ? `Selected #${String(this.state.sel).padStart(3, '0')} · ${this.state.name}` : 'Nothing selected' };
+  }
+}
+</script>
+</body>
+</html>

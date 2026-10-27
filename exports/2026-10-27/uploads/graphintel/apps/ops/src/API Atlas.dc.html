@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #f5f1e8; }
+    a { color: #b8401b; text-underline-offset: 3px; } a:hover { color: #e4572e; }
+    button, input { font: inherit; color: inherit; }
+    pre { margin: 0; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  </style>
+</helmet>
+<div data-screen-label="API atlas" style="--bg:#f5f1e8;--surf:#fffdf8;--sunk:#ece6d6;--line:#e4ddcf;--ink:#1d1a15;--body:#5b5448;--mut:#7a7265;--acc:#e4572e;--accink:#b8401b;--acctint:#fff1ea;--grn:#2e7d5b;--fld:#ffffff;--fldline:#ddd4c0;--code:#1d1a15;--codetxt:#e9e3d3;--btn:#b8401b;--btntxt:#f5f1e8;{{ dark }}min-height:100vh;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:13.5px;">
+  <header style="position:sticky;top:0;z-index:10;display:grid;gap:8px;padding:10px clamp(12px,3vw,28px);background:var(--bg);border-bottom:1px solid var(--line);">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;">
+      <span style="font:400 26px/1 'Instrument Serif',serif;white-space:nowrap;">Threshold <i style="color:var(--acc);">API atlas</i></span>
+      <span style="display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;background:var(--sunk);border:1px solid {{ engTone }};font-size:11.5px;white-space:nowrap;"><span style="{{ engDot }}"></span>{{ engLabel }}</span>
+      <span style="margin-left:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><a href="Explorer.dc.html" target="_blank" style="font-size:12.5px;">Explorer ↗</a><a href="Owner Console.dc.html" target="_blank" style="font-size:12.5px;">Owner console ↗</a><button onClick="{{ toggleTheme }}" style="{{ mini }}">{{ themeLabel }}</button></span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ chips }}" as="c" hint-placeholder-count="9"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div>
+  </header>
+
+  <main style="max-width:1180px;padding:20px clamp(12px,3vw,28px) 64px;display:grid;gap:22px;">
+    <section style="display:grid;gap:10px;max-width:860px;">
+      <h1 style="margin:0;font:400 clamp(30px,4vw,42px)/1.05 'Instrument Serif',serif;letter-spacing:-0.01em;">Who calls the institute, and what each reader gets</h1>
+      <p style="margin:0;font-size:15px;line-height:1.55;color:var(--body);text-wrap:pretty;">One key per tenant, one persona per call. A persona is a policy, not a permission: it sets the reading level, how much of a record comes back, the rate and what is refused, and nothing it asks for can reach an unpublished node. Reads come from the published graph and the repricing board with no model; only /v1/ask runs one.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--line);">
+        <span style="{{ capS }}">Try a call</span>
+        <input value="{{ base }}" onChange="{{ onBase }}" placeholder="/api or http://localhost:8000" style="{{ fld }}flex:1 1 200px;min-width:0;"></input>
+        <input type="password" value="{{ key }}" onChange="{{ onKey }}" placeholder="anma_… tenant key" style="{{ fld }}flex:1 1 220px;min-width:0;"></input>
+        <button onClick="{{ probe }}" style="{{ mini }}">Check the engine</button>
+        <span style="flex-basis:100%;font-size:12px;line-height:1.45;color:var(--mut);">{{ tryNote }}</span>
+      </div>
+    </section>
+
+    <section style="display:grid;gap:8px;">
+      <b style="font:400 22px 'Instrument Serif',serif;">How each persona is treated</b>
+      <div style="overflow-x:auto;border-radius:14px;background:var(--surf);border:1px solid var(--line);"><div style="min-width:620px;">
+        <div style="{{ gridHead }}"><sc-for list="{{ matrixHead }}" as="h" hint-placeholder-count="6"><span>{{ h }}</span></sc-for></div>
+        <sc-for list="{{ matrix }}" as="r" hint-placeholder-count="8"><div style="{{ gridRow }}"><sc-for list="{{ r }}" as="c" hint-placeholder-count="6"><span style="{{ c.st }}">{{ c.v }}</span></sc-for></div></sc-for>
+      </div></div>
+      <span style="font-size:12px;color:var(--mut);line-height:1.5;">Price per call is set by the rung that answered: a graph read costs $0.00001, a model answer $0.004. The cheaper rungs (a small model, an LSTM on a CPU) light up as the experiment lands; today everything model-backed runs on the configured model and says so in the response.</span>
+    </section>
+
+    <sc-for list="{{ personas }}" as="p" hint-placeholder-count="3"><section style="display:grid;gap:10px;">
+      <div style="display:grid;gap:4px;"><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;"><b style="font:400 28px 'Instrument Serif',serif;">{{ p.name }}</b><span style="font-size:12.5px;color:var(--mut);">X-Persona: {{ p.id }}</span></div>
+        <span style="font-size:14px;line-height:1.5;max-width:780px;">{{ p.who }}</span>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ p.chips }}" as="x" hint-placeholder-count="4"><span style="{{ tagS }}">{{ x }}</span></sc-for></div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:12px;"><sc-for list="{{ p.calls }}" as="c" hint-placeholder-count="2"><div style="display:grid;gap:8px;align-content:start;min-width:0;padding:14px;border-radius:16px;background:var(--surf);border:1px solid var(--line);">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;"><span style="{{ c.mSt }}">{{ c.method }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;word-break:break-all;">{{ c.path }}</span><span style="{{ c.stSt }}">{{ c.status }}</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);">{{ c.price }}</span></div>
+        <span style="font-size:14px;line-height:1.45;">“{{ c.ask }}”</span>
+        <span style="font-size:12.5px;line-height:1.5;color:var(--body);">{{ c.does }}</span>
+        <pre style="white-space:pre-wrap;word-break:break-all;padding:10px 12px;border-radius:10px;background:var(--code);color:var(--codetxt);font:400 11.5px/1.6 'JetBrains Mono',monospace;">{{ c.curl }}</pre>
+        <sc-if value="{{ c.open }}" hint-placeholder-val="{{ false }}"><pre style="white-space:pre-wrap;padding:10px 12px;border-radius:10px;background:var(--sunk);font:400 11.5px/1.55 'JetBrains Mono',monospace;overflow-x:auto;">{{ c.shape }}</pre></sc-if>
+        <sc-if value="{{ c.hasRes }}" hint-placeholder-val="{{ false }}"><pre style="white-space:pre-wrap;word-break:break-word;padding:10px 12px;border-radius:10px;border:1px solid var(--grn);background:var(--fld);font:400 11.5px/1.55 'JetBrains Mono',monospace;max-height:260px;overflow:auto;">{{ c.res }}</pre></sc-if>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;"><button onClick="{{ c.toggle }}" style="{{ mini }}">{{ c.toggleLabel }}</button><button onClick="{{ c.copy }}" style="{{ mini }}">Copy curl</button><sc-if value="{{ c.canTry }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.run }}" style="{{ on }}">{{ c.runLabel }}</button></sc-if></div>
+      </div></sc-for></div>
+    </section></sc-for>
+
+    <section style="display:grid;gap:8px;">
+      <b style="font:400 22px 'Instrument Serif',serif;">What a refused call looks like</b>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px;"><sc-for list="{{ errors }}" as="e" hint-placeholder-count="6"><div style="display:grid;gap:3px;padding:10px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--line);"><span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;"><b>{{ e.code }}</b> {{ e.name }}</span><span style="font-size:12.5px;line-height:1.45;color:var(--body);">{{ e.why }}</span></div></sc-for></div>
+    </section>
+  </main>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:20;padding:9px 16px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:13px;">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DARK = '--bg:#0f100d;--surf:#16180f;--sunk:#1c1f16;--line:#2b3024;--ink:#e9ede0;--body:#c6ccb8;--mut:#98a08a;--acc:#c8f43a;--accink:#d6f76a;--acctint:#232a12;--grn:#7fe0a0;--fld:#12140e;--fldline:#2b3024;--code:#0a0b08;--codetxt:#dfe6cf;--btn:#c8f43a;--btntxt:#0f100d;';
+const M = "font-family:'JetBrains Mono',monospace;";
+const B = {
+  mini: 'min-height:30px;padding:0 12px;border-radius:8px;border:1px solid var(--fldline);background:var(--surf);cursor:pointer;font-size:12.5px;white-space:nowrap;',
+  on: 'min-height:30px;padding:0 14px;border-radius:8px;border:1px solid var(--btn);background:var(--btn);color:var(--btntxt);cursor:pointer;font-size:12.5px;font-weight:600;white-space:nowrap;',
+  fld: 'min-height:34px;padding:0 10px;border-radius:9px;border:1px solid var(--fldline);background:var(--fld);outline:none;box-sizing:border-box;',
+  chip: on => 'min-height:28px;padding:0 12px;border-radius:999px;cursor:pointer;font-size:12.5px;border:1px solid ' + (on ? 'var(--ink)' : 'var(--fldline)') + ';background:' + (on ? 'var(--ink)' : 'var(--surf)') + ';color:' + (on ? 'var(--bg)' : 'var(--ink)') + ';',
+};
+const chipS = c => 'padding:1px 8px;border-radius:999px;border:1px solid ' + c + ';font-size:11px;white-space:nowrap;color:var(--ink);';
+const TRIM = u => (u.endsWith('/') ? u.slice(0, -1) : u);
+const PRICE = { graph: '$0.00001 / call · graph rung', '30b': '$0.004 / call · model rung' };
+const D = 'Analysis, not advice. The Institute does not manage money. Every figure is a scenario-weighted estimate with its limits attached.';
+const SH = {
+  board: `{\n  "persona": "<persona>",\n  "disclaimer": "${D}",\n  "items": [ {\n    "id": "px-<asset>-<id>", "asset": "<name>",\n    "kind": "commodity | equity | credit | rental | power | crypto", "unit": "<unit>",\n    "expected_rerate": <percent>, "rerate_low": <percent>, "rerate_high": <percent>,\n    "confidence": "low | medium | high", "basis": "real | mixed | simulated",\n    "as_of": "<date or empty>", "age_h": <hours>,\n    "why": "<up to 280 characters>", "limits": ["<the first limit>"]\n  } ]\n}`,
+  full: `{\n  "id": "px-<asset>-<id>", "asset": "<name>", "kind": "<kind>", "unit": "<unit>",\n  "market": <number or null>, "as_of": "<date>", "fair_low": <number or null>, "fair_high": <number or null>,\n  "expected_rerate": <percent>, "rerate_low": <percent>, "rerate_high": <percent>, "net_drivers": <number>,\n  "scenarios": [ { "name": "<scenario>", "p": <0-1>, "rerate_pct": <percent>, "note": "<note>" } ],\n  "drivers": [ { "name": "<driver>", "direction": 1 | -1, "weight": <0-1>, "evidence": ["<source id>"] } ],\n  "sources": [ { "id": "<id>", "label": "<label>", "url": "<url>", "basis": "real | simulated", "as_of": "<date>" } ],\n  "limits": ["<what it could not see>"], "why": "<reason>", "confidence": "<level>", "basis": "<basis>",\n  "history": [ [<epoch seconds>, <expected re-rate>] ], "age_h": <hours>, "disclaimer": "…"\n}`,
+  limits: `{ "limits": [ {\n  "id": "lim-<n>", "text": "<what the institute cannot yet see or do>",\n  "area": "data | method | model | coverage | access", "severity": 1 | 2 | 3,\n  "status": "open | working | lifted", "lifts_by": "<what would remove it>"\n} ] }`,
+  node: `{\n  "focus": "<node id>", "hops": <1-3>,\n  "nodes": [ { "id": "<id>", "label": "<label, or grey if unpublished>", "type": "<type>", "hop": <n>, "pub": true | false } ],\n  "edges": [ { "id": "<id>", "relation": "<relation>", "members": ["<id>", "<id>"], "w": <weight> } ],\n  "total": { "nodes": <n>, "edges": <n>, "published": <n> }\n}`,
+  prov: `{\n  "agents": [ { "id": "<id>", "num": <n>, "name": "agent #<n>", "role": "<role>", "status": "<status>" } ],\n  "works": [ { "id": "<id>", "agent": "<id>", "origin": "<id or empty>", "kind": "<kind>", "title": "<title>",\n              "state": "planned | ongoing | done | failed", "started": <epoch>, "dur": <seconds>, "energy": <number>, "nodes": ["<id>"], "sim": true | false } ],\n  "nodes": [ { "id": "<id>", "label": "<label>", "lane": "question | claim | source", "refs": <n>, "sim": true | false } ],\n  "edges": [ { "a": "<id>", "b": "<id>", "rel": "<relation>", "w": <weight> } ],\n  "hidden": <links to private nodes>, "world": { "mode": "sim | live" }\n}`,
+  ask: `{\n  "persona": "<persona>",\n  "answer": "<up to 2,400 characters; up to 700 for a child>",\n  "rung": "30b",\n  "disclaimer": "${D}"\n}`,
+  usage: `{\n  "tenant": "<name>", "plan": "metered | team | scale",\n  "usage": { "calls": <n>, "metered_usd": <n>, "subscription_usd": <n>, "total_usd": <n>,\n             "cap_usd": <n>, "rungs": { "graph": <calls>, "30b": <calls> }, "last4": "<last four of the key>" }\n}`,
+  kid: `{\n  "persona": "child",\n  "items": [],\n  "note": "Written for readers under 13. No prices, no investment talk."\n}`,
+};
+const P = [
+  { id: 'civilian', name: 'Civilian', who: 'Someone who has read that the AI boom is a bubble and wants to know what is real, in plain words, and what nobody can tell them.', reading: 'plain', detail: 'basic', rpm: 20, needs: '—', ask: 'yes', prices: 'direction and range', calls: [
+    ['POST', '/v1/ask', 'Is the GPU boom a bubble, and could it touch my savings?', 'A public round on the published graph, written for a general reader. It will not tell anyone what to buy; it says what the evidence supports and what it cannot see.', { question: 'Is the GPU boom a bubble, and could it touch my savings?' }, 'ask', 'ask', 'live'],
+    ['GET', '/v1/reprice?kind=commodity', 'What do you think copper and power are really worth now?', 'The approved repricing board, one row per asset: the scenario-weighted move, its range, how sure the agent is, whether it rests on real or simulated sources, and the first thing it could not see.', null, 'board', 'graph', 'live'],
+    ['GET', '/v1/limits', 'What can’t you tell me?', 'Every limitation the institute holds and what would lift it. Public by design: an estimate with hidden gaps is worse than none.', null, 'limits', 'graph', 'live']] },
+  { id: 'student', name: 'Student', who: 'Someone learning how a claim about GPU prices is tested, and where the evidence stops.', reading: 'plain', detail: 'basic', rpm: 30, needs: '—', ask: 'yes', prices: 'direction and range', calls: [
+    ['GET', '/v1/graph/node/q-gpu-rent?hops=1', 'How would you know if GPU rental prices stopped falling?', 'A published question with its falsifier and its neighbours: the claims and sources bearing on it. Unpublished nodes come back as grey shapes with opaque ids.', null, 'node', 'graph', 'live'],
+    ['GET', '/v1/provenance', 'Who did the work behind these claims, and how long did it take?', 'The public work trail: agents by number, each piece of work with its duration and the nodes it touched, and whether the world behind it is simulated or live.', null, 'prov', 'graph', 'live']] },
+  { id: 'child', name: 'Child', who: 'A reader under thirteen, through an app a parent or school chose. The owner approves the tenant for this persona; the operator answers for parental consent where the law asks.', reading: 'child', detail: 'basic', rpm: 10, needs: 'owner approval', ask: 'yes', prices: 'never shown', calls: [
+    ['POST', '/v1/ask', 'Why do computers use so much electricity?', 'Plain words, short sentences, a kind tone, at most 700 characters. No prices or investing talk; an unsafe or money-advice question gets “ask a grown-up”.', { question: 'Why do computers use so much electricity?' }, 'ask', 'ask', 'live'],
+    ['GET', '/v1/reprice', 'How much are the chips worth?', 'Returns nothing but a note. Prices are not for this reader, and the call is still metered and rate-limited like any other.', null, 'kid', 'graph', 'live']] },
+  { id: 'scholar', name: 'Scholar', who: 'A researcher who needs every figure with its sources, scenarios and history, to cite it or to rerun it.', reading: 'academic', detail: 'full', rpm: 60, needs: '—', ask: 'yes', prices: 'full record', calls: [
+    ['GET', '/v1/reprice/Copper', 'Give me the whole record for copper, with its sources.', 'The full row: market price and date, fair range, every scenario with its weight, every driver with the source ids it cites, every source with its URL and whether it was real or simulated, the limits, and the history of the expected re-rate.', null, 'full', 'graph', 'live'],
+    ['GET', '/v1/graph/node/q-gpu-fair?hops=3', 'Show me everything bearing on the fair-value question.', 'Three hops around a published node. Academic persona can go deeper than the basic ones, which are held to one hop.', null, 'node', 'graph', 'live'],
+    ['POST', '/v1/ask', 'Which claims about depreciation lives rest on a single source?', 'An answer that cites node ids and states its uncertainty.', { question: 'Which claims about depreciation lives rest on a single source?' }, 'ask', 'ask', 'live'],
+    ['GET', '/v1/reprice/export?format=csv', 'Export the board to rerun it.', 'A flat export with one row per scenario. Not built yet.', null, 'board', 'graph', 'planned']] },
+  { id: 'journalist', name: 'Journalist', who: 'A reporter checking what changed and what is solid before printing a number.', reading: 'plain', detail: 'full', rpm: 60, needs: '—', ask: 'yes', prices: 'full record', calls: [
+    ['GET', '/v1/reprice', 'Which of these figures rest on real sources, and which on simulated ones?', 'The full board, each row marked real, mixed or simulated. Simulated records can never be published, so they never appear here; the basis field matters for mixed ones.', null, 'board', 'graph', 'live'],
+    ['GET', '/v1/provenance', 'Is the institute reading real feeds or a simulated world right now?', 'The world block says sim or live, so a figure is never quoted without knowing what fed it.', null, 'prov', 'graph', 'live'],
+    ['GET', '/v1/reprice?changed_since=2026-10-13', 'What moved this week?', 'Only records newer than a date. Not built yet.', null, 'board', 'graph', 'planned']] },
+  { id: 'corporate', name: 'Corporate', who: 'A treasurer or procurement lead deciding whether to lease or buy GPUs, or how exposed a supplier is.', reading: 'technical', detail: 'full', rpm: 120, needs: '—', ask: 'yes', prices: 'full record', calls: [
+    ['GET', '/v1/reprice?kind=rental', 'What does a falling rental rate do to payback on a purchase?', 'Rental-rate records with scenario weights and re-rates, so the lease-versus-buy case can be run against all three scenarios, not one.', null, 'board', 'graph', 'live'],
+    ['GET', '/v1/reprice?kind=credit', 'How stressed is the credit behind my supplier?', 'Credit-spread records with their drivers and sources.', null, 'board', 'graph', 'live'],
+    ['POST', '/v1/webhooks', 'Tell me when the expected re-rate on an asset crosses a threshold.', 'A subscription that posts to the tenant’s URL. Not built yet.', { asset: 'H100 on-demand rental', crosses_pct: -25, url: 'https://example.com/hook' }, 'usage', 'graph', 'planned']] },
+  { id: 'government', name: 'Government', who: 'A regulator, central bank or procurement office that needs exposures, an audit trail, and what the institute cannot see.', reading: 'technical', detail: 'full', rpm: 120, needs: '—', ask: 'yes', prices: 'full record', calls: [
+    ['GET', '/v1/provenance', 'Show me the audit trail behind the board.', 'Every piece of work: which agent, when, how long, which sources, with the simulated ones flagged. The nodes it returns are published ones only.', null, 'prov', 'graph', 'live'],
+    ['GET', '/v1/reprice?kind=credit', 'Where is the credit exposure concentrated?', 'Credit records with drivers and sources, each with its limits stated.', null, 'board', 'graph', 'live'],
+    ['GET', '/v1/limits', 'What can the institute not observe?', 'The public limitations ledger, including the data that is not disclosed (private credit, special-purpose vehicles).', null, 'limits', 'graph', 'live']] },
+  { id: 'developer', name: 'Developer', who: 'Someone integrating the API who needs to meter, cap and monitor it.', reading: 'technical', detail: 'full', rpm: 240, needs: '—', ask: 'yes', prices: 'full record', calls: [
+    ['GET', '/v1/usage', 'What have I spent this month, and on which rung?', 'The tenant’s own calls, metered and subscription spend, cap and rung mix. The cheap rungs are most of the calls by design.', null, 'usage', 'graph', 'live'],
+    ['GET', '/v1/graph/node/institute?hops=2', 'Walk the published graph from the root.', 'Published nodes in full, everything else a grey shape.', null, 'node', 'graph', 'live']] },
+];
+const ERR = [['400', 'unknown persona', 'X-Persona must be one of civilian, student, child, scholar, journalist, corporate, government, developer; a question must be 1–1000 characters.'], ['401', 'no valid key', 'Send Authorization: Bearer anma_… An inactive tenant’s key stops working at once.'], ['402', 'cap reached', 'The tenant has spent its monthly cap. Raise it in the account; nothing is charged past it.'], ['403', 'persona not approved', 'The child persona needs the owner to approve the tenant for it. A child cannot read prices at all.'], ['404', 'nothing published', 'No approved repricing for that asset. Records that rest on simulated sources are never published.'], ['429', 'too fast', 'Each persona has a per-minute rate; the child persona’s is the lowest.']];
+
+class Component extends DCLogic {
+  state = { f: 'all', dark: false, base: '/api', key: '', open: {}, res: {}, eng: null, toast: '' };
+  componentDidMount() {
+    try { const q = new URLSearchParams(location.search); this.setState({ dark: localStorage.getItem('ex_theme') === 'dark', base: q.get('api') || localStorage.getItem('oc_api') || '/api' }, () => this.check()); } catch (e) { this.check(); }
+  }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  say(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: '' }), 2400); }
+  async check() { try { const r = await fetch(TRIM(this.state.base) + '/health'), j = await r.json(); this.setState({ eng: !!(r.ok && j.ok) }); } catch (e) { this.setState({ eng: false }); } }
+  curl(c, persona) {
+    const b = /^https?:/.test(this.state.base) ? TRIM(this.state.base) : location.origin + TRIM(this.state.base);
+    return 'curl' + (c.method === 'POST' ? ' -X POST' : '') + ' ' + b + c.path + ' \\\n  -H "Authorization: Bearer $THRESHOLD_KEY" \\\n  -H "X-Persona: ' + persona + '"' + (c.body ? ' \\\n  -H "content-type: application/json" \\\n  -d \'' + JSON.stringify(c.body) + '\'' : '');
+  }
+  async run(c, persona) {
+    const s = this.state, id = persona + c.path; this.setState(x => ({ res: { ...x.res, [id]: 'Calling…' } }));
+    try { const r = await fetch(TRIM(s.base) + c.path, { method: c.method, headers: { authorization: 'Bearer ' + s.key, 'x-persona': persona, ...(c.body ? { 'content-type': 'application/json' } : {}) }, body: c.body ? JSON.stringify(c.body) : undefined }); const t = await r.text(); let o = t; try { o = JSON.stringify(JSON.parse(t), null, 2); } catch (e) {} this.setState(x => ({ res: { ...x.res, [id]: r.status + ' ' + (r.ok ? 'OK' : 'refused') + '\n' + o.slice(0, 4000) } })); } catch (e) { this.setState(x => ({ res: { ...x.res, [id]: 'Could not reach ' + s.base + ': ' + (e.message || e) } })); }
+  }
+  renderVals() {
+    const s = this.state, list = P.filter(p => s.f === 'all' || p.id === s.f), eng = s.eng;
+    const head = ['Persona', 'Reads as', 'Detail', 'Calls a minute', 'Needs', 'Prices shown'];
+    return {
+      dark: s.dark ? DARK : '', themeLabel: s.dark ? 'Light' : 'Dark', toggleTheme: () => { const v = !s.dark; try { localStorage.setItem('ex_theme', v ? 'dark' : 'light'); } catch (e) {} this.setState({ dark: v }); },
+      mini: B.mini, on: B.on, fld: B.fld, capS: 'font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--mut);',
+      tagS: 'padding:1px 9px;border-radius:999px;background:var(--sunk);color:var(--body);font-size:11.5px;white-space:nowrap;',
+      engLabel: eng === null ? 'checking the engine' : eng ? 'engine reachable at ' + s.base : 'no engine at ' + s.base, engTone: eng ? 'var(--grn)' : 'var(--acc)', engDot: 'width:8px;height:8px;border-radius:50%;background:' + (eng ? 'var(--grn)' : 'var(--acc)') + ';' + (eng ? 'animation:pulse 1.6s infinite;' : ''),
+      chips: [['all', 'All readers']].concat(P.map(p => [p.id, p.name])).map(([id, label]) => ({ label, st: B.chip(s.f === id), fn: () => this.setState({ f: id }) })),
+      base: s.base, onBase: e => { try { localStorage.setItem('oc_api', e.target.value); } catch (x) {} this.setState({ base: e.target.value }); }, key: s.key, onKey: e => this.setState({ key: e.target.value }), probe: () => this.check(),
+      tryNote: eng ? (s.key ? 'Each live call below has a Run button that sends it with this key and returns the real response.' : 'The engine answers. Paste a tenant key (create one in the owner console under API & earnings) to run the calls below.') : 'No engine answers here, so the calls below show their shape only. Nothing on this page is a recorded response; the shapes use placeholders, never invented numbers.',
+      gridHead: 'display:grid;grid-template-columns:120px 100px 80px 110px 130px minmax(0,1fr);gap:10px;padding:9px 14px;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--mut);',
+      gridRow: 'display:grid;grid-template-columns:120px 100px 80px 110px 130px minmax(0,1fr);gap:10px;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;align-items:baseline;',
+      matrixHead: head, matrix: P.map(p => [[p.name, 'font-weight:600;'], [p.reading, ''], [p.detail, ''], [String(p.rpm), M + 'font-size:12px;'], [p.needs, p.needs !== '—' ? 'color:var(--accink);' : ''], [p.prices, '']].map(([v, st]) => ({ v, st }))),
+      personas: list.map(p => ({ id: p.id, name: p.name, who: p.who, chips: ['reads as ' + p.reading, p.detail + ' detail', p.rpm + ' calls a minute', p.needs === '—' ? 'no extra approval' : 'needs ' + p.needs],
+        calls: p.calls.map(([method, path, ask, does, body, shape, rung, status]) => { const c = { method, path, body }, id = p.id + path, live = status === 'live', res = s.res[id];
+          return { method, path, ask, does, status, price: PRICE[rung], curl: this.curl(c, p.id), shape: SH[shape], open: !!s.open[id], toggleLabel: s.open[id] ? 'Hide response shape' : 'Response shape', toggle: () => this.setState(x => ({ open: { ...x.open, [id]: !x.open[id] } })), copy: () => { try { navigator.clipboard.writeText(this.curl(c, p.id)); this.say('Copied'); } catch (e) { this.say('Copy failed'); } },
+            mSt: M + 'font-size:11px;font-weight:600;padding:1px 7px;border-radius:6px;background:' + (method === 'POST' ? 'var(--acc)' : 'var(--sunk)') + ';color:' + (method === 'POST' ? 'var(--btntxt)' : 'var(--ink)') + ';', stSt: chipS(live ? 'var(--grn)' : 'var(--mut)'),
+            canTry: live && !!eng && !!s.key, runLabel: res === 'Calling…' ? 'Calling…' : 'Run', run: () => this.run(c, p.id), hasRes: !!res, res: res || '' }; }) })),
+      errors: ERR.map(([code, name, why]) => ({ code, name, why })),
+      hasToast: !!s.toast, toast: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

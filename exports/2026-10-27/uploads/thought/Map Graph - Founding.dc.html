@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; } button, input, textarea { font-family: 'Instrument Sans', sans-serif; } button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; } ::placeholder { color: #6d7699; }</style>
+</helmet>
+<div data-screen-label="Founding" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.55;">
+  <dc-import name="Map Graph Nav" current="" hint-size="100%,64px"></dc-import>
+  <main style="max-width: 760px; margin: 0 auto; padding: clamp(32px, 6vw, 72px) clamp(16px, 4vw, 32px); display: grid; gap: 28px;">
+    <h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(38px, 6vw, 72px); line-height: 0.97; letter-spacing: -0.03em;">Help shape <span style="color: #ff3ea5;">Map Graph</span>.</h1>
+    <p style="margin: 0; font-size: 19px; color: #b9c1e0;">Founding members are the first group we ask about what to build next. Registering interest takes no payment and commits you to nothing.</p>
+    <div style="display: grid; gap: 10px; padding: 22px; border: 1px solid #252c42; border-radius: 16px; background: #131827;">
+      <div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 20px;">What founding members would get</div>
+      <sc-for list="{{ perks }}" as="p" hint-placeholder-count="4"><div style="display: flex; gap: 10px;"><span style="color: #27d3ff;">+</span><span>{{ p }}</span></div></sc-for>
+      <div style="font-size: 13px; color: #8f98bb;">Terms and pricing are not final. This list is a placeholder for the real offer.</div>
+    </div>
+    <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}"><div style="padding: 22px; border: 1px solid #27d3ff; border-radius: 16px; background: #131827;"><div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 24px; color: #27d3ff;">Interest recorded.</div><div style="color: #b9c1e0;">{{ message }}</div></div></sc-if>
+    <sc-if value="{{ open }}" hint-placeholder-val="{{ true }}"><form onSubmit="{{ submit }}" style="display: grid; gap: 14px;"><label style="display: grid; gap: 8px;"><span style="font-weight: 600;">What would you most want from Map Graph?</span><textarea rows="3" value="{{ note }}" onChange="{{ onNote }}" style="padding: 14px 16px; border-radius: 14px; border: 1px solid #3a4468; background: #131827; color: #eef1ff; font-size: 16px;"></textarea></label><div style="color: #ff7ab8; min-height: 20px; font-size: 14px;">{{ error }}</div><button type="submit" style="width: fit-content; padding: 14px 30px; border: 0; border-radius: 999px; background: #ff3ea5; color: #0b0e17; font-weight: 600; font-size: 16px; cursor: pointer;">Register interest</button></form></sc-if>
+  </main>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { C: null, code: '', note: '', done: false, message: '', error: '' };
+  async componentDidMount() { const C = await import('./tandem-core.js'), API = this.API = await import('./tandem-api.js'); const q = new URLSearchParams(location.search).get('code'), m = API.member.get(); this.setState({ C, code: (q || (m && m.code) || '').toUpperCase() }); API.track('page_view', 'founding'); }
+  submit = async e => { e.preventDefault(); const s = this.state; if (!s.code) { this.setState({ error: 'Join the waitlist first, then come back here.' }); return; } const r = await this.API.api('POST', '/api/upgrade', { code: s.code, note: s.note }); if (r.status >= 400) { this.setState({ error: (r.json.errors && Object.values(r.json.errors)[0]) || 'We could not find your member code.' }); return; } this.API.track('upgrade_intent', 'founding'); this.setState({ done: true, message: r.json.message || 'No payment was taken.', error: '' }); };
+  renderVals() { const s = this.state; return { perks: ['Early access before the public waitlist', 'A direct line to give feedback and see it shipped', 'Your name on the founding list, if you want it there', 'A say in which contexts we build in first'], done: s.done, open: !s.done, message: s.message, note: s.note, onNote: e => this.setState({ note: e.target.value }), error: s.error, submit: this.submit }; }
+}
+
+</script>
+</body>
+</html>

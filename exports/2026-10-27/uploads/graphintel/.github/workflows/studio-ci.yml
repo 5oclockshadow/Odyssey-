@@ -1,0 +1,27 @@
+name: studio-kit
+on:
+  push: { paths: ["marketing/**"] }
+  pull_request: { paths: ["marketing/**"] }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm, cache-dependency-path: marketing/tests/package-lock.json }
+      - run: npm install --prefix marketing/tests --package-lock-only && npm ci --prefix marketing/tests
+      - run: npm test --prefix marketing/tests
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pytest && python -m pytest -q agent
+  build-agent:
+    needs: [test, mcp]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t studio-mcp agent
+      - run: MCP_TOKEN=ci-token docker compose -f agent/docker-compose.yml config -q

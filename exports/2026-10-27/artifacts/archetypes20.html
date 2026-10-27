@@ -1,0 +1,192 @@
+<title>Twenty Consoles</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: a dark neon "console gallery" — 20 wireframe cards in a responsive grid, each a distinct dashboard DNA; click opens a larger schematic. Single deliberate dark world. */
+  :root{
+    --bg:#070a0f; --surface:#0e141c; --surface2:#131b26; --line:#1e2a3a;
+    --fg:#dbe8fb; --dim:#7b8ca3; --faint:#44546b;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace; --sans:'Space Grotesk',system-ui,sans-serif;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:
+      radial-gradient(130% 90% at 80% -10%, #0d1a24 0%, var(--bg) 60%);
+      color:var(--fg);font-family:var(--sans);}
+  .wrap{padding-block:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1280px;margin:0 auto;}
+  header.top{display:flex;flex-direction:column;gap:6px;margin-bottom:22px;}
+  .kick{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+  h1{font-size:clamp(26px,5vw,44px);margin:0;font-weight:600;letter-spacing:-.02em;text-wrap:balance;}
+  .sub{color:var(--dim);font-size:14px;max-width:62ch;line-height:1.5;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;
+    display:flex;flex-direction:column;transition:transform .12s,border-color .12s,box-shadow .12s;min-width:0;}
+  .card:hover,.card:focus-visible{transform:translateY(-3px);border-color:var(--ac);box-shadow:0 10px 30px -12px var(--ac);outline:none;}
+  .wf{height:150px;position:relative;background:var(--surface2);border-bottom:1px solid var(--line);padding:8px;display:grid;gap:5px;}
+  .r{border-radius:5px;background:#0b1118;border:1px solid var(--line);position:relative;overflow:hidden;min-width:0;min-height:0;}
+  .r.ac{border-color:color-mix(in srgb,var(--ac) 55%,var(--line));box-shadow:inset 0 0 18px -8px var(--ac);}
+  /* kind glyphs, drawn with gradients/bg so each region reads as a component */
+  .k-graph{background:radial-gradient(circle at 30% 40%,var(--ac) 0 2px,transparent 3px),radial-gradient(circle at 60% 65%,var(--ac) 0 2px,transparent 3px),radial-gradient(circle at 75% 30%,#fff6 0 1.5px,transparent 3px),radial-gradient(circle at 45% 75%,#fff4 0 1.5px,transparent 3px);background-color:#0a1017;}
+  .k-bars{background:linear-gradient(90deg,transparent 0 10%,var(--ac) 10% 16%,transparent 16% 28%,color-mix(in srgb,var(--ac) 60%,#000) 28% 34%,transparent 34% 48%,var(--ac) 48% 54%,transparent 54% 68%,color-mix(in srgb,var(--ac) 70%,#000) 68% 74%,transparent 74% 88%,var(--ac) 88% 94%,transparent 94%);background-size:100% 70%;background-position:bottom;background-repeat:no-repeat;}
+  .k-chat{background:linear-gradient(var(--line),var(--line)) 8% 22%/36% 2px no-repeat,linear-gradient(var(--line),var(--line)) 8% 40%/54% 2px no-repeat,linear-gradient(var(--ac),var(--ac)) 44% 60%/44% 2px no-repeat,linear-gradient(var(--ac),var(--ac)) 56% 78%/32% 2px no-repeat;}
+  .k-lines{background:repeating-linear-gradient(var(--faint) 0 1px,transparent 1px 7px);}
+  .k-stat{background:linear-gradient(120deg,color-mix(in srgb,var(--ac) 22%,transparent),transparent);}
+  .k-stat::after{content:"";position:absolute;left:8px;top:8px;width:34%;height:7px;border-radius:3px;background:var(--ac);box-shadow:0 14px 0 -1px var(--faint);}
+  .k-lanes{background:linear-gradient(90deg,#0a1017 0 32%,transparent 32% 34%,#0a1017 34% 66%,transparent 66% 68%,#0a1017 68%);}
+  .k-lanes::after{content:"";position:absolute;inset:8px;background:
+     linear-gradient(var(--ac),var(--ac)) 2% 10%/26% 10px no-repeat,
+     linear-gradient(var(--faint),var(--faint)) 2% 34%/26% 10px no-repeat,
+     linear-gradient(var(--faint),var(--faint)) 37% 10%/26% 10px no-repeat,
+     linear-gradient(var(--ac),var(--ac)) 72% 10%/26% 10px no-repeat;border-radius:3px;}
+  .k-ring{background:conic-gradient(var(--ac) 0 65%,var(--line) 65% 100%);border-radius:50%;margin:auto;width:70%;aspect-ratio:1;mask:radial-gradient(circle,transparent 46%,#000 48%);}
+  .k-timeline{background:linear-gradient(90deg,var(--faint) 0 1px,transparent 1px) 0/14% 100%,linear-gradient(var(--ac),var(--ac)) 0 50%/100% 3px no-repeat;background-color:#0a1017;}
+  .k-timeline::after{content:"";position:absolute;left:38%;top:20%;bottom:20%;width:3px;background:var(--ac);box-shadow:0 0 8px var(--ac);}
+  .k-map{background:radial-gradient(circle at 20% 30%,var(--ac) 0 3px,transparent 4px),radial-gradient(circle at 70% 20%,#fff6 0 2px,transparent 3px),radial-gradient(circle at 80% 70%,var(--ac) 0 3px,transparent 4px),radial-gradient(circle at 40% 80%,#fff5 0 2px,transparent 3px),repeating-linear-gradient(0deg,#ffffff08 0 1px,transparent 1px 16px),repeating-linear-gradient(90deg,#ffffff08 0 1px,transparent 1px 16px);background-color:#09131a;}
+  .k-tree{background:linear-gradient(var(--faint),var(--faint)) 10% 14%/60% 2px no-repeat,linear-gradient(var(--faint),var(--faint)) 22% 34%/48% 2px no-repeat,linear-gradient(var(--faint),var(--faint)) 22% 54%/48% 2px no-repeat,linear-gradient(var(--ac),var(--ac)) 34% 74%/36% 2px no-repeat,linear-gradient(var(--line),var(--line)) 12% 14%/2px 64% no-repeat;}
+  .k-editor{background:linear-gradient(var(--ac),var(--ac)) 8% 16%/22% 2px no-repeat,linear-gradient(var(--faint),var(--faint)) 8% 32%/60% 2px no-repeat,linear-gradient(var(--faint),var(--faint)) 14% 48%/52% 2px no-repeat,linear-gradient(var(--faint),var(--faint)) 14% 64%/40% 2px no-repeat,linear-gradient(var(--ac),var(--ac)) 8% 80%/30% 2px no-repeat;}
+  .k-term{background:linear-gradient(var(--ac),var(--ac)) 6% 20%/8% 2px no-repeat,linear-gradient(var(--faint),var(--faint)) 16% 20%/50% 2px no-repeat,linear-gradient(var(--faint),var(--faint)) 6% 40%/66% 2px no-repeat,linear-gradient(var(--ac),var(--ac)) 6% 62%/8% 2px no-repeat,linear-gradient(var(--fg),var(--fg)) 16% 62%/30% 2px no-repeat,linear-gradient(var(--ac),var(--ac)) 6% 82%/3% 7px no-repeat;}
+  .meta{padding:12px 13px 14px;display:flex;flex-direction:column;gap:7px;min-width:0;}
+  .nm{display:flex;align-items:baseline;gap:8px;}
+  .no{font-family:var(--mono);font-size:11px;color:var(--ac);letter-spacing:.1em;}
+  .ti{font-size:15px;font-weight:600;letter-spacing:-.01em;}
+  .tg{font-size:12.5px;color:var(--dim);line-height:1.45;}
+  .feats{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;}
+  .ch{font-family:var(--mono);font-size:10px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:2px 7px;}
+  /* modal */
+  .back{position:fixed;inset:0;background:#040609d9;backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:30;padding:16px;}
+  .back.open{display:flex;}
+  .modal{width:min(760px,100%);max-height:86vh;overflow:auto;background:var(--surface);border:1px solid var(--ac);border-radius:16px;box-shadow:0 30px 80px -20px #000;}
+  .mh{position:relative;height:230px;padding:12px;display:grid;gap:7px;background:var(--surface2);border-bottom:1px solid var(--line);border-radius:16px 16px 0 0;}
+  .mbody{padding:16px 18px 20px;display:flex;flex-direction:column;gap:14px;}
+  .mbody h2{margin:0;font-size:22px;letter-spacing:-.02em;}
+  .mbody .lead{color:var(--dim);font-size:14px;line-height:1.55;margin:0;}
+  .rowz{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+  .box{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;}
+  .box .bl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);margin-bottom:5px;}
+  .box p{margin:0;font-size:12.5px;color:var(--fg);line-height:1.5;}
+  .x{position:absolute;top:10px;right:10px;z-index:2;background:#0009;border:1px solid var(--line);color:var(--fg);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;}
+  footer{margin-top:26px;color:var(--faint);font-size:12px;font-family:var(--mono);}
+  @media(max-width:460px){.wf{height:128px;}}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<div class="wrap">
+  <header class="top">
+    <span class="kick">Codegen × Tester · UI archetypes</span>
+    <h1>Twenty Consoles</h1>
+    <p class="sub">Twenty genuinely different ways to drive the two agents and their 4D brain — each a distinct information architecture, not a reskin. Tap any one for its look, feel, abilities, responsiveness and backend wiring.</p>
+  </header>
+  <div class="grid" id="grid"></div>
+  <footer id="foot"></footer>
+</div>
+
+<div class="back" id="back">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+// each archetype: distinct grid DNA (cols/rows/areas) + region kinds + palette + notes
+const A=[
+ {n:"Mission Command Deck",ac:"#39ff88",tg:"NASA control room — every telemetry stream on one wall, nothing hidden.",
+  g:"2fr 1fr/repeat(3,1fr)",ar:'"brain brain lanes""chat tester lanes"',reg:{brain:"graph",lanes:"lanes",chat:"chat",tester:"stat"},
+  feats:["multi-pane","live telemetry","no tabs"],look:"High-density grid, phosphor-green on near-black, tabular everything.",feel:"Operator-in-charge; glance and act.",ab:"Simultaneous Codegen+Tester+brain+lanes; drag to re-pin panels.",resp:"Panels collapse to an accordion on phone.",be:"WebSocket fan-in from every /api/v3 stream at once."},
+ {n:"IDE-Native",ac:"#4fd6ff",tg:"VS Code for agents: tree, Monaco editor, panel dock, integrated terminal.",
+  g:"1fr auto/200px 1fr",ar:'"tree editor""term term"',reg:{tree:"tree",editor:"editor",term:"term"},
+  feats:["monaco","command palette","keybinds"],look:"Familiar editor chrome, syntax colors, activity bar.",feel:"Home for a developer; muscle memory.",ab:"Edit files, run tasks, chat as a side panel, diff self-rewrites.",resp:"Tree becomes a drawer; editor full-bleed.",be:"/api/v3/tree,/file,/file/versions,/tasks."},
+ {n:"Connectome First",ac:"#e06bff",tg:"The 4D brain IS the home screen; panels orbit the graph you're looking at.",
+  g:"1fr/1fr 280px",ar:'"brain side"',reg:{brain:"graph",side:"chat"},
+  feats:["4D graph","node-chat","hop widgets"],look:"Full-bleed connectome, glassy side rail.",feel:"Exploratory, spatial, alive.",ab:"Click a node → scoped chat; 1/2/3-hop; cascade on activity.",resp:"Side rail slides over the graph.",be:"/api/v3/connectome/4d + per-node /graph/node."},
+ {n:"Conversational",ac:"#ffd166",tg:"One big chat. Everything else is summoned by command and appears inline.",
+  g:"1fr auto/1fr",ar:'"stream""input"',reg:{stream:"chat",input:"lines"},
+  feats:["chat-first","slash cmds","inline cards"],look:"Centered column, generous whitespace, calm.",feel:"Talk to the system; it shows its work.",ab:"`/build`, `/graph`, `/test` render live cards in the thread.",resp:"Already single-column; perfect on phone.",be:"/sessions/{id}/chat SSE + inline tool calls."},
+ {n:"Infinite Canvas",ac:"#5ad1c4",tg:"A zoomable, pannable board where every run, file and agent is a movable node.",
+  g:"1fr/1fr",ar:'"canvas"',reg:{canvas:"map"},
+  feats:["pan/zoom","spatial memory","sticky notes"],look:"Endless dark grid, freeform placement.",feel:"Your workspace, arranged how you think.",ab:"Drop a prompt anywhere; wire outputs by dragging.",resp:"Pinch-zoom; minimap for small screens.",be:"Everything as positioned entities + /tasks."},
+ {n:"Terminal / TUI",ac:"#9dff57",tg:"Pure keyboard. Monospace panes, no mouse needed, retro and fast.",
+  g:"1fr 1fr/1fr",ar:'"out""cmd"',reg:{out:"term",cmd:"term"},
+  feats:["keyboard-only","tmux-like","zero-chrome"],look:"Green-on-black, box-drawing borders.",feel:"Hacker speed; latency-free.",ab:"Split panes, pipe between agents, scriptable.",resp:"Stacks panes; big touch keys.",be:"Thin REST wrapped in a command parser."},
+ {n:"Kanban Flow",ac:"#ff8fb0",tg:"Work as cards sliding through lanes: queued → building → review → shipped.",
+  g:"1fr/repeat(4,1fr)",ar:'"a b c d"',reg:{a:"lanes",b:"lanes",c:"lanes",d:"stat"},
+  feats:["board","WIP limits","drag to promote"],look:"Soft columns, status stripes, pills.",feel:"Everything's progress is obvious.",ab:"Drag a candidate to Review → approval queue; autonomy fills lanes.",resp:"Horizontal snap-scroll of columns.",be:"/jobs,/approvals,/autonomy."},
+ {n:"Timeline Studio",ac:"#ff6b6b",tg:"The recorder is the home: scrub every agent's history like a video editor.",
+  g:"1fr auto/1fr",ar:'"view""track"',reg:{view:"stat",track:"timeline"},
+  feats:["scrub","playback","multi-track"],look:"Editor transport bar, waveform-like tracks.",feel:"Time is the primary axis.",ab:"Play/pause/seek, diff versions at a timestamp, share a moment.",resp:"Track becomes a vertical feed.",be:"/recorder/frames + session_events seq."},
+ {n:"Orbital Radial",ac:"#c792ea",tg:"A central dial; actions and metrics live on rings you rotate to.",
+  g:"1fr/1fr",ar:'"ring"',reg:{ring:"ring"},
+  feats:["radial menu","gesture","one-handed"],look:"Concentric neon rings around a core.",feel:"Playful, tactile, unusual.",ab:"Spin to a sector; inner ring = status, outer = actions.",resp:"Ideal for thumb reach on phone.",be:"Any endpoint mapped to a sector."},
+ {n:"Bento Grid",ac:"#82aaff",tg:"Modular bento boxes, each a self-contained widget you rearrange.",
+  g:"1fr 1fr/2fr 1fr",ar:'"big stat""bars chat"',reg:{big:"graph",stat:"stat",bars:"bars",chat:"chat"},
+  feats:["widgets","resize","personal layout"],look:"Rounded tiles, varied sizes, Apple-calm.",feel:"Curated, personal, tidy.",ab:"Pin the widgets you use; sizes encode importance.",resp:"Reflows to one column cleanly.",be:"Each tile polls its own endpoint."},
+ {n:"Dual-Peer Split",ac:"#64ffda",tg:"Codegen left, Tester right — always side-by-side, always diffable.",
+  g:"1fr/1fr 1fr",ar:'"cg ts"',reg:{cg:"editor",ts:"stat"},
+  feats:["two peers","sync scroll","cross-nav"],look:"Mirror layout, a seam down the middle.",feel:"You see both minds at once.",ab:"Tester's findings line up with Codegen's diff; one click to jump.",resp:"Toggle which peer is foreground.",be:":9902 and :9904 side by side."},
+ {n:"Neo-Brutalist",ac:"#ffe14d",tg:"Raw, loud, honest: thick borders, hard shadows, zero gradients.",
+  g:"auto 1fr/1fr",ar:'"head""body"',reg:{head:"stat",body:"bars"},
+  feats:["high-contrast","no chrome","fast"],look:"Black borders, flat blocks, mono headers.",feel:"Unpretentious, confident, legible.",ab:"Everything labeled bluntly; state as big blocks.",resp:"Blocks stack; nothing fragile.",be:"Plain REST, no decoration."},
+ {n:"Aurora Glass",ac:"#7af5ff",tg:"Frosted panels floating over a slow aurora gradient.",
+  g:"1fr/1fr 300px",ar:'"brain glass"',reg:{brain:"graph",glass:"chat"},
+  feats:["glassmorphism","ambient motion","depth"],look:"Blurred layers, soft glow, gradient sky.",feel:"Premium, serene, modern.",ab:"Panels blur what's behind; focus stays on content.",resp:"Panels become sheets.",be:"Same data, luxe presentation."},
+ {n:"Bloomberg Dense",ac:"#ffb454",tg:"A trading terminal for agents: tickers, tables, every number, amber on black.",
+  g:"auto 1fr/1fr 1fr",ar:'"tick tick""tbl bars"',reg:{tick:"timeline",tbl:"lines",bars:"bars"},
+  feats:["data-dense","tickers","hotkeys"],look:"Amber mono, gridlines, tiny type.",feel:"Pro, serious, information-maximal.",ab:"Route-health, token spend, pass-rates streaming as tickers.",resp:"Tables scroll inside cells.",be:"/route-health,/reports,/models."},
+ {n:"Mobile App Shell",ac:"#b388ff",tg:"Phone-native: bottom tab bar, cards, swipe between agents.",
+  g:"1fr auto/1fr",ar:'"feed""tabs"',reg:{feed:"chat",tabs:"lanes"},
+  feats:["bottom nav","swipe","thumb-first"],look:"Big touch targets, card feed, haptic-ish.",feel:"Pocket control room.",ab:"Swipe Codegen↔Tester; approve from a card.",resp:"Built phone-first; scales up to split.",be:"Same API, mobile gestures."},
+ {n:"Node-Flow Editor",ac:"#00e5ff",tg:"The pipeline as a wired node graph (ComfyUI/n8n style) you rewire live.",
+  g:"1fr/1fr",ar:'"flow"',reg:{flow:"map"},
+  feats:["node editor","live wiring","visual logic"],look:"Boxes + bezier wires on a grid.",feel:"You build the agent by connecting it.",ab:"Drag router→graph→model→judge; see data flow.",resp:"Collapses nodes; pan to navigate.",be:"Maps to the real module graph."},
+ {n:"Notebook",ac:"#a5d6ff",tg:"A living notebook: cells of prompt + result + chart, re-runnable.",
+  g:"1fr/1fr",ar:'"cells"',reg:{cells:"editor"},
+  feats:["cells","inline output","narrative"],look:"Document column, code+result stacked.",feel:"Think, run, keep the reasoning.",ab:"Each cell calls an endpoint; outputs persist as history.",resp:"Natural single column.",be:"/think,/chat,/jobs per cell."},
+ {n:"Cyberpunk HUD",ac:"#ff2bd6",tg:"Heads-up overlay: scanlines, glowing frames, corner brackets, alerts.",
+  g:"auto 1fr auto/1fr",ar:'"top""main""bot"',reg:{top:"timeline",main:"graph",bot:"lanes"},
+  feats:["HUD overlay","glow","alerts"],look:"Neon magenta, scanlines, angular frames.",feel:"In the machine; high-adrenaline.",ab:"Corner readouts, flashing on red CI, targeting reticle on nodes.",resp:"HUD elements dock to edges.",be:"Same streams, dramatized."},
+ {n:"Zen Minimal",ac:"#9fe8c0",tg:"One thing at a time. Enormous calm. The opposite of a dashboard.",
+  g:"1fr/1fr",ar:'"one"',reg:{one:"stat"},
+  feats:["one-focus","huge type","calm"],look:"Vast whitespace, a single number or prompt.",feel:"Unhurried, intentional, clear.",ab:"Shows only what matters now; swipe for the next thing.",resp:"Identical everywhere by design.",be:"Fetches just the current focus."},
+ {n:"RTS Game HUD",ac:"#ffd000",tg:"Command agents like units: minimap, resource bars, selection, orders.",
+  g:"1fr auto/1fr 200px",ar:'"field mini""orders orders"',reg:{field:"map",mini:"graph",orders:"lanes"},
+  feats:["minimap","unit select","command queue"],look:"Game HUD: bars, minimap corner, order tray.",feel:"You're the commander; agents are units.",ab:"Select an agent, queue orders, watch resources (tokens/time).",resp:"Minimap + orders dock to a bar.",be:"autonomy + lanes + jobs as 'units'."}
+];
+
+function wf(el,a,big){
+  el.style.gridTemplate=a.g;el.style.gridTemplateAreas=a.ar.replace(/""/g,'" "');
+  el.style.setProperty('--ac',a.ac);
+  Object.entries(a.reg).forEach(([area,kind])=>{
+    const d=document.createElement('div');d.className='r ac k-'+kind;d.style.gridArea=area;el.appendChild(d);
+  });
+}
+const grid=document.getElementById('grid');
+A.forEach((a,i)=>{
+  const c=document.createElement('button');c.className='card';c.style.setProperty('--ac',a.ac);c.type='button';
+  const w=document.createElement('div');w.className='wf';wf(w,a);
+  const m=document.createElement('div');m.className='meta';
+  m.innerHTML=`<div class="nm"><span class="no">${String(i+1).padStart(2,'0')}</span><span class="ti">${a.n}</span></div>
+    <div class="tg">${a.tg}</div><div class="feats">${a.feats.map(f=>`<span class="ch">${f}</span>`).join('')}</div>`;
+  c.append(w,m);c.onclick=()=>open(i);
+  grid.appendChild(c);
+});
+const back=document.getElementById('back'),modal=document.getElementById('modal');
+function open(i){const a=A[i];
+  modal.style.setProperty('--ac',a.ac);modal.style.borderColor=a.ac;
+  modal.innerHTML=`<div class="mh" id="mh"><button class="x" aria-label="Close" onclick="shut()">✕</button></div>
+   <div class="mbody">
+     <div class="nm"><span class="no">${String(i+1).padStart(2,'0')}</span><h2>${a.n}</h2></div>
+     <p class="lead">${a.tg}</p>
+     <div class="rowz">
+       <div class="box"><div class="bl">Look</div><p>${a.look}</p></div>
+       <div class="box"><div class="bl">Feel</div><p>${a.feel}</p></div>
+       <div class="box"><div class="bl">Abilities</div><p>${a.ab}</p></div>
+       <div class="box"><div class="bl">Responsiveness</div><p>${a.resp}</p></div>
+       <div class="box"><div class="bl">Backend access</div><p>${a.be}</p></div>
+       <div class="box"><div class="bl">Signature</div><p>${a.feats.join(' · ')}</p></div>
+     </div>
+   </div>`;
+  const mh=document.getElementById('mh');mh.style.gridTemplate=a.g;mh.style.gridTemplateAreas=a.ar.replace(/""/g,'" "');mh.style.setProperty('--ac',a.ac);
+  Object.entries(a.reg).forEach(([area,kind])=>{const d=document.createElement('div');d.className='r ac k-'+kind;d.style.gridArea=area;mh.appendChild(d);});
+  back.classList.add('open');
+}
+function shut(){back.classList.remove('open');}
+back.onclick=e=>{if(e.target===back)shut();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')shut();});
+document.getElementById('foot').textContent='20 archetypes · click a console · esc to close · all wired to the same /api/v3 backend';
+</script>

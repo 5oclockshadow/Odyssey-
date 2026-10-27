@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="mega-skins.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</helmet>
+<div data-screen-label="Documents" onClick="{{ close }}" style="{{ shellStyle }}">
+  <div onClick="{{ keep }}" role="dialog" aria-label="Documents" style="width: min(1340px, 100%); height: min(880px, 100%); background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38); display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; font-family: Inter, system-ui, sans-serif; color: var(--ink);">
+
+    <header style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--card2);">
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: var(--ink6);">DOCUMENTS</span>
+      <span style="font-size: 14px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 34ch;">{{ topicName }}</span>
+      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Find in notes" aria-label="Find in notes" style="height: 30px; width: 170px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line3); background: var(--card); color: var(--ink); font-size: 12.5px;">
+      <span style="flex: 1;"></span>
+      <span style="font-size: 12px; color: var(--warn);">{{ msg }}</span>
+      <button type="button" onClick="{{ addTopicNote }}" style="height: 30px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--acc-line); background: var(--acc-bg); color: var(--acc-ink); font-weight: 500; cursor: pointer; white-space: nowrap;">New note</button>
+      <div style="position: relative;">
+        <button type="button" onClick="{{ toggleExp }}" aria-expanded="{{ expOpen }}" style="height: 30px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line3); background: transparent; color: var(--ink3); cursor: pointer; white-space: nowrap;">Export ▾</button>
+        <sc-if value="{{ expOpen }}" hint-placeholder-val="{{ false }}"><div style="position: absolute; right: 0; top: 34px; z-index: 3; width: 230px; display: grid; padding: 4px; border-radius: 10px; background: var(--card); border: 1px solid var(--line3); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3);">
+          <sc-for list="{{ exports }}" as="x" hint-placeholder-count="5"><button type="button" onClick="{{ x.run }}" style="display: grid; gap: 1px; text-align: left; padding: 7px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); cursor: pointer; font-size: 13px;" style-hover="background: var(--hover);"><span>{{ x.label }}</span><span style="font-size: 11px; color: var(--ink6);">{{ x.sub }}</span></button></sc-for>
+        </div></sc-if>
+      </div>
+      <button type="button" onClick="{{ close }}" aria-label="Close documents" style="width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; color: var(--ink5); cursor: pointer; font-size: 18px;" style-hover="background: var(--hover);">×</button>
+    </header>
+
+    <div style="{{ bodyStyle }}">
+      <nav aria-label="Documents of this topic" style="{{ railStyle }}">
+        <sc-for list="{{ groups }}" as="g" hint-placeholder-count="5">
+          <section style="display: grid; gap: 3px; align-content: start;">
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--ink6);">{{ g.label }}</span><span style="flex: 1;"></span><button type="button" onClick="{{ g.add }}" title="{{ g.addTitle }}" aria-label="{{ g.addTitle }}" style="width: 22px; height: 22px; border: 0; border-radius: 6px; background: transparent; color: var(--ink5); cursor: pointer; font-size: 15px; line-height: 1;" style-hover="background: var(--hover);">+</button></div>
+            <button type="button" onClick="{{ g.live.pick }}" title="{{ g.blurb }}" style="{{ g.live.style }}"><span style="font-size: 13px; font-weight: 500;">{{ g.live.title }}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink6);">live · {{ g.live.count }}</span></button>
+            <sc-for list="{{ g.notes }}" as="n" hint-placeholder-count="0"><button type="button" onClick="{{ n.pick }}" style="{{ n.style }}"><span style="font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ n.title }}</span><span style="font-size: 10.5px; color: var(--ink6); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ n.meta }}</span></button></sc-for>
+          </section>
+        </sc-for>
+      </nav>
+
+      <main style="min-width: 0; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr);">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 22px; border-bottom: 1px solid var(--line);">
+          <sc-if value="{{ isNote }}" hint-placeholder-val="{{ false }}"><input value="{{ title }}" onChange="{{ onTitle }}" aria-label="Note title" style="flex: 1 1 200px; min-width: 0; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--ink); font-size: 17px; font-weight: 600;" style-hover="border-color: var(--line3);" style-focus="border-color: var(--acc-line); background: var(--card);"></sc-if>
+          <sc-if value="{{ isLive }}" hint-placeholder-val="{{ true }}"><span style="flex: 1 1 200px; font-size: 17px; font-weight: 600; color: var(--ink);">{{ liveTitle }}</span></sc-if>
+          <span style="font-size: 11.5px; color: var(--ink6);">{{ chip }}</span>
+          <sc-if value="{{ isNote }}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 2px; padding: 2px; border-radius: 9px; border: 1px solid var(--line3);"><sc-for list="{{ modes }}" as="m" hint-placeholder-count="3"><button type="button" onClick="{{ m.pick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for></div><button type="button" onClick="{{ del }}" style="height: 28px; padding: 0 10px; border-radius: 7px; border: 1px solid var(--line3); background: transparent; color: var(--bad2); cursor: pointer; font-size: 12px;">Delete</button></sc-if>
+          <sc-if value="{{ isLive }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ copyLive }}" title="Keep a written copy you can edit and add to" style="height: 28px; padding: 0 12px; border-radius: 7px; border: 1px solid var(--acc-line); background: var(--acc-bg); color: var(--acc-ink); cursor: pointer; font-size: 12px; font-weight: 500;">Edit a copy</button></sc-if>
+        </div>
+        <div ref="{{ scroller }}" style="position: relative; overflow: auto; padding: 18px 26px 48px; min-height: 0;">
+          <div style="{{ pagesStyle }}">
+            <sc-if value="{{ showEdit }}" hint-placeholder-val="{{ false }}"><textarea ref="{{ area }}" value="{{ draft }}" onChange="{{ onDraft }}" aria-label="Edit the note" spellcheck="true" placeholder="Write in Markdown. [[Thought label]] links to a thought, [2] cites a source." style="width: 100%; min-height: 460px; resize: vertical; padding: 14px; border-radius: 10px; border: 1px solid var(--line3); background: var(--card2); color: var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6;"></textarea></sc-if>
+            <sc-if value="{{ showRead }}" hint-placeholder-val="{{ true }}"><div ref="{{ reader }}" onClick="{{ onReader }}" class="mg-doc"></div></sc-if>
+          </div>
+        </div>
+      </main>
+
+      <aside aria-label="Contents and insert" style="{{ asideStyle }}">
+        <section style="display: grid; gap: 4px; align-content: start;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--ink6);">CONTENTS</span>
+          <sc-if value="{{ noToc }}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: var(--ink6);">Headings appear here.</span></sc-if>
+          <sc-for list="{{ toc }}" as="h" hint-placeholder-count="0"><button type="button" onClick="{{ h.go }}" style="{{ h.style }}">{{ h.text }}</button></sc-for>
+        </section>
+        <section style="display: grid; gap: 6px; align-content: start;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--ink6);">SELECTED THOUGHT</span>
+          <sc-if value="{{ hasNode }}" hint-placeholder-val="{{ false }}"><div style="display: grid; gap: 6px; padding: 9px 10px; border-radius: 9px; background: var(--card3); border: 1px solid var(--line);">
+            <div style="font-size: 13px; font-weight: 600; line-height: 1.35;">{{ node.label }}</div>
+            <div style="font-size: 11.5px; color: var(--ink5);">{{ node.meta }}</div>
+            <div style="display: flex; gap: 4px; flex-wrap: wrap;"><sc-for list="{{ node.acts }}" as="a" hint-placeholder-count="3"><button type="button" onClick="{{ a.run }}" style="height: 26px; padding: 0 9px; border-radius: 6px; border: 1px solid var(--line3); background: var(--card); color: var(--ink3); cursor: pointer; font-size: 11.5px;" style-hover="background: var(--hover);">{{ a.label }}</button></sc-for></div>
+          </div></sc-if>
+          <sc-if value="{{ noNode }}" hint-placeholder-val="{{ true }}"><span style="font-size: 12px; color: var(--ink6); line-height: 1.5;">Click a linked thought in a document, or select one on the map, to write about it or link it here.</span></sc-if>
+        </section>
+        <section style="display: grid; gap: 6px; align-content: start;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--ink6);">INSERT FROM THE MAP</span>
+          <input value="{{ iq }}" onChange="{{ onIq }}" placeholder="Find a thought to link" aria-label="Find a thought to link" style="height: 30px; padding: 0 9px; border-radius: 8px; border: 1px solid var(--line3); background: var(--card); color: var(--ink); font-size: 12.5px;">
+          <sc-for list="{{ found }}" as="f" hint-placeholder-count="0"><button type="button" onClick="{{ f.run }}" title="Insert a link to this thought" style="text-align: left; padding: 5px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--ink3); cursor: pointer; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" style-hover="background: var(--hover);">{{ f.label }}</button></sc-for>
+          <span style="font-size: 11px; color: var(--ink6); line-height: 1.4;">{{ insertHint }}</span>
+        </section>
+        <section style="display: grid; gap: 3px; align-content: start;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--ink6);">CITE A SOURCE</span>
+          <sc-if value="{{ noCites }}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: var(--ink6);">No source is cited yet.</span></sc-if>
+          <sc-for list="{{ cites }}" as="c" hint-placeholder-count="0"><div style="display: flex; align-items: center; gap: 2px; min-width: 0;"><button type="button" onClick="{{ c.run }}" title="Insert this citation" style="flex: 1; min-width: 0; text-align: left; padding: 5px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--ink3); cursor: pointer; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" style-hover="background: var(--hover);">{{ c.label }}</button><button type="button" onClick="{{ c.note }}" title="Write a note about this source" style="flex: none; height: 22px; padding: 0 7px; border: 1px solid var(--line3); border-radius: 6px; background: transparent; color: var(--ink5); cursor: pointer; font-size: 11px;" style-hover="background: var(--hover);">note</button></div></sc-for>
+        </section>
+        <section style="display: grid; gap: 3px; align-content: start;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--ink6);">RECENT SEARCHES</span>
+          <sc-if value="{{ noRecent }}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: var(--ink6);">Nothing searched yet.</span></sc-if>
+          <sc-for list="{{ recent }}" as="q" hint-placeholder-count="0"><button type="button" onClick="{{ q.run }}" title="Write a note about this search" style="text-align: left; padding: 5px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--ink3); cursor: pointer; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" style-hover="background: var(--hover);">{{ q.label }}</button></sc-for>
+        </section>
+      </aside>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:820},&quot;doc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;live:topic&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;nonce&quot;:{&quot;editor&quot;:null,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;},&quot;note&quot;:{&quot;editor&quot;:null,&quot;default&quot;:null,&quot;tsType&quot;:&quot;{scope:string,about?:string,title?:string,body?:string}|null&quot;},&quot;close&quot;:{&quot;editor&quot;:null,&quot;default&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+const MODES = [['read', 'Read'], ['edit', 'Edit'], ['split', 'Both']];
+const fmt = t => new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const slug = s => String(s || 'document').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48) || 'document';
+const cap = (s, n) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+const item = on => ({ display: 'grid', gap: 1, textAlign: 'left', padding: '6px 9px', border: 0, borderRadius: 8, background: on ? 'var(--acc-bg)' : 'transparent', color: on ? 'var(--acc-ink)' : 'var(--ink)', cursor: on ? 'default' : 'pointer', minWidth: 0 });
+
+class Component extends DCLogic {
+  state = { sel: 'live:topic', mode: 'read', q: '', notes: [], draft: '', title: '', saved: '', expOpen: false, iq: '', w: window.innerWidth, msg: '', ready: false };
+  reader = React.createRef(); area = React.createRef(); scroller = React.createRef(); dirty = false; cur = { id: null, title: '', body: '' };
+
+  async componentDidMount() {
+    this.M = await import('./mega-agent.js'); this.D = await import('./mega-docs.js');
+    window.addEventListener('resize', this.onResize); window.addEventListener('mega-docs-changed', this.reload); window.addEventListener('keydown', this.onKey);
+    try { await this.reload(); } catch (e) { this.setState({ msg: 'Notes are unavailable here: ' + e.message }); }
+    this.setState({ ready: true }); this.apply();
+  }
+  componentDidUpdate(prev) { if (prev.nonce !== this.props.nonce) this.apply(); this.paint(); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); window.removeEventListener('mega-docs-changed', this.reload); window.removeEventListener('keydown', this.onKey); this.flush(); }
+  onResize = () => this.setState({ w: window.innerWidth });
+  onKey = e => { if (e.key === 'Escape') { if (this.state.expOpen) this.setState({ expOpen: false }); else this.close(); } };
+  host() { return this.M && this.M.S.host; }
+  graph() { const h = this.host(); return h && h.g && h.g(); }
+  topic() { const h = this.host(); return (h && h.topic && h.topic()) || { id: null, name: '' }; }
+  ctx() { const h = this.host(), t = this.topic(); return { name: t.name, searches: (h && h.searches && h.searches()) || [] }; }
+  close = () => { this.flush(); if (this.props.close) this.props.close(); };
+  keep = e => e.stopPropagation();
+  reload = async () => { const t = this.topic(); if (!this.D || !t.id) return; const notes = await this.D.listNotes(t.id); this.setState({ notes }); };
+  apply() { const p = this.props, o = p.note; if (o && o.scope) { this.newNote(o.scope, o.about || '', o.title, o.body); return; } this.select(p.doc || 'live:topic'); }
+  isLive() { return this.state.sel.startsWith('live:'); }
+  note() { return this.state.notes.find(n => n.id === this.state.sel); }
+  liveMd() { const g = this.graph(); return g && this.D ? this.D.live(g, this.state.sel, this.ctx()) : ''; }
+  content() { return this.isLive() ? this.liveMd() : this.state.draft; }
+  liveTitle() { const sc = this.D && this.D.SCOPES.find(x => x.live === this.state.sel); return sc ? sc.title : 'Document'; }
+  curTitle() { return this.isLive() ? this.liveTitle() : (this.state.title || 'Untitled note'); }
+
+  select = async id => { await this.flush(); const note = this.state.notes.find(n => n.id === id); this.cur = { id: note ? note.id : null, title: note ? note.title : '', body: note ? note.body : '' }; this.setState({ sel: id, mode: note && !note.body ? 'edit' : 'read', draft: note ? note.body : '', title: note ? note.title : '', saved: note ? fmt(note.at) : '', expOpen: false, msg: '' }); if (this.scroller.current) this.scroller.current.scrollTop = 0; };
+  newNote = async (scope, about, title, body) => { const t = this.topic(); if (!t.id || !this.D) { this.setState({ msg: 'Open or start a topic first' }); return; } await this.flush(); const d = await this.D.saveNote(t.id, { scope, about, title: title || (about ? 'Note on ' + cap(about, 40) : 'Untitled note'), body: body || '', author: 'you' }); this.cur = { id: d.id, title: d.title, body: d.body }; await this.reload(); this.setState({ sel: d.id, mode: 'edit', draft: d.body, title: d.title, saved: fmt(d.at), msg: '' }); };
+  copyLive = () => { const sc = this.D.SCOPES.find(s => s.live === this.state.sel); return this.newNote(sc ? sc.id : 'topic', '', this.liveTitle() + ' (copy)', this.liveMd()); };
+  onDraft = e => { const v = e.target.value; this.cur.body = v; this.dirty = true; this.setState({ draft: v }); clearTimeout(this.sT); this.sT = setTimeout(this.flush, 900); };
+  onTitle = e => { const v = e.target.value; this.cur.title = v; this.dirty = true; this.setState({ title: v }); clearTimeout(this.sT); this.sT = setTimeout(this.flush, 900); };
+  flush = async () => { clearTimeout(this.sT); if (!this.dirty || !this.cur.id || !this.D) return; this.dirty = false; const t = this.topic(); if (!t.id) return; try { const d = await this.D.saveNote(t.id, { id: this.cur.id, title: this.cur.title, body: this.cur.body }); this.setState(st => ({ notes: [d, ...st.notes.filter(n => n.id !== d.id)], saved: fmt(d.at) })); } catch (e) { this.setState({ msg: 'Could not save: ' + e.message }); } };
+  del = async () => { const n = this.note(); if (!n || !window.confirm('Delete the note "' + n.title + '"?')) return; this.dirty = false; await this.D.removeNote(n.id); await this.reload(); this.select('live:topic'); };
+  insert = text => { if (this.isLive()) { this.setState({ msg: 'Use Edit a copy first, then insert' }); return; } const ta = this.area.current, b = this.state.draft, s = ta ? ta.selectionStart : b.length, e = ta ? ta.selectionEnd : b.length, v = b.slice(0, s) + text + b.slice(e); this.cur.body = v; this.dirty = true; this.setState({ draft: v, mode: this.state.mode === 'read' ? 'split' : this.state.mode }); clearTimeout(this.sT); this.sT = setTimeout(this.flush, 900); };
+  rendered() { const md = this.content(), g = this.graph(); if (this._md !== md || this._g !== g) { this._r = this.D.render(md, { byLabel: g ? this.D.labelIndex(g) : new Map() }); this._md = md; this._g = g; } return this._r; }
+  paint() { const el = this.reader.current; if (!el || !this._r) return; if (this._el !== el || this._shown !== this._r.html) { el.innerHTML = this._r.html; this._el = el; this._shown = this._r.html; if (this.pendingCite) { const c = this.pendingCite; this.pendingCite = null; const li = el.querySelectorAll('ol > li')[+c - 1]; if (li && this.scroller.current) this.scroller.current.scrollTop = li.offsetTop - 16; } } }
+  onReader = e => { const a = e.target.closest && e.target.closest('[data-node],[data-cite]'); if (!a) return; if (a.dataset.node) { const h = this.host(); if (h && h.select) h.select(a.dataset.node); this.forceUpdate(); } else if (a.dataset.cite) { this.pendingCite = a.dataset.cite; this.select('live:sources'); } };
+  download = (name, text, type) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); this.setState({ expOpen: false, msg: 'Saved ' + name }); };
+  byLabel() { const g = this.graph(); return { byLabel: g ? this.D.labelIndex(g) : new Map() }; }
+  exportList() {
+    const T = this.curTitle(), md = () => this.content(), name = slug(this.topic().name + '-' + T);
+    return [
+      { label: 'Markdown file', sub: T + ' as .md', run: () => this.download(name + '.md', md(), 'text/markdown') },
+      { label: 'Web page', sub: 'Standalone .html with the same links', run: () => this.download(name + '.html', this.D.exportHtml(T, md(), this.byLabel()), 'text/html') },
+      { label: 'Print or save as PDF', sub: 'Opens the print dialog', run: () => { this.setState({ expOpen: false }); const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;width:0;height:0;border:0;'; document.body.appendChild(f); f.onload = () => { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { /* blocked */ } setTimeout(() => f.remove(), 60000); }; f.srcdoc = this.D.exportHtml(T, md(), this.byLabel()); } },
+      { label: 'Copy Markdown', sub: 'To the clipboard', run: async () => { try { await navigator.clipboard.writeText(md()); this.setState({ expOpen: false, msg: 'Copied' }); } catch (e) { this.setState({ expOpen: false, msg: 'The browser blocked copying' }); } } },
+      { label: 'Every document', sub: 'All five live ones and your notes in one .md', run: () => { const g = this.graph(), c = this.ctx(); const parts = this.D.SCOPES.map(s => this.D.live(g, s.live, c)).concat(this.state.notes.map(n => '# ' + n.title + '\n\n_' + n.scope + (n.about ? ', about ' + n.about : '') + '_\n\n' + n.body)); this.download(slug(this.topic().name) + '-documents.md', parts.join('\n\n---\n\n'), 'text/markdown'); } },
+    ];
+  }
+
+  renderVals() {
+    const s = this.state, D = this.D, g = this.graph(), narrow = s.w < 700, mid = s.w < 900, wide = s.w >= 1100, live = this.isLive(), ctx = this.ctx(), h = this.host();
+    const base = { shellStyle: { position: 'fixed', inset: 0, zIndex: 75, background: 'rgba(var(--ink-rgb), 0.4)', display: 'grid', placeItems: 'center', padding: narrow ? 8 : 22 }, keep: this.keep, close: this.close, msg: s.msg, q: s.q, onQ: e => this.setState({ q: e.target.value }), topicName: ctx.name || (g ? g.seed : ''), addTopicNote: () => this.newNote('topic', '', '', ''), expOpen: s.expOpen, toggleExp: () => this.setState({ expOpen: !s.expOpen }) };
+    if (!D || !g) return { ...base, exports: [], groups: [], isNote: false, isLive: true, liveTitle: 'Loading…', chip: '', modes: [], del: () => {}, copyLive: () => {}, title: '', onTitle: () => {}, bodyStyle: { display: 'grid' }, railStyle: {}, asideStyle: {}, pagesStyle: {}, showEdit: false, showRead: true, draft: '', onDraft: () => {}, area: this.area, reader: this.reader, scroller: this.scroller, onReader: this.onReader, toc: [], noToc: true, hasNode: false, noNode: true, node: { label: '', meta: '', acts: [] }, iq: '', onIq: () => {}, found: [], insertHint: '', cites: [], noCites: true };
+    const counts = D.counts(g, ctx), q = s.q.trim().toLowerCase(), note = this.note(), r = this.rendered();
+    const groups = D.SCOPES.map(sc => ({
+      label: sc.label.toUpperCase(), blurb: sc.blurb, addTitle: 'New ' + sc.label.toLowerCase() + ' note', add: () => this.newNote(sc.id, '', '', ''),
+      live: { title: sc.title, count: counts[sc.live], pick: () => this.select(sc.live), style: item(s.sel === sc.live) },
+      notes: s.notes.filter(n => n.scope === sc.id && (!q || (n.title + ' ' + n.body + ' ' + n.about).toLowerCase().includes(q))).map(n => ({ title: n.title, meta: (n.about ? 'about ' + cap(n.about, 28) : fmt(n.at)) + (n.author !== 'you' ? ' · ' + n.author : ''), pick: () => this.select(n.id), style: item(s.sel === n.id) })),
+    }));
+    const sel = h && h.sel && h.sel(), node = sel && g.byId.get(sel), ms = node ? D.collectSources(g, ctx.searches) : null;
+    const nodeActs = node ? [
+      { label: 'Link it', run: () => this.insert('[[' + node.label + ']]') },
+      { label: 'Quote it', run: () => this.insert('\n> ' + node.label + (node.detail ? ' — ' + cap(node.detail, 220) : '') + '\n') },
+      { label: 'Write about it', run: () => this.newNote('graph', node.label, 'Note on ' + cap(node.label, 50), '# ' + node.label + '\n\n' + (node.detail ? node.detail + '\n\n' : '')) },
+      { label: 'Evidence note', run: () => this.newNote('evidence', node.label, 'Evidence: ' + cap(node.label, 50), '# Evidence for: ' + node.label + '\n\n' + Math.round((node.g || 0) * 100) + '% grounded' + (node.status ? ', ' + node.status : '') + '\n\nSources:\n' + ((node.evidence || []).map(e => '- ' + e.src + (e.year ? ' (' + e.year + ')' : '')).join('\n') || '- none yet') + (node.challenge ? '\n\nChallenge: ' + node.challenge : '') + '\n\n## Assessment\n\n') },
+      { label: 'Show on the map', run: () => this.close() },
+    ] : [];
+    const iq = (s.iq || '').trim().toLowerCase(), found = iq.length >= 2 ? g.nodes.filter(n => n.label.toLowerCase().includes(iq)).sort((a, b) => (b.label.toLowerCase().startsWith(iq) - a.label.toLowerCase().startsWith(iq)) || a.label.length - b.label.length).slice(0, 8).map(n => ({ label: n.label, run: () => this.insert('[[' + n.label + ']]') })) : [];
+    const S = D.collectSources(g, ctx.searches), showEdit = !live && (s.mode === 'edit' || s.mode === 'split'), showRead = live || s.mode === 'read' || s.mode === 'split';
+    const toc = r.toc.slice(0, 40).map(t => ({ text: t.text, go: () => { const el = this.reader.current && this.reader.current.querySelector('#' + t.id); if (el && this.scroller.current) this.scroller.current.scrollTop = el.offsetTop - 14; }, style: { textAlign: 'left', padding: '3px 6px 3px ' + (6 + (t.level - 1) * 10) + 'px', border: 0, borderRadius: 6, background: 'transparent', color: t.level === 1 ? 'var(--ink)' : 'var(--ink4)', fontWeight: t.level <= 2 ? 500 : 400, cursor: 'pointer', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }));
+    return {
+      ...base, groups, exports: this.exportList(), isNote: !live, isLive: live, liveTitle: this.liveTitle(),
+      chip: live ? 'Live from the map · redrawn as it changes' : 'Written by ' + ((note && note.author) || 'you') + (s.saved ? ' · saved ' + s.saved : ''),
+      modes: MODES.map(([id, label]) => ({ label, pick: () => this.setState({ mode: id }), style: { height: 24, padding: '0 10px', borderRadius: 6, border: 0, background: s.mode === id ? 'var(--acc-bg)' : 'transparent', color: s.mode === id ? 'var(--acc-ink)' : 'var(--ink5)', cursor: 'pointer', fontSize: 12 } })),
+      del: this.del, copyLive: this.copyLive, title: s.title, onTitle: this.onTitle,
+      bodyStyle: { display: 'grid', gridTemplateColumns: narrow ? 'minmax(0, 1fr)' : mid ? '200px minmax(0, 1fr)' : wide ? '236px minmax(0, 1fr) 268px' : '200px minmax(0, 1fr) 224px', gridTemplateRows: narrow ? 'auto minmax(0, 1fr)' : 'minmax(0, 1fr)', minHeight: 0 },
+      railStyle: { overflow: 'auto', borderRight: narrow ? 0 : '1px solid var(--line)', borderBottom: narrow ? '1px solid var(--line)' : 0, padding: 12, display: 'grid', gap: 14, alignContent: 'start', background: 'var(--card2)', maxHeight: narrow ? 170 : 'none' },
+      asideStyle: { display: narrow || mid ? 'none' : 'grid', overflow: 'auto', borderLeft: '1px solid var(--line)', padding: 14, gap: 18, alignContent: 'start', background: 'var(--card2)' },
+      pagesStyle: { display: 'grid', gap: 22, gridTemplateColumns: showEdit && showRead && wide ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)', alignItems: 'start' },
+      showEdit, showRead, draft: s.draft, onDraft: this.onDraft, area: this.area, reader: this.reader, scroller: this.scroller, onReader: this.onReader,
+      toc, noToc: !toc.length, hasNode: !!node, noNode: !node, node: { label: node ? node.label : '', meta: node ? node.plane + ' · ' + Math.round((node.g || 0) * 100) + '% grounded · ' + (node.evidence || []).length + ' source' + ((node.evidence || []).length === 1 ? '' : 's') : '', acts: nodeActs },
+      iq: s.iq || '', onIq: e => this.setState({ iq: e.target.value }), found, insertHint: live ? 'Open a note, or choose Edit a copy, to insert links and quotes.' : 'Inserts at the cursor as [[thought label]].',
+      cites: S.cited.slice(0, 12).map(c => ({ label: c.n + '. ' + cap(c.src, 30), run: () => this.insert('[' + c.n + ']'), note: () => this.newNote('source', c.src, 'Source: ' + cap(c.src, 60), '# ' + c.src + '\n\n' + (c.year ? 'Year: ' + c.year + '\n\n' : '') + (c.url ? c.url + '\n\n' : '') + 'Supports:\n' + c.nodes.slice(0, 8).map(id => '- [[' + ((g.byId.get(id) || {}).label || '') + ']]').join('\n') + '\n\n## Notes\n\n') })), noCites: !S.cited.length,
+      recent: (ctx.searches || []).slice(0, 5).map(q => ({ label: D.kindLabel(q.kind) + ': ' + cap(q.query, 30), run: () => this.newNote('search', q.query, 'Search: ' + cap(q.query, 50), '# Search: ' + q.query + '\n\n_' + D.kindLabel(q.kind) + ', ' + fmt(q.at) + ', ' + q.n + ' results_\n\n' + (q.results || []).slice(0, 10).map(r => '- ' + (r.nodeId ? '[[' + r.title + ']]' : r.url ? '[' + r.title + '](' + r.url + ')' : r.title)).join('\n') + '\n\n## What I learned\n\n') })), noRecent: !(ctx.searches || []).length,
+    };
+  }
+}
+</script>
+</body>
+</html>

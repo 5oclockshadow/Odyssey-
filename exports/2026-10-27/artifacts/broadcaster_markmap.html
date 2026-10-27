@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Broadcaster Markmap</title>
+<style>
+  :root{--bg:#070b11;--text:#eaf2ff;--acc:#39ff9f;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,sans-serif;}
+  :root:not([data-theme="light"]){color-scheme:dark;}
+  .bar{position:fixed;top:0;left:0;right:0;min-height:46px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:8px 14px;border-bottom:1px solid #1a2740;background:#0a0f17;z-index:10;}
+  .bar b{color:var(--acc);} .bar .t{font-weight:600;font-size:15px;} .bar span{font-size:12px;color:#8aa0bd;}
+  .bar .btn{margin-left:auto;display:flex;gap:6px;}
+  .bar button{background:#0e1725;border:1px solid #1a2740;color:#cfe0f5;font:inherit;font-size:12px;
+    padding:6px 11px;border-radius:8px;cursor:pointer;}
+  .bar button:hover{border-color:var(--acc);}
+  #mm{position:fixed;inset:54px 0 0 0;width:100%;height:calc(100% - 54px);}
+  svg.markmap{width:100%;height:100%;font-size:16px;}
+  /* legibility: brighten + enlarge the labels, keep the colored branch lines */
+  svg.markmap .markmap-foreign{color:#eaf2ff;font-size:15px;line-height:1.3;}
+  svg.markmap .markmap-foreign div{color:#eaf2ff !important;font-weight:500;}
+  svg.markmap .markmap-foreign code{color:#9ae9ff !important;background:#0e1725;padding:0 4px;border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>◆</b><span class="t">Broadcaster / Operator</span><span>revenue engine — tap a node to expand · pinch/scroll to zoom</span>
+  <span class="btn"><button id="ex">Expand all</button><button id="co">Collapse</button><button id="fit">Fit</button></span>
+</div>
+<div id="mm"><svg class="markmap"></svg></div>
+
+<script>window.markmap={autoLoader:{manual:true}};</script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@0.18.10/dist/index.js"></script>
+<script type="text/markdown" id="src">
+# Broadcaster / Operator
+## 💰 Revenue model (programmatic · done-for-you)
+### Tiers pay fees for done-for-you ops
+- citizen / creator — self-serve + assist
+- private / corporate — managed channels
+- cities / universities — institutional contracts
+- gov / military — compliance-grade, premium
+- farming / niche verticals
+### Programmatic fee lines
+- per-channel monthly retainer (ops)
+- per-video / per-asset
+- per-publish + per-boost
+- outreach / lead-gen fee
+- analytics / reporting subscription
+### Mini-apps = billable micro-services
+- script-as-a-service
+- AI voiceover
+- visuals / b-roll / thumbnails
+- assemble + publish
+- safety / compliance review
+- outreach / email
+- analytics + reward loop
+### Operator = the managed layer
+- runs N channels per tenant (kestrels)
+- SLA + billing pipeline
+- self-serve → managed → white-label
+## Agent = Graph
+- codebase
+- brain
+- self
+## Pipeline
+- scout → research → script → voice
+- visuals → assemble → safety
+- review → approve → publish
+- outreach/email → analytics → reward
+## Products
+### channel templates
+- faceless doc · news/recap
+- prayer *(missing)* · infomercial *(missing)*
+### onboarding tiers
+- cities · universities · citizen
+- gov · military · private · corporate · farming
+## Dimensions (0–100, measured)
+### Media gen quality ~3% ⚠ PRIORITY
+- real models wired? watchable? review catches bad output?
+### Graphs — all levels; RAPTOR surfaced
+### Hebbian + Q-table — bounded + REAL rewards (Analytics OAuth)
+### DSPy — single OutputField · ReAct · optimizer
+### Router — role/health/context/DMR
+### SaaS — tenancy · quotas · kestrels · operator · secrets
+### Tester — audit/chaos/propose-patch · gated
+### Email/outreach — sends · tracked · compliant
+### SOC 2 — evidence per release
+### Autonomy rate — % zero-touch
+## Known partials (close first)
+- Q-table no real rewards → Analytics OAuth
+- RAPTOR backend-only → browser flat
+- new modules lack CI tests
+- YouTube Data API not exercised live
+- prayer / infomercial templates missing
+## 70-round loop
+- pick 1 dim × 1 cell → MEASURE live
+- fix smallest root cause → re-measure
+- ship PR (tests + README + evidence)
+- outward actions gated (dry-run + notify-after)
+</script>
+<script>
+(function(){
+  let mm=null;
+  function boot(){
+    const md=document.getElementById("src").textContent, svg=document.querySelector("svg.markmap");
+    if(!(window.markmap&&window.markmap.Transformer&&window.markmap.Markmap)){return setTimeout(boot,80);}
+    try{
+      const r=new window.markmap.Transformer().transform(md);
+      mm=window.markmap.Markmap.create(svg,{
+        initialExpandLevel:2, maxWidth:300, nodeMinHeight:22, spacingVertical:10, spacingHorizontal:90,
+        paddingX:14, duration:300, fitRatio:0.92, colorFreezeLevel:3
+      }, r.root);
+      setTimeout(()=>mm.fit(),60);
+      document.getElementById("ex").onclick=()=>mm.setData(r.root,{initialExpandLevel:-1}).then(()=>mm.fit());
+      document.getElementById("co").onclick=()=>mm.setData(r.root,{initialExpandLevel:1}).then(()=>mm.fit());
+      document.getElementById("fit").onclick=()=>mm.fit();
+    }catch(e){ setTimeout(boot,120); }
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

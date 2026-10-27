@@ -1,0 +1,15 @@
+# TenderGraph core (Skilld framework lineage).
+pydantic>=2.5
+fastapi>=0.110
+uvicorn[standard]>=0.29
+networkx>=3.2
+httpx>=0.27
+pyyaml>=6.0
+# Test
+pytest>=8.0
+pytest-asyncio>=0.23
+
+# --- Optional ----------------------------------------------------------------
+# redis>=5.0            # only if TENDERGRAPH_REDIS_URL is set (tendergraph/store.py); else a JSON snapshot on disk
+# NOT implemented yet (no code uses them — listed so nobody assumes they exist): DSPy reasoning, Phoenix tracing,
+# RAPTOR/BM25 retrieval. Add the code and a test before adding the dependency back.

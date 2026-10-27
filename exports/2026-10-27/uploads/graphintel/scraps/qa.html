@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>QA harness</title>
+<style>body{font:13px/1.5 system-ui;margin:12px;background:#111;color:#ddd}table{border-collapse:collapse;width:100%}td,th{border:1px solid #333;padding:4px 8px;text-align:left;vertical-align:top;font-size:12px}.f{color:#ff7a59}.p{color:#7fe0a0}iframe{position:absolute;left:-9999px;top:0;border:0;height:900px}</style></head>
+<body><h3 id="h">QA running…</h3><table id="t"><tr><th>page</th><th>width</th><th>result</th></tr></table><script>
+const W = [390, 1440];
+const S = [
+  { n: 'Explorer · agent brain', u: '../apps/ops/src/Explorer.dc.html', steps: [] },
+  { n: 'Explorer · Reprice', u: '../apps/ops/src/Explorer.dc.html', steps: ['Reprice'] },
+  { n: 'Explorer · Limits', u: '../apps/ops/src/Explorer.dc.html', steps: ['Limits'] },
+  { n: 'Explorer · Finance', u: '../apps/ops/src/Explorer.dc.html', steps: ['Finance'] },
+  { n: 'T: Member · Reprice', u: '../apps/ops/src/Explorer.dc.html', steps: ['Member', 'Reprice'] },
+  { n: 'T: Visitor · agent brain', u: '../apps/ops/src/Explorer.dc.html', steps: ['Visitor'] },
+  { n: 'T: API · Limits', u: '../apps/ops/src/Explorer.dc.html', steps: ['API', 'Limits'] },
+  { n: 'T: Pro · Timeline', u: '../apps/ops/src/Explorer.dc.html', steps: ['Pro', 'Timeline'] },
+  { n: 'T: Institute graph', u: '../apps/ops/src/Explorer.dc.html', steps: ['Institute'] },
+  { n: 'T: Markmap', u: '../apps/ops/src/Explorer.dc.html', steps: ['Markmap'] },
+  { n: 'T: Finance · Backtest', u: '../apps/ops/src/Explorer.dc.html', steps: ['Finance', 'Backtest'] },
+  { n: 'T: Finance · Charts', u: '../apps/ops/src/Explorer.dc.html', steps: ['Finance', 'Charts for social'] },
+  { n: 'T: Finance · Work', u: '../apps/ops/src/Explorer.dc.html', steps: ['Finance', 'Work we seek'] },
+  { n: 'API Atlas', u: '../apps/ops/src/API Atlas.dc.html', steps: [] },
+  { n: 'Finance (standalone)', u: '../apps/ops/src/Finance.dc.html', steps: [] },
+  { n: 'Owner Console', u: '../apps/ops/src/Owner Console.dc.html', steps: [] },
+  { n: 'Tester · live', u: '../apps/ops/src/Tester.dc.html', steps: [] },
+  { n: 'Tester · chat', u: '../apps/ops/src/Tester.dc.html', steps: ['Chat'] },
+  { n: 'Tester · graph view', u: '../apps/ops/src/Tester.dc.html', steps: ['Institute graph'] },
+  { n: 'Tester · settings', u: '../apps/ops/src/Tester.dc.html', steps: ['Settings', 'Abyss', async (w, errs) => { const T = w.__testerDash; if (!T || T.state.set.theme !== 'abyss') errs.push('tester: theme did not change'); }, 'Restore defaults'] },
+  { n: 'Tester · hover holds motion', u: '../apps/ops/src/Tester.dc.html', steps: [async (w, errs) => {
+    const T = w.__testerDash; if (!T || !T.ctl) { errs.push('tester: the brain did not mount'); return; }
+    T.ctl.peek('a:sextant'); await wait(700); const m1 = T.ctl.motion(); for (let i = 0; i < 20; i++) T.ctl.tick(50); const m2 = T.ctl.motion();
+    if (!m1.held) errs.push('tester: hover did not hold the brain');
+    if (Math.abs(m2.ry - m1.ry) > 1e-9 || Math.abs(m2.breath - m1.breath) > 1e-9) errs.push('tester: the brain kept moving while held');
+    if (!(m2.flow > m1.flow)) errs.push('tester: signals stopped while held');
+    if (!w.document.querySelector('[role=dialog][aria-label="SEXTANT"]')) errs.push('tester: hover card missing');
+    T.ctl.peek(''); await wait(700); const m3 = T.ctl.motion(); for (let i = 0; i < 20; i++) T.ctl.tick(50); const m4 = T.ctl.motion();
+    if (m3.held) errs.push('tester: hold did not release'); if (m4.auto && m4.ry === m3.ry) errs.push('tester: rotation did not resume');
+    if (w.document.querySelector('[role=dialog][aria-label="SEXTANT"]')) errs.push('tester: hover card did not close');
+  }] }];
+window.QA = []; window.DONE = false;
+try { const k = 'threshold_livesim_v2', s = JSON.parse(localStorage.getItem(k) || 'null'); if (s) { window.WAS = s.paused; s.paused = true; localStorage.setItem(k, JSON.stringify(s)); } } catch (e) {}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function check(w, d) {
+  const out = { fail: [], warn: [] }, iw = w.innerWidth, txt = d.body ? d.body.innerText : '';
+  if (txt.length < 60) out.fail.push('blank page');
+  if (d.documentElement.scrollWidth - iw > 2) out.fail.push('scroll: page is ' + (d.documentElement.scrollWidth - iw) + 'px wider than the screen');
+  const clipped = el => { for (let p = el.parentElement; p && p !== d.body; p = p.parentElement) { const o = w.getComputedStyle(p).overflowX; if (o === 'auto' || o === 'scroll' || o === 'hidden') { const r = p.getBoundingClientRect(); if (r.right <= iw + 2) return true; } } return false; };
+  const off = [], cut = [];
+  d.querySelectorAll('body *').forEach(el => {
+    const r = el.getBoundingClientRect(); if (!r.width || !r.height) return; const cs = w.getComputedStyle(el); if (cs.position === 'fixed' || cs.visibility === 'hidden' || cs.display === 'none') return;
+    if (r.right > iw + 2 && !clipped(el) && off.length < 4) off.push(el.tagName.toLowerCase() + ' "' + (el.textContent || '').trim().slice(0, 30) + '" +' + Math.round(r.right - iw));
+    if (cs.overflow === 'hidden' && el.scrollWidth > el.clientWidth + 2 && cs.textOverflow !== 'ellipsis' && cs.whiteSpace !== 'normal' && (el.textContent || '').trim() && el.children.length === 0 && cut.length < 4 && !/^(svg|canvas|img)$/i.test(el.tagName)) cut.push((el.textContent || '').trim().slice(0, 30));
+  });
+  off.forEach(x => out.fail.push('offscreen: ' + x)); cut.forEach(x => out.warn.push('clipped text: ' + x));
+  const bad = ['NaN', 'undefined', '[object', 'null%']; bad.forEach(b => { if (txt.includes(b)) out.fail.push('rendering: page text contains "' + b + '"'); });
+  d.querySelectorAll('img:not([alt])').forEach(() => out.fail.push('a11y: image without alt'));
+  let nb = 0; d.querySelectorAll('button,a[href]').forEach(b => { if (!(b.textContent || '').trim() && !b.getAttribute('aria-label') && !b.title) nb++; }); if (nb) out.fail.push('a11y: ' + nb + ' button/link with no name');
+  if (!d.documentElement.lang) out.warn.push('a11y: html has no lang'); if (!d.title) out.warn.push('a11y: page has no title');
+  let sm = 0; d.querySelectorAll('button').forEach(b => { const r = b.getBoundingClientRect(); if (r.height && r.height < 28) sm++; }); if (sm) out.warn.push(sm + ' buttons under 28px tall');
+  return out;
+}
+(async () => {
+  const only = decodeURIComponent(location.hash.slice(1)) || '', RUN = only ? S.filter(s => s.n.includes(only)) : S;
+  for (let pass = 1; pass <= (only ? 1 : 3); pass++) for (const s of RUN) for (const width of W) {
+    const f = document.createElement('iframe'); f.style.width = width + 'px'; f.src = s.u; document.body.appendChild(f); const errs = [];
+    await new Promise(r => { f.onload = r; setTimeout(r, 15000); }); const w = f.contentWindow;
+    try { w.addEventListener('error', e => errs.push(String(e.message))); w.addEventListener('unhandledrejection', e => errs.push(String(e.reason))); } catch (e) {}
+    await wait(3500);
+    for (const t of s.steps) { if (typeof t === 'function') { try { await t(w, errs); } catch (e) { errs.push('step: ' + e.message); } continue; } const b = [...w.document.querySelectorAll('button')].find(x => x.textContent.trim() === t || x.getAttribute('aria-label') === t) || [...w.document.querySelectorAll('label')].find(x => x.textContent.trim() === t); if (b) b.click(); else errs.push('button "' + t + '" not found'); await wait(1800); }
+    let res; try { res = check(w, w.document); } catch (e) { res = { fail: ['harness: ' + e.message], warn: [] }; }
+    errs.forEach(e => res.fail.push('console: ' + e)); const rec = { pass, page: s.n, width, fail: res.fail, warn: res.warn }; window.QA.push(rec);
+    const tr = document.createElement('tr'); tr.innerHTML = '<td>' + s.n + '</td><td>' + width + '</td><td class="' + (res.fail.length ? 'f' : 'p') + '">' + (res.fail.length ? res.fail.join('<br>') : 'pass') + (res.warn.length ? '<br><i>warn: ' + res.warn.join('; ') + '</i>' : '') + '</td>'; document.getElementById('t').appendChild(tr);
+    f.remove();
+  }
+  try { const k = 'threshold_livesim_v2', s2 = JSON.parse(localStorage.getItem(k) || 'null'); if (s2) { s2.paused = !!window.WAS; localStorage.setItem(k, JSON.stringify(s2)); } } catch (e) {}
+  window.DONE = true; document.getElementById('h').textContent = 'QA done: ' + window.QA.filter(r => r.fail.length).length + ' of ' + window.QA.length + ' failed';
+})();
+</script></body></html>

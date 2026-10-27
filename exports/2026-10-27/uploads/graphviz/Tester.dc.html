@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+<script src="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+<style>html,body{margin:0;background:var(--color-bg);color:var(--color-text)}a{color:var(--color-accent)}a:hover{color:var(--color-accent-400)}*:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}button{font:inherit}</style>
+</helmet>
+<div style="min-height:100vh;box-sizing:border-box;padding:24px 28px 40px;font-family:var(--font-body),system-ui,sans-serif;font-size:14px;line-height:1.5;color:var(--color-text);background:var(--color-bg);display:flex;flex-direction:column;gap:20px;width:100%;max-width:1280px;margin:0 auto">
+
+  <header class="nav" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-bottom:16px;border-bottom:1px solid var(--color-neutral-700)">
+    <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+      <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.12em;color:var(--color-neutral-400)">SOC 2 · CHAOS · SELF-IMPROVEMENT</span>
+      <span style="font-size:24px;font-weight:600;letter-spacing:-.01em">Tester</span>
+    </div>
+    <span style="white-space:nowrap;flex:none" class="tag tag-outline">{{ sevText }}</span>
+    <div style="margin-left:auto;display:flex;flex-wrap:wrap;gap:8px">
+      <button onClick="{{ runOne }}" class="btn btn-primary">Run cycle</button>
+      <button onClick="{{ runFive }}" class="btn btn-secondary">Run 5</button>
+      <button onClick="{{ toggleAuto }}" class="btn btn-primary">{{ autoLabel }}</button>
+    </div>
+  </header>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--color-neutral-700);border:1px solid var(--color-neutral-700)">
+    <div class="card" style="padding:12px 14px;gap:2px"><span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-400)">CYCLES</span><span style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums">{{ cycles }}</span></div>
+    <div class="card" style="padding:12px 14px;gap:2px"><span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-400)">FAILURES REPRODUCED</span><span style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--color-accent-100)">{{ breaks }}</span></div>
+    <div class="card" style="padding:12px 14px;gap:2px"><span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-400)">PATCHES ACCEPTED</span><span style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--color-accent-300)">{{ accepted }}</span></div>
+    <div class="card" style="padding:12px 14px;gap:2px"><span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-400)">OPEN FINDINGS</span><span style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums">{{ openCount }}</span></div>
+    <div class="card" style="padding:12px 14px;gap:2px"><span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-400)">SOC 2 SCORE</span><span style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums">{{ overall }}%</span></div>
+  </section>
+
+  <nav style="display:flex;flex-wrap:wrap;row-gap:4px;column-gap:22px;border-bottom:1px solid var(--color-neutral-700)">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.go }}" class="btn btn-ghost" style="padding:8px 0 10px;background:transparent;border:0;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:500;white-space:nowrap;cursor:pointer">{{ t.label }}</button></sc-for>
+  </nav>
+
+  <sc-if value="{{ isLive }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:20px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;color:var(--color-neutral-400)">LIVE TEST TELEMETRY</span>
+        <div class="card" style="padding:4px 14px;max-height:560px;overflow:auto">
+          <sc-if value="{{ noLog }}"><div style="padding:18px 0;color:var(--color-neutral-400)">No runs yet. Press Run cycle, or start autopilot.</div></sc-if>
+          <sc-for list="{{ log }}" as="e" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:36px 74px minmax(0,1fr) 84px;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--color-neutral-700);font-size:13px">
+              <span style="font-family:ui-monospace,monospace;font-size:11px;color:var(--color-neutral-400)">{{ e.n }}</span>
+              <span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.06em;color:var(--color-neutral-400)">{{ e.who }}</span>
+              <span style="min-width:0;overflow-wrap:anywhere">{{ e.action }}</span>
+              <span style="font-family:ui-monospace,monospace;font-size:11px;font-weight:500;color:{{ e.col }};text-align:right">{{ e.result }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card" style="">
+          <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;color:var(--color-neutral-400)">NEXT STRATEGY · UCB</span>
+          <div style="font-size:18px;font-weight:600;margin-top:4px">{{ lastName }}</div>
+          <span style="font-size:12px;color:var(--color-neutral-400)">Chosen by upper-confidence bound: hit rate plus exploration bonus for less-tried strategies.</span>
+        </div>
+        <div class="card" style=";display:flex;flex-direction:column;gap:2px">
+          <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;color:var(--color-neutral-400);margin-bottom:6px">SCOPE</span>
+          <span style="font-size:12px;color:var(--color-neutral-300)">Runs against the bundled sample codebase in this view. Connect a repository through the server in <span style="font-family:ui-monospace,monospace">tester/</span> to test real code.</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSoc }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span style="font-size:13px;color:var(--color-neutral-300);max-width:720px">Each Trust Services Criterion scores passing controls over total controls. Baseline controls pass unless a finding is open against that criterion.</span>
+      <sc-for list="{{ crit }}" as="c" hint-placeholder-count="5">
+        <div class="card" style="display:grid;grid-template-columns:minmax(150px,200px) minmax(0,1fr) 64px;gap:16px;align-items:center; 16px">
+          <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:600">{{ c.name }}</span><span style="font-size:12px;color:var(--color-neutral-400)">{{ c.note }}</span></div>
+          <div style="height:10px;background:var(--color-neutral-700);position:relative"><div style="position:absolute;inset:0 auto 0 0;width:{{ c.w }};background:{{ c.col }};transition:width .4s"></div></div>
+          <span style="font-family:ui-monospace,monospace;font-size:14px;font-weight:500;text-align:right;color:{{ c.col }}">{{ c.pct }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isFind }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ findings }}" as="f" hint-placeholder-count="6">
+        <div style="background:var(--color-neutral-800);border:1px solid var(--color-neutral-700)">
+          <button onClick="{{ f.toggle }}" class="btn btn-ghost" style="display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;width:100%;text-align:left;padding:12px 14px;background:transparent;border:0;cursor:pointer;color:var(--color-text)">
+            <span style="font-family:ui-monospace,monospace;font-size:12px;color:var(--color-neutral-400)">{{ f.id }}</span>
+            <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:500">{{ f.title }}</span><span style="font-family:ui-monospace,monospace;font-size:11px;color:var(--color-neutral-400);overflow-wrap:anywhere">{{ f.loc }} · {{ f.crit }}</span></span>
+            <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+              <span style="white-space:nowrap;flex:none" class="tag tag-accent">{{ f.sev }}</span>
+              <span style="white-space:nowrap;flex:none" class="tag tag-outline">{{ f.status }}</span>
+            </span>
+          </button>
+          <sc-if value="{{ f.isOpen }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;padding:4px 14px 16px 80px">
+              <div style="display:flex;flex-direction:column;gap:6px"><span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-400)">REMEDIATION</span><span style="white-space:pre-wrap;font-size:13px;color:var(--color-neutral-200)">{{ f.fix }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-400)">PROPOSED PATCH</span><pre style="margin:0;padding:10px 12px;background:var(--color-neutral-900);color:var(--color-text);font:12px/1.55 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere">{{ f.diff }}</pre></div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isImp }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;color:var(--color-neutral-400)">TESTER STRATEGIES · SIGNATURE v{{ sigV }} · {{ probeCount }} PROBES</span>
+        <div class="card" style="padding:0">
+          <table class="table" style="background:transparent">
+          <thead><tr><th>Strategy</th><th style="text-align:right">Runs</th><th style="text-align:right">Hits</th><th style="text-align:right">Rate</th><th style="text-align:right">UCB</th></tr></thead>
+          <tbody><sc-for list="{{ strat }}" as="s" hint-placeholder-count="5"><tr style="background:{{ s.bg }}"><td style="font-weight:{{ s.wt }}">{{ s.name }}</td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ s.runs }}</td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ s.hits }}</td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ s.rate }}</td><td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--color-neutral-400)">{{ s.ucb }}</td></tr></sc-for></tbody>
+        </table>
+        </div>
+        <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;color:var(--color-neutral-400);margin-top:12px">TESTER EVOLUTION LOG</span>
+        <div class="card" style="padding:4px 14px">
+          <sc-if value="{{ noEvo }}"><div style="padding:14px 0;color:var(--color-neutral-400);font-size:13px">The signature evolves every four cycles.</div></sc-if>
+          <sc-for list="{{ evo }}" as="v" hint-placeholder-count="3"><div style="padding:9px 0;border-bottom:1px solid var(--color-neutral-700);font-size:13px"><span style="font-family:ui-monospace,monospace;font-size:11px;color:var(--color-neutral-400)">cycle {{ v.n }}</span><div>{{ v.text }}</div></div></sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;color:var(--color-neutral-400)">CODEBASE PATCH HISTORY</span>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-if value="{{ noPatches }}" hint-placeholder-val="{{ true }}"><div class="card" style=";color:var(--color-neutral-400);font-size:13px">No patches yet. Each confirmed failure gets a draft patch, re-run three times before it is accepted.</div></sc-if>
+          <sc-for list="{{ patches }}" as="p" hint-placeholder-count="3">
+            <div style="background:var(--color-neutral-800);border:1px solid var(--color-neutral-700);padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0">
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font-family:ui-monospace,monospace;font-size:12px;color:var(--color-neutral-400)">{{ p.id }} · cycle {{ p.n }}</span><span style="white-space:nowrap;flex:none" class="tag tag-outline">{{ p.status }}</span></div>
+              <span style="font-weight:500">{{ p.title }}</span>
+              <span style="font-family:ui-monospace,monospace;font-size:11px;color:var(--color-neutral-400)">{{ p.checks }}</span>
+              <pre style="margin:0;padding:8px 10px;background:var(--color-neutral-900);color:var(--color-text);font:11px/1.5 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere">{{ p.diff }}</pre>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isRec }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:20px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;color:var(--color-neutral-400)">SESSION EVENTS · {{ recCount }}</span>
+        <div class="card" style="padding:4px 14px;max-height:520px;overflow:auto">
+          <sc-if value="{{ noRec }}"><div style="padding:18px 0;color:var(--color-neutral-400)">Nothing recorded yet. Cycles and operator actions are captured while recording is on.</div></sc-if>
+          <sc-for list="{{ rec }}" as="e" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:84px 70px minmax(0,1fr);gap:10px;padding:7px 0;border-bottom:1px solid var(--color-neutral-700);font-size:13px">
+              <span style="font-family:ui-monospace,monospace;font-size:11px;color:var(--color-neutral-400)">{{ e.time }}</span>
+              <span style="font-family:ui-monospace,monospace;font-size:10px;color:var(--color-neutral-300)">{{ e.kind }}</span>
+              <span style="overflow-wrap:anywhere">{{ e.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:8px;">
+        <span style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;color:var(--color-neutral-400)">RECORDER</span>
+        <span style="font-size:13px;color:var(--color-neutral-300)">{{ recState }}</span>
+        <button onClick="{{ toggleRec }}" class="btn btn-secondary">{{ recLabel }}</button>
+        <button onClick="{{ exportRec }}" class="btn btn-secondary">Export session JSON</button>
+        <button onClick="{{ ingestRec }}" class="btn btn-secondary">Send to Redis-RAPTOR</button>
+        <span style="font-size:12px;color:var(--color-neutral-400);overflow-wrap:anywhere">{{ ingestMsg }}</span>
+        <button onClick="{{ clearRec }}" class="btn btn-ghost">Clear</button>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'live', auto: false, rec: [], recording: true, ingestMsg: '', cycle: 0, log: [], open: {}, status: {}, patches: [], evo: [], last: '', sigV: 1, probes: [], strat: { payload: { runs: 0, hits: 0 }, fuzz: { runs: 0, hits: 0 }, race: { runs: 0, hits: 0 }, mem: { runs: 0, hits: 0 }, audit: { runs: 0, hits: 0 } } };
+  findings = [
+    { id: 'F-01', file: 'api/routes/users.py', line: 42, crit: 'Security', sev: 'High', kind: 'payload', title: 'GET /users/{id} returns any record without an ownership check', fix: ['Compare the path id with the session subject.', 'Return 404 for foreign ids so existence is not leaked.', 'Add a two-session regression test.'], diff: '- return db.get_user(user_id)\n+ if user_id != session.sub and not session.is_admin:\n+     raise HTTPException(404)\n+ return db.get_user(user_id)' },
+    { id: 'F-02', file: 'api/db.py', line: 17, crit: 'Security', sev: 'High', kind: 'payload', title: 'Search builds SQL with an f-string', fix: ['Switch to a parameterised query.', 'Escape LIKE wildcards in the bound value.', 'Add a payload test with quotes and statement separators.'], diff: '- q = f"SELECT * FROM items WHERE name LIKE \'%{term}%\'"\n+ q = "SELECT * FROM items WHERE name LIKE %s"\n+ cur.execute(q, (f"%{term}%",))' },
+    { id: 'F-03', file: 'api/upload.py', line: 9, crit: 'Availability', sev: 'Medium', kind: 'mem', title: 'Upload reads the whole body into memory with no size limit', fix: ['Stream the body to a temp file in chunks.', 'Cap the size and return 413 above the cap.'], diff: '- data = await request.body()\n+ size = 0\n+ async for chunk in request.stream():\n+     size += len(chunk)\n+     if size > MAX_UPLOAD: raise HTTPException(413)\n+     tmp.write(chunk)' },
+    { id: 'F-04', file: 'workers/counter.py', line: 23, crit: 'Processing Integrity', sev: 'Medium', kind: 'race', title: 'Usage counter is read, incremented and written without a lock', fix: ['Use an atomic increment or a row-level lock.', 'Assert the final count under concurrent writers.'], diff: '- n = r.get(key); r.set(key, int(n or 0) + 1)\n+ r.incr(key)' },
+    { id: 'F-05', file: 'config/settings.py', line: 8, crit: 'Confidentiality', sev: 'High', kind: 'audit', title: 'Database connection runs with TLS disabled', fix: ['Set sslmode to verify-full on the database URL.', 'Fail startup when the URL has no TLS mode.'], diff: '- DATABASE_URL = "postgresql://db/app?sslmode=disable"\n+ DATABASE_URL = os.environ["DATABASE_URL"]  # must include sslmode=verify-full' },
+    { id: 'F-06', file: 'logging/audit.py', line: 31, crit: 'Privacy', sev: 'Medium', kind: 'audit', title: 'Audit log writes email addresses in plain text', fix: ['Mask the address before it is logged.', 'Add a scrubbing test for the audit channel.'], diff: '- log.info("login", email=user.email)\n+ log.info("login", email=mask(user.email))' }
+  ];
+  candidates = ['unicode normalisation in path params', 'nested-quote escape in search', 'oversized multipart boundary', 'clock-skew token replay', 'slow-body upload flood', 'duplicate idempotency keys under retry'];
+  kinds = { payload: ['payload'], fuzz: ['payload', 'mem'], race: ['race'], mem: ['mem'], audit: ['audit'] };
+  names = { payload: 'Malicious payload injection', fuzz: 'Fuzzing', race: 'Concurrency flood', mem: 'Memory exhaustion', audit: 'Config & telemetry audit' };
+  crits = ['Security', 'Availability', 'Processing Integrity', 'Confidentiality', 'Privacy'];
+
+  componentWillUnmount() { if (this._iv) clearInterval(this._iv); }
+  rnd() { this._s = ((this._s || 7) * 16807) % 2147483647; return (this._s - 1) / 2147483646; }
+  ucb(k, S, tot) { const s = S.strat[k]; return s.runs ? s.hits / s.runs + Math.sqrt(2 * Math.log(tot + 1) / s.runs) : 1e9; }
+
+  step(S) {
+    const tot = Object.keys(S.strat).reduce((a, k) => a + S.strat[k].runs, 0);
+    const pick = Object.keys(S.strat).sort((a, b) => this.ucb(b, S, tot) - this.ucb(a, S, tot))[0];
+    const n = S.cycle + 1, log = S.log.slice(), status = { ...S.status }, strat = { ...S.strat, [pick]: { ...S.strat[pick] } }, patches = S.patches.slice(), evo = S.evo.slice(), ks = this.kinds[pick];
+    const add = (who, action, result, tone) => log.unshift({ n, who, action, result, tone });
+    const pool = this.findings.filter(f => ks.includes(f.kind));
+    const open = pool.filter(f => status[f.id] !== 'accepted'), base = open.length ? open : pool;
+    const f = base[Math.floor(this.rnd() * base.length)], regr = status[f.id] === 'accepted';
+    const broke = this.rnd() < (regr ? 0.03 : 0.62);
+    strat[pick].runs++;
+    add('tester', this.names[pick] + ' → ' + f.id + ' ' + f.file + ':' + f.line + (regr ? ' (regression)' : ''), broke ? 'BROKE' : 'held', broke ? 'bad' : 'ok');
+    if (broke) {
+      strat[pick].hits++;
+      status[f.id] = 'confirmed';
+      if (regr) add('tester', 'accepted patch failed regression for ' + f.id, 'reopened', 'bad');
+      else {
+        add('tester', 'reproduced ' + f.id + ' in 3 of 3 attempts', f.sev, 'bad');
+        patches.unshift({ n, id: f.id, title: f.title, diff: f.diff, status: 'proposed', checks: '' });
+        add('codebase', 'drafted patch for ' + f.id, 'diff ready', 'info');
+        const ok = this.rnd() > 0.18 && this.rnd() > 0.18 && this.rnd() > 0.18;
+        status[f.id] = ok ? 'accepted' : 'rejected';
+        patches[0] = { ...patches[0], status: ok ? 'accepted' : 'rejected', checks: ok ? '3/3 re-runs held' : 'regression failed; patch withheld' };
+        add('codebase', 'verified patch for ' + f.id + ' (3 re-runs)', ok ? 'accepted' : 'rejected', ok ? 'ok' : 'bad');
+      }
+    }
+    let sigV = S.sigV, probes = S.probes.slice();
+    if (n % 4 === 0) {
+      const rate = k => strat[k].hits / Math.max(1, strat[k].runs), worst = Object.keys(strat).sort((a, b) => rate(a) - rate(b))[0];
+      sigV += 1;
+      const p = this.candidates.find(c => !probes.includes(c)) || 'mutate the last probe';
+      probes.push(p);
+      evo.unshift({ n, text: 'Signature v' + sigV + ': ' + this.names[worst] + ' hit rate ' + Math.round(rate(worst) * 100) + '% over ' + strat[worst].runs + ' runs. Added probe "' + p + '" and raised its exploration weight.' });
+      add('tester', 'self-improve: signature v' + sigV, 'probe added', 'info');
+    }
+    return { cycle: n, log: log.slice(0, 200), status, strat, patches: patches.slice(0, 40), evo: evo.slice(0, 40), sigV, probes, last: pick };
+  }
+  runN(k) { let S = this.state; const rec = S.rec.slice(); for (let i = 0; i < k; i++) { S = { ...S, ...this.step(S) }; if (S.recording) S.log.filter(e => e.n === S.cycle).reverse().forEach(e => rec.push({ time: new Date().toLocaleTimeString(), kind: e.who, text: e.action + ' → ' + e.result })); } this.setState({ ...S, rec: rec.slice(-500) }); }
+  toggleAuto() {
+    if (this._iv) { clearInterval(this._iv); this._iv = null; this.setState({ auto: false }); }
+    else { this._iv = setInterval(() => this.runN(1), 1400); this.setState({ auto: true }); }
+  }
+  toggleOpen(id) { this.setState(s => ({ open: { ...s.open, [id]: !s.open[id] } })); }
+  setTab(t) { this.setState(s => ({ tab: t, rec: s.recording ? [...s.rec, { time: new Date().toLocaleTimeString(), kind: 'operator', text: 'opened ' + t }].slice(-500) : s.rec })); }
+  exportRec() { const b = new Blob([JSON.stringify({ exported: new Date().toISOString(), events: this.state.rec }, null, 2)], { type: 'application/json' }), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'tester-session.json'; a.click(); }
+  async ingestRec() { const ev = this.state.rec; this.setState({ ingestMsg: 'sending…' }); try { const r = await fetch('/recordings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ events: ev }) }); this.setState({ ingestMsg: r.ok ? 'stored ' + ev.length + ' events on the server; RAPTOR ingest is not wired yet' : 'server returned ' + r.status }); } catch (e) { this.setState({ ingestMsg: 'Server not reachable. Export the JSON instead.' }); } }
+
+  renderVals() {
+    const S = this.state, F = this.findings, st = S.status;
+    const tot = Object.keys(S.strat).reduce((a, k) => a + S.strat[k].runs, 0);
+    const SEV = { High: ['var(--color-accent-100)', 'var(--color-accent-900)'], Medium: ['var(--color-accent-200)', 'var(--color-accent-900)'] };
+    const STAT = { open: ['OPEN', 'var(--color-neutral-400)'], confirmed: ['CONFIRMED', 'var(--color-accent-100)'], proposed: ['PATCH PROPOSED', 'var(--color-accent-200)'], accepted: ['ACCEPTED', 'var(--color-accent-300)'], rejected: ['REJECTED', 'var(--color-accent-100)'] };
+    const TONE = { ok: 'var(--color-accent-300)', bad: 'var(--color-accent-100)', info: 'var(--color-accent)', muted: 'var(--color-neutral-400)' };
+    const openCount = F.filter(f => st[f.id] !== 'accepted').length;
+    const breaks = Object.keys(S.strat).reduce((a, k) => a + S.strat[k].hits, 0);
+    const accepted = F.filter(f => st[f.id] === 'accepted').length;
+    const crit = this.crits.map(c => {
+      const n = F.filter(f => f.crit === c), total = 3 + n.length, open = n.filter(f => st[f.id] !== 'accepted').length, pass = total - open, pct = Math.round(pass / total * 100);
+      return { name: c, pct: pct + '%', w: pct + '%', total, pass, col: pct >= 90 ? TONE.ok : pct >= 70 ? 'var(--color-accent-200)' : TONE.bad, note: open ? open + ' open finding' + (open > 1 ? 's' : '') : 'all controls passing' };
+    });
+    const overall = Math.round(crit.reduce((a, c) => a + c.pass, 0) / crit.reduce((a, c) => a + c.total, 0) * 100);
+    const sevFg = openCount ? TONE.bad : TONE.ok, sevText = openCount ? 'OPEN RISK · ' + openCount : 'ALL CLEAR';
+    const findings = F.map(f => { const s = st[f.id] || 'open', t = STAT[s], sv = SEV[f.sev]; return { id: f.id, title: f.title, loc: f.file + ':' + f.line, crit: f.crit, sev: f.sev.toUpperCase(), sevFg: sv[0], sevBg: sv[1], status: t[0], statusFg: t[1], isOpen: !!S.open[f.id], toggle: () => this.toggleOpen(f.id), fix: f.fix.map((x, i) => (i + 1) + '. ' + x).join('\n'), diff: f.diff }; });
+    const rate = k => S.strat[k].hits / Math.max(1, S.strat[k].runs);
+    const strat = Object.keys(S.strat).map(k => { const s = S.strat[k], u = this.ucb(k, S, tot), on = S.last === k; return { name: this.names[k], runs: s.runs, hits: s.hits, rate: s.runs ? Math.round(rate(k) * 100) + '%' : '—', ucb: u > 1e8 ? '∞' : u.toFixed(2), bg: on ? 'var(--color-accent-900)' : 'transparent', wt: on ? 600 : 400 }; });
+    const log = S.log.slice(0, 60).map(e => ({ n: e.n, who: e.who, action: e.action, result: e.result, col: TONE[e.tone] || TONE.muted }));
+    const patches = S.patches.map(p => ({ n: p.n, id: p.id, title: p.title, diff: p.diff, checks: p.checks || 'drafting…', status: p.status === 'accepted' ? 'ACCEPTED' : p.status === 'rejected' ? 'REJECTED' : 'PROPOSED', col: p.status === 'accepted' ? TONE.ok : p.status === 'rejected' ? TONE.bad : 'var(--color-accent-200)' }));
+    const evo = S.evo.map(v => ({ n: v.n, text: v.text }));
+    const tabDef = [['live', 'Live', ''], ['soc', 'SOC 2', overall + '%'], ['find', 'Findings', openCount], ['imp', 'Self-improvement', S.cycle], ['rec', 'Recorder', S.rec.length]];
+    const tabs = tabDef.map(([k, l, n]) => ({ label: n !== '' ? l + ' · ' + n : l, go: () => this.setTab(k), fg: S.tab === k ? 'var(--color-accent)' : 'var(--color-neutral-400)', line: S.tab === k ? 'var(--color-accent)' : 'transparent' }));
+    const lastStrat = S.last ? this.names[S.last] : 'Awaiting first cycle';
+    return {
+      sevFg, sevText, cycles: S.cycle, breaks, accepted, openCount, overall,
+      tabs, isRec: S.tab === 'rec', isLive: S.tab === 'live', isSoc: S.tab === 'soc', isFind: S.tab === 'find', isImp: S.tab === 'imp',
+      noLog: !S.log.length, log, lastName: lastStrat,
+      crit, findings, strat, evo, noEvo: !S.evo.length, sigV: S.sigV, probeCount: S.probes.length,
+      patches, noPatches: !S.patches.length,
+      runOne: () => this.runN(1), runFive: () => this.runN(5), toggleAuto: () => this.toggleAuto(),
+      rec: S.rec.slice().reverse().slice(0, 80), recCount: S.rec.length, noRec: !S.rec.length, recLabel: S.recording ? 'Stop recording' : 'Start recording', recState: S.recording ? 'Recording: cycles and operator actions are captured.' : 'Paused. New actions are not captured.', ingestMsg: S.ingestMsg, toggleRec: () => this.setState(s => ({ recording: !s.recording })), exportRec: () => this.exportRec(), ingestRec: () => this.ingestRec(), clearRec: () => this.setState({ rec: [] }),
+      autoLabel: S.auto ? 'Pause autopilot' : 'Autopilot', autoBg: S.auto ? 'var(--color-accent)' : 'transparent', autoFg: S.auto ? '#fff' : 'var(--color-accent)', autoBd: 'var(--color-accent)'
+    };
+  }
+}
+</script>
+</body>
+</html>

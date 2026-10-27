@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="single">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>body{margin:0;background:#161826;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}a{color:#b5abfc}a:hover{color:#d2cefd}:focus-visible{outline:2px solid #9184d9;outline-offset:2px}</style>
+</helmet>
+<div data-screen-label="Tester dashboard" style="width:100%;min-height:100vh;box-sizing:border-box;background:radial-gradient(1100px 420px at 18% -12%,#1f2236 0%,#161826 62%);color:#e9e9ed;font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:1.5">
+<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:56px;padding:10px 24px">
+<div style="display:flex;align-items:center;gap:9px"><div style="width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #9184d9;display:grid;place-items:center"><div style="width:6px;height:6px;border-radius:2px;background:#9184d9;box-shadow:0 0 8px #9184d9"></div></div><span style="font-size:15px;font-weight:500;letter-spacing:-0.01em">The Tester</span></div>
+<span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b2b6ca">repo:ledger-kit · main</span>
+<span style="display:flex;align-items:center;gap:6px;padding:2px 8px;border-radius:6px;background:#2b2741;box-shadow:inset 0 0 0 1px #423a6a;font-size:12px;color:#e7e5fe"><i class="ph ph-flask" style="font-size:13px"></i>Sandbox copy</span>
+<div style="flex:1"></div>
+<span style="display:flex;align-items:center;gap:8px;font-size:12px;color:#cfd3e5"><span style="width:7px;height:7px;border-radius:50%;background:#9184d9;box-shadow:0 0 10px #9184d9"></span>{{ statusLabel }}</span>
+<button type="button" aria-label="Pause the loop" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-pause" style="font-size:14px"></i>Pause loop</button>
+</div>
+<div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.14) 48px,rgba(233,233,237,.14) calc(100% - 48px),transparent)"></div>
+<div role="tablist" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 24px">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" aria-selected="{{ t.pressed }}" onClick="{{ t.go }}" style="display:inline-flex;align-items:center;flex:none;white-space:nowrap;height:30px;padding:0 12px;border:0;border-radius:8px;background:{{ t.bg }};box-shadow:{{ t.sh }};color:{{ t.fg }};font:500 12.5px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">{{ t.l }}</button></sc-for>
+</div>
+
+<sc-if value="{{ isLive }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:0 24px 16px">
+<sc-for list="{{ chaos }}" as="c" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a">
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px"><i class="{{ c.icon }}" style="font-size:16px;color:#b5abfc;flex:none"></i><span style="font-weight:500;white-space:nowrap">{{ c.name }}</span><div style="flex:1"></div><span style="flex:none;font-size:11px;padding:1px 7px;border-radius:6px;white-space:nowrap;background:{{ c.tbg }};color:{{ c.tfg }}">{{ c.state }}</span></div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:24px;font-weight:500;letter-spacing:-0.02em">{{ c.hits }}</span><span style="font-size:12px;color:#9397ab">failures found</span></div>
+<div style="height:4px;border-radius:2px;background:#2a2d3a;overflow:hidden"><div style="width:{{ c.pct }};height:100%;background:{{ c.bar }}"></div></div>
+<span style="font-size:12px;color:#9397ab;text-wrap:pretty">{{ c.desc }}</span>
+</div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start;padding:0 24px 28px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 16px 8px">
+<div style="display:flex;align-items:baseline;gap:10px;padding-bottom:8px"><span style="font-size:15px;font-weight:500">Execution stream</span><span style="font-size:12px;color:#9397ab">live from the sandbox</span></div>
+<sc-for list="{{ events }}" as="e" hint-placeholder-count="10"><div style="display:grid;grid-template-columns:70px 22px 150px minmax(0,1fr);gap:10px;align-items:baseline;padding:5px 0;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px"><span style="color:#9397ab">{{ e.t }}</span><span style="width:6px;height:6px;border-radius:50%;background:{{ e.c }};align-self:center"></span><span style="color:#b5abfc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.kind }}</span><span style="color:#cfd3e5;text-wrap:pretty">{{ e.m }}</span></div></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #2f3242;padding:14px 16px">
+<div style="display:flex;align-items:center;gap:8px;padding-bottom:6px;white-space:nowrap"><i class="ph ph-warning-octagon" style="font-size:16px;color:oklch(0.83 0.08 25)"></i><span style="font-weight:500">Open failures</span><span style="flex:none;font-size:12px;color:#9397ab">{{ openCount }}</span></div>
+<sc-for list="{{ openFails }}" as="f" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:3px;padding:9px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.1) 24px,rgba(233,233,237,.1) calc(100% - 24px),transparent) no-repeat top/100% 1px"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px">{{ f.title }}</span><span style="font-size:12px;color:#b2b6ca;text-wrap:pretty">{{ f.detail }}</span><span style="font-size:11px;color:#9397ab">{{ f.sev }} · {{ f.next }}</span></div></sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTrace }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start;padding:0 24px 28px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 18px">
+<div style="display:flex;align-items:baseline;gap:10px;padding-bottom:8px"><span style="font-size:15px;font-weight:500">Thought trace</span><span style="font-size:12px;color:#9397ab">ReAct loop · iteration 14</span></div>
+<sc-for list="{{ trace }}" as="s" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:86px minmax(0,1fr);gap:12px;padding:10px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 48px,rgba(233,233,237,.08) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:{{ s.c }};padding-top:2px">{{ s.k }}</span><span style="font-size:13px;color:#cfd3e5;text-wrap:pretty">{{ s.t }}</span></div></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #2f3242;padding:14px 16px">
+<div style="font-weight:500;padding-bottom:6px">Prompt mutation</div>
+<div style="font-size:12px;color:#9397ab;padding-bottom:8px">signature: FindEdgeCases · v3 → v4</div>
+<div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:6px;background:#141623;box-shadow:inset 0 0 0 1px #2a2d3a;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;line-height:1.6">
+<div style="color:oklch(0.83 0.08 25);text-decoration:line-through">- Propose inputs that might break the function.</div>
+<div style="color:oklch(0.85 0.08 155)">+ Propose inputs at type boundaries, empty and max-size values, and interleaved calls. Name the invariant each one tests.</div>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRecorder }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start;padding:0 24px 28px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 18px">
+<div style="display:flex;align-items:center;gap:12px;padding-bottom:12px"><span style="font-size:15px;font-weight:500">Sessions</span><span style="font-size:12px;color:#9397ab">exports as .testrec.json, then ingested into Redis-RAPTOR</span><div style="flex:1"></div>
+<button type="button" onClick="{{ toggleRec }}" aria-pressed="{{ recOn }}" style="display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:8px;border:1px solid {{ recBorder }};background:transparent;color:{{ recFg }};font:500 13px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><span style="width:8px;height:8px;border-radius:50%;background:{{ recFg }}"></span>{{ recLabel }}</button></div>
+<sc-for list="{{ sessions }}" as="s" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) 110px 90px 150px;gap:12px;align-items:center;padding:10px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 48px,rgba(233,233,237,.08) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><div style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-weight:500">{{ s.name }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#9397ab">{{ s.file }}</span></div><span style="font-size:12px;color:#b2b6ca">{{ s.len }}</span><span style="font-size:12px;color:{{ s.sc }}">{{ s.st }}</span><button type="button" aria-label="Ingest {{ s.name }} into Redis-RAPTOR" style="justify-self:end;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;font:500 12px Inter,system-ui,sans-serif;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-database" style="font-size:13px"></i>Ingest</button></div></sc-for>
+</div>
+<div style="border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #2f3242;padding:14px 16px">
+<div style="font-weight:500;padding-bottom:6px">Replay as regression</div>
+<div style="font-size:12.5px;color:#cfd3e5;text-wrap:pretty">Each ingested session becomes a regression case. The next loop replays it against the current build before any new chaos run.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSoc }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start;padding:0 24px 28px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 18px">
+<div style="display:flex;align-items:baseline;gap:10px;padding-bottom:10px"><span style="font-size:15px;font-weight:500">Trust Services Criteria</span><span style="font-size:12px;color:#9397ab">scored against the codebase and sandbox telemetry</span></div>
+<sc-for list="{{ soc }}" as="c" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:150px minmax(0,1fr) 64px 80px;gap:14px;align-items:center;padding:10px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 48px,rgba(233,233,237,.08) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span style="font-weight:500">{{ c.name }}</span><div style="height:6px;border-radius:3px;background:#2a2d3a;overflow:hidden"><div style="width:{{ c.pct }};height:100%;background:{{ c.bar }}"></div></div><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px;text-align:right">{{ c.score }}</span><span style="font-size:12px;color:#9397ab;text-align:right">{{ c.open }} open</span></div></sc-for>
+</div>
+<div style="border-radius:8px;background:linear-gradient(180deg,#252839,#20222f);box-shadow:inset 0 0 0 1px #2f3242;padding:14px 16px">
+<div style="font-weight:500;padding-bottom:6px">Findings and remediation</div>
+<sc-for list="{{ findings }}" as="f" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;gap:4px;padding:10px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.1) 24px,rgba(233,233,237,.1) calc(100% - 24px),transparent) no-repeat top/100% 1px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;padding:1px 7px;border-radius:6px;background:{{ f.bg }};color:{{ f.fg }}">{{ f.sev }}</span><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:#9397ab">{{ f.crit }}</span></div><span style="font-size:12.5px;text-wrap:pretty">{{ f.title }}</span><span style="font-size:12px;color:#b2b6ca;text-wrap:pretty">Fix: {{ f.fix }}</span></div></sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isEvolve }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;padding:0 24px 28px">
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 18px">
+<div style="display:flex;align-items:baseline;gap:10px;padding-bottom:8px"><span style="font-size:15px;font-weight:500">Tester evolution</span><span style="font-size:12px;color:#9397ab">signatures and prompts</span></div>
+<sc-for list="{{ evolve }}" as="v" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 48px,rgba(233,233,237,.08) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#b5abfc">{{ v.ver }}</span><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:13px">{{ v.what }}</span><span style="font-size:12px;color:#9397ab">{{ v.why }}</span></div><span style="font-size:12px;color:{{ v.sc }}">{{ v.res }}</span></div></sc-for>
+</div>
+<div style="border-radius:8px;background:linear-gradient(180deg,#1f2130,#1a1c29);box-shadow:inset 0 0 0 1px #2a2d3a;padding:14px 18px">
+<div style="display:flex;align-items:baseline;gap:10px;padding-bottom:8px"><span style="font-size:15px;font-weight:500">Codebase patches</span><span style="font-size:12px;color:#9397ab">proposed as PRs, never applied to main</span></div>
+<sc-for list="{{ patches }}" as="p" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;background:linear-gradient(to right,transparent,rgba(233,233,237,.08) 48px,rgba(233,233,237,.08) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.file }}</span><span style="font-size:12px;color:#b2b6ca;text-wrap:pretty">{{ p.why }}</span><span style="font-size:11.5px;color:#9397ab">Tests: {{ p.tests }}</span></div><span style="font-size:11px;padding:2px 8px;border-radius:6px;background:{{ p.bg }};color:{{ p.fg }};white-space:nowrap">{{ p.st }}</span></div></sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = { tab: 'live', rec: true };
+  renderVals() {
+    const { tab, rec } = this.state;
+    const G = 'oklch(0.72 0.11 155)', R = 'oklch(0.68 0.13 25)', A = 'oklch(0.8 0.11 80)', P = '#9184d9', MT = '#9397ab';
+    const names = [['live', 'Live execution'], ['trace', 'Thought trace'], ['recorder', 'Recorder'], ['soc', 'SOC 2'], ['evolve', 'Self-improvement']];
+    const tabs = names.map(([k, l]) => ({ l, pressed: tab === k ? 'true' : 'false', bg: tab === k ? '#2b2741' : 'transparent', sh: tab === k ? 'inset 0 0 0 1px #9184d9' : 'inset 0 0 0 1px rgba(233,233,237,.16)', fg: tab === k ? '#e7e5fe' : '#b2b6ca', go: () => this.setState({ tab: k }) }));
+    const chaos = [
+      { name: 'Fuzzing', icon: 'ph ph-shuffle', state: 'Running', tbg: '#423a6a', tfg: '#e7e5fe', hits: 7, pct: '62%', bar: P, desc: 'Schema-aware inputs to 14 endpoints. 2 crashes reproduced.' },
+      { name: 'Concurrency flood', icon: 'ph ph-lightning', state: 'Running', tbg: '#423a6a', tfg: '#e7e5fe', hits: 3, pct: '40%', bar: P, desc: 'Parallel writes to the same ledger row. 1 lost update.' },
+      { name: 'Memory pressure', icon: 'ph ph-cpu', state: 'Queued', tbg: '#3f424d', tfg: '#e4e7f5', hits: 0, pct: '0%', bar: MT, desc: 'Ramp to 90% of the sandbox limit. Starts after the flood.' },
+      { name: 'Payload injection', icon: 'ph ph-bug', state: 'Passed', tbg: 'oklch(0.3 0.05 155)', tfg: 'oklch(0.85 0.08 155)', hits: 0, pct: '100%', bar: G, desc: 'Injection and traversal strings, 412 cases. None reached a sink.' }
+    ];
+    const events = [
+      { t: '20:14:09', kind: 'fuzz.crash', c: R, m: 'POST /ledger/refund · 500 on negative amount' },
+      { t: '20:14:07', kind: 'race.lost-update', c: R, m: 'ledger row 118 · 2 writers, 1 value kept' },
+      { t: '20:14:02', kind: 'agent.hypothesis', c: P, m: 'Refund path may skip the currency check' },
+      { t: '20:13:58', kind: 'payload.pass', c: G, m: '412 injection cases, 0 reached a sink' },
+      { t: '20:13:41', kind: 'soc2.finding', c: A, m: 'CC6.1 · session token stored unencrypted in logs' },
+      { t: '20:13:30', kind: 'patch.proposed', c: G, m: 'PR draft: money.py rounding, tests green' }
+    ];
+    const openFails = [
+      { title: 'POST /ledger/refund', detail: 'Negative amount returns 500 instead of 422.', sev: 'High', next: 'Patch drafted' },
+      { title: 'ledger row 118', detail: 'Concurrent refunds lose one update.', sev: 'High', next: 'Needs a lock review' },
+      { title: 'session token in logs', detail: 'Printed at debug level in auth middleware.', sev: 'Medium', next: 'Redaction proposed' }
+    ];
+    const trace = [
+      { k: 'Thought', c: MT, t: 'Fuzzing covered the refund endpoint but not the currency branch. The gap is in the boundary inputs.' },
+      { k: 'Action', c: P, t: 'search_code(query="currency", path="src/ledger")' },
+      { k: 'Observation', c: MT, t: 'Three call sites. The refund path skips the currency check at refund.py:42.' },
+      { k: 'Thought', c: MT, t: 'Test with a negative amount in each currency to confirm before proposing a fix.' },
+      { k: 'Action', c: P, t: 'run_test(id="chaos.refund.negative", sandbox=true)' },
+      { k: 'Observation', c: R, t: 'Reproduced: 500 for USD and JPY. Fail 1 of 3.' },
+      { k: 'Action', c: P, t: 'propose_patch(file="src/ledger/refund.py", tests=["chaos.refund.*"])' }
+    ];
+    const recLabel = rec ? 'Stop recording' : 'Start recording';
+    const sessions = [
+      { name: 'Refund happy path', file: 'sessions/refund-happy.testrec.json', len: '2 min 14 s', st: 'Ingested r37', sc: G },
+      { name: 'Refund under race', file: 'sessions/refund-race.testrec.json', len: '48 s', st: 'Ready to ingest', sc: A },
+      { name: 'Sign-in with expired token', file: 'sessions/signin-expired.testrec.json', len: '1 min 02 s', st: 'Ready to ingest', sc: A }
+    ];
+    const soc = [
+      { name: 'Security', pct: '71%', bar: A, score: '71', open: 4 },
+      { name: 'Availability', pct: '84%', bar: G, score: '84', open: 1 },
+      { name: 'Processing integrity', pct: '66%', bar: A, score: '66', open: 3 },
+      { name: 'Confidentiality', pct: '58%', bar: R, score: '58', open: 2 },
+      { name: 'Privacy', pct: '90%', bar: G, score: '90', open: 0 }
+    ];
+    const findings = [
+      { sev: 'High', bg: 'oklch(0.31 0.07 25)', fg: 'oklch(0.83 0.08 25)', crit: 'CC6.1 · Confidentiality', title: 'Session token written to debug logs.', fix: 'Redact the Authorization header in the logging middleware.' },
+      { sev: 'High', bg: 'oklch(0.31 0.07 25)', fg: 'oklch(0.83 0.08 25)', crit: 'PI1.2 · Processing integrity', title: 'Refund accepts a negative amount.', fix: 'Validate amount > 0 before the currency branch.' },
+      { sev: 'Medium', bg: 'oklch(0.33 0.06 80)', fg: 'oklch(0.88 0.08 80)', crit: 'CC6.6 · Security', title: 'Admin routes missing the scope check.', fix: 'Require the admin scope on /admin/* in the router.' }
+    ];
+    const evolve = [
+      { ver: 'sig v4', what: 'FindEdgeCases: boundary-first prompt', why: 'Found 2 bugs in the last 3 rounds that v3 missed.', res: 'Kept', sc: G },
+      { ver: 'sig v3', what: 'FindEdgeCases: generic prompt', why: 'Coverage stalled at 61% of branches.', res: 'Replaced', sc: MT },
+      { ver: 'cov', what: 'Branch gap list refreshed', why: 'Currency branches had zero tests.', res: 'Closed 4 of 6', sc: G }
+    ];
+    const patches = [
+      { file: 'src/ledger/refund.py', why: 'Check amount before the currency branch.', tests: '18 passed, 0 weakened', st: 'PR open', bg: 'oklch(0.3 0.05 155)', fg: 'oklch(0.85 0.08 155)' },
+      { file: 'src/http/logging.py', why: 'Redact Authorization header.', tests: '9 passed', st: 'PR open', bg: 'oklch(0.3 0.05 155)', fg: 'oklch(0.85 0.08 155)' },
+      { file: 'src/ledger/lock.py', why: 'Row lock on refund write.', tests: '2 of 5 failing', st: 'Needs review', bg: 'oklch(0.33 0.06 80)', fg: 'oklch(0.88 0.08 80)' }
+    ];
+    return {
+      tabs, isLive: tab === 'live', isTrace: tab === 'trace', isRecorder: tab === 'recorder', isSoc: tab === 'soc', isEvolve: tab === 'evolve',
+      statusLabel: 'Running · round 37', chaos, events, openFails, openCount: openFails.length, trace,
+      recOn: rec ? 'true' : 'false', recLabel, recFg: rec ? R : G, recBorder: rec ? R : G, toggleRec: () => this.setState(s => ({ rec: !s.rec })),
+      sessions, soc, findings, evolve, patches
+    };
+  }
+}
+</script>
+</body>
+</html>

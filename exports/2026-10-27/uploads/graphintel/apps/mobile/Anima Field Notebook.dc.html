@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; color: #1b2a6b; font-family: 'Newsreader', serif; text-wrap: pretty; background-color: #f6f3ea; background-image: linear-gradient(#dfe6f2 1px, transparent 1px), linear-gradient(90deg, #dfe6f2 1px, transparent 1px); background-size: 24px 24px; }
+    a { color: #d6362b; text-underline-offset: 3px; } a:hover { color: #1b2a6b; }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</helmet>
+<div data-screen-label="Field notebook" style="min-height:100vh;display:flex;flex-wrap:wrap;gap:48px;justify-content:center;align-items:flex-start;padding:48px clamp(16px,4vw,56px) 80px;">
+
+  <aside style="flex:1 1 320px;max-width:440px;display:grid;gap:26px;">
+    <div style="display:grid;gap:10px;">
+      <span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:#d6362b;">Anima Institute · field notebook · phone</span>
+      <h1 style="margin:0;font:400 64px/0.9 'Instrument Serif',serif;letter-spacing:-0.02em;">Four apps,<br><i>one brain.</i></h1>
+      <p style="margin:0;font-size:17px;line-height:1.5;">Every surface of the web stack, working on a phone. Pick who you are, then tap through. Popups suggest, clarify and ask, as they do on the web. Sample data until the engine is connected.</p>
+    </div>
+
+    <div style="display:grid;gap:8px;">
+      <span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Who are you</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <sc-for list="{{ roles }}" as="r" hint-placeholder-count="4">
+          <button onClick="{{ r.pick }}" style="{{ r.style }}"><span style="font:400 24px/1 'Instrument Serif',serif;">{{ r.name }}</span><span style="font:400 11px/1.35 'JetBrains Mono',monospace;">{{ r.text }}</span></button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid;gap:4px;">
+      <span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Screens in this app</span>
+      <sc-for list="{{ list }}" as="l" hint-placeholder-count="5">
+        <button onClick="{{ l.go }}" style="{{ l.style }}"><span style="font:600 11px 'JetBrains Mono',monospace;width:28px;">{{ l.id }}</span><span style="font-size:16px;">{{ l.title }}</span></button>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;gap:6px;padding:14px 16px;border:1.5px solid #1b2a6b;border-radius:4px;background:#fffdf6;box-shadow:3px 3px 0 #1b2a6b;">
+      <span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;color:#d6362b;">Web parity · {{ cur.id }}</span>
+      <span style="font-size:16px;line-height:1.45;"><b style="font-weight:500;">On the web:</b> {{ cur.web }}</span>
+      <span style="font-size:15px;line-height:1.45;color:#5a6488;"><b style="font-weight:500;">On the phone:</b> {{ cur.diff }}</span>
+    </div>
+  </aside>
+
+  <div style="flex:0 1 auto;min-width:0;max-width:100%;display:grid;gap:12px;justify-items:center;">
+    <div style="width:min(390px,100%);box-sizing:border-box;height:844px;border:2px solid #1b2a6b;border-radius:48px;padding:10px;background:#1b2a6b;box-shadow:10px 12px 0 rgba(27,42,107,0.18);">
+      <div style="width:100%;height:100%;border-radius:38px;overflow:hidden;position:relative;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background-color:#fffdf6;background-image:linear-gradient(#e8edf6 1px, transparent 1px);background-size:100% 28px;">
+        <header style="display:grid;gap:6px;padding:16px 22px 12px;border-bottom:1.5px solid #1b2a6b;background:#fffdf6;">
+          <div style="display:flex;justify-content:space-between;font:500 11px 'JetBrains Mono',monospace;"><span>9:41</span><span style="color:#d6362b;">{{ roleName }}</span></div>
+          <span style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;color:#d6362b;">{{ cur.id }} · {{ cur.kicker }}</span>
+          <h2 style="margin:0;font:400 36px/0.95 'Instrument Serif',serif;letter-spacing:-0.01em;">{{ cur.title }}</h2>
+        </header>
+
+        <main style="overflow-y:auto;padding:14px 18px 120px;display:grid;gap:12px;align-content:start;">
+          <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="4">
+            <div style="display:grid;gap:8px;">
+              <sc-if value="{{ b.isH }}" hint-placeholder-val="{{ false }}"><span style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;margin-top:6px;">{{ b.text }}</span></sc-if>
+              <sc-if value="{{ b.isP }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:15.5px;line-height:1.55;">{{ b.text }}</p></sc-if>
+              <sc-if value="{{ b.isMark }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:15.5px;line-height:1.55;"><span style="background:#ffe866;box-shadow:0 0 0 2px #ffe866;">{{ b.text }}</span> {{ b.rest }}</p></sc-if>
+              <sc-if value="{{ b.isInput }}" hint-placeholder-val="{{ false }}"><input value="{{ b.value }}" onChange="{{ b.on }}" placeholder="{{ b.ph }}" style="min-height:44px;padding:0 14px;border:1.5px solid #1b2a6b;border-radius:999px;background:#fff;font:500 13px 'JetBrains Mono',monospace;color:#1b2a6b;outline-color:#d6362b;"></input></sc-if>
+              <sc-if value="{{ b.isStats }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><sc-for list="{{ b.items }}" as="s" hint-placeholder-count="4"><div style="padding:10px 12px;border:1.5px solid #1b2a6b;border-radius:4px;background:#fff;display:grid;gap:2px;"><span style="font:400 30px/1 'Instrument Serif',serif;color:{{ s.c }};">{{ s.v }}</span><span style="font:400 11px/1.35 'JetBrains Mono',monospace;">{{ s.k }}</span></div></sc-for></div>
+              </sc-if>
+              <sc-if value="{{ b.isRows }}" hint-placeholder-val="{{ false }}">
+                <sc-for list="{{ b.items }}" as="r" hint-placeholder-count="4">
+                  <div style="display:grid;gap:6px;padding:10px 12px;border:1.5px solid #1b2a6b;border-radius:4px;background:#fff;">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;"><span style="font-size:16px;font-weight:500;line-height:1.25;min-width:0;">{{ r.t }}</span><span style="font:600 10px 'JetBrains Mono',monospace;white-space:nowrap;padding:2px 7px;border:1.5px solid {{ r.c }};color:{{ r.c }};border-radius:999px;">{{ r.tag }}</span></div>
+                    <span style="font:400 11.5px/1.4 'JetBrains Mono',monospace;color:#5a6488;">{{ r.s }}</span>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ r.acts }}" as="a" hint-placeholder-count="0"><button onClick="{{ a.fn }}" style="min-height:36px;padding:0 14px;border:1.5px solid #1b2a6b;border-radius:999px;background:{{ a.bg }};color:{{ a.fg }};font:600 11.5px 'JetBrains Mono',monospace;cursor:pointer;">{{ a.label }}</button></sc-for></div>
+                  </div>
+                </sc-for>
+              </sc-if>
+              <sc-if value="{{ b.isBars }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid;gap:7px;padding:10px 12px;border:1.5px solid #1b2a6b;border-radius:4px;background:#fff;"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:76px minmax(0,1fr) 54px;gap:8px;align-items:center;font:500 11px 'JetBrains Mono',monospace;"><span>{{ x.k }}</span><div style="height:10px;border:1.5px solid #1b2a6b;border-radius:999px;overflow:hidden;"><div style="height:100%;width:{{ x.w }};background:{{ x.c }};"></div></div><span style="text-align:right;">{{ x.label }}</span></div></sc-for></div>
+              </sc-if>
+              <sc-if value="{{ b.isCode }}" hint-placeholder-val="{{ false }}"><pre style="margin:0;white-space:pre-wrap;padding:12px;border:1.5px solid #1b2a6b;border-radius:4px;background:{{ b.bg }};color:{{ b.fg }};font:500 11.5px/1.55 'JetBrains Mono',monospace;">{{ b.text }}</pre></sc-if>
+              <sc-if value="{{ b.isButton }}" hint-placeholder-val="{{ false }}"><button onClick="{{ b.fn }}" style="min-height:48px;border:1.5px solid #1b2a6b;border-radius:999px;background:#d6362b;color:#fffdf6;font:400 22px 'Instrument Serif',serif;cursor:pointer;box-shadow:3px 3px 0 #1b2a6b;">{{ b.text }}</button></sc-if>
+              <sc-if value="{{ b.isToggles }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1.5px solid #1b2a6b;border-radius:4px;background:#fff;padding:2px 12px;"><sc-for list="{{ b.items }}" as="g" hint-placeholder-count="3"><button onClick="{{ g.fn }}" style="width:100%;min-height:46px;display:flex;justify-content:space-between;align-items:center;background:none;border:0;border-bottom:1px dashed #b9c2dc;font:inherit;font-size:15px;color:#1b2a6b;cursor:pointer;text-align:left;"><span>{{ g.k }}</span><span style="width:40px;height:22px;border:1.5px solid #1b2a6b;border-radius:999px;position:relative;background:{{ g.bg }};"><span style="position:absolute;top:2px;left:{{ g.x }};width:15px;height:15px;border-radius:50%;background:#1b2a6b;"></span></span></button></sc-for></div>
+              </sc-if>
+              <sc-if value="{{ b.isTiers }}" hint-placeholder-val="{{ false }}">
+                <sc-for list="{{ b.items }}" as="t" hint-placeholder-count="3"><div style="display:grid;gap:5px;padding:12px 14px;border:1.5px solid #1b2a6b;border-radius:4px;background:{{ t.bg }};color:{{ t.fg }};box-shadow:3px 3px 0 #1b2a6b;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font:400 28px/1 'Instrument Serif',serif;">{{ t.name }}</span><span style="font:600 12px 'JetBrains Mono',monospace;">{{ t.price }}</span></div><sc-for list="{{ t.feats }}" as="f" hint-placeholder-count="3"><span style="font:400 12px/1.4 'JetBrains Mono',monospace;">+ {{ f }}</span></sc-for></div></sc-for>
+              </sc-if>
+              <sc-if value="{{ b.isChat }}" hint-placeholder-val="{{ false }}">
+                <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="2"><div style="{{ m.style }}">{{ m.text }}</div></sc-for>
+                <sc-if value="{{ clarify }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;gap:6px;padding:10px 12px;border:1.5px dashed #d6362b;border-radius:4px;background:#fff;"><span style="font:600 10px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;color:#d6362b;">One question first</span><span style="font-size:15px;">{{ clarifyQ }}</span><sc-for list="{{ clarifyOpts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.fn }}" style="min-height:42px;text-align:left;padding:0 12px;border:1.5px solid #1b2a6b;border-radius:4px;background:#fffdf6;font:inherit;font-size:14px;color:#1b2a6b;cursor:pointer;">{{ o.label }}</button></sc-for></div>
+                </sc-if>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.fn }}" style="min-height:38px;padding:0 12px;border:1.5px solid #1b2a6b;border-radius:999px;background:#ffe866;font:500 11.5px 'JetBrains Mono',monospace;color:#1b2a6b;cursor:pointer;">{{ c.label }}</button></sc-for></div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </main>
+
+        <sc-if value="{{ showSugg }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:14px;right:14px;bottom:82px;display:grid;gap:6px;padding:12px 14px;border:1.5px solid #1b2a6b;border-radius:4px;background:#ffe866;box-shadow:4px 4px 0 #1b2a6b;transform:rotate(-0.6deg);">
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font:600 10px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;color:#d6362b;">Suggestion</span><button onClick="{{ dismiss }}" style="min-height:32px;background:none;border:0;font:500 11px 'JetBrains Mono',monospace;color:#1b2a6b;cursor:pointer;">dismiss ×</button></div>
+            <span style="font-size:15.5px;line-height:1.35;">{{ sugg.text }}</span>
+            <button onClick="{{ sugg.go }}" style="justify-self:start;min-height:36px;padding:0 14px;border:1.5px solid #1b2a6b;border-radius:999px;background:#fffdf6;font:600 11.5px 'JetBrains Mono',monospace;color:#1b2a6b;cursor:pointer;">{{ sugg.cta }} →</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:14px;right:14px;bottom:82px;display:flex;justify-content:space-between;align-items:center;padding:8px 8px 8px 14px;border-radius:4px;background:#1b2a6b;color:#fffdf6;font:500 12px 'JetBrains Mono',monospace;"><span>{{ toastText }}</span><sc-if value="{{ canUndo }}" hint-placeholder-val="{{ false }}"><button onClick="{{ undo }}" style="min-height:36px;padding:0 12px;background:none;border:1.5px solid #fffdf6;border-radius:999px;color:#fffdf6;font:inherit;cursor:pointer;">Undo</button></sc-if></div>
+        </sc-if>
+
+        <nav style="display:grid;grid-template-columns:repeat({{ tabCount }},1fr);padding:6px 8px 22px;border-top:1.5px solid #1b2a6b;background:#fffdf6;">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.fn }}" style="{{ t.style }}">{{ t.label }}</button></sc-for>
+        </nav>
+      </div>
+    </div>
+    <span style="font:400 12px 'JetBrains Mono',monospace;color:#5a6488;">tap anything · the yellow note is the popup system</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const INK = '#1b2a6b', RED = '#d6362b', HI = '#ffe866', PAPER = '#fffdf6', MUTED = '#5a6488', OK = '#2f7d4f';
+const R = '../../research/reports/';
+const ROLES = [['owner', 'Owner', 'run the institute'], ['research', 'Researcher', 'search, read, chat'], ['api', 'API', 'keys, usage, billing'], ['sub', 'Subscriber', 'follow the work']];
+const FIRES = [['spend', 80, 'Spend near the monthly cap', 'owner · $412 of $450', ['Raise', 'Throttle']], ['inc', 74, 'KeyError in round.merge', 'maintainer · patch ready, tests failed once', ['Approve', 'Retry']], ['scout', 69, 'Scout is silent', 'overseer · 14 h, expected every 6 h', ['Wake']], ['shadow', 45, 'LSTM shadow beats 1–3B for Scout', 'registrar · 0.83 vs 0.81 for 7 days', ['Promote', 'Hold']]];
+const AGENTS = [['Scout', 'work · 1–3B', 'silent'], ['Theorist', 'work · 8B · 43% failed', 'noisy'], ['Experimenter', 'work · 8B', 'ok'], ['Builder', 'work · 30B', 'ok'], ['SEXTANT', 'work · 8B · 31 chats', 'ok'], ['Critic', 'check · 30B', 'ok'], ['Publisher', 'check · 1–3B', 'ok'], ['Maintainer', 'check · 8B', 'ok'], ['Overseer', 'oversee · no model', 'ok'], ['Registrar', 'oversee · no model', 'ok']];
+const PIPES = [['A · Research', [['ingest', 42], ['question', 9], ['cell', 6], ['result', 4], ['attack', 3], ['promote', 1]]], ['B · Build', [['spec', 5], ['code', 3], ['review', 2], ['ship', 1]]], ['C · Publish', [['propose', 2], ['approve', 1], ['label', 12], ['post', 4]]], ['D · Client', [['contact', 7], ['qualify', 3], ['accept', 1], ['seed', 1], ['run', 1], ['deliver', 0]]]];
+const NODES = [['H5 · Shuffled-seed control', 'hypothesis', 'A degree-preserving shuffle should remove at least 80% of the gain.', true], ['H4 · The LSTM signature', 'hypothesis', 'Fails unseeded, passes with the curated seed.', true], ['H0 · Quality holds across the ladder', 'hypothesis', 'Every rung within 5 points of 30B, seeded.', true], ['Seed v4', 'artifact', 'Incidence, types, restriction maps, Horn constraints, energy.', true], ['TRM on ARC-AGI-1', 'source', '7M parameters, 44.6%. Recursion in place of size.', true], ['Substrate shadow results', 'private', 'LSTM shadow for Scout: 0.83 vs 0.81 over 7 days.', false]];
+const REPORTS = [['Seeded Substrate Plan v4', 'Core paper · 13 Oct'], ['Cheap Brain Evidence', 'A · evidence · 15 Oct'], ['AI Era Bubble', 'B · macro · 15 Oct'], ['Institute Blueprint v3', 'C · organisation · 15 Oct'], ['Exposure and Templates', 'D · 50 companies · 15 Oct']];
+const json = o => JSON.stringify(o, null, 2);
+const st = (c => ({ ok: OK, idle: MUTED, silent: RED, noisy: RED }[c] || INK));
+
+const SCREENS = {
+  owner: [
+    ['O1', 'Today', 'oversee the overseers', 'Ranked fires', 'Overseer page: every fire, filters, batch actions', 'Top fires only; the rest batch behind one row', ['4 post drafts pass the mindful gate. Approve them as one batch?', 'Go to Publish', 'O4']],
+    ['O2', 'Agents', 'staffed by the agents it studies', 'Ten agents', 'Console agents panel and the staff register', 'States and rungs as a list; tap through for history', ['The Theorist is noisy. It feeds every pipeline downstream.', 'See pipelines', 'O3']],
+    ['O3', 'Pipes', 'four pipelines', 'Every stage clocked', 'Blueprint pipelines and live funnels', 'One bar per stage; counts only', ['Pipeline D has a client waiting on accept.', 'Back to Today', 'O1']],
+    ['O4', 'Publish', 'nothing goes out without you', 'Approve and publish', 'Public graph batches, outbox, 100-repo waves', 'Approve and reject; editing drafts stays on web', ['Wave 1 has 2 blocked repos. Builder can fix the flaky test.', 'Open Config', 'O5']],
+    ['O5', 'Config', 'spend, routing, stack', 'Config', 'Settings, Stack (MCP hub), upgrades, Studio, Tmpltz', 'Review and approve; installs and site editing stay on web', ['Spend is at 91%. Throttle the 30B rung for the rest of the month?', 'Back to Today', 'O1']],
+  ],
+  research: [
+    ['R1', 'Search', 'the graph', 'Search', 'Public graph search with type filters', 'Same search; private nodes only with clearance', ['Searching for the LSTM? H4 is the test that isolates it.', 'Open H4 in graph', 'R3']],
+    ['R2', 'Read', 'companion A · §03', 'A 7M network on ARC', 'Reports with inline citations', 'Reader with tap-to-cite', ['This source bears on H3. Ask SEXTANT how.', 'Ask about this', 'R4']],
+    ['R3', 'Graph', 'node and neighbourhood', 'H5 · shuffled seed', '3D graph with 1–3 hop neighbourhoods', 'Relations as a list; 3D stays on web', ['H5 is read in P3, first. Want a ping when it lands?', 'Notification settings', 'R5']],
+    ['R4', 'Chat', 'SEXTANT · cites the graph', 'Ask the institute', 'SEXTANT chat with clarifying questions', 'Full parity', null],
+    ['R5', 'Me', 'settings and config', 'Settings', 'Profile, visibility, notifications, plan, keys', 'Full parity', null],
+  ],
+  api: [
+    ['A1', 'Usage', 'acme-labs · October', 'Usage', 'API dashboard: calls, spend, rung mix', 'Full parity', ['Two-thirds of your calls were answered on CPU rungs.', 'See prices', 'A4']],
+    ['A2', 'Keys', 'keys and endpoints', 'Keys', 'Key management and endpoint docs', 'Full parity', null],
+    ['A3', 'Try', 'playground', 'Playground', 'Interactive API console', 'One endpoint at a time', ['Seeding a private graph? Try POST /v1/seed next.', 'See endpoints', 'A2']],
+    ['A4', 'Billing', 'pay for the rung that answered', 'Billing', 'Invoices, caps, payment method', 'Full parity', null],
+  ],
+  sub: [
+    ['S1', 'Home', 'this week at the institute', 'This week', 'Public site, 3D hero, weekly digest', 'The hero becomes the experiment card', ['You read Companion A. H5 is the control it says nobody has run.', 'Ask about H5', 'S3']],
+    ['S2', 'Library', 'reports and findings', 'Library', 'Research reports index', 'Full parity', null],
+    ['S3', 'Ask', 'SEXTANT · 50 questions a month', 'Ask', 'SEXTANT chat', 'Monthly quota for Members', ['Pro removes the quota and adds raw result tables.', 'See plans', 'S4']],
+    ['S4', 'Plan', 'tiers', 'Pick your depth', 'Tier pages and checkout', 'Full parity', null],
+  ],
+};
+const ALL = Object.fromEntries(Object.entries(SCREENS).flatMap(([role, l]) => l.map(s => [s[0], { role, id: s[0], tab: s[1], kicker: s[2], title: s[3], web: s[4], diff: s[5], sugg: s[6] }])));
+
+class Component extends DCLogic {
+  state = { role: 'owner', scr: 'O1', gone: {}, toast: null, sugOff: {}, sugOn: {}, q: '', tg: { 'Show private nodes': true, 'New findings': true, 'Clarifying questions': true, 'Suggestions': true, 'Quiet hours 22–07': true, 'Auto-batch posts': false, 'Page me at score ≥ 70': true }, ran: false, quota: 38, msgs: [{ me: false, text: 'I answer from the published graph and cite what I use.' }], clarify: null };
+  componentDidMount() { this.arm(this.state.scr); }
+  componentWillUnmount() { clearTimeout(this.sT); clearTimeout(this.tT); }
+  arm(id) { clearTimeout(this.sT); this.sT = setTimeout(() => this.setState(s => ({ sugOn: { ...s.sugOn, [id]: true } })), 1300); }
+  go(id) { const sc = ALL[id]; this.setState({ role: sc.role, scr: id, toast: null }); this.arm(id); }
+  toast(text, undo) { clearTimeout(this.tT); this.setState({ toast: { text, undo } }); this.tT = setTimeout(() => this.setState({ toast: null }), 3500); }
+  hide(key, label) { this.setState(s => ({ gone: { ...s.gone, [key]: 1 } })); this.toast(`${label}: done`, key); }
+  ask(q) {
+    const s = this.state;
+    if (s.role === 'sub' && s.quota <= 0) return;
+    const add = (msgs, clarify) => this.setState(x => ({ msgs: [...x.msgs, { me: true, text: q }, ...msgs], clarify: clarify || null, quota: x.role === 'sub' ? x.quota - 1 : x.quota }));
+    if (/small|good|cheap/i.test(q)) return add([], { q: 'Do you mean quality, or cost per answer?', opts: [['Quality', 'Not shown yet. Small models match large ones on scoped tasks when fine-tuned. Whether a seed replaces that training is H7, read in P4.'], ['Cost per answer', 'A 7B model is 10–30× cheaper to serve than 70–175B (Belcak et al.). An LSTM on CPU is cheaper again; H3 sets the bar at 10× below the tiny transformer.']] });
+    if (/bubble|gpu/i.test(q)) return add([], { q: 'The seven indicators, or how it affects your sector?', opts: [['Indicators', 'Debt share of AI capex 32%, AI share of IG issuance 10%, cost per task falling ~13× a year, capex >$690B, entry-level gap 19%, unemployment 4.1%, neocloud health. Companion B.'], ['My sector', 'Companion D scores 50 companies by exposure if H0 holds. Debt-funded GPU clouds and frontier labs are most exposed; CPU, edge and graph players gain.']] });
+    add([{ me: false, text: 'H5 shuffles the seed while keeping its size. If the shuffled seed keeps more than 20% of the gain, the gain was extra context, not structure. Read in P3. [H5 · Plan v4 §6]' }]);
+  }
+  blocks(id) {
+    const s = this.state, g = s.gone;
+    const acts = (key, labels) => labels.map((l, i) => ({ label: l, bg: i ? '#fff' : INK, fg: i ? INK : PAPER, fn: () => this.hide(key, l) }));
+    const tog = keys => ({ isToggles: true, items: keys.map(k => ({ k, bg: s.tg[k] ? HI : '#fff', x: s.tg[k] ? '19px' : '2px', fn: () => this.setState(x => ({ tg: { ...x.tg, [k]: !x.tg[k] } })) })) });
+    const bars = (items, max, c) => ({ isBars: true, items: items.map(([k, v, label]) => ({ k, w: Math.max(2, Math.round(v / max * 100)) + '%', label: label ?? String(v), c: c || INK })) });
+    const q = s.q.toLowerCase();
+    const B = {
+      O1: () => { const f = FIRES.filter(x => !g[x[0]]); return [{ isP: true, text: f.length ? `${f.length} fires, about ${f.length * 2} minutes. 214 lower items are held back with a reason.` : 'Nothing needs you. The Overseer will page you.' }, { isRows: true, items: f.map(([k, sc, t, sub, a]) => ({ t, s: sub, tag: `score ${sc}`, c: sc >= 70 ? RED : INK, acts: acts(k, a) })) }]; },
+      O2: () => [{ isStats: true, items: [{ v: '10', k: 'agents on the register', c: INK }, { v: '2', k: 'need you', c: RED }, { v: '2', k: 'run on rules, no model', c: INK }, { v: '1', k: 'shadow winning', c: OK }] }, { isRows: true, items: AGENTS.map(([t, sub, state]) => ({ t, s: sub, tag: state, c: st(state), acts: state === 'ok' ? [] : acts('ag' + t, state === 'silent' ? ['Wake'] : ['Pause', 'Inspect']).filter(() => !g['ag' + t]) })) }],
+      O3: () => PIPES.flatMap(([n, stages]) => [{ isH: true, text: n }, bars(stages, Math.max(...stages.map(x => x[1])), RED)]),
+      O4: () => [{ isRows: true, items: g.batch ? [] : [{ t: '12 nodes turn from grey to labelled', s: 'publisher · 9 sources · critic re-run passed · 0 private links', tag: 'graph batch', c: RED, acts: acts('batch', ['Publish', 'Inspect']) }] }, { isH: true, text: 'Post drafts · mindful gate passed' }, { isRows: true, items: [['p1', 'x', 'We published the shuffled-seed control before running it.'], ['p2', 'linkedin', 'Seven indicators that tell a correction from a depression.'], ['p3', 'reddit', 'The 30B-to-LSTM ladder: method only, results pending.']].filter(p => !g[p[0]]).map(([k, ch, t]) => ({ t, s: 'caps ✓ quiet hours ✓ spacing ✓ duplicates ✓ disclosure ✓', tag: ch, c: INK, acts: acts(k, ['Approve', 'Reject']) })) }, { isH: true, text: 'Coming-out party · wave 1 of 5' }, { isStats: true, items: [{ v: '18', k: 'of 20 repos clear the bar', c: OK }, { v: '2', k: 'blocked: licence scan, flaky test', c: RED }] }],
+      O5: () => [bars([['spend', 412, '$412'], ['cap', 450, '$450']], 450, RED), { isH: true, text: 'Ladder routing · holder → shadow' }, { isRows: true, items: [['Scout', '1–3B → LSTM', 'winning'], ['Publisher', '1–3B → tiny', 'testing'], ['Theorist', '8B → 1–3B', 'testing']].map(([t, sub, tag]) => ({ t, s: sub, tag, c: tag === 'winning' ? OK : MUTED, acts: [] })) }, tog(['Quiet hours 22–07', 'Auto-batch posts', 'Page me at score ≥ 70']), { isStats: true, items: [{ v: '7', k: 'MCP servers · 1 audit pending', c: INK }, { v: '3', k: 'upgrades tested', c: INK }, { v: '4', k: 'Studio sites · 1 in review', c: INK }, { v: '42', k: 'Tmpltz archetypes', c: INK }] }],
+      R1: () => { const items = NODES.filter(([t, k, d, pub]) => (pub || s.tg['Show private nodes']) && (!q || (t + k + d).toLowerCase().includes(q))); return [{ isInput: true, value: s.q, ph: 'search: lstm, seed, H0…', on: e => this.setState({ q: e.target.value }) }, { isP: true, text: `${items.length} nodes, ranked by graph distance.` }, { isRows: true, items: items.map(([t, k, d, pub]) => ({ t, s: d, tag: k, c: pub ? INK : RED, acts: [] })) }]; },
+      R2: () => [{ isMark: true, text: "Samsung SAIL's Tiny Recursive Model scores 44.6% on ARC-AGI-1 with 7M parameters.", rest: 'A living survey of ARC reads it as evidence that recursive depth can compensate for parameter count.' }, { isP: true, text: "Jarvis's energy-halting loop comes from this line of work. The original results rely on heavy test-time augmentation and majority voting, and the model is trained per task family." }, { isH: true, text: 'Cited here' }, { isRows: true, items: [{ t: 'TRM on ARC-AGI-1', s: 'arXiv 2512.11847 · bears on H0, H3', tag: 'source', c: INK, acts: [] }, { t: 'Independent replication', s: 'Sudoku-Extreme 79.37% vs 87.4% reported', tag: 'limit', c: RED, acts: [] }] }],
+      R3: () => [{ isP: true, text: 'A degree-preserving shuffle of the seed keeps its size and breaks its structure. Refuted if the shuffle keeps more than 20% of the gain.' }, { isStats: true, items: [{ v: 'P3', k: 'read first', c: RED }, { v: 'open', k: 'status', c: INK }] }, { isH: true, text: 'Relations · 1 hop' }, { isRows: true, items: [['tests', 'H0 · quality holds'], ['shuffles', 'Seed v4'], ['separates', 'structure from context'], ['re-run by', 'Critic']].map(([r, t]) => ({ t, s: r, tag: 'edge', c: MUTED, acts: [] })) }],
+      R4: () => [{ isChat: true }],
+      R5: () => [{ isStats: true, items: [{ v: 'Pro', k: 'M. Kader · researcher', c: INK }, { v: '2', k: 'private graphs cleared', c: RED }] }, { isH: true, text: 'Graph' }, tog(['Show private nodes']), { isH: true, text: 'Notify me' }, tog(['New findings', 'Clarifying questions', 'Suggestions']), { isRows: true, items: [{ t: 'Export my notes', s: 'JSON, with node ids', tag: 'export', c: INK, acts: acts('exp', ['Export']) }] }],
+      A1: () => [{ isStats: true, items: [{ v: '18,420', k: 'calls this month', c: INK }, { v: '$86.40', k: 'of $200 budget', c: RED }, { v: '140 ms', k: 'p50 latency', c: INK }, { v: '63%', k: 'answered on CPU', c: OK }] }, { isH: true, text: 'Calls per day' }, bars([['Mon', 2610], ['Tue', 3240], ['Wed', 2880], ['Thu', 4050], ['Fri', 3650], ['Sat', 1350], ['Sun', 1080]], 4050), { isH: true, text: 'Which rung answered' }, bars([['LSTM', 41, '41%'], ['tiny', 22, '22%'], ['1–3B', 24, '24%'], ['8B', 10, '10%'], ['30B', 3, '3%']], 41, RED)],
+      A2: () => [{ isRows: true, items: [['kp', 'production', 'anm_live_••••7Qx2 · ask, graph.read · used 3 min ago', 'live'], ['ks', 'staging', 'anm_test_••••c19F · all scopes · used 1 day ago', 'test']].filter(k => !g[k[0]]).map(([k, t, sub, tag]) => ({ t, s: sub, tag, c: tag === 'live' ? OK : MUTED, acts: [{ label: 'Copy', bg: INK, fg: PAPER, fn: () => this.toast('Key copied', null) }, { label: 'Rotate', bg: '#fff', fg: INK, fn: () => this.toast('Rotated. Old key works for 24 h.', null) }, { label: 'Revoke', bg: '#fff', fg: RED, fn: () => this.hide(k, 'Revoked') }] })) }, { isH: true, text: 'Endpoints' }, { isRows: true, items: [['POST /v1/ask', 'Answer with citations, auto rung'], ['POST /v1/graph/query', 'Typed hops over the public graph'], ['POST /v1/seed', 'Seed a private graph from your schema'], ['POST /v1/harness/run', 'Run a harness cell, get a result row'], ['GET /v1/usage', 'Calls, spend, rung mix']].map(([t, sub]) => ({ t, s: sub, tag: t.split(' ')[0], c: RED, acts: [] })) }],
+      A3: () => [{ isCode: true, bg: '#fff', fg: INK, text: 'POST /v1/ask\n' + json({ question: 'Which rung clears depth-4 schemas?', graph: 'public', rung: 'auto', cite: true }) }, { isButton: true, text: s.ran ? 'Run again' : 'Run · est. $0.0004', fn: () => this.setState({ ran: true }) }, ...(s.ran ? [{ isCode: true, bg: INK, fg: PAPER, text: '200 OK · 162 ms\n' + json({ answer: 'Seeded, the 1–3B rung clears depth 4 in shadow runs; the full grid reads in P4.', rung: '1–3B', cost_usd: 0.0003, cites: ['H6', 'Plan v4 §7'] }) }] : [])],
+      A4: () => [{ isP: true, text: 'Draft prices per 1,000 calls. Auto-routing picks the smallest rung that clears the quality bar.' }, bars([['LSTM', 5, '$0.05'], ['tiny', 10, '$0.10'], ['1–3B', 40, '$0.40'], ['8B', 120, '$1.20'], ['30B', 400, '$4.00']], 400, RED), { isStats: true, items: [{ v: '$86.40', k: 'due 1 Nov', c: RED }, { v: '$200', k: 'hard cap', c: INK }] }, { isRows: true, items: [['September', '$71.10'], ['August', '$44.85'], ['July', '$12.30']].map(([t, v]) => ({ t, s: 'Visa ·· 4242', tag: v, c: INK, acts: [{ label: 'PDF', bg: '#fff', fg: INK, fn: () => this.toast(`${t} invoice downloaded`, null) }] })) }],
+      S1: () => [{ isP: true, text: 'The headline experiment is in phase P3: 30B, small and LSTM at depth 1–3. The result is published either way.' }, bars([['P0 unify', 100, 'done'], ['P1 replicate', 100, 'done'], ['P2 seed', 100, 'done'], ['P3 small', 35, 'running'], ['P4 full', 0, '—'], ['P5 publish', 0, '—']], 100, RED), { isRows: true, items: [{ t: 'Companion D: who is exposed if H0 holds', s: '15 Oct · 9 min read', tag: 'report', c: INK, acts: [] }, { t: 'Debt share of AI capex: 32%', s: 'Companion B · tracked weekly', tag: 'indicator', c: RED, acts: [] }] }],
+      S2: () => [{ isRows: true, items: REPORTS.map(([t, sub]) => ({ t, s: sub, tag: 'report', c: INK, acts: [{ label: 'Read', bg: INK, fg: PAPER, fn: () => window.open(R + t + '.dc.html', '_blank') }] })) }],
+      S3: () => [bars([['quota', s.quota, `${s.quota} / 50`]], 50, RED), { isChat: true }],
+      S4: () => [{ isTiers: true, items: [['Member', 'free', ['Public graph and all reports', '50 questions a month', 'Weekly digest'], '#fff', INK], ['Pro', '$29 / mo', ['Unlimited questions', 'Raw result tables and shadow scores', 'Private follow-ups'], HI, INK], ['Partner', 'talk to us', ['Private seeded graph', 'Paid study or design partnership', 'Bridago on your CPUs'], INK, PAPER]].map(([name, price, feats, bg, fg]) => ({ name, price, feats, bg, fg })) }],
+    };
+    return B[id]();
+  }
+  renderVals() {
+    const s = this.state, cur = ALL[s.scr], list = SCREENS[s.role];
+    const blank = { isH: false, isP: false, isMark: false, isInput: false, isStats: false, isRows: false, isBars: false, isCode: false, isButton: false, isToggles: false, isTiers: false, isChat: false };
+    const sg = cur.sugg;
+    return {
+      roles: ROLES.map(([id, name, text]) => ({ name, text, pick: () => this.go(SCREENS[id][0][0]), style: `display:grid;gap:4px;text-align:left;padding:12px;min-height:72px;border:1.5px solid ${INK};border-radius:4px;cursor:pointer;color:${s.role === id ? PAPER : INK};background:${s.role === id ? INK : PAPER};box-shadow:${s.role === id ? '3px 3px 0 ' + RED : 'none'};` })),
+      list: list.map(([id, , , title]) => ({ id, title, go: () => this.go(id), style: `display:flex;gap:10px;align-items:baseline;min-height:40px;padding:0 10px;border:0;border-bottom:1px dashed #b9c2dc;cursor:pointer;text-align:left;color:${INK};font-family:inherit;background:${id === s.scr ? HI : 'transparent'};` })),
+      roleName: ROLES.find(r => r[0] === s.role)[1], cur,
+      blocks: this.blocks(s.scr).map(b => ({ ...blank, ...b })),
+      tabCount: list.length,
+      tabs: list.map(([id, tab]) => ({ label: tab, fn: () => this.go(id), style: `min-height:46px;background:none;border:0;cursor:pointer;font:600 11px 'JetBrains Mono',monospace;color:${id === s.scr ? RED : INK};text-decoration:${id === s.scr ? 'underline wavy ' + RED : 'none'};text-underline-offset:5px;` })),
+      showSugg: !!sg && s.sugOn[s.scr] && !s.sugOff[s.scr] && !s.toast,
+      sugg: sg ? { text: sg[0], cta: sg[1], go: () => { this.setState(x => ({ sugOff: { ...x.sugOff, [s.scr]: true } })); this.go(sg[2]); } } : { text: '', cta: '', go: () => {} },
+      dismiss: () => this.setState(x => ({ sugOff: { ...x.sugOff, [s.scr]: true } })),
+      toast: !!s.toast, toastText: s.toast ? s.toast.text : '', canUndo: !!(s.toast && s.toast.undo),
+      undo: () => this.setState(x => { const gg = { ...x.gone }; delete gg[x.toast.undo]; return { gone: gg, toast: null }; }),
+      msgs: s.msgs.map(m => ({ text: m.text, style: m.me ? `justify-self:end;max-width:82%;padding:9px 12px;border-radius:14px 14px 3px 14px;background:${INK};color:${PAPER};font-size:15px;line-height:1.4;` : `justify-self:start;max-width:92%;padding:9px 12px;border-radius:14px 14px 14px 3px;border:1.5px solid ${INK};background:#fff;font-size:15px;line-height:1.45;` })),
+      clarify: !!s.clarify, clarifyQ: s.clarify ? s.clarify.q : '',
+      clarifyOpts: (s.clarify ? s.clarify.opts : []).map(([label, ans]) => ({ label, fn: () => this.setState(x => ({ clarify: null, msgs: [...x.msgs, { me: true, text: label }, { me: false, text: ans }] })) })),
+      chips: (s.role === 'sub' && s.quota <= 0 ? [] : ['Can a small model be as good?', 'Is the GPU boom a bubble?', 'What does H5 test?']).map(l => ({ label: l, fn: () => this.ask(l) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

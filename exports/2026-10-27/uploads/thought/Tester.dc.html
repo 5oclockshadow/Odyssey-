@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <style>
+    html, body { height: 100%; margin: 0; overflow: hidden; background: #161826; }
+    button { font: inherit; }
+    .lbl { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(233,233,237,0.55); }
+    .tbody { display: grid; grid-template-columns: 220px minmax(0,1fr) 300px; }
+    .kpis, .lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .feedrow { display: grid; grid-template-columns: 70px 84px minmax(0,1fr) auto; gap: 12px; }
+    .rside { border-left: 1px solid rgba(233,233,237,0.10); }
+    @media (max-width: 1100px) {
+      .tbody { display: flex; flex-direction: column; }
+      .tbody > * { flex: none; }
+      .rail { border-right: 0 !important; border-bottom: 1px solid rgba(233,233,237,0.10); overflow: visible !important; }
+      .rside { border-left: 0; border-top: 1px solid rgba(233,233,237,0.10); overflow: visible !important; }
+      .cmain { order: 1; }
+      .rail { order: 2; }
+      .rside { order: 3; }
+      .sname { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+    }
+    @media (max-width: 700px) {
+      .feedrow { grid-template-columns: 84px minmax(0,1fr) auto; }
+      .feedrow .ft { display: none; }
+    }
+    .card { background: #232532; border: 1px solid rgba(233,233,237,0.10); border-radius: 8px; padding: 14px; }
+  </style>
+</helmet>
+
+<div data-screen-label="Tester" style="position:fixed; inset:0; display:grid; grid-template-rows:52px 1fr; background:#161826; color:#e9e9ed; font-family:Inter, system-ui, sans-serif; font-size:13px; line-height:1.45;">
+
+  <header style="display:flex; align-items:center; gap:16px; padding:0 18px; border-bottom:1px solid rgba(233,233,237,0.16); background:#1b1d2c; min-width:0;">
+    <div style="display:flex; align-items:center; gap:10px; white-space:nowrap;">
+      <span style="width:9px; height:9px; border-radius:50%; background:#9184d9; box-shadow:0 0 10px #9184d9;"></span>
+      <b style="font-size:15px; letter-spacing:-0.01em;">The Tester</b>
+      <span style="color:rgba(233,233,237,0.55);">/ thought-graph</span>
+    </div>
+    <div style="flex:1;"></div>
+    <span class="lbl" style="white-space:nowrap;">Cycle {{ cycle }}</span>
+    <span class="tag tag-neutral" style="white-space:nowrap; color:{{ statusColor }};">{{ statusLabel }}</span>
+    <button type="button" class="btn btn-secondary" onClick="{{ toggleChaos }}">{{ chaosLabel }}</button>
+    <button type="button" class="btn btn-secondary" onClick="{{ togglePause }}">{{ pauseLabel }}</button>
+    <button type="button" class="btn btn-primary" onClick="{{ runNow }}">Run cycle</button>
+  </header>
+
+  <div class="tbody" style="min-height:0; overflow:auto;">
+
+    <!-- Left rail -->
+    <aside class="rail" style="padding:16px 14px; overflow:auto; display:flex; flex-direction:column; gap:22px;">
+      <div>
+        <div class="lbl" style="margin-bottom:10px;">Pipeline</div>
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="7">
+          <div style="display:flex; align-items:center; gap:10px; padding:7px 8px; border-radius:4px; {{ s.rowStyle }}">
+            <span style="width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; {{ s.dotStyle }}">{{ s.n }}</span>
+            <span style="flex:1; {{ s.textStyle }}">{{ s.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:10px;">Suites</div>
+        <sc-for list="{{ suites }}" as="u" hint-placeholder-count="5">
+          <div style="padding:8px 0; border-bottom:1px solid rgba(233,233,237,0.08);">
+            <div style="display:flex; justify-content:space-between; gap:8px;">
+              <span class="sname" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;">{{ u.name }}</span>
+              <span style="color:{{ u.color }}; font-variant-numeric:tabular-nums;">{{ u.pass }}%</span>
+            </div>
+            <div style="height:3px; background:rgba(233,233,237,0.10); border-radius:2px; margin-top:6px; overflow:hidden;">
+              <div style="height:100%; width:{{ u.pass }}%; background:{{ u.color }};"></div>
+            </div>
+            <div class="text-muted" style="font-size:11px; margin-top:4px;">{{ u.count }} cases · {{ u.open }} open</div>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+
+    <!-- Center -->
+    <main class="cmain" style="padding:16px 18px; overflow:auto; display:flex; flex-direction:column; gap:14px; min-width:0;">
+      <div class="kpis">
+        <div class="card"><div class="lbl">Coverage</div><div style="font-size:26px; font-weight:600; margin-top:6px;">{{ cov }}%</div></div>
+        <div class="card"><div class="lbl">SOC 2 score</div><div style="font-size:26px; font-weight:600; margin-top:6px;">{{ socScore }}</div></div>
+        <div class="card"><div class="lbl">Open findings</div><div style="font-size:26px; font-weight:600; margin-top:6px;">{{ openCount }}</div></div>
+        <div class="card"><div class="lbl">Patches proposed</div><div style="font-size:26px; font-weight:600; margin-top:6px;">{{ patchCount }}</div></div>
+      </div>
+
+      <div>
+        <div class="lbl" style="margin-bottom:10px;">Chaos telemetry</div>
+        <div class="kpis">
+          <sc-for list="{{ lanes }}" as="l" hint-placeholder-count="4">
+            <div class="card" style="padding:12px;">
+              <div style="display:flex; justify-content:space-between; gap:8px; min-width:0;"><span style="flex:1; min-width:0;">{{ l.name }}</span><span style="flex-shrink:0; font-variant-numeric:tabular-nums; color:{{ l.color }};">{{ l.count }}</span></div>
+              <div class="text-muted" style="font-size:11px; margin:2px 0 8px;">{{ l.desc }}</div>
+              <div style="height:4px; background:rgba(233,233,237,0.10); border-radius:2px; overflow:hidden;">
+                <div style="height:100%; width:{{ l.pct }}%; background:{{ l.color }}; transition:width .4s;"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="min-height:0;">
+        <div class="lbl" style="margin-bottom:10px;">Live feed</div>
+        <div class="card" style="padding:0; overflow:hidden;">
+          <sc-if value="{{ hasEvents }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ events }}" as="e" hint-placeholder-count="6">
+              <div class="feedrow" style="align-items:center; padding:9px 14px; border-bottom:1px solid rgba(233,233,237,0.07); font-size:12px;">
+                <span class="text-muted ft" style="font-variant-numeric:tabular-nums;">{{ e.time }}</span>
+                <span style="color:{{ e.color }};">{{ e.lane }}</span>
+                <span style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ e.msg }} <span class="text-muted">· {{ e.file }}</span></span>
+                <span style="font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid {{ e.color }}; color:{{ e.color }};">{{ e.sev }}</span>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ noEvents }}" hint-placeholder-val="{{ false }}">
+            <div class="text-muted" style="padding:20px 14px;">Waiting for the first cycle.</div>
+          </sc-if>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right panel -->
+    <aside class="rside" style="display:flex; flex-direction:column; min-height:0;">
+      <div style="display:flex; gap:4px; padding:10px 12px; border-bottom:1px solid rgba(233,233,237,0.10);">
+        <button type="button" class="btn btn-secondary" style="{{ tabSocStyle }}" onClick="{{ showSoc }}">SOC 2</button>
+        <button type="button" class="btn btn-secondary" style="{{ tabEvoStyle }}" onClick="{{ showEvo }}">Self-improve</button>
+      </div>
+
+      <div style="padding:14px; overflow:auto; display:flex; flex-direction:column; gap:18px; min-height:0;">
+        <sc-if value="{{ isSoc }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div class="lbl" style="margin-bottom:10px;">Trust Services Criteria</div>
+            <sc-for list="{{ tsc }}" as="t" hint-placeholder-count="5">
+              <div style="padding:9px 0; border-bottom:1px solid rgba(233,233,237,0.08);">
+                <div style="display:flex; justify-content:space-between; gap:8px; min-width:0;"><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;">{{ t.name }}</span><span style="font-variant-numeric:tabular-nums; color:{{ t.color }};">{{ t.score }}</span></div>
+                <div class="text-muted" style="font-size:11px;">{{ t.control }} · {{ t.open }} open</div>
+                <div style="height:3px; background:rgba(233,233,237,0.10); border-radius:2px; margin-top:6px; overflow:hidden;"><div style="height:100%; width:{{ t.score }}%; background:{{ t.color }};"></div></div>
+              </div>
+            </sc-for>
+          </div>
+          <div>
+            <div class="lbl" style="margin-bottom:10px;">Remediation</div>
+            <sc-for list="{{ remediation }}" as="r" hint-placeholder-count="3">
+              <div class="card" style="padding:12px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; gap:8px;"><span style="color:{{ r.color }}; font-size:11px;">{{ r.sev }} · {{ r.file }}</span><span class="text-muted" style="font-size:11px;">{{ r.id }}</span></div>
+                <div style="margin:6px 0 8px;">{{ r.msg }}</div>
+                <div class="text-muted" style="font-size:12px;">Fix: {{ r.fix }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isEvo }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div class="lbl" style="margin-bottom:10px;">Tester evolution</div>
+            <sc-for list="{{ evo }}" as="v" hint-placeholder-count="4">
+              <div style="padding:9px 0; border-bottom:1px solid rgba(233,233,237,0.08);">
+                <div style="display:flex; justify-content:space-between; gap:8px;"><span class="text-muted" style="font-size:11px; font-variant-numeric:tabular-nums;">{{ v.time }}</span><span style="font-size:11px; color:#a7a1db;">{{ v.kind }}</span></div>
+                <div style="margin-top:3px;">{{ v.text }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div>
+            <div class="lbl" style="margin-bottom:10px;">Codebase patches</div>
+            <sc-for list="{{ patches }}" as="p" hint-placeholder-count="3">
+              <div class="card" style="padding:12px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; gap:8px; font-size:11px;"><span class="text-muted">{{ p.id }} · {{ p.file }}</span><span style="color:{{ p.color }};">{{ p.status }}</span></div>
+                <div style="margin:6px 0 10px;">{{ p.title }}</div>
+                <button type="button" class="btn btn-secondary" style="{{ p.btnStyle }}" onClick="{{ p.approve }}">{{ p.btnLabel }}</button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </aside>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;tickMs&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1400,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:400,&quot;max&quot;:4000,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;section&quot;:&quot;Simulation&quot;}}">
+class Component extends DCLogic {
+  state = { running: true, chaos: true, tab: 'soc', cycle: 0, n: 0, evoN: 0, events: [], findings: [], patches: [], evo: [], cov: 61,
+    lanes: { fuzz: 0, race: 0, mem: 0, payload: 0 },
+    suites: [
+      { name: 'Unit · core', count: 412, pass: 97, open: 3 },
+      { name: 'Integration · api', count: 138, pass: 91, open: 6 },
+      { name: 'Security · auth', count: 64, pass: 84, open: 5 },
+      { name: 'Chaos · fuzz', count: 220, pass: 79, open: 9 },
+      { name: 'Data · store', count: 57, pass: 93, open: 2 } ],
+    tsc: { Security: 71, Availability: 84, 'Processing Integrity': 78, Confidentiality: 66, Privacy: 74 } };
+  componentDidMount() { this.timer = setInterval(() => this.tick(), this.props.tickMs ?? 1400); this.tick(); }
+  componentWillUnmount() { clearInterval(this.timer); }
+  tick() {
+    if (!this.state.running) return;
+    const LANES = ['fuzz', 'race', 'mem', 'payload'];
+    const MSG = { fuzz: ['malformed JSON body on /api/thoughts', 'integer overflow in limit param', 'unicode normalization mismatch'], race: ['concurrent writes to graph store', 'double submit on shake endpoint'], mem: ['allocation spike in worker', 'unbounded cache growth'], payload: ['script tag reflected in node label', 'path traversal in file param', 'injection token in search query'] };
+    const FILES = ['server/handler.js', 'server/validate.js', 'server/store-sqlite.js', 'server/worker.js', 'tandem-api.js', 'storage.js'];
+    const TSC_OF = { fuzz: 'Processing Integrity', race: 'Availability', mem: 'Availability', payload: 'Security' };
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    this.setState(s => {
+      const cycle = s.cycle + 1, n = s.n + 1;
+      const lane = this.state.chaos ? pick(LANES) : null;
+      const sevR = Math.random();
+      const sev = sevR < 0.22 ? 'high' : sevR < 0.55 ? 'medium' : 'low';
+      const color = sev === 'high' ? '#e7839b' : sev === 'medium' ? '#d9b26b' : '#8fd1b5';
+      const time = new Date().toLocaleTimeString([], { hour12: false });
+      const msg = lane ? pick(MSG[lane]) : 'scheduled audit pass';
+      const file = pick(FILES);
+      const events = [{ id: n, time, lane: lane || 'audit', msg, file, sev, color }, ...s.events].slice(0, 40);
+      const lanes = { ...s.lanes }; if (lane) lanes[lane]++;
+      let findings = s.findings, evo = s.evo, evoN = s.evoN;
+      if (sev !== 'low') findings = [{ id: 'F-' + n, sev, file, msg, fix: 'validate input before parse; add regression case', tsc: lane ? TSC_OF[lane] : 'Security', color, patched: false }, ...s.findings].slice(0, 30);
+      if (cycle % 3 === 0) { evoN++; evo = [{ time, kind: 'signature', text: 'Widened ' + (lane || 'audit') + ' prompt with ' + (evoN + 2) + ' variants after low yield' }, ...s.evo].slice(0, 30); }
+      let patches = s.patches;
+      const target = findings.find(f => !f.patched && f.sev === 'high');
+      if (cycle % 4 === 0 && target) {
+        patches = [{ id: 'P-' + target.id.slice(2), file: target.file, title: 'Validate input before parse: ' + target.msg, status: 'drafted', color: '#d9b26b', approved: false }, ...s.patches].slice(0, 20);
+        findings = findings.map(f => f.id === target.id ? { ...f, patched: true } : f);
+      }
+      const tsc = { ...s.tsc }; const cat = lane ? TSC_OF[lane] : 'Privacy';
+      if (tsc[cat] !== undefined) tsc[cat] = Math.max(40, Math.min(99, tsc[cat] + (sev === 'high' ? -1 : 0.5)));
+      return { cycle, n, events, lanes, findings, patches, evo, evoN, tsc, cov: Math.min(96, +(s.cov + 0.4).toFixed(1)), suites: s.suites.map((u, i) => ({ ...u, pass: Math.max(60, Math.min(99, u.pass + (i === cycle % 5 ? (sev === 'high' ? -1 : 1) : 0))) })) };
+    });
+  }
+  renderVals() {
+    const s = this.state;
+    const ORDER = ['Discover', 'Index · rm + RAPTOR', 'Audit · SOC 2', 'Chaos inject', 'Triage', 'Patch draft', 'Verify & propose'];
+    const active = s.cycle % 7;
+    const steps = ORDER.map((label, i) => ({ n: i + 1, label,
+      rowStyle: i === active ? 'background:rgba(145,132,217,0.14);' : '',
+      dotStyle: i < active ? 'background:#9184d9; color:#161826;' : i === active ? 'border:1px solid #9184d9; color:#9184d9;' : 'border:1px solid rgba(233,233,237,0.2); color:rgba(233,233,237,0.55);',
+      textStyle: i < active ? 'color:rgba(233,233,237,0.55);' : i === active ? 'color:#e9e9ed; font-weight:600;' : 'color:rgba(233,233,237,0.8);' }));
+    const scoreOf = arr => arr.map(x => x);
+    const suites = s.suites.map(u => ({ ...u, color: u.pass >= 90 ? '#8fd1b5' : u.pass >= 80 ? '#d9b26b' : '#e7839b' }));
+    const laneMeta = { fuzz: 'Automated fuzzing', race: 'Concurrency flooding', mem: 'Memory exhaustion', payload: 'Malicious payloads' };
+    const laneColor = { fuzz: '#9184d9', race: '#a7a1db', mem: '#d9b26b', payload: '#e7839b' };
+    const maxLane = Math.max(1, ...Object.values(s.lanes));
+    const lanes = Object.keys(laneMeta).map(k => ({ name: k, desc: laneMeta[k], count: s.lanes[k], color: laneColor[k], pct: Math.round(s.lanes[k] / maxLane * 100) }));
+    const openF = s.findings.filter(f => !f.patched);
+    const sevColor = c => c;
+    const tscColor = v => v >= 80 ? '#8fd1b5' : v >= 70 ? '#d9b26b' : '#e7839b';
+    const CONTROL = { Security: 'CC6 access controls', Availability: 'A1 capacity', 'Processing Integrity': 'PI1 processing', Confidentiality: 'C1 data protection', Privacy: 'P-series notice' };
+    const tsc = Object.keys(s.tsc).map(k => ({ name: k, score: Math.round(s.tsc[k]), color: tscColor(s.tsc[k]), control: CONTROL[k], open: s.findings.filter(f => !f.patched && f.tsc === k).length }));
+    const socScore = Math.round(Object.values(s.tsc).reduce((a, b) => a + b, 0) / Object.keys(s.tsc).length);
+    const patches = s.patches.map(p => ({ ...p, btnLabel: p.approved ? 'Merged' : 'Approve patch', btnStyle: p.approved ? 'opacity:.5;' : 'background:#9184d9; color:#161826; border-color:#9184d9; font-weight:600;',
+      status: p.approved ? 'merged to tester/' + p.id.toLowerCase() : p.status,
+      color: p.approved ? '#8fd1b5' : p.color,
+      approve: () => this.setState(st => ({ patches: st.patches.map(x => x.id === p.id ? { ...x, approved: true, status: 'approved' } : x) })) }));
+    const tab = s.tab;
+    const tabOn = 'background:#9184d9; color:#161826; border-color:#9184d9; font-weight:600;';
+    return {
+      cycle: s.cycle, steps, suites, lanes, tsc, socScore, cov: Math.round(s.cov), openCount: openF.length, patchCount: s.patches.length,
+      events: s.events, hasEvents: s.events.length > 0, noEvents: s.events.length === 0,
+      remediation: s.findings.filter(f => !f.patched).slice(0, 4).map(f => ({ ...f, sev: f.sev, color: sevColor(f.color) })),
+      evo: s.evo, patches,
+      isSoc: tab === 'soc', isEvo: tab === 'evo',
+      tabSocStyle: tab === 'soc' ? tabOn : '', tabEvoStyle: tab === 'evo' ? tabOn : '',
+      showSoc: () => this.setState({ tab: 'soc' }), showEvo: () => this.setState({ tab: 'evo' }),
+      statusLabel: s.running ? (s.chaos ? 'Running · chaos on' : 'Running · audit only') : 'Paused',
+      statusColor: s.running ? '#8fd1b5' : '#d9b26b',
+      chaosLabel: s.chaos ? 'Chaos: on' : 'Chaos: off',
+      pauseLabel: s.running ? 'Pause' : 'Resume',
+      toggleChaos: () => this.setState(st => ({ chaos: !st.chaos })),
+      togglePause: () => this.setState(st => ({ running: !st.running })),
+      runNow: () => this.tick(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

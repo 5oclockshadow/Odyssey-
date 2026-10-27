@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="suite-theme.css">
+  <script src="suite-theme.js"></script>
+  <style>
+    body{margin:0;min-height:100vh;background:var(--color-bg)}
+    a{color:var(--color-accent)} a:hover{color:var(--color-accent-400)}
+    ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--color-neutral-800);border-radius:4px}
+  </style>
+</helmet>
+<div style="min-height:100vh;color:var(--color-text);background:radial-gradient(900px 460px at 4% -10%,color-mix(in srgb,var(--color-accent) 13%,transparent),transparent 72%),radial-gradient(760px 420px at 100% 0%,color-mix(in srgb,var(--color-section) 60%,transparent),transparent 70%),var(--color-bg)">
+  <nav class="nav" style="padding:var(--space-4) var(--space-8);gap:var(--space-4) var(--space-6);flex-wrap:wrap">
+    <span class="nav-brand" style="display:flex;align-items:center;gap:10px"><span style="width:18px;height:18px;border-radius:50%;border:1.5px solid var(--color-accent);box-shadow:0 0 16px color-mix(in srgb,var(--color-accent) 70%,transparent)"></span>Saltline</span>
+    <a href="Institute.dc.html">Institute</a><a href="Features.dc.html" aria-current="page">AI features</a><a href="Saltline.dc.html">Operations</a>
+  </nav>
+  <main style="max-width:1320px;margin:0 auto;padding:var(--space-8) var(--space-8) 72px">
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+    <header style="margin-bottom:28px">
+      <div class="card-kicker">AI features</div>
+      <h1 style="font-size:44px;margin:8px 0 12px">200 features for environmental science</h1>
+      <p class="text-muted" style="max-width:68ch;margin:0 0 14px">Thirty calculators run offline and are self-tested. Ten pull live public data. A hundred and sixty assistants call Claude with a task-specific brief. Assistants state assumptions and invent no citations, so check their output before relying on it.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <sc-for list="{{ counts }}" as="c" hint-placeholder-count="3"><span class="tag tag-neutral">{{ c }}</span></sc-for>
+        <button type="button" class="btn btn-secondary" onClick="{{ selfTest }}">Run calculator self-test</button>
+      </div>
+      <sc-if value="{{ hasTests }}" hint-placeholder-val="{{ false }}"><div class="card" style="padding:var(--space-4) var(--space-6);margin-top:14px;gap:6px;max-width:760px"><div id="s" style="font-size:14px">{{ tests.text }}</div><div style="font-size:12px;color:var(--color-neutral-400);display:flex;flex-direction:column;gap:2px"><sc-for list="{{ tests.lines }}" as="t" hint-placeholder-count="30"><div>{{ t }}</div></sc-for></div></div></sc-if>
+    </header>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px">
+      <input class="input" style="max-width:320px" placeholder="Search all 200 features" value="{{ q }}" onChange="{{ onQ }}">
+      <sc-for list="{{ kinds }}" as="k" hint-placeholder-count="4"><button type="button" class="tag" style="cursor:pointer;font-family:inherit;border:1px solid {{ k.bd }};background:{{ k.bg }};color:{{ k.fg }}" onClick="{{ k.go }}">{{ k.label }}</button></sc-for>
+    </div>
+    <div style="overflow-x:auto"><div style="min-width:980px;display:grid;grid-template-columns:210px 310px minmax(0,1fr);gap:28px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:2px"><sc-for list="{{ domains }}" as="d" hint-placeholder-count="20"><button type="button" onClick="{{ d.go }}" class="btn btn-ghost" style="justify-content:space-between;width:100%;text-align:left;padding:6px 8px;color:{{ d.fg }};background:{{ d.bg }}"><span>{{ d.name }}</span><span style="font-size:11px;opacity:.7">{{ d.n }}</span></button></sc-for></div>
+      <div style="display:flex;flex-direction:column">
+        <div class="text-muted" style="font-size:12px;margin-bottom:6px">{{ listNote }}</div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10"><div onClick="{{ r.go }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 6px;cursor:pointer;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 9%,transparent) 32px,color-mix(in srgb,var(--color-text) 9%,transparent) calc(100% - 32px),transparent) no-repeat bottom/100% 1px"><span style="min-width:0"><span style="font-size:14px;color:{{ r.fg }}">{{ r.name }}</span><span class="text-muted" style="display:block;font-size:11px">{{ r.dom }}</span></span><span class="{{ r.tag }}">{{ r.kind }}</span></div></sc-for>
+      </div>
+      <div class="card" style="padding:var(--space-6);gap:16px;min-width:0">
+        <div><span class="{{ cur.tag }}">{{ cur.kind }}</span><h2 style="font-size:28px;margin:10px 0 6px">{{ cur.name }}</h2><p class="text-muted" style="margin:0;font-size:14px">{{ cur.about }}</p></div>
+        <div style="display:flex;flex-direction:column;gap:10px"><sc-for list="{{ fields }}" as="f" hint-placeholder-count="2"><div class="field"><label>{{ f.label }}</label><sc-if value="{{ f.area }}" hint-placeholder-val="{{ false }}"><textarea class="input" style="min-height:110px" value="{{ f.val }}" onChange="{{ f.set }}"></textarea></sc-if><sc-if value="{{ f.line }}" hint-placeholder-val="{{ false }}"><input class="input" placeholder="{{ f.ph }}" value="{{ f.val }}" onChange="{{ f.set }}"></sc-if></div></sc-for></div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="btn btn-primary" disabled="{{ busy }}" onClick="{{ run }}">{{ runLabel }}</button><span class="text-muted" style="font-size:12px">{{ hint }}</span></div>
+        <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-accent-300)">{{ out.err }}</div></sc-if>
+        <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column"><sc-for list="{{ out.rows }}" as="r" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px;padding:10px 0;font-size:14px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 9%,transparent) 32px,color-mix(in srgb,var(--color-text) 9%,transparent) calc(100% - 32px),transparent) no-repeat bottom/100% 1px"><span class="text-muted">{{ r.a }}</span><span><span style="font-size:18px;font-weight:500">{{ r.b }}</span><span class="text-muted" style="display:block;font-size:11px">{{ r.c }}</span></span></div></sc-for></div></sc-if>
+        <sc-if value="{{ hasText }}" hint-placeholder-val="{{ false }}"><div><div style="white-space:pre-wrap;font-size:14px;line-height:1.6">{{ out.text }}</div><button type="button" class="btn btn-ghost" style="margin-top:8px" onClick="{{ copy }}">{{ copyLabel }}</button></div></sc-if>
+      </div>
+    </div></div>
+  </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { dom: 0, fid: null, q: '', kind: 'All', vals: {}, out: {}, busy: '', tests: null, copied: false, ready: false };
+
+  async componentDidMount() {
+    const M = await import('./features-data.js');
+    this.M = M; this.all = []; let id = 0;
+    M.DOMAINS.forEach(([dn, items], di) => items.forEach(it => this.all.push({ ...it, id: 'f' + (++id), di, dn })));
+    window.__features = { count: this.all.length, byKind: this.all.reduce((o, f) => { o[f.k] = (o[f.k] || 0) + 1; return o; }, {}) };
+    this.setState({ ready: true });
+  }
+
+  renderVals() {
+    const s = this.state, M = this.M;
+    if (!M) return { ready: false };
+    const chip = (label, on, go) => ({ label, go, bd: on ? 'var(--color-accent)' : 'transparent', bg: on ? 'transparent' : 'var(--color-neutral-800)', fg: on ? 'var(--color-accent)' : 'var(--color-neutral-100)' });
+    const KL = { calc: 'Calculator', live: 'Live data', ai: 'AI' }, KT = { calc: 'tag tag-neutral', live: 'tag tag-outline', ai: 'tag tag-accent' };
+    const text = s.q.trim().toLowerCase();
+    const list = this.all.filter(f => (s.kind === 'All' || f.k === s.kind) && (text ? (f.n + ' ' + f.dn + ' ' + (f.i || '')).toLowerCase().includes(text) : f.di === s.dom));
+    const cur = this.all.find(f => f.id === s.fid) || list[0] || this.all[0];
+    const by = this.all.reduce((o, f) => { o[f.k] = (o[f.k] || 0) + 1; return o; }, {});
+    const vv = s.vals[cur.id] || {}, o = s.out[cur.id] || {};
+    const spec = cur.k === 'calc' ? M.CALCS[cur.key] : cur.k === 'live' ? M.LIVE[cur.key] : null;
+    const defs = cur.k === 'ai' ? [['a', cur.a, true], ...(cur.b ? [['b', cur.b, true]] : [])] : spec.f.map(([k, l]) => [k, l, false]);
+    const fields = defs.map(([key, label, area]) => ({ key, label, area, line: !area, val: vv[key] ?? '', ph: spec ? 'e.g. ' + spec.ex[key] : '', set: e => { const val = e.target.value; this.setState(st => ({ vals: { ...st.vals, [cur.id]: { ...(st.vals[cur.id] || {}), [key]: val } } })); } }));
+    const run = async () => {
+      const v = { ...(s.vals[cur.id] || {}) }, done = r => this.setState(st => ({ busy: '', out: { ...st.out, [cur.id]: r } })), rows = a => a.filter(Boolean).map(r => ({ a: r[0], b: r[1], c: r[2] || '' }));
+      this.setState({ busy: cur.id });
+      try {
+        if (cur.k === 'calc') { const n = {}; spec.f.forEach(([k]) => { n[k] = parseFloat(v[k] !== undefined && v[k] !== '' ? v[k] : spec.ex[k]); }); if (Object.values(n).some(Number.isNaN)) throw new Error('Enter a number in every field.'); done({ rows: rows(spec.run(n)) }); }
+        else if (cur.k === 'live') { const n = {}; spec.f.forEach(([k]) => { n[k] = v[k] !== undefined && v[k] !== '' ? v[k] : spec.ex[k]; }); done({ rows: rows(await spec.run(n)) }); }
+        else { const t = await window.claude.complete({ system: M.COMMON + ' Task: ' + cur.n + '. ' + cur.i, messages: [{ role: 'user', content: cur.a + ': ' + (v.a || '(not given)') + (cur.b ? '\n' + cur.b + ': ' + (v.b || '(not given)') : '') }], max_tokens: 1100 }); done({ text: t }); }
+      } catch (e) { done({ err: (cur.k === 'live' ? 'Live feed unavailable: ' : '') + (e.message || 'Failed') }); }
+    };
+    const selfTest = () => {
+      const lines = []; let pass = 0, fail = 0;
+      Object.entries(M.CALCS).forEach(([k, C]) => { try { const r = C.run(C.ex), got = parseFloat(r[0][1]), ok = Math.abs(got - C.exp) <= Math.max(0.05, Math.abs(C.exp) * 0.01); if (ok) pass++; else fail++; lines.push((ok ? 'PASS ' : 'FAIL ') + k + ': ' + r[0][0] + ' = ' + r[0][1] + ' (expected ' + C.exp + ')'); } catch (e) { fail++; lines.push('FAIL ' + k + ': ' + e.message); } });
+      this.setState({ tests: { lines, text: fail ? fail + ' failed · ' + pass + ' passed' : 'All ' + pass + ' calculators passed' } });
+    };
+    const copy = () => { try { navigator.clipboard.writeText(o.text); } catch (e) {} this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 1500); };
+    return {
+      ready: true, counts: [this.all.length + ' features', by.calc + ' calculators', by.live + ' live data', by.ai + ' AI assistants'],
+      selfTest, hasTests: !!s.tests, tests: s.tests || { text: '', lines: [] },
+      q: s.q, onQ: e => this.setState({ q: e.target.value }),
+      kinds: [['All', 'All'], ['calc', 'Calculators'], ['live', 'Live data'], ['ai', 'AI assistants']].map(([k, l]) => chip(l, s.kind === k, () => this.setState({ kind: k }))),
+      domains: M.DOMAINS.map(([n, it], i) => ({ name: n, n: it.length, go: () => this.setState({ dom: i, q: '', fid: null }), fg: i === s.dom && !text ? 'var(--color-accent)' : 'var(--color-text)', bg: i === s.dom && !text ? 'color-mix(in srgb,var(--color-accent) 10%,transparent)' : 'transparent' })),
+      listNote: text ? list.length + ' matches across all domains' : M.DOMAINS[s.dom][0],
+      rows: list.map(f => ({ name: f.n, kind: KL[f.k], tag: KT[f.k], dom: text ? f.dn : '', fg: f.id === cur.id ? 'var(--color-accent)' : 'var(--color-text)', go: () => this.setState({ fid: f.id }) })),
+      cur: { name: cur.n, kind: KL[cur.k], tag: KT[cur.k], about: cur.k === 'ai' ? cur.i : cur.k === 'calc' ? 'Runs in your browser. Leave a field blank to use the example value.' : 'Fetches public data live. Leave a field blank to use the example value.' },
+      fields, run, busy: s.busy === cur.id, runLabel: s.busy === cur.id ? 'Running' : cur.k === 'ai' ? 'Ask Claude' : 'Run', hint: cur.k === 'ai' ? 'Fifteen AI calls a minute are available.' : '',
+      out: o, hasErr: !!o.err, hasRows: !!o.rows, hasText: !!o.text, copy, copyLabel: s.copied ? 'Copied' : 'Copy',
+    };
+  }
+}
+</script>
+</body>
+</html>

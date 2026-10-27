@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="suite-theme.css">
+  <script src="suite-theme.js"></script>
+  <style>
+    body{margin:0;min-height:100vh;background:var(--color-bg)}
+    a{color:var(--color-accent)} a:hover{color:var(--color-accent-400)}
+    @keyframes slPulse{0%,100%{opacity:1}50%{opacity:.35}}
+    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:var(--color-neutral-800);border-radius:3px}
+  </style>
+</helmet>
+<div style="min-height:100vh;color:var(--color-text);font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:12px;background:radial-gradient(900px 420px at 0% -10%,color-mix(in srgb,var(--color-accent) 10%,transparent),transparent 70%),var(--color-bg)">
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 22px;padding:10px 18px;background:linear-gradient(to right,transparent,var(--color-divider) 48px,var(--color-divider) calc(100% - 48px),transparent) no-repeat bottom/100% 1px,color-mix(in srgb,var(--color-bg) 94%,transparent);backdrop-filter:blur(10px);position:sticky;top:0;z-index:5">
+    <span style="display:flex;align-items:center;gap:8px;font-family:var(--font-heading);font-size:15px;font-weight:500"><span style="width:14px;height:14px;border-radius:50%;border:1.5px solid var(--color-accent);box-shadow:0 0 12px var(--color-accent)"></span>{{ name }} <span style="color:var(--color-accent)">TERMINAL</span></span>
+    <span style="color:var(--color-neutral-400)">{{ clock }}</span>
+    <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--color-accent);margin-right:6px;animation:slPulse 1.4s infinite"></span>{{ running }} TASKS · R&amp;D {{ share }}%</span>
+    <sc-for list="{{ feeds }}" as="f" hint-placeholder-count="4"><span style="color:{{ f.c }}">{{ f.t }}</span></sc-for>
+    <span style="flex:1"></span>
+    <a href="Institute.dc.html" style="text-decoration:none">INSTITUTE</a><a href="Features.dc.html" style="text-decoration:none">FEATURES</a><a href="Saltline.dc.html" style="text-decoration:none">OPS</a>
+  </div>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="padding:14px 18px;display:flex;flex-direction:column;gap:14px">
+    <div class="card" style="padding:10px 14px;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="color:var(--color-accent)">›</span><input value="{{ cmd }}" onChange="{{ onCmd }}" onKeyDown="{{ onKey }}" autofocus placeholder="type help · wx A · eq · sat · fr brine discharge · calc sar 10 2 2 · find drone · ask …" style="flex:1;background:transparent;border:0;color:var(--color-text);font:inherit;font-size:13px;outline:none;caret-color:var(--color-accent)"></div>
+      <div style="max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:2px"><sc-for list="{{ log }}" as="l" hint-placeholder-count="4"><div style="white-space:pre-wrap;color:{{ l.c }}">{{ l.t }}</div></sc-for></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:14px;align-items:start">
+      <div class="card" style="padding:10px 14px;gap:6px"><div style="display:flex;justify-content:space-between"><span class="card-kicker">AGENTS</span><span style="color:var(--color-neutral-500)">{{ running }} running</span></div><sc-for list="{{ lanes }}" as="a" hint-placeholder-count="8"><div style="display:grid;grid-template-columns:86px minmax(0,1fr) 92px;gap:8px;align-items:center"><span>{{ a.name }}</span><span style="height:6px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden"><span style="display:block;height:100%;width:{{ a.w }};background:{{ a.c }};transition:width .4s"></span></span><span style="color:var(--color-neutral-400);text-align:right">{{ a.s }}</span></div></sc-for></div>
+      <div class="card" style="padding:10px 14px;gap:4px"><div style="display:flex;justify-content:space-between"><span class="card-kicker">PIPELINE</span><span style="color:var(--color-neutral-500)">{{ pipeTotal }}</span></div><sc-for list="{{ pipe }}" as="p" hint-placeholder-count="12"><div style="display:grid;grid-template-columns:minmax(0,1fr) 34px 84px;gap:8px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.n }}</span><span style="color:var(--color-accent-300);text-align:right">{{ p.f }}</span><span style="color:{{ p.c }};text-align:right">{{ p.s }}</span></div></sc-for></div>
+      <div class="card" style="padding:10px 14px;gap:6px"><span class="card-kicker">WEATHER · FLIGHT WINDOWS</span><sc-for list="{{ wx }}" as="w" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) 54px 92px 70px;gap:8px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ w.name }}</span><span style="text-align:right">{{ w.temp }}</span><span style="text-align:right;color:var(--color-neutral-400)">G {{ w.gust }}</span><span style="text-align:right;color:{{ w.c }}">{{ w.adv }}</span></div></sc-for></div>
+      <div class="card" style="padding:10px 14px;gap:4px"><div style="display:flex;justify-content:space-between"><span class="card-kicker">SEISMIC 24H · M2.5+</span><span style="color:var(--color-neutral-500)">{{ eqCount }} events</span></div><sc-for list="{{ eq }}" as="q" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:44px minmax(0,1fr) 120px;gap:8px"><span style="color:{{ q.c }}">M{{ q.mag }}</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ q.place }}</span><span style="text-align:right;color:var(--color-neutral-400)">{{ q.when }}</span></div></sc-for></div>
+      <div class="card" style="padding:10px 14px;gap:4px"><span class="card-kicker">SENTINEL-2 · LAST 30 DAYS</span><sc-for list="{{ sc }}" as="s" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) 40px 86px 70px;gap:8px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.name }}</span><span style="text-align:right">{{ s.n }}</span><span style="text-align:right">{{ s.date }}</span><span style="text-align:right;color:var(--color-neutral-400)">{{ s.cloud }}</span></div></sc-for></div>
+      <div class="card" style="padding:10px 14px;gap:4px"><div style="display:flex;justify-content:space-between;gap:8px"><span class="card-kicker">FEDERAL REGISTER</span><span style="color:var(--color-neutral-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">“{{ frTerm }}” · {{ frTotal }}</span></div><sc-for list="{{ fr }}" as="d" hint-placeholder-count="5"><div style="padding:2px 0"><a href="{{ d.url }}" target="_blank" rel="noopener" style="color:var(--color-text);text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.title }}</a><span style="color:var(--color-neutral-500)">{{ d.date }} · {{ d.agency }}</span></div></sc-for></div>
+      <div class="card" style="padding:10px 14px;gap:6px"><span class="card-kicker">R&amp;D · SIMULATED</span><sc-for list="{{ rnd }}" as="r" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:minmax(0,1fr) 70px 60px;gap:8px;align-items:center"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.n }}</span><span style="height:4px;border-radius:2px;background:var(--color-neutral-800);overflow:hidden"><span style="display:block;height:100%;width:{{ r.p }};background:var(--color-accent)"></span></span><span style="text-align:right">{{ r.v }}</span></div></sc-for></div>
+      <div class="card" style="padding:10px 14px;gap:4px"><span class="card-kicker">FIELD BOARD</span><sc-for list="{{ jobs }}" as="j" hint-placeholder-count="8"><div style="display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:8px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ j.t }}</span><span style="text-align:right;color:{{ j.c }}">{{ j.s }}</span></div></sc-for></div>
+      <div class="card" style="padding:10px 14px;gap:4px"><span class="card-kicker">EVENT TAPE</span><sc-for list="{{ tape }}" as="e" hint-placeholder-count="8"><div style="display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px"><span style="color:var(--color-neutral-500)">{{ e.a }}</span><span style="color:{{ e.c }}">{{ e.m }}</span></div></sc-for></div>
+    </div>
+    <div style="color:var(--color-neutral-500)">Weather Open-Meteo · seismic USGS · imagery Earth Search STAC · rules Federal Register · agents, R&amp;D and field board simulated in the browser · organisations real, stages from Operations.</div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;entityName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Saltline Institute&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Entity&quot;},&quot;rndTarget&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:80,&quot;min&quot;:50,&quot;max&quot;:95,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Runtime&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, cmd: '', hist: [], hi: -1, log: [], wx: null, sc: null, eq: null, fr: null, frTerm: 'desalination brine', st: {}, tick: 0 };
+  cfg = () => ({ rnd: this.props.rndTarget ?? 80, max: 12, tempo: 1, company: this.props.entityName ?? 'Saltline Institute', sender: '[Your name]' });
+
+  async componentDidMount() {
+    let saved = null; try { saved = JSON.parse(localStorage.getItem('saltline.os.v1') || 'null'); } catch (e) {}
+    const [S, E, X, F] = await Promise.all([import('./saltline-data.js'), import('./saltline-engine.js'), import('./institute-intel.js'), import('./features-data.js')]);
+    Object.assign(this, { S, X, F, saved });
+    this.engine = new E.Engine(S, this.cfg, { change: () => this.poke(), persist: () => {}, claude: () => Promise.reject(new Error('read only')) }, saved);
+    this.engine.start();
+    this.say('Terminal ready. Type help.', 'ok');
+    this.setState({ ready: true });
+    this.load(); this.iv = setInterval(() => this.load(), 300000);
+  }
+  componentWillUnmount() { if (this.engine) this.engine.stop(); clearInterval(this.iv); clearTimeout(this._pk); }
+  poke() { if (this._pk) return; this._pk = setTimeout(() => { this._pk = 0; this.setState({ tick: Date.now() }); }, 250); }
+  say(t, k) { this.setState(s => ({ log: [{ t, k: k || 'out' }, ...s.log].slice(0, 80) })); }
+  feed(key, p) { this.setState(s => ({ st: { ...s.st, [key]: 'load' } })); return p.then(v => { this.setState(s => ({ [key]: v, st: { ...s.st, [key]: 'ok' } })); return v; }, e => { this.setState(s => ({ st: { ...s.st, [key]: 'err' } })); this.say(key.toUpperCase() + ' feed failed: ' + e.message, 'err'); }); }
+  load() { const X = this.X; this.feed('wx', X.weather()); this.feed('sc', X.scenes()); this.feed('eq', X.quakes()); this.feed('fr', X.regs(this.state.frTerm)); }
+
+  async exec(line) {
+    const [c0, ...rest] = line.trim().split(/\s+/), c = (c0 || '').toLowerCase(), arg = rest.join(' '), F = this.F, E = this.engine;
+    this.say('› ' + line, 'cmd');
+    if (!c) return;
+    if (c === 'help') return this.say('wx · eq · sat · fr <term> · calc [key numbers…] · find <text> · ask <question> · pause [agent] · resume [agent] · pipeline · clear · open institute|features|ops');
+    if (c === 'clear') return this.setState({ log: [] });
+    if (c === 'wx') return this.feed('wx', this.X.weather()).then(w => w && this.say(w.map(x => `${x.name}: ${x.temp}, gusts ${x.gust}, rain ${x.rain} → ${x.adv}`).join('\n')));
+    if (c === 'eq') return this.feed('eq', this.X.quakes()).then(q => q && this.say(`${q.count} events M2.5+ in 24 h. Largest: ` + q.top.slice(0, 3).map(x => `M${x.mag} ${x.place}`).join('; ')));
+    if (c === 'sat') return this.feed('sc', this.X.scenes()).then(s => s && this.say(s.map(x => `${x.name}: ${x.n} scenes, latest ${x.date} ${x.cloud}`).join('\n')));
+    if (c === 'fr') { const t = arg || this.state.frTerm; this.setState({ frTerm: t }); return this.feed('fr', this.X.regs(t)).then(r => r && this.say(`${r.total} Federal Register documents for “${t}”. Agencies: ${r.agencies.join(', ') || 'none listed'}`)); }
+    if (c === 'calc') {
+      const [k, ...nums] = rest, C = F.CALCS[k];
+      if (!C) return this.say('Calculators: ' + Object.keys(F.CALCS).join(' '));
+      const v = {}; C.f.forEach(([key], i) => { v[key] = nums[i] !== undefined ? parseFloat(nums[i]) : C.ex[key]; });
+      if (Object.values(v).some(Number.isNaN)) return this.say('Inputs: ' + C.f.map(x => x[1]).join(', '), 'err');
+      return this.say(k + ' (' + C.f.map(([key, l]) => `${l}=${v[key]}`).join(', ') + ')\n' + C.run(v).filter(Boolean).map(r => `  ${r[0]}: ${r[1]}${r[2] ? '  (' + r[2] + ')' : ''}`).join('\n'), 'ok');
+    }
+    if (c === 'find') { const q = arg.toLowerCase(), hits = []; F.DOMAINS.forEach(([d, it]) => it.forEach(f => { if ((f.n + ' ' + d).toLowerCase().includes(q)) hits.push(`${f.k.padEnd(5)} ${f.n}  [${d}]`); })); return this.say(hits.length ? hits.slice(0, 15).join('\n') + (hits.length > 15 ? `\n… ${hits.length - 15} more in Features` : '') : 'No matches.'); }
+    if (c === 'ask') { if (!arg) return this.say('ask <question>', 'err'); this.say('Asking Claude…'); try { this.say(await window.claude.complete({ system: F.COMMON + ' Answer in under 180 words, terminal style, no markdown headings.', messages: [{ role: 'user', content: arg }], max_tokens: 600 }), 'ok'); } catch (e) { this.say('Claude unavailable: ' + e.message, 'err'); } return; }
+    if (c === 'pause' || c === 'resume') { const on = c === 'pause'; if (!arg) { E.paused = on; return this.say(on ? 'All agents paused.' : 'All agents running.', 'ok'); } const a = E.agents.find(x => x.name.toLowerCase().replace(' ', '') === arg.toLowerCase().replace(' ', '')); if (!a) return this.say('Agents: ' + E.agents.map(x => x.name).join(', '), 'err'); a.paused = on; return this.say(`${a.name} ${on ? 'paused' : 'resumed'}.`, 'ok'); }
+    if (c === 'pipeline') return this.say(E.P.map(p => `${String(p.fit).padStart(3)}  ${p.name}  ${p.stage}`).join('\n'));
+    if (c === 'open') { const m = { institute: 'Institute.dc.html', features: 'Features.dc.html', ops: 'Saltline.dc.html' }[arg.toLowerCase()]; if (m) { window.location.href = m; return; } return this.say('open institute|features|ops', 'err'); }
+    this.say(`Unknown command “${c}”. Type help.`, 'err');
+  }
+
+  renderVals() {
+    const s = this.state, E = this.engine, c = this.cfg();
+    const out = { name: c.company.toUpperCase(), ready: !!E, clock: new Date().toISOString().slice(0, 19).replace('T', ' ') + ' UTC', running: 0, share: c.rnd, feeds: [] };
+    if (!E) return out;
+    const now = Date.now(), sh = E.shares(), col = { ok: 'var(--color-accent)', err: 'var(--color-neutral-400)', cmd: 'var(--color-accent-300)', out: 'var(--color-text)' };
+    const stC = { ok: 'var(--color-accent)', load: 'var(--color-neutral-400)', err: 'var(--color-neutral-500)' };
+    const feeds = [['wx', 'WX'], ['sc', 'SAT'], ['eq', 'SEIS'], ['fr', 'REG']].map(([k, l]) => ({ t: l + ' ' + ({ ok: 'OK', load: '…', err: 'ERR' }[s.st[k]] || '…'), c: stC[s.st[k]] || stC.load }));
+    const lanes = E.agents.map(a => { const run = E.running.filter(r => r.a === a.id), n = run.length; return { name: a.name, w: Math.round(n / a.cap * 100) + '%', c: a.lane === 'rnd' ? 'var(--color-accent)' : 'var(--color-neutral-400)', s: a.paused ? 'PAUSED' : n ? n + '/' + a.cap : a.blocked ? 'HELD' : 'IDLE' }; });
+    const SN = { hidden: 'scouting', found: 'found', drafting: 'drafting', drafted: 'draft ready', approved: 'approved', sent: 'sent' };
+    const pipe = E.P.slice().sort((x, y) => y.fit - x.fit).map(p => ({ n: p.name, f: p.fit, s: SN[p.stage] || p.stage, c: p.stage === 'drafted' || p.stage === 'approved' ? 'var(--color-accent)' : 'var(--color-neutral-400)' }));
+    const advC = { Good: 'var(--color-accent)', Marginal: 'var(--color-accent-300)', 'No-go': 'var(--color-neutral-400)' };
+    const ago = t => { const x = Math.round((now - t) / 1000); return x < 60 ? x + 's' : Math.floor(x / 60) + 'm'; };
+    const JS = ['QUEUED', 'ASSIGNED', 'IN FIELD', 'DATA IN'];
+    return {
+      ...out, running: E.running.length, share: Math.round(sh.rnd * 100), feeds,
+      cmd: s.cmd, onCmd: e => this.setState({ cmd: e.target.value, hi: -1 }),
+      onKey: e => {
+        if (e.key === 'Enter') { const l = s.cmd; this.setState({ cmd: '', hist: [l, ...s.hist].slice(0, 50), hi: -1 }); this.exec(l); }
+        else if (e.key === 'ArrowUp' && s.hist.length) { e.preventDefault(); const hi = Math.min(s.hist.length - 1, s.hi + 1); this.setState({ hi, cmd: s.hist[hi] }); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); const hi = Math.max(-1, s.hi - 1); this.setState({ hi, cmd: hi < 0 ? '' : s.hist[hi] }); }
+      },
+      log: s.log.map(l => ({ t: l.t, c: col[l.k] || col.out })),
+      lanes, pipe, pipeTotal: E.P.filter(p => p.disc).length + ' of ' + E.P.length + ' found',
+      wx: (s.wx || []).map(w => ({ ...w, c: advC[w.adv] })),
+      eq: ((s.eq && s.eq.top) || []).map(q => ({ ...q, c: +q.mag >= 6 ? 'var(--color-accent)' : 'var(--color-text)' })), eqCount: s.eq ? s.eq.count : '–',
+      sc: s.sc || [], fr: ((s.fr && s.fr.docs) || []).slice(0, 6), frTerm: s.frTerm, frTotal: s.fr ? s.fr.total + ' docs' : '…',
+      rnd: E.progs.map(p => ({ n: p.name, v: this.F ? (p.m.v.toFixed(p.m.t < 1 ? 2 : 1) + p.m.u) : '', p: Math.round(Math.max(0, Math.min(1, (p.m.v - p.m.v0) / (p.m.t - p.m.v0))) * 100) + '%' })),
+      jobs: E.jobs.map(j => ({ t: j.title + ' · ' + j.ex, s: JS[j.st], c: j.st === 3 ? 'var(--color-accent)' : 'var(--color-neutral-400)' })),
+      tape: E.feed.slice(0, 10).map(f => ({ a: ago(f.t), m: f.who + ': ' + f.msg, c: f.kind === 'real' ? 'var(--color-accent)' : 'var(--color-text)' })),
+    };
+  }
+}
+</script>
+</body>
+</html>

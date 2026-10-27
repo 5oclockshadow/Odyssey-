@@ -1,0 +1,1 @@
+{ "name": "studio-kit-tests", "private": true, "scripts": { "test": "node --test" }, "devDependencies": { "jsdom": "^24.1.0" } }

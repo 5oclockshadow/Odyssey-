@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Saltline · Agency</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="suite-theme.css">
+  <script src="suite-theme.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="suite-launcher.js"></script>
+  <script src="suite-nav.js"></script>
+  <style>body{margin:0;background:var(--color-bg);color:var(--color-text);font-size:13.5px;line-height:1.5}a{color:var(--color-accent-300);text-decoration:none}a:hover{color:var(--color-accent-200)}.ag-post h4{font-size:15px;margin:14px 0 6px;font-weight:600}.ag-post p,.ag-post li{font-size:13.5px;color:var(--color-neutral-300);line-height:1.6}.ag-post ul{padding-left:18px}.ag-post .cite{font-size:10px;color:var(--color-accent-300)}</style>
+</helmet>
+<div style="min-height:100vh;color:var(--color-text);font-family:var(--font-body);background:radial-gradient(900px 420px at 4% -10%,color-mix(in srgb,var(--color-accent) 8%,transparent),transparent 72%),var(--color-bg)">
+  <div data-suite-nav="agency"></div>
+
+  <main style="max-width:1560px;margin:0 auto;padding:var(--space-8) 22px 64px;display:flex;flex-direction:column;gap:28px">
+    <section style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-end">
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1 1 520px;max-width:860px">
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Saltline Agency · agent v1.4.0</div>
+        <h1 style="margin:0;font-size:34px;line-height:1.1;font-weight:600;letter-spacing:-.02em;text-wrap:balance">The agent that builds, tests and improves Saltline</h1>
+        <p style="margin:0;font-size:15px;color:var(--color-neutral-300);text-wrap:pretty">Each cycle runs every self-test, rebuilds the code graph, then picks the skills that pay off: test-gated patches (its own code included), device fit, sourced competitor facts, source-checked posts and research experiments. Every run is logged and scored.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-primary" onClick="{{ runCycle }}" disabled="{{ busy }}"><i class="ph ph-play"></i>Run a cycle</button>
+        <button class="btn" onClick="{{ toggleAuto }}" style="background:{{ autoBg }};color:{{ autoFg }}"><i class="ph ph-repeat"></i>{{ autoLabel }}</button>
+      </div>
+    </section>
+
+    <section style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:var(--space-3)">
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+        <div style="display:flex;flex-direction:column;gap:4px;padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);min-width:0">
+          <span style="display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500);white-space:nowrap;min-width:0"><i class="ph {{ k.icon }}" style="font-size:14px;flex:none;color:{{ k.color }}"></i>{{ k.label }}</span>
+          <span style="font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.15">{{ k.value }}</span>
+          <span style="font-size:12px;color:var(--color-neutral-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.sub }}</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <section style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start">
+      <div style="flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:6px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Skills</span><span style="font-size:12px;color:var(--color-neutral-500)">value learned from each run's reward</span></div>
+        <sc-for list="{{ skills }}" as="s" hint-placeholder-count="7">
+          <div style="display:grid;grid-template-columns:22px minmax(0,1fr) 92px 70px 76px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--color-neutral-900)">
+            <i class="ph {{ s.icon }}" style="font-size:17px;color:var(--color-accent-400)"></i>
+            <span style="min-width:0"><span style="font-weight:500">{{ s.label }}</span><div style="font-size:11.5px;color:var(--color-neutral-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ s.desc }}">{{ s.desc }}</div></span>
+            <span title="{{ s.qTip }}"><div style="height:5px;border-radius:3px;background:var(--color-neutral-900)"><div style="height:5px;border-radius:3px;width:{{ s.qPct }};background:var(--color-accent)"></div></div><div style="font-size:11px;color:var(--color-neutral-500);margin-top:3px">{{ s.runs }}</div></span>
+            <span style="font-size:11.5px;color:var(--color-neutral-400)">{{ s.last }}</span>
+            <button class="btn" onClick="{{ s.go }}" disabled="{{ s.busy }}" style="font-size:12px;padding:4px 9px"><i class="ph ph-play"></i>Run</button>
+          </div>
+        </sc-for>
+      </div>
+      <div style="flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:6px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);max-height:470px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Activity</span><span style="flex:1"></span><span style="font-size:12px;color:var(--color-neutral-500)">{{ cyclesLine }}</span></div>
+        <div style="overflow-y:auto;display:flex;flex-direction:column">
+          <sc-for list="{{ ledger }}" as="l" hint-placeholder-count="8">
+            <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--color-neutral-900);font-size:13px">
+              <span style="width:7px;height:7px;border-radius:50%;margin-top:7px;flex:none;background:{{ l.dot }}"></span>
+              <span style="flex:1;min-width:0"><span style="color:var(--color-neutral-500);font-size:11.5px">{{ l.head }}</span><div style="text-wrap:pretty">{{ l.summary }}</div></span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noLedger }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-neutral-500);padding:var(--space-3) 0">No runs yet. Run a cycle to start.</div></sc-if>
+        </div>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:var(--space-3)">
+      <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap"><div style="flex:1 1 420px"><h2 style="margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em">Research · Can burn history and dryness forecast next year's fire zones?</h2><p style="margin:4px 0 0;font-size:13.5px;color:var(--color-neutral-400);max-width:900px;text-wrap:pretty">{{ rs.intro }}</p></div><div class="seg"><sc-for list="{{ rs.yearOpts }}" as="y" hint-placeholder-count="3"><button class="seg-opt {{ y.cls }}" onClick="{{ y.go }}">{{ y.label }}</button></sc-for></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:stretch">
+        <div style="flex:3 1 520px;min-width:0;padding:0;border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column">
+          <div ref="{{ fireRef }}" style="position:relative;height:420px"></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px 16px;padding:var(--space-3) var(--space-4);font-size:11.5px;color:var(--color-neutral-400)"><span style="display:flex;align-items:center;gap:6px"><span style="width:44px;height:8px;border-radius:2px;background:linear-gradient(90deg,var(--color-neutral-800),color-mix(in srgb,var(--bad) 85%,var(--color-neutral-800)))"></span>{{ rs.legend }}</span><span style="display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:var(--color-text)"></span>Recorded fire, 2017 to date (EONET)</span></div>
+        </div>
+        <div style="flex:2 1 360px;min-width:0;display:flex;flex-direction:column;gap:10px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+          <span style="font-weight:600;font-size:15px">What the backtest says</span>
+          <sc-for list="{{ rs.points }}" as="p" hint-placeholder-count="4"><div style="display:flex;gap:9px;font-size:13px;color:var(--color-neutral-300);text-wrap:pretty"><i class="ph {{ p.icon }}" style="margin-top:3px;color:{{ p.color }}"></i><span>{{ p.text }}</span></div></sc-for>
+          <div style="overflow-x:auto"><div style="display:grid;grid-template-columns:52px repeat(6,minmax(52px,1fr));font-size:12px;min-width:420px">
+            <sc-for list="{{ rs.head }}" as="h" hint-placeholder-count="7"><span title="{{ h.tip }}" style="padding:5px 4px;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800);text-align:{{ h.align }}">{{ h.t }}</span></sc-for>
+            <sc-for list="{{ rs.cells }}" as="c" hint-placeholder-count="21"><span style="padding:5px 4px;border-bottom:1px solid var(--color-neutral-900);text-align:{{ c.align }};font-variant-numeric:tabular-nums;color:{{ c.color }};font-weight:{{ c.w }}">{{ c.t }}</span></sc-for>
+          </div></div>
+          <div style="font-size:11.5px;color:var(--color-neutral-500);text-wrap:pretty">{{ rs.caveat }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start">
+      <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:6px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);max-height:620px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Journal</span><span style="font-size:12px;color:var(--color-neutral-500)">every number checked against its sources</span></div>
+        <div style="overflow-y:auto;display:flex;flex-direction:column">
+          <sc-for list="{{ posts }}" as="p" hint-placeholder-count="4">
+            <button onClick="{{ p.go }}" style="display:flex;flex-direction:column;gap:3px;text-align:left;border:0;font:inherit;color:inherit;cursor:pointer;padding:9px 8px;border-radius:var(--radius-md);background:{{ p.bg }}" style-hover="background:var(--color-neutral-900)">
+              <span style="font-weight:500;font-size:13.5px">{{ p.title }}</span>
+              <span style="display:flex;gap:6px;align-items:center;font-size:11.5px;color:var(--color-neutral-500)"><span class="tag" style="background:{{ p.tagBg }};color:{{ p.tagFg }}">{{ p.status }}</span>{{ p.meta }}</span>
+            </button>
+          </sc-for>
+          <sc-if value="{{ noPosts }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-neutral-500);padding:var(--space-3) 0">{{ noPostsText }}</div></sc-if>
+        </div>
+      </div>
+      <div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column;gap:10px;padding:var(--space-4) var(--space-6);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);max-height:620px;overflow-y:auto">
+        <sc-if value="{{ hasPost }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--color-neutral-500)"><span>{{ post.meta }}</span><span class="tag" style="background:{{ post.tagBg }};color:{{ post.tagFg }}">{{ post.grounding }}</span></div>
+          <h3 style="margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em;text-wrap:balance">{{ post.title }}</h3>
+          <div class="ag-post" ref="{{ postRef }}"></div>
+          <sc-if value="{{ post.hasMissing }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--warn)">{{ post.missing }}</div></sc-if>
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500);margin-top:6px">Sources</div>
+          <sc-for list="{{ post.sources }}" as="s" hint-placeholder-count="4"><div style="font-size:12.5px;display:flex;gap:6px"><span style="color:var(--color-neutral-500);font-variant-numeric:tabular-nums">[{{ s.n }}]</span><a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.title }}</a></div></sc-for>
+        </sc-if>
+        <sc-if value="{{ noPost }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;color:var(--color-neutral-500)">Select a post to read it.</div></sc-if>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start">
+      <div style="flex:3 1 560px;min-width:0;display:flex;flex-direction:column;gap:6px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);max-height:560px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Code findings</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ auditLine }}</span></div>
+        <div style="overflow-y:auto;display:flex;flex-direction:column">
+          <sc-for list="{{ findings }}" as="f" hint-placeholder-count="8">
+            <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--color-neutral-900)">
+              <span class="tag" style="align-self:flex-start;background:{{ f.bg }};color:{{ f.fg }}">{{ f.sev }}</span>
+              <span style="flex:1;min-width:0"><span style="font-size:13px;font-weight:500">{{ f.title }}</span><div style="font-size:12px;color:var(--color-neutral-400);text-wrap:pretty">{{ f.detail }}</div><div style="font-size:11.5px;color:var(--color-neutral-500)">{{ f.where }} · {{ f.action }}</div></span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noFindings }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-neutral-500);padding:var(--space-3) 0">Run an audit to build the code graph.</div></sc-if>
+        </div>
+      </div>
+      <div style="flex:2 1 380px;min-width:0;display:flex;flex-direction:column;gap:8px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Patches and learned tests</span><span style="flex:1"></span><button class="btn btn-ghost" onClick="{{ togglePatches }}" style="font-size:12px">{{ patchToggle }}</button></div>
+        <sc-for list="{{ patches }}" as="p" hint-placeholder-count="2">
+          <div style="display:flex;flex-direction:column;gap:4px;padding:8px 10px;border-radius:var(--radius-md);background:var(--color-bg)">
+            <span style="font-size:13px;font-weight:500">{{ p.title }}</span><span style="font-size:12px;color:var(--color-neutral-400);text-wrap:pretty">{{ p.why }}</span><span style="font-size:11.5px;color:var(--color-neutral-500)">{{ p.meta }}</span>
+            <span style="display:flex;gap:6px"><button class="btn" onClick="{{ p.download }}" style="font-size:12px;padding:3px 9px"><i class="ph ph-download-simple"></i>Download file</button><button class="btn btn-ghost" onClick="{{ p.discard }}" style="font-size:12px;padding:3px 9px">Discard</button></span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noPatches }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--color-neutral-500)">{{ noPatchText }}</div></sc-if>
+        <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500);margin-top:4px">Learned tests</div>
+        <sc-for list="{{ learnedList }}" as="t" hint-placeholder-count="2"><div style="font-size:12.5px;color:var(--color-neutral-300)">{{ t.label }}</div></sc-for>
+        <sc-if value="{{ noLearned }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--color-neutral-500)">None yet. The agent writes a test before it will patch an untested function.</div></sc-if>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start">
+      <div style="flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:8px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Device fit</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ devLine }}</span></div>
+        <div style="overflow-x:auto"><div style="display:grid;grid-template-columns:minmax(150px,1.4fr) repeat(3,minmax(96px,1fr));font-size:12.5px;min-width:460px">
+          <sc-for list="{{ devHead }}" as="h" hint-placeholder-count="4"><span style="padding:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800)">{{ h }}</span></sc-for>
+          <sc-for list="{{ devCells }}" as="c" hint-placeholder-count="12"><span title="{{ c.tip }}" style="padding:6px;border-bottom:1px solid var(--color-neutral-900);color:{{ c.color }}">{{ c.t }}</span></sc-for>
+        </div></div>
+      </div>
+      <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:8px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Competitor facts</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ intelLine }}</span></div>
+        <div style="overflow-x:auto"><div style="display:grid;grid-template-columns:minmax(170px,1.6fr) minmax(90px,1fr) minmax(110px,1fr) minmax(110px,1.2fr) 60px;font-size:12.5px;min-width:600px">
+          <span style="padding:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800)">Company</span><span style="padding:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800)">Employees</span><span style="padding:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800)">Revenue</span><span style="padding:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800)">HQ · parent</span><span style="padding:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800)">Since</span>
+          <sc-for list="{{ intel }}" as="r" hint-placeholder-count="10">
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);min-width:0"><a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.label }}</a><div style="font-size:11px;color:var(--color-neutral-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.desc }}</div></span>
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums">{{ r.emp }}</span>
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums">{{ r.rev }}</span>
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);color:var(--color-neutral-300)">{{ r.hq }}</span>
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);color:var(--color-neutral-400)">{{ r.founded }}</span>
+          </sc-for>
+        </div></div>
+        <div style="font-size:11.5px;color:var(--color-neutral-500)">Wikidata, as edited by its contributors; each name links to the record. Blank cells are facts Wikidata does not hold.</div>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:var(--space-3)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em">Agency graph</h2><span style="font-size:12.5px;color:var(--color-neutral-500)">{{ graphLine }}</span></div>
+      <div ref="{{ graphRef }}" style="position:relative;height:440px;border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);overflow:hidden"></div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;autoMinutes&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:20,&quot;min&quot;:5,&quot;max&quot;:240,&quot;unit&quot;:&quot;min&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Agent&quot;}}">
+class Component extends DCLogic {
+  state = { st: null, busy: false, status: 'Loading the agent…', auto: false, sel: null, year: 0, rev: 0 };
+  fireRef = React.createRef(); graphRef = React.createRef(); postRef = React.createRef();
+  async componentDidMount() {
+    const u = p => new URL(p, document.baseURI).href;
+    try { const P = await import(u('suite-patch.js')); this.P = P; this.C = await import(u('suite-core.js')); this.A = await P.load('suite-agent.js'); this.refresh(`Agent v${this.A.AG.version} ready${P.active.includes('suite-agent.js') ? ' · running its own patched code' : ''}`); }
+    catch (e) { this.setState({ status: 'Agent failed to load: ' + e.message }); }
+    const paint = () => window.dispatchEvent(new StorageEvent('storage', { key: 'saltline.theme' })); paint(); setTimeout(paint, 400);
+    let n = 0; const iv = setInterval(() => { const b = document.getElementById('slk-btn'); if (b) b.style.display = 'none'; if (b || ++n > 40) clearInterval(iv); }, 150);
+    this.mo = new MutationObserver(() => { this.drawFire(); this.drawGraph(); }); this.mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    this.ro = new ResizeObserver(() => { clearTimeout(this._rz); this._rz = setTimeout(() => { this.drawFire(); this.drawGraph(); }, 150); });
+    [this.fireRef.current, this.graphRef.current].forEach(el => el && this.ro.observe(el));
+  }
+  componentWillUnmount() { clearInterval(this.timer); this.mo && this.mo.disconnect(); this.ro && this.ro.disconnect(); this.sim && this.sim.stop(); }
+  componentDidUpdate() { if (window.SuiteNav && this._navT !== this.state.status + this.state.busy) { this._navT = this.state.status + this.state.busy; window.SuiteNav.status(this.state.status, this.state.busy ? 'busy' : this.state.st ? 'ok' : ''); }
+    const s = this.state, p = this._p || {}; if (s.rev !== p.rev || s.year !== p.year) { this.drawFire(); if (s.rev !== p.rev) this.drawGraph(); } this._p = { rev: s.rev, year: s.year }; this.paintPost(); }
+  refresh(status) { this.setState(s => ({ st: this.A.state(), rev: s.rev + 1, ...(status ? { status } : {}) })); }
+  async go(fn) { if (this.state.busy || !this.A) return; this.setState({ busy: true }); try { await fn(m => this.setState({ status: m })); this.refresh('Done · ' + new Date().toISOString().slice(11, 16) + ' UTC'); } catch (e) { this.refresh('Stopped: ' + e.message); } finally { this.setState({ busy: false }); } }
+  paintPost() { const el = this.postRef.current, s = this.state; if (!el || !s.st) return; const p = s.st.journal.find(x => x.id === s.sel); const html = p ? this.C.mdToHtml(p.md.replace(/^#\s+.+\n?/, '')) : ''; if (el._h !== html) { el.innerHTML = html; el._h = html; } }
+  async drawFire() {
+    const el = this.fireRef.current, r = this.state.st && this.state.st.research; if (!el || !window.d3) return;
+    d3.select(el).selectAll('*').remove(); if (!r) { d3.select(el).append('div').style('padding', '18px').style('font-size', '13px').style('color', 'var(--color-neutral-500)').text('Run the fire-zone experiment to see the forecast map.'); return; }
+    if (!this.land) { try { const t = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-50m.json').then(x => x.json()); this.land = topojson.feature(t, t.objects.countries); } catch (e) { this.land = { type: 'FeatureCollection', features: [] }; } }
+    d3.select(el).selectAll('*').remove();
+    const w = el.clientWidth, h = el.clientHeight, R = r.region, box = { type: 'Polygon', coordinates: [[[R.w, R.s], [R.w, R.n], [R.e, R.n], [R.e, R.s], [R.w, R.s]]] };
+    const proj = d3.geoMercator().fitExtent([[14, 14], [w - 14, h - 14]], { type: 'MultiPoint', coordinates: [[R.w, R.s], [R.e, R.n]] }), path = d3.geoPath(proj), svg = d3.select(el).append('svg').attr('width', w).attr('height', h).style('display', 'block');
+    svg.append('path').attr('d', path(box)).style('fill', 'color-mix(in srgb, var(--info) 10%, var(--color-bg))');
+    svg.append('g').selectAll('path').data(this.land.features).join('path').attr('d', path).style('fill', 'var(--color-neutral-900)').style('stroke', 'var(--color-neutral-700)').style('stroke-width', .6);
+    const yi = this.state.year, vals = r.grid.map(c => c.f[yi]), mx = Math.max(...vals), mn = Math.min(...vals), tip = d3.select(el).append('div').style('position', 'absolute').style('pointer-events', 'none').style('display', 'none').style('padding', '7px 9px').style('border-radius', '8px').style('background', 'var(--color-surface)').style('box-shadow', 'var(--shadow-lg)').style('font-size', '12px').style('color', 'var(--color-text)');
+    svg.append('g').selectAll('rect').data(r.grid).join('rect').each(function (c) { const a = proj([c.lon - r.dLon / 2, c.lat + r.dLat / 2]), b = proj([c.lon + r.dLon / 2, c.lat - r.dLat / 2]); d3.select(this).attr('x', a[0]).attr('y', a[1]).attr('width', Math.max(0, b[0] - a[0] - .5)).attr('height', Math.max(0, b[1] - a[1] - .5)); })
+      .style('fill', c => `color-mix(in srgb, var(--bad) ${Math.round(8 + 80 * ((c.f[yi] - mn) / ((mx - mn) || 1)))}%, transparent)`).style('cursor', 'default')
+      .on('mousemove', (e, c) => { const q = el.getBoundingClientRect(); tip.style('display', 'block').style('left', Math.min(e.clientX - q.left + 12, w - 200) + 'px').style('top', (e.clientY - q.top + 12) + 'px').html(`<b>${c.lat.toFixed(2)}, ${c.lon.toFixed(2)}</b><br>Relative score ${Math.round((c.f[yi] - mn) / ((mx - mn) || 1) * 100)}/100<br>${c.fires} recorded fires${c.last ? ', last in ' + c.last : ''}<br>Driest month RH ${c.rhMin}%`); }).on('mouseleave', () => tip.style('display', 'none'));
+    svg.append('g').selectAll('circle').data(r.pts || []).join('circle').attr('cx', p => proj([p[1], p[0]])[0]).attr('cy', p => proj([p[1], p[0]])[1]).attr('r', 1.6).style('fill', 'var(--color-text)').style('opacity', .55);
+  }
+  drawGraph() {
+    const el = this.graphRef.current, g = this.state.st && this.state.st.graph; if (!el || !window.d3 || !g) return; this.sim && this.sim.stop(); d3.select(el).selectAll('*').remove();
+    const w = el.clientWidth, h = el.clientHeight; if (!g.nodes.length) { d3.select(el).append('div').style('padding', '18px').style('font-size', '13px').style('color', 'var(--color-neutral-500)').text('The graph grows as the agent runs.'); return; }
+    const COL = { skill: 'var(--color-accent)', run: 'var(--color-neutral-600)', patch: 'var(--ok)', test: 'var(--color-accent-300)', post: 'var(--info)', experiment: 'var(--warn)', company: 'var(--color-neutral-400)', source: 'var(--color-neutral-300)' };
+    const nodes = g.nodes.map(n => ({ ...n })), ids = new Set(nodes.map(n => n.id)), links = g.edges.filter(e => ids.has(e.a) && ids.has(e.b)).map(e => ({ source: e.a, target: e.b }));
+    const svg = d3.select(el).append('svg').attr('width', w).attr('height', h).style('display', 'block'), z = svg.append('g'); svg.call(d3.zoom().scaleExtent([.4, 4]).on('zoom', e => z.attr('transform', e.transform)));
+    const L = z.append('g').selectAll('line').data(links).join('line').style('stroke', 'var(--color-neutral-800)').style('stroke-width', 1);
+    const N = z.append('g').selectAll('g').data(nodes).join('g'); N.append('circle').attr('r', n => n.type === 'skill' ? 9 : n.type === 'source' ? 6 : 4).style('fill', n => COL[n.type] || 'var(--color-neutral-500)').append('title').text(n => `${n.type}: ${n.label}`);
+    N.filter(n => n.type === 'skill' || n.type === 'source').append('text').attr('x', 11).attr('y', 4).text(n => n.label).style('font-size', '11px').style('fill', 'var(--color-neutral-300)').style('paint-order', 'stroke').style('stroke', 'var(--color-surface)').style('stroke-width', 3);
+    this.sim = d3.forceSimulation(nodes).force('link', d3.forceLink(links).id(n => n.id).distance(46).strength(.5)).force('charge', d3.forceManyBody().strength(-70)).force('center', d3.forceCenter(w / 2, h / 2)).force('collide', d3.forceCollide(10)).on('tick', () => { L.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y); N.attr('transform', d => `translate(${d.x},${d.y})`); });
+  }
+  ago(t) { if (!t) return 'never'; const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 2880 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; }
+  renderVals() {
+    const s = this.state, st = s.st, A = this.A, fmt = n => n == null ? '—' : Number(n).toLocaleString('en');
+    const base = { fireRef: this.fireRef, graphRef: this.graphRef, postRef: this.postRef, status: s.status, busy: s.busy, busyDot: s.busy ? 'var(--warn)' : st ? 'var(--ok)' : 'var(--color-neutral-600)', openSearch: () => { const b = document.getElementById('slk-btn'); if (b) b.click(); }, runCycle: () => this.go(on => A.cycle(on)), autoLabel: s.auto ? 'Auto · on' : 'Auto · off', autoBg: s.auto ? 'var(--color-accent-900)' : '', autoFg: s.auto ? 'var(--color-accent-200)' : '', toggleAuto: () => { const on = !s.auto; clearInterval(this.timer); if (on) { const m = Math.max(5, +(this.props.autoMinutes ?? 20)); this.timer = setInterval(() => !this.state.busy && this.go(o => A.cycle(o)), m * 6e4); this.go(o => A.cycle(o)); } this.setState({ auto: on }); } };
+    if (!st || !A) return { ...base, kpis: [], skills: [], ledger: [], noLedger: false, cyclesLine: '', rs: { intro: '', yearOpts: [], points: [], head: [], cells: [], caveat: '', legend: '' }, posts: [], noPosts: false, noPostsText: '', hasPost: false, noPost: true, post: { sources: [] }, findings: [], noFindings: false, auditLine: '', patches: [], noPatches: false, noPatchText: '', patchToggle: '', togglePatches: () => {}, learnedList: [], noLearned: false, devLine: '', devHead: [], devCells: [], intel: [], intelLine: '', graphLine: '' };
+    const T = st.tests, AU = st.audit, DV = st.devices, J = st.journal, RS = st.research, IN = st.intel, pub = J.filter(p => p.status === 'published').length;
+    const devOk = DV ? DV.rows.filter(r => r.ok).length : null, LBL = { dry: 'Dryness', hump: 'Intermediate dryness', persist: 'Fire history', both: 'Dryness + history', humpPersist: 'Intermediate dryness + history', full: '+ burn-scar recovery' };
+    const kpis = [
+      { icon: 'ph-flask', color: 'var(--ok)', label: 'Self-tests', value: T ? `${T.passed}/${T.total}` : '—', sub: T ? (T.pass ? 'all passing' : `${T.total - T.passed} failing`) : 'not run yet' },
+      { icon: 'ph-bug', color: 'var(--bad)', label: 'Code findings', value: AU ? `${AU.metrics.high} high` : '—', sub: AU ? `${AU.metrics.med} medium · ${AU.metrics.low} low` : 'run an audit' },
+      { icon: 'ph-devices', color: 'var(--info)', label: 'Device fit', value: DV ? `${devOk}/${DV.rows.length}` : '—', sub: 'page × device checks' },
+      { icon: 'ph-magic-wand', color: 'var(--color-accent)', label: 'Patches live', value: fmt(st.patches.length), sub: `${st.learned.length} learned tests` },
+      { icon: 'ph-article', color: 'var(--info)', label: 'Journal', value: fmt(J.length), sub: `${pub} published · ${J.length - pub} held` },
+      { icon: 'ph-fire', color: 'var(--warn)', label: 'Fire model', value: RS && RS.best ? 'AUC ' + RS.mean[RS.best] : '—', sub: RS && RS.best ? LBL[RS.best] : 'not run yet' },
+    ];
+    const pol = st.policy, skills = Object.entries(A.SKILLS).map(([k, v]) => ({ icon: v.icon, label: v.label, desc: v.desc, qPct: Math.round(pol[k].q * 100) + '%', qTip: `Learned value ${pol[k].q.toFixed(2)}`, runs: `${pol[k].n} runs · ${pol[k].n ? Math.round(pol[k].ok / pol[k].n * 100) : 0}% ok`, last: this.ago(pol[k].last), busy: s.busy, go: () => this.go(on => A.runSkill(k, on)) }));
+    const ledger = st.ledger.slice(0, 60).map(l => ({ dot: l.ok ? 'var(--ok)' : 'var(--bad)', head: `${(A.SKILLS[l.skill] || {}).label || l.skill} · ${this.ago(l.t)}${l.ms ? ' · ' + (l.ms / 1000).toFixed(1) + ' s' : ''}`, summary: l.summary }));
+    /* research */
+    let rs = { intro: 'The agent tests whether dryness, fire history and the recovery of burnt land predict where fires occur in a held-out year, then forecasts the next three years with the model that scored best.', yearOpts: [], points: [], head: [], cells: [], caveat: '', legend: 'Relative fire score' };
+    if (RS) {
+      const m = RS.mean, rb = RS.reburn, pr = Math.round(rb.recent[0] / Math.max(1, rb.recent[1]) * 100), po = Math.round(rb.other[0] / Math.max(1, rb.other[1]) * 100), helps = m.full > m.humpPersist;
+      rs.intro = `${RS.region.name}: ${fmt(RS.fires)} recorded fires in ${RS.cells} grid cells of ${RS.dLat}° × ${RS.dLon}°, backtested on ${RS.back.length} held-out years. Forecast model: ${LBL[RS.best]}.`;
+      rs.yearOpts = RS.years.map((y, i) => ({ label: String(y), cls: s.year === i ? 'on' : '', go: () => this.setState({ year: i }) }));
+      rs.legend = `Relative fire score, ${RS.years[s.year]}${RS.ratio[RS.years[s.year]] ? `, regional dryness ×${RS.ratio[RS.years[s.year]]} vs 2015–19 (CMIP6)` : ''}`;
+      rs.points = [
+        { icon: 'ph-check-circle', color: 'var(--ok)', text: `Fire history is the strongest predictor: AUC ${m.persist} (0.5 is chance, 1.0 is perfect).` },
+        { icon: 'ph-drop-half', color: 'var(--info)', text: `Hot, dry, windy climate alone scores ${m.dry}, worse than chance, because the driest desert cells have little fuel. Treating dryness as fuel-limited, with fire peaking at intermediate dryness, raises it to ${m.hump}.` },
+        { icon: helps ? 'ph-check-circle' : 'ph-x-circle', color: helps ? 'var(--ok)' : 'var(--bad)', text: `The burn-scar idea (recently burnt land resists fire) ${helps ? 'improves' : 'lowers'} accuracy here: ${m.humpPersist} → ${m.full}. Cells that burned in the previous three years burned again ${pr}% of the time, against ${po}% elsewhere.` },
+        { icon: 'ph-arrow-right', color: 'var(--color-accent-400)', text: `At ${Math.round(RS.dLat * 111)} km cells, recent fire marks a fire-prone landscape rather than a depleted one. Testing the burn-scar effect needs fire perimeters at a few hundred metres, such as MODIS burned area or state perimeter archives.` },
+      ];
+      const V = ['dry', 'hump', 'persist', 'humpPersist', 'full'];
+      rs.head = [{ t: 'Year', tip: 'Held-out year', align: 'left' }, { t: 'Fires', tip: 'Recorded fires that year', align: 'right' }].concat(V.map(v => ({ t: { dry: 'Dry', hump: 'Inter.', persist: 'History', humpPersist: 'Int.+Hist.', full: '+Scar' }[v], tip: LBL[v], align: 'right' })));
+      rs.head = rs.head.slice(0, 7);
+      RS.back.forEach(b => { const best = V.reduce((a, v) => (b[v] ?? -1) > (b[a] ?? -1) ? v : a, V[0]); rs.cells.push({ t: String(b.year), align: 'left', color: 'var(--color-neutral-300)', w: 500 }, { t: fmt(b.fires), align: 'right', color: 'var(--color-neutral-400)', w: 400 }); V.forEach(v => rs.cells.push({ t: b[v] == null ? '—' : b[v].toFixed(2), align: 'right', color: v === best ? 'var(--color-text)' : 'var(--color-neutral-400)', w: v === best ? 600 : 400 })); });
+      rs.cells.push({ t: 'Mean', align: 'left', color: 'var(--color-text)', w: 600 }, { t: fmt(RS.fires), align: 'right', color: 'var(--color-neutral-400)', w: 400 }); V.forEach(v => rs.cells.push({ t: m[v] == null ? '—' : m[v].toFixed(2), align: 'right', color: v === RS.best ? 'var(--color-accent-300)' : 'var(--color-text)', w: 600 }));
+      rs.caveat = `Experimental, not operational. Fire records are NASA EONET points, not perimeters, and coverage varies by year (${Object.entries(RS.byYear).map(([y, n]) => `${y}: ${n}`).join(', ')}). Climate is NASA POWER monthly climatology; the yearly dryness ratio comes from one CMIP6 model. Run ${this.ago(RS.t)}.`;
+    }
+    /* journal */
+    const SC = { published: ['var(--ok)', 'Published'], held: ['var(--warn)', 'Held for review'] };
+    const posts = J.map(p => ({ title: p.title, status: SC[p.status][1], tagBg: `color-mix(in srgb, ${SC[p.status][0]} 18%, transparent)`, tagFg: SC[p.status][0], meta: `${p.topic} · ${new Date(p.t).toISOString().slice(0, 10)} · ${p.gc.numbers - p.gc.missing.length}/${p.gc.numbers} numbers grounded`, bg: p.id === s.sel ? 'var(--color-accent-900)' : 'transparent', go: () => this.setState({ sel: p.id }) }));
+    const sp = J.find(p => p.id === s.sel), post = sp ? { title: sp.title, meta: `${sp.topic} · ${new Date(sp.t).toISOString().slice(0, 16).replace('T', ' ')} UTC · ${sp.sources.length} sources`, grounding: `${sp.gc.numbers - sp.gc.missing.length}/${sp.gc.numbers} numbers grounded${sp.gc.badCites.length ? ' · invalid citations' : ''}`, tagBg: `color-mix(in srgb, ${SC[sp.status][0]} 18%, transparent)`, tagFg: SC[sp.status][0], hasMissing: sp.gc.missing.length > 0 || sp.gc.badCites.length > 0, missing: `${sp.gc.missing.length ? 'Not found in the sources: ' + sp.gc.missing.join(', ') + '. ' : ''}${sp.gc.badCites.length ? 'Citations to missing sources: ' + sp.gc.badCites.map(c => '[' + c + ']').join(' ') + '.' : ''}`, sources: sp.sources } : { sources: [] };
+    /* code */
+    const SV = { high: ['var(--bad)', 'High'], med: ['var(--warn)', 'Medium'], low: ['var(--color-neutral-400)', 'Low'] };
+    const findings = AU ? AU.findings.slice(0, 40).map(f => ({ sev: SV[f.sev][1], bg: `color-mix(in srgb, ${SV[f.sev][0]} 16%, transparent)`, fg: SV[f.sev][0], title: f.title, detail: f.detail, where: f.file + (f.line ? ':' + f.line : ''), action: f.action })) : [];
+    const patches = st.patches.map(p => ({ title: `${p.fn}() in ${p.file}${p.stale ? ' · stale' : ''}`, why: p.why || '', meta: `${p.tests} tests passed · complexity ${(p.cc || []).join(' → ')} · ${this.ago(p.t)}`, download: () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([p.src], { type: 'text/javascript' })); a.download = p.file; a.click(); }, discard: () => { this.P.clear(p.file); this.refresh('Patch discarded'); } }));
+    /* devices */
+    const devHead = ['Page'].concat(A.DEVICES.map(([d, w]) => `${d} ${w}px`)), devCells = [];
+    if (DV) A.FIT_PAGES.forEach(pg => { devCells.push({ t: pg.replace('.dc.html', '').replace('.html', ''), color: 'var(--color-neutral-200)', tip: pg }); A.DEVICES.forEach(([d, W]) => { const r = DV.rows.find(x => x.page === pg && x.W === W); devCells.push(r ? { t: r.err ? 'error' : r.ok ? `✓${r.tap ? ' · ' + r.tap + ' small taps' : ''}` : `✗ ${r.overflow ? r.overflow + 'px overflow' : Math.round(r.small / Math.max(1, r.text) * 100) + '% tiny text'}`, color: r.ok ? 'var(--ok)' : 'var(--bad)', tip: r.err || `${r.overflow}px horizontal overflow · ${r.small}/${r.text} text elements under 11px · ${r.tap} tap targets under 28px` } : { t: '—', color: 'var(--color-neutral-600)', tip: 'not run' }); }); });
+    const intel = IN ? IN.rows.map(r => ({ label: r.label, url: r.url, desc: r.desc, emp: r.employees ? fmt(r.employees) + (r.empYear ? ` (${r.empYear})` : '') : '', rev: r.revenue ? `${(r.revenue / 1e9 >= 1 ? (r.revenue / 1e9).toFixed(2) + ' bn' : (r.revenue / 1e6).toFixed(0) + ' m')} ${r.revUnit || ''}${r.revYear ? ` (${r.revYear})` : ''}` : '', hq: [r.hq, r.parent && r.parent !== r.label ? 'part of ' + r.parent : ''].filter(Boolean).join(' · '), founded: r.founded || '' })) : [];
+    return { ...base, kpis, skills, ledger, noLedger: !ledger.length, cyclesLine: `${st.cycles} cycles · ${st.ledger.length} runs logged`, rs, posts, noPosts: !posts.length, noPostsText: this.C && this.C.hasClaude() ? 'No posts yet. Run "Write a post".' : 'Writing needs Claude, which is not available in this browser.', hasPost: !!sp, noPost: !sp, post,
+      findings, noFindings: !findings.length, auditLine: AU ? `${AU.metrics.files} files · ${fmt(AU.metrics.loc)} lines · ${AU.metrics.fns} functions · ${fmt(AU.metrics.calls)} call edges · ${AU.metrics.clones} clones · ${this.ago(AU.t)}` : '',
+      patches, noPatches: !patches.length, noPatchText: 'No patches. A patch only goes live after every test for its module passes.', patchToggle: this.P && this.P.disabled() ? 'Patches off · turn on' : 'Patches on · turn off', togglePatches: () => { this.P.setDisabled(!this.P.disabled()); this.refresh('Patch setting saved; reload pages to apply'); },
+      learnedList: st.learned.map(t => ({ label: `${t.name} · ${t.file}` })), noLearned: !st.learned.length,
+      devLine: DV ? `${devOk}/${DV.rows.length} pass · ${this.ago(DV.t)}` : 'not run yet', devHead, devCells,
+      intel, intelLine: IN ? `${IN.rows.length} companies · ${IN.changes.length} changes logged · ${this.ago(IN.t)}` : 'not run yet', graphLine: `${st.graph.nodes.length} nodes · ${st.graph.edges.length} edges · skills, runs, patches, posts, experiments and their sources` };
+  }
+}
+</script>
+</body>
+</html>

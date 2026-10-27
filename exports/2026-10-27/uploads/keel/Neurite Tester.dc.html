@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#f3f1ec}a{color:#d9480f}a:hover{color:#a83709}</style>
+</helmet>
+<div data-screen-label="Tester" style="min-height:100vh;box-sizing:border-box;background:#f3f1ec;color:#1d1b18;font-family:'IBM Plex Sans',system-ui,sans-serif;padding:24px 28px 56px;font-size:14px">
+  <header style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-bottom:14px;border-bottom:2px solid #1d1b18">
+    <div style="flex:1 1 auto;min-width:0">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6b665c">Tester / operator console</div>
+      <h1 style="font-weight:600;font-size:26px;margin:4px 0 0;white-space:nowrap;letter-spacing:-.01em">Test, build, improve</h1>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#1d1b18">● {{ statusLabel }}</span>
+      <button onClick="{{ toggle }}" style="font:500 13px 'IBM Plex Sans',sans-serif;background:#1d1b18;color:#f3f1ec;border:0;padding:8px 14px;cursor:pointer">{{ toggleLabel }}</button>
+    </div>
+  </header>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));border-bottom:1px solid #1d1b18;margin-bottom:20px">
+    <sc-for list="{{ stages }}" as="st" hint-placeholder-count="4">
+      <div style="padding:14px 14px 14px 0;border-right:1px solid #cfcab9;margin-right:14px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b665c">{{ st.n }}</div>
+        <div style="font-weight:600;font-size:18px;margin-top:2px">{{ st.name }}</div>
+        <div style="font-size:12px;color:#6b665c;margin-top:4px">{{ st.meta }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;margin-bottom:22px">
+    <div style="padding:6px 0"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b665c">TEST RUNS</div><div style="font-size:34px;font-weight:500;font-family:'IBM Plex Mono',monospace">{{ runs }}</div></div>
+    <div style="padding:6px 0"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b665c">PASS RATE</div><div style="font-size:34px;font-weight:500;font-family:'IBM Plex Mono',monospace">{{ passRate }}%</div></div>
+    <div style="padding:6px 0"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b665c">OPEN FINDINGS</div><div style="font-size:34px;font-weight:500;font-family:'IBM Plex Mono',monospace;color:#d9480f">{{ open }}</div></div>
+    <div style="padding:6px 0"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b665c">SOC 2 AVERAGE</div><div style="font-size:34px;font-weight:500;font-family:'IBM Plex Mono',monospace">{{ socAvg }}</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px;margin-bottom:28px">
+    <section>
+      <h2 style="font-size:15px;font-weight:600;margin:0 0 6px;padding-bottom:8px;border-bottom:1px solid #1d1b18">Live test telemetry</h2>
+      <sc-for list="{{ events }}" as="e" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:64px 1fr auto;gap:10px;padding:9px 0;border-bottom:1px solid #dcd7c7;font-size:13px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b665c">{{ e.time }}</span>
+          <span><span style="font-weight:500">{{ e.kind }}</span> on <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">{{ e.target }}</span><br><span style="color:#6b665c">{{ e.detail }}</span></span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ e.color }};white-space:nowrap">{{ e.result }} · {{ e.ms }}ms</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <section>
+      <h2 style="font-size:15px;font-weight:600;margin:0 0 6px;padding-bottom:8px;border-bottom:1px solid #1d1b18">SOC 2 trust services criteria</h2>
+      <sc-for list="{{ soc }}" as="c" hint-placeholder-count="5">
+        <div style="padding:11px 0;border-bottom:1px solid #dcd7c7">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;min-width:0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">{{ c.tsc }}</span><span style="font-family:'IBM Plex Mono',monospace">{{ c.score }}</span></div>
+          <div style="height:4px;background:#dcd7c7;margin:8px 0 6px"><div style="height:100%;width:{{ c.pct }};background:{{ c.color }}"></div></div>
+          <div style="font-size:12px;color:#6b665c">{{ c.note }}</div>
+        </div>
+      </sc-for>
+    </section>
+  </div>
+
+  <section style="margin-bottom:28px">
+    <h2 style="font-size:15px;font-weight:600;margin:0 0 6px;padding-bottom:8px;border-bottom:1px solid #1d1b18">Static scan and vulnerability matrix</h2>
+    <div style="display:grid;grid-template-columns:56px 80px 1fr 2fr 1fr;gap:12px;padding:8px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b665c;text-transform:uppercase"><span>ID</span><span>Severity</span><span>Where</span><span>Finding</span><span>Criterion</span></div>
+    <sc-for list="{{ vulns }}" as="v" hint-placeholder-count="5">
+      <div style="display:grid;grid-template-columns:56px 80px 1fr 2fr 1fr;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #dcd7c7;font-size:13px">
+        <span style="font-family:'IBM Plex Mono',monospace">{{ v.id }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ v.color }}">{{ v.sev }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">{{ v.where }}</span>
+        <span>{{ v.finding }}</span>
+        <span style="color:#6b665c">{{ v.tsc }}</span>
+      </div>
+    </sc-for>
+  </section>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px">
+    <section>
+      <h2 style="font-size:15px;font-weight:600;margin:0 0 6px;padding-bottom:8px;border-bottom:1px solid #1d1b18">Improvement log</h2>
+      <sc-for list="{{ evo }}" as="line" hint-placeholder-count="4">
+        <div style="padding:10px 0;border-bottom:1px solid #dcd7c7;line-height:1.5">{{ line }}</div>
+      </sc-for>
+    </section>
+
+    <section>
+      <h2 style="font-size:15px;font-weight:600;margin:0 0 6px;padding-bottom:8px;border-bottom:1px solid #1d1b18">Patch proposals</h2>
+      <div style="font-size:12px;color:#6b665c;padding:6px 0">Proposed patches are tested in isolation. Nothing merges without operator approval.</div>
+      <sc-for list="{{ patches }}" as="p" hint-placeholder-count="3">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #dcd7c7">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b665c">{{ p.id }} · {{ p.tsc }} · {{ p.status }}</div>
+            <div style="margin-top:2px">{{ p.summary }}</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b665c;margin-top:2px">{{ p.file }}</div>
+          </div>
+          <button onClick="{{ p.approve }}" disabled="{{ p.done }}" style="font:500 13px 'IBM Plex Sans',sans-serif;background:transparent;color:#1d1b18;border:1px solid #1d1b18;padding:7px 12px;cursor:pointer">{{ p.action }}</button>
+        </div>
+      </sc-for>
+    </section>
+  </div>
+
+  <footer style="margin-top:28px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b665c">Sample data. The dashboard is not yet connected to server.py. See tester/README.md.</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    running: true, runs: 0, passes: 0, events: [],
+    patches: [
+      { id: 'P-014', file: 'api/upload.py', summary: 'Reject multipart bodies above the size cap before parsing', tsc: 'Availability', status: 'proposed' },
+      { id: 'P-015', file: 'api/auth/token.py', summary: 'Set Secure and SameSite on the refresh-token cookie', tsc: 'Confidentiality', status: 'proposed' },
+      { id: 'P-016', file: 'graph/query.py', summary: 'Bound traversal depth to 64', tsc: 'Processing Integrity', status: 'approved' }
+    ]
+  };
+  K = [
+    { k: 'Fuzz', d: 'Malformed JSON, 4,096 mutations' },
+    { k: 'Race flood', d: '256 concurrent writers' },
+    { k: 'Memory pressure', d: '512 MB allocated over 30 s' },
+    { k: 'Payload injection', d: 'SQLi and XSS corpus, 88 vectors' }
+  ];
+  T = ['/api/auth/token', '/api/ingest', '/api/graph/query', '/api/payments/webhook', '/api/upload'];
+  SOC = [
+    { tsc: 'Security', score: 71, note: '2 open findings' },
+    { tsc: 'Availability', score: 84, note: '1 open finding' },
+    { tsc: 'Processing Integrity', score: 88, note: '1 open finding' },
+    { tsc: 'Confidentiality', score: 63, note: '1 unencrypted data path' },
+    { tsc: 'Privacy', score: 79, note: '0 open findings' }
+  ];
+  VULNS = [
+    { id: 'V-07', sev: 'High', where: '/api/auth/token', finding: 'Refresh cookie missing Secure flag', tsc: 'Confidentiality' },
+    { id: 'V-09', sev: 'High', where: '/api/upload', finding: 'No body size cap on multipart parse', tsc: 'Availability' },
+    { id: 'V-11', sev: 'Medium', where: 'ingest/store', finding: 'Ingest cache written unencrypted at rest', tsc: 'Confidentiality' },
+    { id: 'V-12', sev: 'Medium', where: '/api/graph/query', finding: 'Traversal depth unbounded', tsc: 'Processing Integrity' },
+    { id: 'V-14', sev: 'Low', where: '/api/ingest', finding: 'Verbose stack traces on 500', tsc: 'Security' }
+  ];
+  EVO = [
+    'Coverage gap in /api/upload: oversize-body case missing. Added 3 signatures.',
+    'Reasoning loop in the fuzz planner (repeated mutation family). Prompt revised.',
+    'Race-flood concurrency raised from 64 to 256 writers after 40 clean runs.',
+    'Payload corpus pruned: 12 duplicate vectors removed.'
+  ];
+
+  componentDidMount() { this._t = setInterval(this.step, 1600); }
+  componentWillUnmount() { clearInterval(this._t); }
+
+  step = () => {
+    if (!this.state.running) return;
+    const kind = this.K[Math.floor(Math.random() * this.K.length)];
+    const pass = Math.random() > 0.22;
+    const e = {
+      id: this.state.runs + 1, kind: kind.k, detail: kind.d,
+      target: this.T[Math.floor(Math.random() * this.T.length)], pass,
+      ms: Math.round(40 + Math.random() * 860),
+      time: new Date().toLocaleTimeString([], { hour12: false })
+    };
+    this.setState(s => ({ runs: s.runs + 1, passes: s.passes + (pass ? 1 : 0), events: [e, ...s.events].slice(0, 30) }));
+  };
+
+  toggle = () => this.setState(s => ({ running: !s.running }));
+  approve = id => this.setState(s => ({ patches: s.patches.map(p => p.id === id ? { ...p, status: 'approved' } : p) }));
+
+  renderVals() {
+    const s = this.state;
+    const passRate = s.runs ? Math.round(s.passes / s.runs * 100) : 100;
+    const socAvg = Math.round(this.SOC.reduce((a, c) => a + c.score, 0) / this.SOC.length);
+    const approved = s.patches.filter(p => p.status === 'approved').length;
+    const stages = [
+      { n: '01', name: 'Ingest', meta: 'Repo indexed for retrieval' },
+      { n: '02', name: 'Test', meta: s.runs + ' chaos runs this session' },
+      { n: '03', name: 'Build', meta: 'Compile check gates every patch' },
+      { n: '04', name: 'Improve', meta: approved + ' of ' + s.patches.length + ' patches approved' }
+    ];
+    const events = s.events.map(e => ({ ...e, result: e.pass ? 'Held' : 'Fractured', color: e.pass ? '#6b665c' : '#d9480f' }));
+    const soc = this.SOC.map(c => ({ ...c, pct: c.score + '%', color: c.score < 70 ? '#d9480f' : '#1d1b18' }));
+    const vulns = this.VULNS.map(v => ({ ...v, color: v.sev === 'High' ? '#d9480f' : '#1d1b18' }));
+    const patches = s.patches.map(p => {
+      const done = p.status === 'approved';
+      return { ...p, done, action: done ? 'Approved' : 'Approve', approve: () => this.approve(p.id) };
+    });
+    return {
+      runs: s.runs, passRate, socAvg, open: this.VULNS.length, stages, events, soc, vulns,
+      evo: this.EVO, patches,
+      statusLabel: s.running ? 'Live' : 'Paused',
+      toggleLabel: s.running ? 'Pause' : 'Resume',
+      toggle: this.toggle
+    };
+  }
+}
+</script>
+</body>
+</html>

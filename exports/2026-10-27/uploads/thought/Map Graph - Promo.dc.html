@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+  <style>html, body { margin: 0; background: #05070d; height: 100%; }</style>
+  <script>window.OM_SCENES = '[{"name":"Seed","dur":4,"desc":"A plain idea is typed and becomes the first node on a map"},{"name":"Drop","dur":6,"desc":"Ctrl+click drops a node; the map places it and explains why"},{"name":"Ask","dur":6,"desc":"A node asks what it runs on and the answer becomes a link"},{"name":"Submap","dur":7,"desc":"Into, for, from and reverse light up different parts of the map"},{"name":"Twins","dur":4,"desc":"Two engines keep growing in separate tabs"},{"name":"Close","dur":3,"desc":"Name, line and call to action"}]';</script>
+  <script>window.OM_PLAYBACK = '{"mode":"loop"}';</script>
+  <script>window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"motionEditor": true}/*EDITMODE-END*/;</script>
+</helmet>
+<div data-screen-label="Promo" style="position: fixed; inset: 0;">
+  <x-import component-from-global-scope="PromoRoot" from="./animations-v3.jsx ./tweaks-panel.jsx ./promo-scene.jsx" hint-size="100%,100%"></x-import>
+</div>
+
+</x-dc>
+</body>
+</html>

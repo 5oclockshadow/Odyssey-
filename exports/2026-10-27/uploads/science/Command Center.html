@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saltline · Console</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="suite-theme.css">
+<script src="suite-theme.js"></script>
+<script src="suite-launcher.js"></script>
+<script src="suite-nav.js"></script>
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-bg);color:var(--color-text);font-size:13.5px;line-height:1.5}
+a{color:var(--color-accent-300);text-decoration:none}a:hover{color:var(--color-accent-200)}
+.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--color-bg) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--color-neutral-800)}
+.top-in{display:flex;align-items:center;gap:18px;padding:10px 22px;max-width:1560px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;flex:none;white-space:nowrap}
+.brand .mk{width:28px;height:28px;border-radius:8px;background:var(--color-accent);color:var(--color-on-accent);display:grid;place-items:center;font-size:16px}
+.brand small{display:block;font-weight:500;font-size:11.5px;color:var(--color-neutral-500);line-height:1}
+.nav{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none;flex:1}
+.nav::-webkit-scrollbar{display:none}
+.nav a{color:var(--color-neutral-400);padding:6px 10px;border-radius:8px;font-weight:500;white-space:nowrap}
+.nav a:hover{background:var(--color-neutral-900);color:var(--color-text)}.nav a.on{background:var(--color-neutral-900);color:var(--color-text)}
+.clock{font:500 12.5px var(--font-mono);color:var(--color-neutral-400);white-space:nowrap}
+.feeds{display:flex;gap:6px}
+.fd{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--color-neutral-500);white-space:nowrap}
+.fd i{width:7px;height:7px;border-radius:50%;background:var(--color-neutral-700)}
+.fd.ok i{background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 18%,transparent)}.fd.err i{background:var(--bad)}.fd.load i{background:var(--warn);animation:pl 1.2s infinite}
+@keyframes pl{50%{opacity:.35}}
+@media(max-width:1100px){.feeds{display:none}}
+.shell{display:flex;align-items:flex-start;max-width:1560px;margin:0 auto}
+.rail{position:sticky;top:57px;flex:none;width:210px;align-self:flex-start;height:calc(100vh - 57px);overflow-y:auto;padding:16px 10px 72px;display:flex;flex-direction:column;gap:1px;border-right:1px solid var(--color-neutral-800);scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail .rl-h{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--color-neutral-600);padding:14px 10px 5px;font-weight:600}
+.rail a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--color-neutral-400);font-weight:500;font-size:13px;cursor:pointer;white-space:nowrap}
+.rail a i.ph{font-size:17px}
+.rail a:hover{background:var(--color-neutral-900);color:var(--color-text)}
+.rail a.on{background:var(--color-accent-900);color:var(--color-accent-200)}
+.rail a .rc{margin-left:auto;font:600 11px var(--font-mono);color:var(--color-neutral-500);background:var(--color-surface-2);padding:1px 7px;border-radius:999px}
+.rail a.on .rc{color:var(--color-accent-200);background:color-mix(in srgb,var(--color-accent) 22%,transparent)}
+.rail .rl-sp{flex:1;min-height:14px}
+.page{flex:1;min-width:0;padding:18px 22px 60px;display:flex;flex-direction:column;gap:16px}
+.region{display:flex;flex-direction:column;gap:14px;scroll-margin-top:70px}
+.reg-h{display:flex;align-items:center;gap:12px;margin-bottom:-4px}
+.reg-h h2{margin:0;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--color-neutral-500);white-space:nowrap}
+.reg-h .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--color-neutral-800),transparent)}
+.reg-h .rr{font-size:12px;color:var(--color-neutral-500);white-space:nowrap}
+@media(max-width:820px){.rail{display:none}}
+@media(min-width:821px){#slk-btn{display:none!important}}
+.hello{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.hello h1{margin:0;font-size:26px;font-weight:600;letter-spacing:-.02em}
+.hello p{margin:2px 0 0;color:var(--color-neutral-500)}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:12px 14px;cursor:pointer;transition:box-shadow .15s}
+.kpi:hover{box-shadow:var(--shadow-md)}
+.kpi span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-neutral-500)}
+.kpi b{display:block;font:600 24px var(--font-mono);letter-spacing:-.02em;margin-top:4px}
+.kpi em{font-style:normal;font-size:11.5px;color:var(--color-neutral-500)}
+.g{display:grid;gap:14px}
+.g-map{grid-template-columns:minmax(0,1fr) 360px}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+@media(max-width:1180px){.g-map,.g3,.g2{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);min-width:0;display:flex;flex-direction:column}
+.ch{display:flex;align-items:center;gap:8px;padding:12px 14px 0;font-weight:600}
+.ch i.ph{color:var(--color-accent);font-size:16px}
+.ch .r{margin-left:auto;color:var(--color-neutral-500);font-size:12px;font-weight:400;display:flex;gap:6px;align-items:center}
+.cb{padding:10px 14px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.note{color:var(--color-neutral-500);font-size:12px}
+.row{display:flex;align-items:center;gap:10px;padding:7px 8px;margin:0 -8px;border-radius:8px;min-width:0}
+.row.clk{cursor:pointer}.row.clk:hover{background:var(--color-neutral-900)}
+.row .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .m{font-family:var(--font-mono);font-size:12px;color:var(--color-neutral-400);white-space:nowrap}
+.pill{font:600 11px var(--font-body);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.p-ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.p-warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.p-bad{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.p-info{background:var(--color-accent-900);color:var(--color-accent-300)}
+#mapbox{position:relative;height:clamp(360px,52vh,560px);margin:10px 14px 14px;border-radius:var(--radius-md);overflow:hidden;background:var(--color-surface-2);box-shadow:inset 0 0 0 1px var(--color-neutral-800)}
+#map{width:100%;height:100%;display:block;cursor:grab}#map:active{cursor:grabbing}
+.sphere{fill:var(--color-surface-2)}.grat{fill:none;stroke:var(--color-neutral-800);stroke-width:.5;opacity:.7}
+.land{fill:var(--color-neutral-900);stroke:var(--color-neutral-700);stroke-width:.4;transition:fill .12s}
+.land:hover{fill:var(--color-accent-800);stroke:var(--color-accent)}
+.tip{position:absolute;z-index:5;pointer-events:none;display:none;max-width:290px;background:var(--color-surface);box-shadow:var(--shadow-lg);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.45}
+.tip b{display:block;font-weight:600;font-size:13.5px;margin-bottom:2px}
+.tip .k{color:var(--color-neutral-500)}
+.maptools{position:absolute;left:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap}
+.maptools label{display:flex;align-items:center;gap:5px;background:var(--color-surface);box-shadow:var(--shadow-sm);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--color-neutral-300)}
+.ping{animation:ping 2.4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+.sats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.sat{border-radius:10px;overflow:hidden;background:var(--color-surface-2);box-shadow:var(--shadow-sm);cursor:pointer;transition:box-shadow .15s}
+.sat:hover{box-shadow:var(--shadow-md)}
+.sat .img{aspect-ratio:2/1;background:var(--color-neutral-900);position:relative}
+.sat img{width:100%;height:100%;object-fit:cover;display:block}
+.sat .src{position:absolute;left:6px;bottom:6px;font:600 10px var(--font-body);background:color-mix(in srgb,var(--color-surface) 85%,transparent);padding:2px 6px;border-radius:5px}
+.sat .t{padding:7px 9px;font-size:12px;display:flex;justify-content:space-between;gap:8px}
+.alert{display:flex;gap:10px;align-items:flex-start;padding:8px;margin:0 -8px;border-radius:8px;cursor:pointer}
+.alert:hover{background:var(--color-neutral-900)}
+.alert .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none;font-size:14px}
+.alert b{font-weight:600;font-size:12.5px;display:block}
+select.sel{background:var(--color-surface);border:1px solid var(--color-neutral-800);border-radius:8px;color:var(--color-text);font:13px var(--font-body);padding:7px 9px;width:100%}
+.inc{border-left:2px solid var(--warn);padding:2px 0 2px 10px;font-size:12.5px}
+.inc b{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--warn);margin-right:6px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 6px}
+.st{background:var(--color-surface-2);border-radius:8px;padding:8px;box-shadow:var(--shadow-sm)}
+.st span{display:block;font-size:11px;color:var(--color-neutral-500)}.st b{font-weight:600;font-size:13px}
+.st.done{box-shadow:inset 0 0 0 1px var(--color-accent-700);background:var(--color-accent-900)}
+.qkp{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px}
+.qkp div{background:var(--color-surface-2);border-radius:8px;padding:7px 8px;box-shadow:var(--shadow-sm)}.qkp span{display:block;font-size:11px;color:var(--color-neutral-500)}.qkp b{font:600 16px var(--font-mono)}
+.ins{font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--color-neutral-900)}
+.ins:last-child{border:0}
+.ins b{font-size:10.5px;letter-spacing:.07em;color:var(--color-accent-300);margin-right:6px}
+.cmd{display:flex;gap:8px;align-items:center;background:var(--color-surface-2);border-radius:10px;box-shadow:inset 0 0 0 1px var(--color-neutral-800);padding:4px 4px 4px 12px}
+.cmd i{color:var(--color-accent)}
+.cmd input{flex:1;border:0;background:transparent;color:var(--color-text);font:13px var(--font-mono);padding:8px 0;outline:none;min-width:0}
+.out{height:220px;overflow:auto;display:flex;flex-direction:column-reverse;gap:4px;font:12.5px/1.5 var(--font-mono);white-space:pre-wrap;color:var(--color-neutral-300);padding-top:6px}
+.out .u{color:var(--color-accent-300)}.out .e{color:var(--bad)}
+.cat{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.ci{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;background:var(--color-surface-2);box-shadow:var(--shadow-sm);color:var(--color-text);transition:box-shadow .15s}
+.ci:hover{box-shadow:var(--shadow-md);color:var(--color-text)}
+.ci i{font-size:18px;color:var(--color-accent);margin-top:1px}.ci b{font-weight:600;display:block;font-size:13px}.ci span{font-size:11.5px;color:var(--color-neutral-500)}
+.empty{color:var(--color-neutral-500);font-size:12.5px;padding:6px 0}
+.spin{width:12px;height:12px;border:2px solid var(--color-accent-800);border-top-color:var(--color-accent);border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div data-suite-nav="console"></div>
+<span data-nav-extra="" style="display:flex;align-items:center;gap:12px"><div class="feeds" id="feeds"></div><span class="clock" id="clock">--:--:-- UTC</span></span>
+
+<div class="shell">
+<aside class="rail" id="rail">
+  <div class="rl-h">Operations</div>
+  <a data-sec="sec-overview"><i class="ph ph-gauge"></i>Overview<span class="rc" id="rc-alerts"></span></a>
+  <a data-sec="sec-map"><i class="ph ph-globe-hemisphere-west"></i>World picture<span class="rc" id="rc-sites"></span></a>
+  <a data-sec="sec-monitor"><i class="ph ph-planet"></i>Monitoring<span class="rc" id="rc-feeds"></span></a>
+  <a data-sec="sec-clients"><i class="ph ph-briefcase"></i>Dossiers &amp; QA<span class="rc" id="rc-doss"></span></a>
+  <a data-sec="sec-command"><i class="ph ph-terminal-window"></i>Command</a>
+</aside>
+<main class="page">
+  <div id="sec-overview" class="region">
+  <div class="hello"><div><h1 id="greet">Operations</h1><p>Live environmental feeds, client dossiers and QA in one place. Every figure on this page comes from a live source or from work done in the suite.</p></div></div>
+  <div class="kpis" id="kpis"></div>
+  </div>
+
+  <div id="sec-map" class="region">
+  <div class="reg-h"><h2>World picture</h2><span class="ln"></span><span class="rr">live geospatial feeds</span></div>
+  <div class="g g-map">
+    <section class="card"><div class="ch"><i class="ph ph-globe-hemisphere-west"></i>World picture<span class="r" id="mapNote">loading geometry…</span></div>
+      <div id="mapbox"><svg id="map"></svg><div class="tip" id="tip"></div><div class="maptools" id="maptools"></div></div></section>
+    <div class="col">
+      <section class="card"><div class="ch"><i class="ph ph-bell"></i>Alerts<span class="r" id="alertN"></span></div><div class="cb" id="alerts"><div class="empty">Waiting for feeds…</div></div></section>
+      <section class="card"><div class="ch"><i class="ph ph-wind"></i>Flight conditions<span class="r">Open-Meteo · now</span></div><div class="cb" id="wx"><div class="empty"><span class="spin"></span> Loading…</div></div></section>
+    </div>
+  </div>
+  </div>
+
+  <div id="sec-monitor" class="region">
+  <div class="reg-h"><h2>Monitoring</h2><span class="ln"></span><span class="rr">Sentinel-2 · Federal Register · USGS</span></div>
+  <div class="g g3">
+    <section class="card"><div class="ch"><i class="ph ph-planet"></i>Satellite<span class="r"><div class="seg" id="satMode"><button class="seg-opt on" data-m="pass">Latest clear pass</button><button class="seg-opt" data-m="mosaic">Cloudless</button></div></span></div><div class="cb"><div class="sats" id="sats"></div><div class="note" id="satN"></div></div></section>
+    <section class="card"><div class="ch"><i class="ph ph-scales"></i>Regulatory radar<span class="r">Federal Register</span></div><div class="cb" id="reg"></div></section>
+    <section class="card"><div class="ch"><i class="ph ph-wave-sine"></i>Seismic<span class="r" id="eqN">USGS · 24 h · M2.5+</span></div><div class="cb" id="eq"><div class="empty"><span class="spin"></span> Loading…</div></div></section>
+  </div>
+  </div>
+
+  <div id="sec-clients" class="region">
+  <div class="reg-h"><h2>Dossiers &amp; QA</h2><span class="ln"></span><span class="rr">from work done in the suite</span></div>
+  <div class="g g3">
+    <section class="card"><div class="ch"><i class="ph ph-briefcase"></i>Clients &amp; dossiers<span class="r"><a href="Onboarding.html">New client</a></span></div><div class="cb" id="clients"></div></section>
+    <section class="card"><div class="ch"><i class="ph ph-flask"></i>Dossier QA<span class="r"><a href="Tester.html">Open tester</a></span></div><div class="cb" id="qa"></div></section>
+    <section class="card"><div class="ch"><i class="ph ph-graph"></i>Intelligence<span class="r">graph · Hebbian · Q-table</span></div><div class="cb" id="ins"></div></section>
+  </div>
+  </div>
+
+  <div id="sec-command" class="region">
+  <div class="reg-h"><h2>Command &amp; suite</h2><span class="ln"></span><span class="rr">type help for commands</span></div>
+  <div class="g g2">
+    <section class="card"><div class="ch"><i class="ph ph-terminal-window"></i>Command<span class="r">type help</span></div><div class="cb"><div class="cmd"><i class="ph ph-caret-right"></i><input id="cli" autocomplete="off" placeholder="wx · eq · sat · focus b · fr mangrove restoration · calc sar 10 2 2 · ask … · open dossier"><button class="btn btn-primary btn-icon" id="cliGo" aria-label="Run"><i class="ph ph-arrow-right"></i></button></div><div class="out" id="out"></div></div></section>
+    <section class="card"><div class="ch"><i class="ph ph-squares-four"></i>Suite<span class="r" id="catN"></span></div><div class="cb"><div class="cat" id="cat"></div></div></section>
+  </div>
+  </div>
+</main>
+</div>
+
+<script type="module">
+import * as X from './institute-intel.js';
+import * as F from './features-data.js';
+import * as C from './suite-core.js';
+import * as HZ from './suite-hazards.js';
+HZ.init(C);
+const SITES = () => HZ.getSites(X.SITES);
+const $ = id => document.getElementById(id), esc = C.esc;
+const TERMS = { 'Irrigating halophytes with desalination reject brine': 'desalination brine', 'Autonomous drone surveys over coastal wetlands': 'unmanned aircraft wetlands', 'Importing and growing a non-native halophyte': 'plant import quarantine', 'Selling halophyte seed oil as a fuel feedstock': 'renewable fuel feedstock', 'Restoring mangrove on public foreshore': 'mangrove restoration', 'Selling carbon credits from a restored marsh': 'carbon credits wetlands' };
+const D = { wx: null, sc: null, eq: null, reg: null, ana: null, st: { wx: 'load', sc: 'load', eq: 'load', reg: 'load' }, topic: X.TOPICS[0], term: 'desalination brine', satMode: 'pass', layers: { sites: 1, quakes: 1 } };
+const say = (t, cls) => { const d = document.createElement('div'); d.textContent = t; if (cls) d.className = cls; $('out').prepend(d); };
+
+/* ---------- live feeds ---------- */
+function feed(k, p) { D.st[k] = 'load'; paintFeeds(); return p.then(v => { D[k] = v; D.st[k] = 'ok'; paintAll(); return v; }, e => { D.st[k] = 'err'; paintAll(); say(k.toUpperCase() + ' feed unavailable: ' + e.message, 'e'); }); }
+const quakeFeed = () => fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+function load() { feed('wx', X.weather(SITES())); feed('sc', X.scenes(SITES())); feed('eq', quakeFeed()); feed('reg', X.regs(D.term)); }
+function paintFeeds() { $('feeds').innerHTML = [['wx', 'Weather'], ['sc', 'Sentinel-2'], ['eq', 'USGS'], ['reg', 'Fed. Register']].map(([k, l]) => `<span class="fd ${D.st[k]}"><i></i>${l}</span>`).join(''); }
+
+/* ---------- suite data (real work done in Dossier Suite + Tester) ---------- */
+const suite = () => ({ client: C.db.get('client', null), dossiers: C.db.get('dossiers', []), tests: C.db.get('tests', []), ins: C.db.get('insights', []), st: C.db.get('selftests', null) });
+
+/* ---------- KPIs ---------- */
+function paintKpis() {
+  const s = suite(), ok = Object.values(D.st).filter(v => v === 'ok').length;
+  const eq = D.eq ? D.eq.features : null, mx = eq && eq.length ? Math.max(...eq.map(q => q.properties.mag)) : null;
+  const good = D.wx ? D.wx.filter(w => w.adv === 'Good').length : null, n = s.tests.length, p = s.tests.filter(t => t.pass).length;
+  const K = [
+    ['ph-broadcast', 'Live feeds', ok + '/4', 'online now', 'feeds'],
+    ['ph-wave-sine', 'Seismic · 24 h', eq ? eq.length : '—', mx ? 'max M' + mx.toFixed(1) : 'USGS', 'eq'],
+    ['ph-globe-hemisphere-west', 'Hazard alerts', D.hz ? D.hz.gd.filter(e => e.lvl === 'red' || e.lvl === 'orange').length : '—', D.hz && D.hz.sw && D.hz.sw.kpNow != null ? 'Kp ' + D.hz.sw.kpNow.toFixed(1) + ' · G' + HZ.gScale(D.hz.sw.kpNow) + ' · Observatory' : 'GDACS · NOAA', 'obs'],
+    ['ph-drone', 'Flyable sites', good == null ? '—' : good + '/' + D.wx.length, 'drone advisory', 'wx'],
+    ['ph-scales', 'Regulatory docs', D.reg ? D.reg.total.toLocaleString() : '—', D.term, 'reg'],
+    ['ph-books', 'Dossiers built', s.dossiers.length, s.client && s.client.intake && s.client.intake.project ? s.client.intake.project.slice(0, 28) : 'no client yet', 'clients'],
+    ['ph-check-circle', 'QA pass rate', n ? Math.round(p / n * 100) + '%' : '—', n ? n + ' runs' : 'no runs yet', 'qa'],
+    ['ph-code', 'Code self-tests', s.st ? s.st.passed + '/' + s.st.total : '—', s.st ? 'engine v' + s.st.version : 'not run', 'qa'],
+  ];
+  $('kpis').innerHTML = K.map(([ic, l, v, e, tg]) => `<div class="kpi" data-go="${tg}"><span><i class="ph ${ic}"></i>${l}</span><b>${esc(v)}</b><em>${esc(e)}</em></div>`).join('');
+  $('kpis').querySelectorAll('[data-go]').forEach(el => el.onclick = () => { if (el.dataset.go === 'obs') { location.href = 'Observatory.dc.html'; return; } const t = $(el.dataset.go === 'feeds' ? 'alerts' : el.dataset.go); if (t) window.scrollTo({ top: t.closest('.card').getBoundingClientRect().top + scrollY - 70, behavior: 'smooth' }); });
+}
+
+/* ---------- alerts from real data only ---------- */
+function alerts() {
+  const a = [], s = suite();
+  (D.wx || []).forEach(w => { const sid = (SITES().find(x => x.name === w.name) || {}).id; if (w.adv === 'No-go') a.push([3, 'ph-airplane-tilt', 'Drone ops grounded', `${w.name}: gusts ${w.gust}, rain ${w.rain}`, { site: sid }]); else if (w.adv === 'Marginal') a.push([2, 'ph-wind', 'Marginal flight conditions', `${w.name}: gusts ${w.gust}`, { site: sid }]); });
+  if (D.eq) D.eq.features.filter(q => q.properties.mag >= 5.5).slice(0, 3).forEach(q => a.push([q.properties.mag >= 6.5 ? 3 : 2, 'ph-wave-sine', `M${q.properties.mag.toFixed(1)} earthquake`, (q.properties.place || '') + (q.properties.tsunami ? ' · tsunami flag' : ''), { ll: q.geometry.coordinates.slice(0, 2) }]));
+  Object.entries(D.st).forEach(([k, v]) => { if (v === 'err') a.push([2, 'ph-plugs', 'Feed offline', k.toUpperCase() + ' did not respond', null]); });
+  const failing = s.tests.slice(-20).filter(t => !t.pass); if (failing.length) a.push([2, 'ph-flask', `${failing.length} failing QA runs`, failing.slice(0, 3).map(t => t.id).join(', '), { href: 'Tester.html' }]);
+  if (s.client && s.client.intake && s.client.intake.project) { const miss = C.validateIntake(s.client.intake); if (miss.length) a.push([1, 'ph-clipboard-text', 'Client intake incomplete', miss.join(', '), { href: 'Dossier.html#/intake' }]); }
+  return a.sort((x, y) => y[0] - x[0]);
+}
+const SEVC = { 3: 'bad', 2: 'warn', 1: 'info' };
+function paintAlerts() {
+  const al = alerts(); $('alertN').textContent = al.length ? al.length + ' open' : 'all clear';
+  $('alerts').innerHTML = al.length ? al.slice(0, 6).map(([s, ic, t, d, tg], i) => `<div class="alert" data-i="${i}"><span class="ic p-${SEVC[s]}"><i class="ph ${ic}"></i></span><div style="min-width:0"><b>${esc(t)}</b><div class="note" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d)}</div></div></div>`).join('') : '<div class="empty">No open alerts from live feeds or QA.</div>';
+  $('alerts').querySelectorAll('[data-i]').forEach(el => el.onclick = () => { const g = al[+el.dataset.i][4] || {}; if (g.site) focusSite(g.site); else if (g.ll) flyTo(g.ll, 5); else if (g.href) location.href = g.href; });
+}
+function paintWx() {
+  if (!D.wx) { if (D.st.wx === 'err') $('wx').innerHTML = '<div class="empty">Weather feed unavailable.</div>'; return; }
+  const P = { Good: 'ok', Marginal: 'warn', 'No-go': 'bad' };
+  $('wx').innerHTML = D.wx.map(w => { const s = SITES().find(x => x.name === w.name) || {}; return `<div class="row clk" data-site="${s.id}"><span class="t">${esc(w.name)}</span><span class="m">${w.temp}</span><span class="m">gust ${w.gust}</span><span class="pill p-${P[w.adv]}">${w.adv}</span></div>`; }).join('') + '<div class="note">Advisory only — the licensed pilot decides.</div>';
+  $('wx').querySelectorAll('[data-site]').forEach(el => el.onclick = () => focusSite(el.dataset.site));
+}
+function paintSats() {
+  if (!D.sc) { $('sats').innerHTML = SITES().map(() => '<div class="sat"><div class="img"></div><div class="t note">loading…</div></div>').join(''); return; }
+  $('satN').textContent = 'Earth Search STAC (Sentinel-2 L2A, last 90 days) · EOX cloudless mosaic · click a tile for EO Browser';
+  $('sats').innerHTML = D.sc.map(s => {
+    const bbox = [s.lon - 0.45, s.lat - 0.22, s.lon + 0.45, s.lat + 0.22].join(',');
+    const eox = `https://tiles.maps.eox.at/wms?service=WMS&version=1.1.1&request=GetMap&layers=s2cloudless-2020&srs=EPSG:4326&bbox=${bbox}&width=360&height=180&format=image/jpeg`;
+    const usePass = D.satMode === 'pass' && s.thumb, src = usePass ? s.thumb : eox;
+    return `<div class="sat" data-site="${s.id}" title="Open ${esc(s.name)} in EO Browser"><div class="img"><img src="${src}" alt="${esc(s.name)}" onerror="this.onerror=null;this.src='${eox}'"><span class="src">${usePass ? 'S2 · ' + esc(s.clearDate) + ' · ' + esc(s.clearCloud) + ' cloud' : 'S2 cloudless mosaic'}</span></div><div class="t"><span>${esc(s.name.split(' · ')[0])}</span><span class="note">${s.n} scenes · latest ${esc(s.date)}</span></div></div>`;
+  }).join('');
+  $('sats').querySelectorAll('[data-site]').forEach(el => el.onclick = () => { const s = SITES().find(x => x.id === el.dataset.site); window.open(`https://apps.sentinel-hub.com/eo-browser/?lat=${s.lat}&lng=${s.lon}&zoom=11`, '_blank', 'noopener'); });
+}
+document.querySelectorAll('#satMode [data-m]').forEach(b => b.onclick = () => { D.satMode = b.dataset.m; document.querySelectorAll('#satMode [data-m]').forEach(x => x.classList.toggle('on', x === b)); paintSats(); });
+function paintEq() {
+  if (!D.eq) { if (D.st.eq === 'err') $('eq').innerHTML = '<div class="empty">USGS feed unavailable.</div>'; return; }
+  const fs = D.eq.features.slice().sort((a, b) => b.properties.mag - a.properties.mag);
+  $('eqN').textContent = fs.length + ' events · 24 h';
+  $('eq').innerHTML = fs.slice(0, 7).map((q, i) => { const m = q.properties.mag; return `<div class="row clk" data-q="${i}"><span class="pill ${m >= 6 ? 'p-bad' : m >= 5 ? 'p-warn' : 'p-info'}">M${m.toFixed(1)}</span><span class="t">${esc(q.properties.place || 'Unnamed')}</span><span class="m">${new Date(q.properties.time).toISOString().slice(11, 16)}</span><a href="${q.properties.url}" target="_blank" rel="noopener" title="USGS event page"><i class="ph ph-arrow-up-right"></i></a></div>`; }).join('');
+  $('eq').querySelectorAll('[data-q]').forEach(el => el.onclick = e => { if (e.target.closest('a')) return; const q = fs[+el.dataset.q]; flyTo(q.geometry.coordinates.slice(0, 2), 5); });
+}
+function paintReg() {
+  const docs = !D.reg ? '<div class="empty"><span class="spin"></span> Searching…</div>' : !D.reg.docs.length ? '<div class="empty">No matching documents.</div>' : D.reg.docs.slice(0, 4).map(d => `<a class="row clk" href="${d.url}" target="_blank" rel="noopener" style="color:inherit;align-items:flex-start"><span style="flex:1;min-width:0"><span style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.title)}</span><span class="note">${d.date} · ${esc(d.agency)}</span></span><i class="ph ph-arrow-up-right" style="color:var(--color-neutral-500)"></i></a>`).join('');
+  const ana = D.ana ? D.ana.incongruities.slice(0, 3).map(i => `<div class="inc"><b>${esc(i.kind)}</b>${esc(i.issue)}</div>`).join('') + '<div class="note">Claude analysis of the retrieved documents — unverified until counsel or the agency confirms.</div>' : '';
+  $('reg').innerHTML = `<select class="sel" id="topic">${X.TOPICS.map(t => `<option ${t === D.topic ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select><div class="note">${D.reg ? `“${esc(D.term)}” · ${D.reg.total.toLocaleString()} documents` : ''}</div>${docs}<button class="btn" id="anaBtn">${D.anaBusy ? '<span class="spin"></span> Analysing…' : '<i class="ph ph-sparkle"></i> Find incongruities across government levels'}</button>${ana}`;
+  $('topic').onchange = e => { D.topic = e.target.value; D.term = TERMS[D.topic] || D.topic; D.ana = null; D.reg = null; paintReg(); feed('reg', X.regs(D.term)); };
+  $('anaBtn').onclick = async () => {
+    if (D.anaBusy || !D.reg) return; if (!C.hasClaude()) { say('Analysis needs the assistant runtime.', 'e'); return; }
+    D.anaBusy = true; paintReg();
+    try { D.ana = X.parseAnalysis(await window.claude.complete(X.analysisRequest(D.topic, ['National or federal', 'State or provincial', 'Local or municipal'], '', D.reg))); } catch (e) { say('Analysis failed: ' + e.message, 'e'); }
+    D.anaBusy = false; paintReg();
+  };
+}
+function paintClients() {
+  const s = suite(), c = s.client, i = c && c.intake || {};
+  let h = '';
+  if (c && (i.project || (c.client && c.client.org))) {
+    const miss = C.validateIntake(i), docs = (c.docs || []).length, built = !!c.dossier;
+    h += `<div style="display:flex;align-items:baseline;gap:8px"><b style="font-weight:600;font-size:14px">${esc(i.project || c.client.project || 'Untitled project')}</b><span class="note">${esc(i.org || c.client.org || '')}</span></div>
+      <div class="note">${esc(i.location || '')}${i.authority ? ' · meeting ' + esc(i.authority) : ''}</div>
+      <div class="steps"><div class="st done"><span>Onboarding</span><b>done</b></div><div class="st ${miss.length ? '' : 'done'}"><span>Intake</span><b>${miss.length ? miss.length + ' left' : 'complete'}</b></div><div class="st ${docs ? 'done' : ''}"><span>Documents</span><b>${docs}</b></div><div class="st ${built ? 'done' : ''}"><span>Dossier</span><b>${built ? c.dossier.sections.length + ' sections' : 'not built'}</b></div></div>
+      <a class="btn" href="Dossier.html#/${built ? 'dossier' : miss.length || !docs ? 'intake' : 'dossier'}">${built ? 'Open dossier' : 'Continue in suite'} <i class="ph ph-arrow-right"></i></a>`;
+  } else h += '<div class="empty">No client yet. Onboard one in the Dossier Suite and it appears here.</div><a class="btn btn-primary" href="Onboarding.html"><i class="ph ph-plus"></i> Onboard a client</a>';
+  if (s.dossiers.length) h += '<div class="note" style="margin-top:8px">Recent dossiers</div>' + s.dossiers.slice(0, 4).map(d => `<a class="row clk" href="Dossier.html#/dossier" style="color:inherit"><span class="t">${esc(d.project || 'Untitled')} <span class="note">· ${esc(d.product)}</span></span><span class="m">${Math.round((d.coverage || 0) * 100)}%</span><span class="m">${new Date(d.t).toLocaleDateString()}</span></a>`).join('');
+  $('clients').innerHTML = h;
+}
+function paintQA() {
+  const R = suite().tests, n = R.length, p = R.filter(r => r.pass).length, avg = k => n ? R.reduce((a, r) => a + ((r.metrics || {})[k] || 0), 0) / n : 0;
+  if (!n) { $('qa').innerHTML = '<div class="empty">No test runs yet.</div><a class="btn" href="Tester.html"><i class="ph ph-play"></i> Run the tester</a>'; return; }
+  $('qa').innerHTML = `<div class="qkp"><div><span>Runs</span><b>${n}</b></div><div><span>Pass</span><b>${Math.round(p / n * 100)}%</b></div><div><span>Recall</span><b>${Math.round(avg('recall') * 100)}%</b></div><div><span>Coverage</span><b>${Math.round(avg('coverage') * 100)}%</b></div></div>` +
+    R.slice(-6).reverse().map(r => `<a class="row clk" href="Tester.html" style="color:inherit"><span class="pill ${r.pass ? 'p-ok' : 'p-bad'}">${r.asserts.filter(a => a.ok).length}/${r.asserts.length}</span><span class="t">${esc(r.id)} · ${esc(r.name)}</span><span class="m">${r.llm ? 'Claude' : 'agent'}</span></a>`).join('');
+}
+function paintIns() {
+  const I = suite().ins;
+  $('ins').innerHTML = I.length ? I.slice(-6).reverse().map(i => `<div class="ins"><b>${esc(i.kind)}</b>${esc(i.text)}</div>`).join('') : '<div class="empty">Insights appear as the tester runs: failure clusters, Hebbian links and Q-table strategy changes.</div>';
+}
+function paintCat() {
+  const nTools = F.DOMAINS.reduce((a, d) => a + d[1].length, 0);
+  $('catN').textContent = C.PRODUCTS.length + ' products · ' + nTools + ' tools';
+  $('cat').innerHTML = C.PRODUCTS.map(p => `<a class="ci" href="Dossier.html#/products"><i class="ph ${p.icon}"></i><div><b>${esc(p.name)}</b><span>${p.sections.length} sections · ${esc(p.for)}</span></div></a>`).join('') +
+    `<a class="ci" href="Field Tools.html"><i class="ph ph-toolbox"></i><div><b>Field tools</b><span>${nTools} calculators, live-data and AI tools in ${F.DOMAINS.length} domains</span></div></a>` +
+    `<a class="ci" href="Impact Assessment.html"><i class="ph ph-file-text"></i><div><b>ESIA workspace</b><span>Full impact assessment draft, section by section</span></div></a>`;
+}
+function paintAll() { paintFeeds(); paintKpis(); paintAlerts(); paintWx(); paintSats(); paintEq(); paintReg(); paintClients(); paintQA(); paintIns(); railCounts(); drawDyn(); }
+
+/* ---------- map ---------- */
+const svg = d3.select('#map'), box = $('mapbox'), tip = $('tip');
+let proj, path, land, zT = d3.zoomIdentity;
+const gAll = svg.append('g'), gBase = gAll.append('g'), gQ = gAll.append('g'), gS = gAll.append('g');
+const zoom = d3.zoom().scaleExtent([1, 10]).on('zoom', e => { zT = e.transform; gAll.attr('transform', zT); gS.selectAll('g.s').attr('transform', s => { const [x, y] = proj([s.lon, s.lat]); return `translate(${x},${y}) scale(${1 / zT.k})`; }); gQ.selectAll('circle').attr('r', q => qr(q) / Math.sqrt(zT.k)); });
+svg.call(zoom);
+const qr = q => Math.max(2, (q.properties.mag - 2) * 2);
+function showTip(e, html) { const r = box.getBoundingClientRect(); tip.innerHTML = html; tip.style.display = 'block'; tip.style.left = Math.min(r.width - 300, e.clientX - r.left + 14) + 'px'; tip.style.top = Math.min(r.height - 140, e.clientY - r.top + 12) + 'px'; }
+const hideTip = () => tip.style.display = 'none';
+function countryInfo(d) {
+  const name = (d.properties && d.properties.name) || 'Unknown territory', area = Math.round(d3.geoArea(d) * 6371 * 6371), [lon, lat] = d3.geoCentroid(d);
+  const sites = SITES().filter(s => d3.geoContains(d, [s.lon, s.lat]));
+  const qs = D.eq ? D.eq.features.filter(q => q.geometry && d3.geoContains(d, q.geometry.coordinates.slice(0, 2))) : [];
+  const c = suite().client, cl = c && c.intake && c.intake.location && c.intake.location.toLowerCase().includes(name.toLowerCase()) ? c.intake.project : null;
+  let h = `<b>${esc(name)}</b><span class="k">${area.toLocaleString()} km² · centroid ${lat.toFixed(1)}°, ${lon.toFixed(1)}°</span>`;
+  h += `<div style="margin-top:6px">${qs.length ? `<span style="color:var(--warn)">${qs.length} earthquake${qs.length > 1 ? 's' : ''} M2.5+ in 24 h</span> · max M${Math.max(...qs.map(q => q.properties.mag)).toFixed(1)}` : '<span class="k">No M2.5+ earthquakes in 24 h</span>'}</div>`;
+  sites.forEach(s => { const w = (D.wx || []).find(x => x.name === s.name); h += `<div style="margin-top:4px;color:var(--color-accent-300)">● ${esc(s.name)}${w ? ` · ${w.temp}, gust ${w.gust}, ${w.adv}` : ''}</div>`; });
+  if (cl) h += `<div style="margin-top:4px">◆ Client project: ${esc(cl)}</div>`;
+  return h;
+}
+function layout() {
+  const w = box.clientWidth, h = box.clientHeight; svg.attr('viewBox', `0 0 ${w} ${h}`);
+  proj = d3.geoNaturalEarth1().fitExtent([[10, 10], [w - 10, h - 10]], { type: 'Sphere' }); path = d3.geoPath(proj);
+  gBase.selectAll('*').remove();
+  gBase.append('path').attr('class', 'sphere').attr('d', path({ type: 'Sphere' }));
+  gBase.append('path').attr('class', 'grat').attr('d', path(d3.geoGraticule10()));
+  if (land) gBase.append('g').selectAll('path').data(land.features).join('path').attr('class', 'land').attr('d', path)
+    .on('mousemove', (e, d) => showTip(e, countryInfo(d))).on('mouseleave', hideTip)
+    .on('click', (e, d) => { const [[x0, y0], [x1, y1]] = path.bounds(d), k = Math.min(8, 0.8 / Math.max((x1 - x0) / w, (y1 - y0) / h)); svg.transition().duration(800).call(zoom.transform, d3.zoomIdentity.translate(w / 2 - k * (x0 + x1) / 2, h / 2 - k * (y0 + y1) / 2).scale(k)); say('focus ' + (d.properties.name || 'territory'), 'u'); });
+  drawDyn();
+}
+function drawDyn() {
+  if (!proj) return;
+  gS.style('display', D.layers.sites ? null : 'none'); gQ.style('display', D.layers.quakes ? null : 'none');
+  if (D.eq) gQ.selectAll('circle').data(D.eq.features.filter(q => q.geometry), q => q.id).join('circle')
+    .attr('cx', q => proj(q.geometry.coordinates.slice(0, 2))[0]).attr('cy', q => proj(q.geometry.coordinates.slice(0, 2))[1]).attr('r', q => qr(q) / Math.sqrt(zT.k))
+    .attr('fill', q => q.properties.mag >= 5 ? 'var(--bad)' : 'var(--warn)').attr('fill-opacity', .55).attr('stroke', 'var(--color-surface)').attr('stroke-width', .6).style('cursor', 'pointer')
+    .on('mousemove', (e, q) => showTip(e, `<b>M${q.properties.mag.toFixed(1)} · ${esc(q.properties.place || '')}</b><span class="k">${new Date(q.properties.time).toISOString().slice(0, 16).replace('T', ' ')} UTC · depth ${Math.round(q.geometry.coordinates[2])} km${q.properties.tsunami ? ' · tsunami flag' : ''}</span>`)).on('mouseleave', hideTip)
+    .on('click', (e, q) => { e.stopPropagation(); window.open(q.properties.url, '_blank', 'noopener'); });
+  const sg = gS.selectAll('g.s').data(SITES(), s => s.id).join(en => { const g = en.append('g').attr('class', 's').style('cursor', 'pointer'); g.append('circle').attr('class', 'ping').attr('r', 7).attr('fill', 'none').attr('stroke', 'var(--color-accent)').attr('stroke-width', 1.5); g.append('circle').attr('r', 4.5).attr('fill', 'var(--color-accent)').attr('stroke', 'var(--color-surface)').attr('stroke-width', 1.5); g.append('text').attr('x', 8).attr('y', 4).attr('font-size', 11).attr('font-weight', 600).attr('fill', 'var(--color-text)').attr('paint-order', 'stroke').attr('stroke', 'var(--color-surface)').attr('stroke-width', 3); return g; });
+  sg.attr('transform', s => { const [x, y] = proj([s.lon, s.lat]); return `translate(${x},${y}) scale(${1 / zT.k})`; }).select('text').text(s => s.name.split(' · ')[0]);
+  sg.on('mousemove', (e, s) => { const w = (D.wx || []).find(x => x.name === s.name), sc = (D.sc || []).find(x => x.id === s.id); showTip(e, `<b>${esc(s.name)}</b><span class="k">${s.lat}°, ${s.lon}° · reference site</span>${w ? `<div style="margin-top:4px">${w.temp} · wind ${w.wind} · gust ${w.gust} · <b style="display:inline;font-size:12.5px">${w.adv}</b></div>` : ''}${sc ? `<div class="k">Sentinel-2: ${sc.n} scenes / 90 d · latest ${sc.date}</div>` : ''}`); }).on('mouseleave', hideTip).on('click', (e, s) => { e.stopPropagation(); flyTo([s.lon, s.lat], 5); });
+}
+function flyTo(c, k = 4) { if (!proj) return; const [x, y] = proj(c), w = box.clientWidth, h = box.clientHeight; svg.transition().duration(850).call(zoom.transform, d3.zoomIdentity.translate(w / 2 - k * x, h / 2 - k * y).scale(k)); window.scrollTo({ top: box.closest('.card').getBoundingClientRect().top + scrollY - 70, behavior: 'smooth' }); }
+function focusSite(id) { const s = SITES().find(x => x.id.toLowerCase() === String(id).toLowerCase()); if (!s) return false; flyTo([s.lon, s.lat], 5); say('focus ' + s.name, 'u'); return true; }
+$('maptools').innerHTML = [['sites', 'Sites'], ['quakes', 'Earthquakes']].map(([k, l]) => `<label><input type="checkbox" data-l="${k}" checked> ${l}</label>`).join('') + '<label id="resetZ"><i class="ph ph-arrows-out-simple"></i> Reset</label>';
+$('maptools').querySelectorAll('input').forEach(i => i.onchange = () => { D.layers[i.dataset.l] = i.checked ? 1 : 0; drawDyn(); });
+$('resetZ').onclick = () => svg.transition().duration(700).call(zoom.transform, d3.zoomIdentity);
+new ResizeObserver(layout).observe(box);
+
+/* ---------- left rail ---------- */
+function railCounts(){ const s = suite(), ok = Object.values(D.st).filter(v => v === 'ok').length, set = (id, v) => { const e = $(id); if (e) e.textContent = v; };
+  set('rc-alerts', alerts().length || ''); set('rc-sites', SITES().length); set('rc-feeds', ok + '/4'); set('rc-doss', s.dossiers.length || ''); set('rc-hz', D.hz ? D.hz.gd.filter(e => e.lvl === 'red' || e.lvl === 'orange').length || '' : ''); }
+const railA = [...document.querySelectorAll('#rail a[data-sec]')];
+railA.forEach(a => a.onclick = () => { const el = $(a.dataset.sec); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 66, behavior: 'smooth' }); });
+const railSpy = new IntersectionObserver(es => { es.forEach(e => { if (e.isIntersecting) railA.forEach(a => a.classList.toggle('on', a.dataset.sec === e.target.id)); }); }, { rootMargin: '-60px 0px -72% 0px' });
+document.querySelectorAll('.region').forEach(r => railSpy.observe(r));
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json()).then(t => { land = topojson.feature(t, t.objects.countries); $('mapNote').textContent = 'Natural Earth · hover any country · scroll to zoom'; layout(); }).catch(e => { $('mapNote').textContent = 'geometry unavailable'; say('Map geometry failed: ' + e.message, 'e'); });
+
+/* ---------- command bar ---------- */
+const hist = []; let hi = -1;
+async function exec(line) {
+  const [c0, ...rest] = line.trim().split(/\s+/), c = (c0 || '').toLowerCase(), arg = rest.join(' ');
+  if (!c) return; say('› ' + line, 'u');
+  if (c === 'help') return say('wx · eq · sat · fr <term> · focus <a|b|c|d> · reset · calc <key> [numbers] · ask <question> · open <dossier|intake|tester|tools|esia> · qa · theme');
+  if (c === 'focus') return focusSite(arg) || say('Sites: ' + SITES().map(s => s.id.toLowerCase() + ' = ' + s.name).join(' · '), 'e');
+  if (c === 'reset') return svg.transition().duration(700).call(zoom.transform, d3.zoomIdentity);
+  if (c === 'wx') return feed('wx', X.weather(SITES())).then(w => w && say(w.map(x => `${x.name}: ${x.temp}, gust ${x.gust} → ${x.adv}`).join('\n')));
+  if (c === 'eq') return feed('eq', quakeFeed()).then(q => q && say(q.features.length + ' events M2.5+ in the last 24 h.'));
+  if (c === 'sat') return feed('sc', X.scenes(SITES())).then(s => s && say(s.map(x => `${x.name}: ${x.n} scenes, latest ${x.date} (${x.cloud} cloud)`).join('\n')));
+  if (c === 'fr') { if (!arg) return say('fr <search term>', 'e'); D.term = arg; D.ana = null; D.reg = null; paintReg(); return feed('reg', X.regs(arg)).then(r => r && say(`${r.total.toLocaleString()} documents · ${r.agencies.slice(0, 4).join(', ')}`)); }
+  if (c === 'calc') { const K = F.CALCS[rest[0]]; if (!K) return say('Calculators: ' + Object.keys(F.CALCS).join(' '), 'e'); const v = {}; K.f.forEach(([k], i) => { v[k] = rest[i + 1] !== undefined ? parseFloat(rest[i + 1]) : K.ex[k]; }); return say(K.run(v).filter(Boolean).map(r => `${r[0]}: ${r[1]}`).join('\n')); }
+  if (c === 'ask') { if (!arg) return say('ask <question>', 'e'); if (!C.hasClaude()) return say('Claude unavailable here.', 'e'); say('asking Claude…'); try { say(await window.claude.complete({ system: F.COMMON + ' Answer in under 150 words, plain text.', messages: [{ role: 'user', content: arg }], max_tokens: 500 })); } catch (e) { say('Claude unavailable: ' + e.message, 'e'); } return; }
+  if (c === 'open') { const m = { dossier: 'Dossier.html#/dossier', intake: 'Dossier.html#/intake', suite: 'Dossier.html', onboarding: 'Dossier.html#/onboarding', tester: 'Tester.html', tools: 'Field Tools.html', esia: 'Impact Assessment.html', sitemap: 'Dossier.html#/sitemap' }[arg]; return m ? (location.href = m) : say('open dossier | intake | onboarding | tester | tools | esia | sitemap', 'e'); }
+  if (c === 'qa') { const R = suite().tests; return say(R.length ? `${R.length} runs · ${R.filter(r => r.pass).length} passed · last: ${R.slice(-1)[0].id} ${R.slice(-1)[0].name}` : 'No QA runs yet.'); }
+  if (c === 'theme') { const b = document.querySelector('[data-theme-toggle]'); return b && b.click(); }
+  say(`Unknown command “${c}”. Type help.`, 'e');
+}
+$('cli').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { const l = e.target.value; if (l.trim()) hist.unshift(l); hi = -1; e.target.value = ''; exec(l); }
+  else if (e.key === 'ArrowUp' && hist.length) { e.preventDefault(); hi = Math.min(hist.length - 1, hi + 1); e.target.value = hist[hi]; }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); hi = Math.max(-1, hi - 1); e.target.value = hi < 0 ? '' : hist[hi]; }
+});
+$('cliGo').onclick = () => { const l = $('cli').value; $('cli').value = ''; exec(l); };
+document.addEventListener('keydown', e => { if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') { e.preventDefault(); $('cli').focus(); } });
+
+/* ---------- clock, greeting, live suite sync ---------- */
+const tick = () => { const n = new Date(); $('clock').textContent = n.toISOString().slice(11, 19) + ' UTC'; };
+const hr = new Date().getHours(); $('greet').textContent = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening');
+C.listen(() => setTimeout(() => { paintKpis(); paintAlerts(); paintClients(); paintQA(); paintIns(); }, 60));
+C.listen(m => { if (m && m.type === 'sites') { load(); drawDyn(); railCounts(); } });
+window.addEventListener('storage', e => { if (e.key && e.key.startsWith('saltline.')) { paintKpis(); paintAlerts(); paintClients(); paintQA(); paintIns(); } });
+function loadHz() { const J = HZ.eventJobs(); Promise.allSettled([J.gdacs(), HZ.loadSpace()]).then(([g, s]) => { D.hz = { gd: g.status === 'fulfilled' ? g.value : [], sw: s.status === 'fulfilled' ? s.value : null }; paintKpis(); railCounts(); }); }
+paintCat(); paintAll(); load(); loadHz(); tick(); setInterval(tick, 1000); setInterval(() => { load(); loadHz(); }, 300000);
+say('Console ready. Press / to type a command, or type help.');
+</script>
+</body>
+</html>

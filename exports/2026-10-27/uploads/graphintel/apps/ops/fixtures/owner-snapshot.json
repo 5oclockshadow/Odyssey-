@@ -1,0 +1,35 @@
+{
+  "_note": "A recorded snapshot of the engine's owner endpoints, for previewing the signed-in console when no engine is reachable. Read-only. Negative times are seconds before load.",
+  "/owner/board": {
+    "pending": 3,
+    "counts": {"planned": 4, "ongoing": 3, "done": 7, "failed": 1},
+    "tasks": [
+      {"id": "t1", "who": "sextant", "title": "Decide whether the research needs a new post", "kind": "staff", "state": "ongoing", "ts": -40},
+      {"id": "t2", "who": "sub:grid-watch", "title": "Found: IEA revises 2026 data-centre demand outlook", "note": "iea.org", "kind": "find", "state": "ongoing", "ts": -95},
+      {"id": "t3", "who": "sextant", "title": "Lab round", "kind": "lab", "state": "ongoing", "ts": -130},
+      {"id": "t4", "who": "sextant", "title": "Research: paid phone and tablet compute networks", "kind": "research", "state": "planned", "ts": -20},
+      {"id": "t5", "who": "sextant", "title": "Re-examine an edge: s:compute", "kind": "reexamine", "state": "planned", "ts": -18},
+      {"id": "t6", "who": "sextant", "title": "Read an item: Trending search on Google Trends CA: 'great lakes water levels'", "kind": "ingest", "state": "planned", "ts": -12},
+      {"id": "t7", "who": "sub:ca-trends", "title": "Found: hydro rate filing in Ontario", "kind": "find", "state": "planned", "ts": -8},
+      {"id": "t8", "who": "sextant", "title": "Research: data-centre electricity demand forecasts", "note": "Two of three forecasts in circulation predate 2025; the IEA figure is the only current one.", "kind": "research", "state": "done", "ts": -620, "energy": -0.07},
+      {"id": "t9", "who": "sextant", "title": "Answer the owner", "note": "Ongoing: grid-watch on the IEA outlook; ca-trends on Ontario filings. Four rounds queued.", "kind": "chat", "state": "done", "ts": -900, "energy": 0.0},
+      {"id": "t10", "who": "sub:arxiv-scout", "title": "Found: Shared memory for agent fleets", "note": "sent to SEXTANT", "kind": "find", "state": "done", "ts": -1300},
+      {"id": "t11", "who": "sextant", "title": "Lab round", "note": "Ran aspirin-analog-3 phase 1: passed, 2.91 kcal per heavy atom. Proposed two more.", "kind": "lab", "state": "done", "ts": -1700, "energy": -0.03},
+      {"id": "t12", "who": "sextant", "title": "Re-examine an edge: s:sectors", "note": "Retracted one single-source claim on hospital AI outcomes.", "kind": "reexamine", "state": "done", "ts": -2400, "energy": -0.11},
+      {"id": "t13", "who": "sextant", "title": "Decide whether the research needs a new post", "note": "Hired phone-payout for q-phone: payouts change weekly and the falsifier needs a measured figure.", "kind": "staff", "state": "done", "ts": -3600, "energy": -0.02},
+      {"id": "t14", "who": "sextant", "title": "Repair", "note": "incident:fetch_url → patch_tested", "kind": "repair", "state": "done", "ts": -5200},
+      {"id": "t15", "who": "sextant", "title": "Read an item: hnrss.org", "note": "ReadTimeout after 20s", "kind": "ingest", "state": "failed", "ts": -5400}
+    ],
+    "actors": [
+      {"id": "sextant", "name": "SEXTANT", "role": "the brain", "kind": "brain", "status": "working", "now": {"title": "Decide whether the research needs a new post"}, "depth": 0},
+      {"id": "grid-watch", "name": "grid-watch", "role": "energy and grid watcher", "kind": "sub", "status": "running", "now": {"title": "Found: IEA revises 2026 data-centre demand outlook"}, "depth": 0},
+      {"id": "ca-trends", "name": "ca-trends", "role": "Canada trend scout", "kind": "sub", "status": "running", "now": null, "depth": 1},
+      {"id": "arxiv-scout", "name": "arxiv-scout", "role": "paper reader", "kind": "sub", "status": "running", "now": null, "depth": 0},
+      {"id": "phone-payout", "name": "phone-payout", "role": "phone compute watcher", "kind": "sub", "status": "running", "now": null, "depth": 0},
+      {"id": "app-health", "name": "app-health", "role": "shipped-app watcher", "kind": "sub", "status": "paused", "now": null, "depth": 0}
+    ]
+  },
+  "/owner/stream": {"messages": [
+    {"id": "m1", "ts": -3610, "from": "brain", "to": "sub:phone-payout", "text": "Hired for q-phone: payouts change weekly and the falsifier needs a measured figure."}
+  ]}
+}

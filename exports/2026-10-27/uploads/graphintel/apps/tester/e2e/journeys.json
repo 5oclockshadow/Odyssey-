@@ -1,0 +1,82 @@
+{
+  "note": "TESTER's end-to-end journeys through the institute site. Selectors are data-e2e hooks in apps/web/src/Platform.dc.html. Run in the browser by e2e.js (Build Room) and in the container by qa.py run_journeys(). $NAME values come from the environment; a journey whose needs are missing is skipped and reported.",
+  "site": "apps/web/src/Platform.dc.html",
+  "widths": [360, 768, 1440],
+  "journeys": [
+    { "id": "every-route", "who": "visitor", "goal": "Every link in the rail reaches its page and the back button returns", "steps": [
+      { "go": "#/" }, { "see": "[data-e2e=route-home]" },
+      { "click": "[data-e2e=menu]", "optional": true, "timeout": 600 }, { "click": "[data-e2e=nav-experiment]" }, { "see": "[data-e2e=route-experiment]" },
+      { "click": "[data-e2e=menu]", "optional": true, "timeout": 600 }, { "click": "[data-e2e=nav-research]" }, { "see": "[data-e2e=route-research]" },
+      { "click": "[data-e2e=menu]", "optional": true, "timeout": 600 }, { "click": "[data-e2e=nav-repos]" }, { "see": "[data-e2e=route-repos]" },
+      { "click": "[data-e2e=menu]", "optional": true, "timeout": 600 }, { "click": "[data-e2e=nav-pricing]" }, { "see": "[data-e2e=route-pricing]" },
+      { "click": "[data-e2e=menu]", "optional": true, "timeout": 600 }, { "click": "[data-e2e=nav-docs]" }, { "see": "[data-e2e=route-docs]" },
+      { "click": "[data-e2e=menu]", "optional": true, "timeout": 600 }, { "click": "[data-e2e=nav-sandbox]" }, { "see": "[data-e2e=route-sandbox]" },
+      { "click": "[data-e2e=menu]", "optional": true, "timeout": 600 }, { "click": "[data-e2e=nav-signin]" }, { "see": "[data-e2e=route-signin]" },
+      { "back": true }, { "see": "[data-e2e=route-sandbox]" },
+      { "go": "#/nowhere" }, { "see": "[data-e2e=route-missing]" }
+    ] },
+    { "id": "reads-the-thesis", "who": "visitor", "goal": "The overview states the thesis, the price ladder and what would refute it, then leads to the experiment", "steps": [
+      { "go": "#/" }, { "see": "[data-e2e=hero]" }, { "has": "[data-e2e=hero]", "text": "LSTM" },
+      { "count": "[data-e2e=rung]", "min": 6, "max": 6 }, { "has": "[data-e2e=ladder]", "text": "$0.00005" },
+      { "count": "[data-e2e=hypothesis]", "min": 3 },
+      { "click": "[data-e2e=cta-experiment]" }, { "see": "[data-e2e=route-experiment]" },
+      { "count": "[data-e2e=hypothesis]", "min": 8 }, { "count": "[data-e2e=condition]", "min": 4 }, { "count": "[data-e2e=phase]", "min": 6 },
+      { "has": "[data-e2e=route-experiment]", "text": "Refuted if" }
+    ] },
+    { "id": "research-portal", "who": "visitor", "goal": "Open questions carry falsifiers; reports and goals are listed", "steps": [
+      { "go": "#/research" }, { "see": "[data-e2e=route-research]" },
+      { "count": "[data-e2e=question]", "min": 13 }, { "has": "[data-e2e=question]", "text": "Refuted if" },
+      { "count": "[data-e2e=report-link]", "min": 9 }, { "count": "[data-e2e=goal]", "min": 10 }
+    ] },
+    { "id": "repos-filter", "who": "developer", "goal": "All 100 repos load from the registry; search and filters narrow them and clear", "steps": [
+      { "go": "#/repos" }, { "see": "[data-e2e=route-repos]" }, { "count": "[data-e2e=repo-card]", "min": 100, "max": 100, "timeout": 8000 },
+      { "has": "[data-e2e=repo-stats]", "text": "100 repos" },
+      { "fill": "[data-e2e=repo-search]", "value": "lstm" }, { "count": "[data-e2e=repo-card]", "min": 1, "max": 6 }, { "has": "[data-e2e=repo-grid]", "text": "lstm-substrate" },
+      { "fill": "[data-e2e=repo-search]", "value": "" }, { "click": "[data-e2e=f-builder-claude]" }, { "count": "[data-e2e=repo-card]", "min": 3, "max": 3 },
+      { "fill": "[data-e2e=repo-search]", "value": "zzzz-no-such-repo" }, { "see": "[data-e2e=f-clear]" }, { "click": "[data-e2e=f-clear]" },
+      { "count": "[data-e2e=repo-card]", "min": 100 }
+    ] },
+    { "id": "pricing-to-request", "who": "buyer", "goal": "Pricing leads to a key request that validates its fields and either sends or says plainly that it could not", "steps": [
+      { "go": "#/pricing" }, { "count": "[data-e2e=plan]", "min": 3, "max": 3 }, { "has": "[data-e2e=price-table]", "text": "$0.00005" }, { "has": "[data-e2e=rate-table]", "text": "240" },
+      { "click": "[data-e2e=plan-team-cta]" }, { "see": "[data-e2e=route-signup]" }, { "value": "[data-e2e=signup-plan]", "is": "team" },
+      { "click": "[data-e2e=signup-submit]" }, { "has": "[data-e2e=signup-error]", "text": "name" },
+      { "fill": "[data-e2e=signup-name]", "value": "Ada Tester" }, { "fill": "[data-e2e=signup-email]", "value": "not-an-email" },
+      { "click": "[data-e2e=signup-submit]" }, { "has": "[data-e2e=signup-error]", "text": "email" },
+      { "fill": "[data-e2e=signup-email]", "value": "ada@example.org" }, { "fill": "[data-e2e=signup-use]", "value": "Reading the repricing board for a newsroom explainer series." },
+      { "click": "[data-e2e=signup-submit]" }, { "see": "[data-e2e=signup-sent],[data-e2e=signup-offline]", "timeout": 22000 }
+    ] },
+    { "id": "docs-to-sandbox", "who": "developer", "goal": "Docs list the endpoints, copy works or says it is blocked, Try opens the sandbox with the endpoint chosen and a call returns or explains", "steps": [
+      { "go": "#/docs" }, { "count": "[data-e2e=endpoint]", "min": 10 }, { "has": "[data-e2e=auth-example]", "text": "X-Persona" },
+      { "click": "[data-e2e=copy-curl]" }, { "has": "[data-e2e=copy-curl]", "text": "Cop" },
+      { "click": "[data-e2e=try-public-questions]" }, { "see": "[data-e2e=route-sandbox]" }, { "value": "[data-e2e=sb-endpoint]", "is": "public-questions" },
+      { "has": "[data-e2e=sb-curl]", "text": "/public/questions" },
+      { "click": "[data-e2e=sb-send]" }, { "see": "[data-e2e=sb-result]", "timeout": 10000 }, { "has": "[data-e2e=sb-result]", "text": "GET" },
+      { "fill": "[data-e2e=sb-endpoint]", "value": "limits" }, { "click": "[data-e2e=sb-send]" }, { "has": "[data-e2e=sb-error]", "text": "needs an API key" }
+    ] },
+    { "id": "signin-validates", "who": "member", "goal": "Sign in refuses empty and malformed keys before calling the engine, and explains any refusal after", "steps": [
+      { "go": "#/signin" }, { "see": "[data-e2e=route-signin]" },
+      { "click": "[data-e2e=signin-submit]" }, { "has": "[data-e2e=signin-error]", "text": "Paste your API key" },
+      { "fill": "[data-e2e=key-input]", "value": "nope" }, { "click": "[data-e2e=signin-submit]" }, { "has": "[data-e2e=signin-error]", "text": "anma_" },
+      { "fill": "[data-e2e=key-input]", "value": "anma_00000000000000000000000000000000" }, { "click": "[data-e2e=signin-submit]" }, { "see": "[data-e2e=signin-error]", "timeout": 10000 },
+      { "click": "[data-e2e=signin-mode-seat]" }, { "see": "[data-e2e=seat-user]" }, { "click": "[data-e2e=signin-submit]" }, { "has": "[data-e2e=signin-error]", "text": "seat" },
+      { "click": "[data-e2e=signin-mode-owner]" }, { "see": "[data-e2e=owner-password]" }, { "click": "[data-e2e=signin-submit]" }, { "has": "[data-e2e=signin-error]", "text": "password" }
+    ] },
+    { "id": "account-signed-out", "who": "member", "goal": "The account page asks a signed-out visitor to sign in and takes them there", "steps": [
+      { "go": "#/account" }, { "see": "[data-e2e=account-signin]" }, { "click": "[data-e2e=account-signin]" }, { "see": "[data-e2e=route-signin]" }
+    ] },
+    { "id": "account-with-key", "who": "member", "needs": ["E2E_KEY"], "goal": "A real test-tenant key signs in, shows limits and usage, and signs out", "steps": [
+      { "go": "#/signin" }, { "fill": "[data-e2e=key-input]", "value": "$E2E_KEY" }, { "click": "[data-e2e=signin-submit]" },
+      { "see": "[data-e2e=route-account]", "timeout": 10000 }, { "see": "[data-e2e=account-usage]" }, { "see": "[data-e2e=account-limits]" },
+      { "click": "[data-e2e=signout]" }, { "see": "[data-e2e=account-signin]" }
+    ] },
+    { "id": "phone-menu", "who": "visitor", "maxWidth": 899, "goal": "On a phone the menu opens the rail, a link navigates and the rail closes", "steps": [
+      { "go": "#/" }, { "see": "[data-e2e=menu]" }, { "gone": "[data-e2e=nav-panel]" },
+      { "click": "[data-e2e=menu]" }, { "see": "[data-e2e=nav-panel]" }, { "click": "[data-e2e=nav-docs]" },
+      { "see": "[data-e2e=route-docs]" }, { "gone": "[data-e2e=nav-panel]" }
+    ] },
+    { "id": "desktop-chrome", "who": "visitor", "minWidth": 900, "goal": "On a wide screen the rail is always there and the engine status is shown", "steps": [
+      { "go": "#/" }, { "see": "[data-e2e=nav-rail]" }, { "see": "[data-e2e=engine-status]" }, { "has": "[data-e2e=engine-status]", "text": "engine" },
+      { "click": "[data-e2e=top-you]" }, { "see": "[data-e2e=route-signin]" }
+    ] }
+  ]
+}

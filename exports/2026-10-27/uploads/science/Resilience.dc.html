@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Saltline · Resilience</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="suite-theme.css">
+  <script src="suite-theme.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <script src="suite-launcher.js"></script>
+  <script src="suite-nav.js"></script>
+  <style>body{margin:0;background:var(--color-bg);color:var(--color-text);font-size:13.5px;line-height:1.5}a{color:var(--color-accent-300);text-decoration:none}a:hover{color:var(--color-accent-200)}</style>
+</helmet>
+<div style="min-height:100vh;color:var(--color-text);font-family:var(--font-body);background:radial-gradient(900px 420px at 4% -10%,color-mix(in srgb,var(--color-accent) 8%,transparent),transparent 72%),var(--color-bg)">
+  <div data-suite-nav="resilience"></div>
+  <main style="max-width:1560px;margin:0 auto;padding:var(--space-8) 22px 64px;display:flex;flex-direction:column;gap:28px">
+    <section style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-end">
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1 1 520px;max-width:860px">
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Resilience · SOC 2-aligned · engine v{{ version }}</div>
+        <h1 style="margin:0;font-size:34px;line-height:1.1;font-weight:600;letter-spacing:-.02em;text-wrap:balance">Control checks, chaos tests and stress tests on this codebase</h1>
+        <p style="margin:0;font-size:14.5px;color:var(--color-neutral-300);text-wrap:pretty">Each run reads every file in the suite, checks the code against SOC 2 criteria, fuzzes every pure function the engines export with hostile inputs, and times the heavy work against a budget. Findings are compared with the previous run. This produces evidence and findings. It does not make the product SOC 2 compliant: that requires an examination by a licensed CPA firm over a period of operation.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+        <div class="seg" style="flex-wrap:nowrap"><button class="seg-opt {{ tSuite }}" onClick="{{ tgtSuite }}" style="white-space:nowrap">This suite</button><button class="seg-opt {{ tUrl }}" onClick="{{ tgtUrl }}" style="white-space:nowrap">URL</button><button class="seg-opt {{ tUp }}" onClick="{{ tgtUp }}" style="white-space:nowrap">Folder</button></div>
+        <sc-if value="{{ isUrl }}" hint-placeholder-val="{{ false }}"><input value="{{ url }}" onChange="{{ onUrl }}" placeholder="https://example.com" style="min-height:34px;padding:6px 10px;font:inherit;font-size:13.5px;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);width:100%;box-sizing:border-box"></sc-if>
+        <sc-if value="{{ isUp }}" hint-placeholder-val="{{ false }}"><input type="file" multiple webkitdirectory="" onChange="{{ onPick }}" style="font-size:12.5px;color:var(--color-neutral-300)"></sc-if>
+        <button class="btn btn-primary" onClick="{{ runTarget }}" disabled="{{ busy }}"><i class="ph ph-play"></i>{{ runLabel }}</button>
+        <sc-if value="{{ isSuite }}" hint-placeholder-val="{{ true }}"><button class="btn" onClick="{{ autoApply }}" disabled="{{ busy }}"><i class="ph ph-magic-wand"></i>Auto-apply tested fixes</button></sc-if>
+        <span style="font-size:12.5px;color:var(--color-neutral-400);max-width:360px;text-wrap:pretty">{{ msg }}</span>
+      </div>
+    </section>
+
+    <section style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--space-3)">
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5">
+        <div style="display:flex;flex-direction:column;gap:4px;padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);min-width:0">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500);white-space:nowrap">{{ k.label }}</span>
+          <span style="font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.15;color:{{ k.color }}">{{ k.value }}</span>
+          <span style="font-size:12px;color:var(--color-neutral-400)">{{ k.sub }}</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <section style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start">
+      <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:6px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px;white-space:nowrap">Control checks</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ critLine }}</span></div>
+        <sc-if value="{{ noCriteria }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;color:var(--color-neutral-500);padding:var(--space-3) 0">Run a check to see control results.</div></sc-if>
+        <sc-for list="{{ criteria }}" as="c" hint-placeholder-count="9">
+          <div style="display:grid;grid-template-columns:62px minmax(0,1fr) 84px;gap:10px;align-items:start;padding:8px 0;border-bottom:1px solid var(--color-neutral-900)">
+            <span style="font-size:12px;color:var(--color-neutral-400);font-variant-numeric:tabular-nums">{{ c.criterion }}</span>
+            <span style="min-width:0"><span style="font-weight:500">{{ c.title }}</span><div style="font-size:12px;color:var(--color-neutral-500);text-wrap:pretty">{{ c.fix }}</div></span>
+            <span class="tag" style="justify-self:end;white-space:nowrap;background:{{ c.bg }};color:{{ c.fg }}">{{ c.status }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:6px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm);max-height:620px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Findings</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ findLine }}</span></div>
+        <div style="overflow-y:auto;display:flex;flex-direction:column">
+          <sc-for list="{{ findings }}" as="f" hint-placeholder-count="8">
+            <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--color-neutral-900)">
+              <span class="tag" style="align-self:flex-start;white-space:nowrap;color:{{ f.color }}">{{ f.sev }}</span>
+              <span style="flex:1;min-width:0"><span style="font-size:13px;font-weight:500">{{ f.title }}</span><div style="font-size:11.5px;color:var(--color-neutral-500);overflow-wrap:anywhere">{{ f.where }} · {{ f.criterion }}</div><div style="font-size:12px;color:var(--color-neutral-400);overflow-wrap:anywhere;text-wrap:pretty">{{ f.detail }}</div><div style="font-size:12px;color:var(--color-neutral-300);text-wrap:pretty">{{ f.fix }}</div></span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noFindings }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-neutral-500);padding:var(--space-3) 0">{{ noFindingsText }}</div></sc-if>
+        </div>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start">
+      <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:6px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:16px">Chaos · fuzzing of pure exports</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ chaosLine }}</span></div>
+        <div style="overflow-x:auto"><div style="display:grid;grid-template-columns:minmax(150px,1.2fr) 72px 92px minmax(200px,2.4fr);font-size:12.5px;min-width:600px">
+          <sc-for list="{{ chaosHead }}" as="h" hint-placeholder-count="4"><span style="padding:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800)">{{ h }}</span></sc-for>
+          <sc-for list="{{ chaos }}" as="c" hint-placeholder-count="10">
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);min-width:0"><span style="font-weight:500">{{ c.fn }}()</span><div style="font-size:11px;color:var(--color-neutral-500)">{{ c.mod }}</div></span>
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums">{{ c.cases }}</span>
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums;color:{{ c.color }}">{{ c.crashes }} throw</span>
+            <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-size:11.5px;color:var(--color-neutral-400);overflow-wrap:anywhere">{{ c.example }}</span>
+          </sc-for>
+        </div></div>
+      </div>
+
+      <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:6px;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+        <div style="font-weight:600;font-size:16px">Stress · against budget</div>
+        <sc-for list="{{ stress }}" as="s" hint-placeholder-count="3">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px 74px;gap:10px;padding:8px 0;border-bottom:1px solid var(--color-neutral-900);font-size:13px;align-items:center">
+            <span style="min-width:0">{{ s.name }}</span>
+            <span style="font-variant-numeric:tabular-nums;color:var(--color-neutral-400)">{{ s.ms }} / {{ s.budget }} ms</span>
+            <span class="tag" style="justify-self:end;color:{{ s.color }}">{{ s.status }}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noStress }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-neutral-500)">Not run yet.</div></sc-if>
+        <div style="font-weight:600;font-size:16px;margin-top:var(--space-3)">Not fuzzed</div>
+        <div style="font-size:12px;color:var(--color-neutral-500);text-wrap:pretty">Exports that touch the network or storage, are async, or are classes. They need their own tests against recorded responses.</div>
+        <div style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column">
+          <sc-for list="{{ gaps }}" as="g" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--color-neutral-900);font-size:12.5px"><span>{{ g.name }}() <span style="color:var(--color-neutral-500)">{{ g.mod }}</span></span><span style="color:var(--color-neutral-500);white-space:nowrap">{{ g.why }}</span></div></sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:var(--space-3)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em">Tester evolution</h2><span style="font-size:12.5px;color:var(--color-neutral-500)">one row per run; new and resolved are compared with the run before</span></div>
+      <div style="overflow-x:auto;padding:var(--space-2) var(--space-3);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-sm)"><div style="display:grid;grid-template-columns:repeat(8,minmax(90px,1fr));font-size:12.5px;min-width:760px">
+        <sc-for list="{{ logHead }}" as="h" hint-placeholder-count="8"><span style="padding:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);border-bottom:1px solid var(--color-neutral-800)">{{ h }}</span></sc-for>
+        <sc-for list="{{ log }}" as="l" hint-placeholder-count="5">
+          <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);color:var(--color-neutral-300)">{{ l.when }}</span>
+          <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums">{{ l.soc }}</span>
+          <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums">{{ l.chaos }}</span>
+          <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums">{{ l.stress }}</span>
+          <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums">{{ l.findings }}</span>
+          <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums;color:var(--bad)">{{ l.added }}</span>
+          <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums;color:var(--ok)">{{ l.resolved }}</span>
+          <span style="padding:6px;border-bottom:1px solid var(--color-neutral-900);font-variant-numeric:tabular-nums;color:var(--color-neutral-400)">{{ l.fuzzed }} fns · {{ l.ms }} ms</span>
+        </sc-for>
+      </div></div>
+      <sc-if value="{{ noLog }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-neutral-500)">No runs recorded yet.</div></sc-if>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = { st: null, log: [], busy: false, msg: 'Loading…', target: 'suite', url: '' };
+  picked = null;
+  async componentDidMount() {
+    try {
+      this.R = await import(new URL('suite-resilience.js', document.baseURI).href);
+      const st = this.R.last();
+      this.setState({ st, log: this.R.history(), msg: st ? `Last run ${this.ago(st.t)}.` : 'No run yet. Start one to check the codebase.' });
+    } catch (e) { this.setState({ msg: 'Could not load the engine: ' + e.message }); }
+    const paint = () => window.dispatchEvent(new StorageEvent('storage', { key: 'saltline.theme' })); paint(); setTimeout(paint, 400);
+  }
+  async run() {
+    if (this.state.busy || !this.R) return;
+    this.setState({ busy: true, msg: 'Starting…' });
+    try { const st = await this.R.runAll({ onStep: m => this.setState({ msg: m }) }); this.setState({ st, log: this.R.history(), msg: `Run ${st.run} finished in ${(st.ms / 1000).toFixed(1)} s.` }); }
+    catch (e) { this.setState({ msg: 'Run stopped: ' + e.message }); }
+    finally { this.setState({ busy: false }); }
+  }
+  async runTarget() {
+    const s = this.state; if (s.busy || !this.R) return;
+    this.setState({ busy: true, msg: 'Starting…' });
+    try {
+      const onStep = m => this.setState({ msg: m }); let files = null, label = 'This suite';
+      if (s.target === 'url') { if (!s.url) throw new Error('enter a URL first'); files = await this.R.sourceFromUrl(s.url, onStep); label = s.url; if (!files.length) throw new Error('no readable files at that URL (other origins are not readable from this page)'); }
+      if (s.target === 'upload') { if (!this.picked || !this.picked.length) throw new Error('choose a folder first'); files = await this.R.sourceFromFiles(this.picked); label = 'Folder · ' + files.length + ' files'; if (!files.length) throw new Error('no readable text files in that folder'); }
+      const st = await this.R.runAll({ onStep, files, label });
+      this.setState({ st, log: this.R.history(), msg: `${label}: run ${st.run} finished in ${(st.ms / 1000).toFixed(1)} s.` });
+    } catch (e) { this.setState({ msg: 'Run stopped: ' + e.message }); }
+    finally { this.setState({ busy: false }); }
+  }
+  setTarget(t) { this.setState({ target: t, msg: t === 'suite' ? 'Checks this suite: its files, fuzzing and stress tests.' : t === 'url' ? 'Enter a URL. Only files the site serves to this page can be read.' : 'Choose a folder. Files are read in this browser and not uploaded anywhere.' }); }
+  onUrl(e) { this.setState({ url: e.target.value.trim() }); }
+  onPick(e) { this.picked = [...(e.target.files || [])]; this.setState({ msg: `${this.picked.length} files selected.` }); }
+  async autoApply() {
+    if (this.state.busy || !this.R) return;
+    this.setState({ busy: true, msg: 'Asking the agent for tested fixes…' }); const out = [];
+    try {
+      const A = await import(new URL('suite-agent.js', document.baseURI).href);
+      for (let i = 0; i < 3; i++) { const r = await A.runSkill('improve', m => this.setState({ msg: m })); out.push(r.summary); if (/not available/.test(r.summary)) break; }
+      this.setState({ msg: out.join(' · ') });
+    } catch (e) { this.setState({ msg: 'Auto-apply stopped: ' + e.message }); }
+    this.setState({ busy: false });
+    await this.runTarget();
+  }
+  ago(t) { if (!t) return 'never'; const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 2880 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; }
+  renderVals() {
+    const s = this.state, st = s.st, tone = v => v == null ? 'var(--color-neutral-500)' : v >= 90 ? 'var(--ok)' : v >= 70 ? 'var(--warn)' : 'var(--bad)';
+    const tg = s.target, base = { runTarget: () => this.runTarget(), busy: s.busy, runLabel: s.busy ? 'Running…' : st ? 'Run again' : 'Start a run', tSuite: tg === 'suite' ? 'on' : '', tUrl: tg === 'url' ? 'on' : '', tUp: tg === 'upload' ? 'on' : '', tgtSuite: () => this.setTarget('suite'), tgtUrl: () => this.setTarget('url'), tgtUp: () => this.setTarget('upload'), isUrl: tg === 'url', isUp: tg === 'upload', isSuite: tg === 'suite', url: s.url, onUrl: e => this.onUrl(e), onPick: e => this.onPick(e), autoApply: () => this.autoApply(), msg: s.msg, version: this.R ? this.R.RS.version : '1.4.0', logHead: ['When', 'SOC score', 'Chaos survived', 'Stress passed', 'Findings', 'New', 'Resolved', 'Coverage'], chaosHead: ['Function', 'Inputs', 'Crashes', 'First failing input'], log: s.log.slice(0, 40).map(l => ({ when: this.ago(l.t), soc: l.soc == null ? '—' : l.soc + '%', chaos: l.chaos == null ? '—' : l.chaos + '%', stress: l.stress == null ? '—' : l.stress + '%', findings: l.findings, added: l.added, resolved: l.resolved, fuzzed: l.fuzzed, ms: l.ms })), noLog: !s.log.length };
+    if (!st) return { ...base, kpis: [], criteria: [], noCriteria: true, critLine: '', findings: [], noFindings: true, noFindingsText: 'Run a check to see findings.', findLine: '', chaos: [], chaosLine: '', stress: [], noStress: true, gaps: [] };
+    const RANK = { high: 0, med: 1, low: 2, info: 3 }, SEV = { high: ['High', 'var(--bad)'], med: ['Medium', 'var(--warn)'], low: ['Low', 'var(--color-neutral-400)'], info: ['Info', 'var(--info)'] };
+    const open = st.findings.filter(f => f.sev === 'high' || f.sev === 'med').length;
+    const kpis = [
+      { label: 'SOC 2-aligned checks', value: st.socScore == null ? '—' : st.socScore + '%', color: tone(st.socScore), sub: `${st.checksPassing} of ${st.checksTotal} control checks pass` },
+      { label: 'Chaos survived', value: st.chaosScore == null ? '—' : st.chaosScore + '%', color: tone(st.chaosScore), sub: `${st.chaos.filter(c => c.crashes === 0).length} of ${st.chaos.length} functions never throw` },
+      { label: 'Stress within budget', value: st.stressScore == null ? '—' : st.stressScore + '%', color: tone(st.stressScore), sub: `${st.stress.filter(x => !x.over).length} of ${st.stress.length} heavy workloads` },
+      { label: 'Open high and medium', value: open, color: open ? 'var(--bad)' : 'var(--ok)', sub: `${st.added} new · ${st.resolved} resolved since last run` },
+      { label: 'Coverage', value: `${st.coverage.fuzzed}`, color: 'var(--color-text)', sub: `functions fuzzed · ${st.coverage.skipped} not fuzzable · ${st.coverage.files} files read` },
+    ];
+    const criteria = st.checks.map(c => { const status = c.inventory ? `${c.count} hosts` : c.pass ? (c.count ? 'Warning' : 'Pass') : 'Fail'; const col = c.inventory ? 'var(--info)' : c.pass ? (c.count ? 'var(--warn)' : 'var(--ok)') : 'var(--bad)'; return { criterion: c.criterion, title: c.title, fix: c.count ? `${c.count} found. ${c.fix}` : c.fix, status, fg: col, bg: `color-mix(in srgb, ${col} 16%, transparent)` }; });
+    const findings = st.findings.slice().sort((a, b) => (RANK[a.sev] ?? 9) - (RANK[b.sev] ?? 9)).slice(0, 60).map(f => ({ sev: SEV[f.sev][0], color: SEV[f.sev][1], title: f.title, where: f.where, criterion: f.criterion, detail: f.detail, fix: f.fix }));
+    const chaos = st.chaos.slice().sort((a, b) => b.crashes - a.crashes || b.cases - a.cases).slice(0, 40).map(c => ({ fn: c.fn, mod: c.mod, cases: c.cases, crashes: c.crashes, color: c.crashes ? 'var(--bad)' : 'var(--ok)', example: c.example || '—' }));
+    const stress = st.stress.map(x => ({ name: x.name, ms: x.ms, budget: x.budget, status: x.over ? 'Over' : 'Within', color: x.over ? 'var(--bad)' : 'var(--ok)' }));
+    const gaps = (st.skipped || []).slice(0, 60).map(g => ({ name: g.name, mod: g.mod, why: g.why }));
+    return { ...base, kpis, criteria, noCriteria: !criteria.length, critLine: `${st.checksPassing}/${st.checksTotal} pass · ${this.ago(st.t)}`, findings, noFindings: !findings.length, noFindingsText: 'No findings in the last run.', findLine: `${st.findings.length} total · showing ${findings.length} by severity`, chaos, chaosLine: `${st.chaos.reduce((a, c) => a + c.cases, 0).toLocaleString('en')} inputs`, stress, noStress: !stress.length, gaps };
+  }
+}
+</script>
+</body>
+</html>

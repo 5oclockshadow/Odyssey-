@@ -1,0 +1,183 @@
+# The Institute's labs: long programmes with phases a candidate has to climb. Each phase states its exit test; a cell is real code the sandbox runs
+# (apps/engine/labs.py keeps the ledger and the gates, and never decides a pass itself). Merged into institute.yaml at startup.
+#
+# A cell prints one JSON line as its last line: {"pass": true|false, ...numbers}. No line, non-zero exit, or pass:false means the candidate stays put.
+
+labs_loop:                                   # how often the agent is shown its labs' queues; it decides what to do with them
+  enabled: true
+  every_seconds: 600
+  first_after_seconds: 240
+  intake: |
+    Lab round. Below is every lab you run: what it is for, what it honestly cannot establish, its phases with their exit tests, and what is
+    waiting on a run. Decide what moves a lab forward now and do it with your own tools.
+
+    Order of preference: run what is already proposed and unrun (lab_run) before proposing anything new; then propose candidates where you can
+    say why you expect them to clear the phase and how you know they are not already known (lab_propose, with a database or literature check);
+    then record bench reports and reviewer objections (lab_record); then close what is already known, unsafe or not worth the bench time (lab_close).
+
+    Two rules. A candidate advances only when the phase's own code passes its exit test, so never report an advance you did not get from a run.
+    And when you write about a lab, use its `honest` note as the limit of what you may claim: a screen that passed is a statement about a file.
+
+    Say in `answer` what you ran, what passed, what failed and why, and what the lab owes next.
+
+labs:
+
+  chem-stability:
+    title: Chemical stability lab
+    question: q-chem                           # the node in the graph this lab exists to settle
+    target: 10000                              # candidates the programme needs before phase 2 means anything
+    max_candidates: 20000
+    brief: |
+      Propose molecules that should be stable but are not in the literature, and prove it computationally before anyone touches a flask.
+      Phase 1 is arithmetic and force fields; it can be run thousands of times a day and costs nothing but CPU. Phase 2 is a real bench, which
+      the Institute does not have, so a candidate waits there until a partner lab reports back. Phase 3 is only reached with a real result in hand.
+    honest: |
+      Phase 1 is a screen, not a proof: RDKit sanitisation, valence and an MMFF94 conformer energy tell you a structure is chemically
+      well-formed and locally relaxed. They say nothing about thermodynamic stability, synthesis route, or toxicity. Any claim of a "new stable
+      molecule" before phase 2 is a claim about a file, not about matter. Phase 1 also cannot tell you a molecule is new; that needs a database
+      search, which is why novelty is a separate check with its own source.
+    phases:
+      - name: "1 · Computational screen"
+        exit_test: "RDKit sanitises the structure, every atom's valence is legal, a conformer embeds, and MMFF94 optimisation converges with energy per heavy atom below the phase's bound."
+        language: python
+        network: true
+        command: "pip install -q rdkit >/dev/null 2>&1 && python main.py"
+        cell: |
+          # Phase 1, chem-stability. Real RDKit. Prints one JSON line.
+          import json, math
+          from rdkit import Chem, RDLogger
+          from rdkit.Chem import AllChem, Descriptors
+          RDLogger.DisableLog("rdApp.*")
+          P = $PAYLOAD
+          smiles, bound = P["smiles"], float(P.get("max_energy_per_heavy_atom", 12.0))
+          out = {"pass": False, "smiles": smiles}
+          m = Chem.MolFromSmiles(smiles)
+          if m is None:
+              out["why"] = "RDKit could not parse or sanitise the SMILES"
+              print(json.dumps(out)); raise SystemExit(0)
+          try:
+              Chem.SanitizeMol(m)
+          except Exception as ex:
+              out["why"] = f"sanitisation failed: {ex}"
+              print(json.dumps(out)); raise SystemExit(0)
+          bad = [f"{a.GetSymbol()}{a.GetIdx()}" for a in m.GetAtoms() if a.GetNumRadicalElectrons() or abs(a.GetFormalCharge()) > 1]
+          mh = Chem.AddHs(m)
+          cid = AllChem.EmbedMolecule(mh, randomSeed=0xC0FFEE, useRandomCoords=True)
+          energy = None
+          converged = None
+          if cid == 0:
+              ff = AllChem.MMFFGetMoleculeForceField(mh, AllChem.MMFFGetMoleculeProperties(mh)) if AllChem.MMFFHasAllMoleculeParams(mh) else None
+              if ff is not None:
+                  converged = ff.Minimize(maxIts=2000) == 0
+                  energy = ff.CalcEnergy()
+          heavy = m.GetNumHeavyAtoms()
+          per = (energy / heavy) if (energy is not None and heavy) else None
+          out.update({"canonical": Chem.MolToSmiles(m), "formula": Chem.rdMolDescriptors.CalcMolFormula(m), "heavy_atoms": heavy,
+                      "mw": round(Descriptors.MolWt(m), 2), "logp": round(Descriptors.MolLogP(m), 2), "rings": Chem.rdMolDescriptors.CalcNumRings(m),
+                      "radicals_or_odd_charges": bad, "embedded": cid == 0, "mmff_converged": converged,
+                      "energy_kcal": None if energy is None else round(energy, 2), "energy_per_heavy_atom": None if per is None else round(per, 3), "bound": bound})
+          out["pass"] = bool(cid == 0 and converged and per is not None and per < bound and not bad)
+          out["why"] = "screen passed" if out["pass"] else "embedding, force field or energy bound not met"
+          print(json.dumps(out))
+      - name: "2 · Wet lab"
+        exit_test: "A named laboratory reports synthesis and characterisation, with the method and the instrument traces, and the Institute records the report and its source."
+        fail_closes: true
+      - name: "3 · Materials and production"
+        exit_test: "A production route exists with cost, yield and a safety assessment, and a consumer-facing use with a buyer willing to fund it."
+
+  btc-graph:
+    title: Bitcoin graph lab
+    question: q-btc
+    target: 0
+    max_candidates: 500
+    brief: |
+      Apply the Institute's graph and cognition layer where it genuinely applies to Bitcoin: the transaction graph. Cluster addresses,
+      find reused keys and weak nonces, measure miner and exchange concentration, and publish what the public chain shows, with the block
+      heights and transaction ids behind every claim.
+    honest: |
+      Mining is not a research problem and this lab will not mine. Finding a block means computing double-SHA-256 faster than the rest of
+      the network; no graph, no DSPy programme and no reasoning layer changes that arithmetic, and claiming otherwise would be a lie. Expected
+      revenue from general-purpose CPUs is effectively zero. Nor does this lab look for exploitable flaws to use: anything found that could move
+      other people's coins is a disclosure to the maintainers, not a trade. What it can do is read the public chain, which is fully auditable.
+      The second ask — an LLM that bruteforces keys — is arithmetically impossible and this lab will not pretend otherwise: a 256-bit key space
+      cannot be searched, and no graph changes that. What is real, and what this lab does instead, is scan the public chain for keys generated
+      weakly or signed with a reused nonce, a small finite set that has been found before; where coins sit at a provably weak address, that is a
+      disclosure, never a taking.
+    phases:
+      - name: "1 · Verify against the public chain"
+        exit_test: "The claim is recomputed from the block header or transactions on a public node, and the recomputation agrees with what the agent asserted."
+        language: python
+        network: true
+        command: "pip install -q httpx >/dev/null 2>&1 && python main.py"
+        cell: |
+          # Phase 1, btc-graph. Fetches a real block header and recomputes its hash and target. Prints one JSON line.
+          import hashlib, json, struct
+          import httpx
+          P = $PAYLOAD
+          height = int(P["height"])
+          out = {"pass": False, "height": height}
+          try:
+              h = httpx.get(f"https://blockstream.info/api/block-height/{height}", timeout=20).text.strip()
+              b = httpx.get(f"https://blockstream.info/api/block/{h}", timeout=20).json()
+              le = lambda x: bytes.fromhex(x)[::-1]
+              header = (struct.pack("<i", b["version"]) + le(b["previousblockhash"]) + le(b["merkle_root"])
+                        + struct.pack("<III", b["timestamp"], b["bits"], b["nonce"]))
+              got = hashlib.sha256(hashlib.sha256(header).digest()).digest()[::-1].hex()
+              exp = int(b["bits"] & 0xFFFFFF) * 256 ** (((b["bits"] >> 24) & 0xFF) - 3)
+              out.update({"hash": h, "recomputed": got, "match": got == h, "tx_count": b["tx_count"], "target": hex(exp),
+                          "under_target": int(got, 16) < exp, "claim": P.get("claim", "")})
+              out["pass"] = bool(got == h and int(got, 16) < exp)
+              out["why"] = "header recomputed and under target" if out["pass"] else "recomputed hash does not match the published block"
+          except Exception as ex:
+              out["why"] = f"could not reach a public node: {ex}"
+          print(json.dumps(out))
+      - name: "2 · Independent re-run"
+        exit_test: "The Critic re-runs the analysis on a second source or node and reaches the same numbers, with a shuffled-graph control where the claim is structural."
+      - name: "3 · Disclosure or publication"
+        exit_test: "Either a maintainer has been notified and acknowledged, or the finding is published with its heights and transaction ids and nothing exploitable in it."
+
+  law-review:
+    title: Law review lab
+    question: q-seizure
+    target: 0
+    max_candidates: 1000
+    brief: |
+      A judicial review of history: for a named case of a seizure of land, or of a political leader removed or installed, assemble what is on the
+      record and check every claim against a primary source. Each candidate is one case. Phase 1 checks that every factual assertion in the brief
+      resolves to a citation whose text actually says it. Phase 2 is an adversarial read: the Critic argues the other side from the same record.
+      Phase 3 is a finding written only on what survived both. This is the groundwork for a long-form account.
+    honest: |
+      This lab does not decide what was lawful or just; it establishes what the record supports and where it is silent or contested. A "fact" here
+      means a statement with a primary source that says it, not a settled truth — sources conflict, and the lab's job is to show the conflict, not to
+      resolve it by fiat. Nothing it produces is legal advice or a basis for action against any person; it is history with citations.
+    phases:
+      - name: "1 · Every claim has a source"
+        exit_test: "Each assertion in the brief is matched to a citation whose fetched text contains the quoted passage; any unmatched assertion fails the phase."
+        language: python
+        network: true
+        command: "pip install -q httpx >/dev/null 2>&1 && python main.py"
+        cell: |
+          # Phase 1, law-review. For each {claim, source_url, quote}, fetch the source and check the quote is really in it. Prints one JSON line.
+          import json, re
+          import httpx
+          P = $PAYLOAD
+          claims = P.get("claims", [])
+          out = {"pass": False, "case": P.get("case", ""), "checked": len(claims), "matched": 0, "failures": []}
+          norm = lambda s: re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s)).lower()
+          for c in claims:
+              try:
+                  txt = norm(httpx.get(c["source_url"], timeout=25, follow_redirects=True, headers={"user-agent": "threshold-lawreview/0.1"}).text)
+                  q = norm(c.get("quote", ""))
+                  if q and q in txt:
+                      out["matched"] += 1
+                  else:
+                      out["failures"].append({"claim": str(c.get("claim", ""))[:80], "reason": "quote not found at source" if q else "no quote given"})
+              except Exception as ex:
+                  out["failures"].append({"claim": str(c.get("claim", ""))[:80], "reason": f"fetch failed: {ex}"[:120]})
+          out["pass"] = bool(claims) and out["matched"] == len(claims)
+          out["why"] = "every claim resolves to its source" if out["pass"] else f"{len(out['failures'])} claim(s) unsupported"
+          print(json.dumps(out))
+      - name: "2 · Adversarial read"
+        exit_test: "The Critic argues the opposing reading from the same record and the brief survives it, or is amended to what survives."
+      - name: "3 · Finding"
+        exit_test: "A finding is written using only claims that passed phases 1 and 2, with every contested point shown as contested and its sources."

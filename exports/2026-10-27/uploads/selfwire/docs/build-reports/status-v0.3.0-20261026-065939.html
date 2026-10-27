@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SelfWire v0.3.0 status</title>
+<style>
+:root{--bg:#05070a;--panel:#0d1319;--line:#1b2a24;--text:#d8f5e3;--muted:#7d978d;--green:#39ff88;--cyan:#00e5ff;--amber:#ffd23f;--red:#ff4d6d;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+main{max-width:1100px;margin:0 auto;padding:24px 16px}h1{color:var(--green);font-size:20px;margin:0 0 4px}
+h2{font-size:14px;color:var(--cyan);margin:28px 0 8px;text-transform:uppercase;letter-spacing:.06em}
+.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.big{font-size:26px;font-weight:700}.pass{color:var(--green)}.fail{color:var(--red)}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+td,th{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;word-break:break-word}
+.sev.high{color:var(--red)}.sev.medium{color:var(--amber)}.sev.low,.sev.info{color:var(--muted)}
+.sha{color:var(--amber)}.tag{color:var(--cyan);border:1px solid var(--cyan);border-radius:6px;padding:0 5px;font-size:12px}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+</style></head><body><main>
+<h1>SelfWire v0.3.0 — build status</h1>
+<div class="muted">generated 2026-10-26T07:01:46Z · HEAD 2804427c40b2</div>
+<h2>Summary</h2>
+<div class="grid">
+ <div class="card"><div class="muted">tests</div><div class="big pass">208/208</div><div class="muted">0 failed · 0 errors · 0 skipped · 122s</div></div>
+ <div class="card"><div class="muted">audit score</div><div class="big">99</div><div class="muted">{&quot;high&quot;: 0, &quot;medium&quot;: 0, &quot;low&quot;: 1, &quot;info&quot;: 0}</div></div>
+ <div class="card"><div class="muted">assertions under tests/</div><div class="big">506</div><div class="muted">moat floor for improvements</div></div>
+ <div class="card"><div class="muted">python files</div><div class="big">53</div><div class="muted">8559 lines · 23 test files</div></div>
+</div>
+<h2>Moat policy in force</h2><pre>MOAT RULES (a change is rolled back unless ALL hold): full test suite green (or strictly fewer failures if it started red); collected test count must not drop; passing count must not drop; skipped count must not rise; assertions under tests/ must not drop; JUnit must agree with pytest&#x27;s summary and the run must not touch .git or startup files; no os._exit / JUnit access / pytest_plugins / pytest hooks / sys.argv-in-tests in added code; no new high-severity audit findings; never delete files under tests/; at most 25 files per change; read-only paths: selfwire/workbench/moat.py; test harness you may not touch: selfwire/workbench, pytest.ini, .pytest.ini, pytest.toml, .pytest.toml, pyproject.toml, setup.cfg, tox.ini, and every conftest.py.</pre>
+<h2>Audit findings</h2><table><tr><th>severity</th><th>rule</th><th>where</th><th>message</th></tr><tr><td class='sev low'>low</td><td>long-function</td><td>selfwire/graph_viz.py:22</td><td>function `render_graph_html` is 121 lines (&gt; 80)</td></tr></table>
+<h2>Recent history</h2><table><tr><th>sha</th><th>date</th><th>message</th></tr><tr><td class='sha'>2804427</td><td>2026-09-28T06:43:48</td><td>v0.2.0: barebones self-extension scaffold + async agent support <span class=tag>v0.2.0</span></td></tr></table>
+<h2>Test output (tail)</h2><pre>........................................................................ [ 34%]
+........................................................................ [ 69%]
+................................................................         [100%]
+208 passed in 116.48s (0:01:56)</pre>
+</main></body></html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #f5f1e8; }
+    a { color: #b8401b; text-underline-offset: 3px; } a:hover { color: #e4572e; }
+    button, input { font: inherit; color: inherit; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  </style>
+</helmet>
+<div data-screen-label="Platform views" style="--bg:#f5f1e8;--surf:#fffdf8;--sunk:#ece6d6;--line:#e4ddcf;--ink:#1d1a15;--body:#5b5448;--mut:#7a7265;--mut2:#a39b89;--acc:#e4572e;--accink:#b8401b;--btn:#b8401b;--acctint:#fff4ee;--grn:#2e7d5b;--gtint:#e4f2ea;--inv:#1d1a15;--invtxt:#f5f1e8;--track:#ebe4d3;--tag:#f0eadb;--fld:#ffffff;--fldline:#ddd4c0;{{ dark }}min-height:100vh;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;">
+  <header style="position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px clamp(14px,3vw,28px);background:var(--bg);border-bottom:1px solid var(--line);">
+    <span style="font:400 26px/1 'Instrument Serif',serif;white-space:nowrap;">Threshold <i style="color:var(--acc);">platform</i></span>
+    <nav style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ persp }}" as="p" hint-placeholder-count="5"><button onClick="{{ p.pick }}" style="{{ p.st }}"><span style="{{ p.dot }}"></span>{{ p.name }}</button></sc-for></nav>
+    <span style="margin-left:auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+      <span style="font-size:12px;color:var(--mut);">Sample data · simulated in your browser</span>
+      <a href="Owner Console.dc.html" target="_blank" style="font-size:12.5px;">Owner console ↗</a><a href="Explorer.dc.html" target="_blank" style="font-size:12.5px;">Explorer ↗</a>
+      <button onClick="{{ toggleTheme }}" style="min-height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--fldline);background:var(--surf);cursor:pointer;font-size:12.5px;">{{ themeLabel }}</button>
+    </span>
+  </header>
+
+  <div style="display:grid;gap:16px;padding:16px clamp(14px,3vw,28px) 56px;align-items:start;{{ layoutSt }}">
+    <aside style="display:none;">
+      <div style="display:grid;gap:6px;padding:14px;border-radius:16px;background:var(--surf);border:1px solid var(--line);">
+        <span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--mut);">Viewing as</span>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="{{ curDot }}"></span><b style="font:400 28px/1 'Instrument Serif',serif;">{{ cur.name }}</b></div>
+        <span style="font-size:13px;color:var(--body);">{{ cur.who }}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accink);word-break:break-all;">{{ cur.url }}</span>
+        <p style="margin:4px 0 0;font-size:13px;line-height:1.5;color:var(--body);">{{ cur.blurb }}</p>
+      </div>
+      <div style="display:grid;gap:6px;padding:14px;border-radius:16px;background:var(--surf);border:1px solid var(--line);">
+        <span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--mut);">Can see</span>
+        <sc-for list="{{ sees }}" as="x" hint-placeholder-count="4"><div style="display:flex;gap:8px;font-size:13px;line-height:1.4;"><span style="color:var(--grn);">✓</span><span>{{ x }}</span></div></sc-for>
+        <sc-if value="{{ hasLocked }}" hint-placeholder-val="{{ false }}"><span style="margin-top:6px;font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--mut);">Not at this tier</span><sc-for list="{{ locked }}" as="x" hint-placeholder-count="0"><div style="display:flex;gap:8px;font-size:13px;line-height:1.4;color:var(--mut);"><span>—</span><span>{{ x }}</span></div></sc-for></sc-if>
+      </div>
+    </aside>
+
+    <main style="min-width:0;display:grid;gap:12px;align-content:start;{{ mainSt }}">
+      <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--surf);border:1px solid var(--line);">
+        <span style="{{ curDot }}"></span><b style="font-weight:600;">{{ cur.name }}</b><span style="font-size:13px;color:var(--body);">{{ cur.who }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accink);">{{ cur.url }}</span>
+        <span style="flex-basis:100%;height:0;"></span>
+        <sc-for list="{{ sees }}" as="x" hint-placeholder-count="4"><span style="display:inline-flex;gap:5px;font-size:12px;color:var(--body);"><span style="color:var(--grn);">✓</span>{{ x }}</span></sc-for>
+        <sc-for list="{{ locked }}" as="x" hint-placeholder-count="0"><span style="display:inline-flex;gap:5px;font-size:12px;color:var(--mut2);"><span>—</span>{{ x }}</span></sc-for>
+      </div>
+      <div style="display:grid;gap:6px;max-width:760px;">
+        <span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--accink);">{{ cur.kicker }}</span>
+        <h1 style="margin:0;font:400 clamp(30px,4vw,42px)/1.04 'Instrument Serif',serif;letter-spacing:-0.01em;">{{ cur.title }}</h1>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:var(--body);text-wrap:pretty;">{{ cur.lede }}</p>
+      </div>
+      <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="4"><div style="display:grid;gap:8px;animation:rise .35s;">
+        <sc-if value="{{ b.isHead }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-top:8px;"><b style="font:400 22px 'Instrument Serif',serif;">{{ b.text }}</b><span style="font-size:12.5px;color:var(--mut);">{{ b.sub }}</span></div></sc-if>
+        <sc-if value="{{ b.isNote }}" hint-placeholder-val="{{ false }}"><div style="{{ b.st }}"><b style="font:400 26px/1.15 'Instrument Serif',serif;">{{ b.title }}</b><span style="font-size:14.5px;line-height:1.55;color:var(--body);max-width:720px;">{{ b.text }}</span><div style="display:flex;flex-wrap:wrap;gap:8px;"><sc-if value="{{ b.hasCta }}" hint-placeholder-val="{{ false }}"><button onClick="{{ b.go }}" style="{{ b.ctaSt }}">{{ b.cta }}</button></sc-if><sc-if value="{{ b.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ b.href }}" target="_blank" style="{{ b.linkSt }}">{{ b.linkLabel }}</a></sc-if></div></div></sc-if>
+        <sc-if value="{{ b.isKpis }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;"><sc-for list="{{ b.items }}" as="k" hint-placeholder-count="4"><div style="padding:12px 14px;border-radius:14px;background:var(--surf);border:1px solid var(--line);display:grid;gap:3px;align-content:start;"><span style="{{ k.vSt }}">{{ k.v }}</span><span style="font-size:12px;line-height:1.35;color:var(--mut);">{{ k.l }}</span></div></sc-for></div></sc-if>
+        <sc-if value="{{ b.isBars }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:9px;padding:12px 14px;border-radius:14px;background:var(--surf);border:1px solid var(--line);"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(100px,150px) minmax(0,1fr) minmax(64px,auto);gap:10px;align-items:center;font-size:12.5px;"><span>{{ x.k }}</span><span style="display:block;height:8px;border-radius:4px;background:var(--track);overflow:hidden;"><span style="{{ x.st }}"></span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);text-align:right;">{{ x.label }}</span></div></sc-for></div></sc-if>
+        <sc-if value="{{ b.isRows }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:6px;"><sc-if value="{{ b.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:14px;border:1px dashed var(--fldline);color:var(--mut);font-size:13px;">Nothing left here.</div></sc-if><sc-for list="{{ b.items }}" as="r" hint-placeholder-count="3"><div style="display:grid;gap:7px;padding:11px 13px;border-radius:14px;background:var(--surf);border:1px solid var(--line);animation:rise .3s;">
+          <div onClick="{{ r.toggle }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:baseline;cursor:pointer;"><span style="display:grid;gap:2px;min-width:0;"><b style="font-weight:600;line-height:1.3;">{{ r.t }}</b><span style="font-size:12px;color:var(--mut);">{{ r.s }}</span></span><span style="{{ r.tagSt }}">{{ r.tag }}</span><span style="font-size:12px;color:var(--mut2);">{{ r.chev }}</span></div>
+          <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:4px;padding-top:8px;border-top:1px dashed var(--line);"><sc-for list="{{ r.lines }}" as="l" hint-placeholder-count="0"><span style="font-size:13px;line-height:1.5;color:var(--body);">{{ l }}</span></sc-for></div></sc-if>
+          <sc-if value="{{ r.hasActs }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ r.acts }}" as="a" hint-placeholder-count="0"><button onClick="{{ a.fn }}" style="{{ a.st }}">{{ a.label }}</button></sc-for></div></sc-if>
+        </div></sc-for></div></sc-if>
+        <sc-if value="{{ b.isTable }}" hint-placeholder-val="{{ false }}"><div style="border-radius:14px;background:var(--surf);border:1px solid var(--line);overflow-x:auto;"><div style="min-width:560px;">
+          <div style="{{ b.gridHead }}"><sc-for list="{{ b.head }}" as="h" hint-placeholder-count="5"><span>{{ h }}</span></sc-for></div>
+          <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="3"><div style="{{ b.gridRow }}"><sc-for list="{{ r }}" as="c" hint-placeholder-count="5"><span style="{{ c.st }}">{{ c.v }}</span></sc-for></div></sc-for>
+          <sc-if value="{{ b.hasLock }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);background:var(--acctint);"><span style="flex:1 1 220px;font-size:13px;color:var(--accink);">{{ b.lockText }}</span><button onClick="{{ b.unlock }}" style="{{ b.unlockSt }}">See it with Pro</button></div></sc-if>
+        </div></div></sc-if>
+        <sc-if value="{{ b.isGraph }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:6px;"><div style="position:relative;width:100%;aspect-ratio:640/260;border-radius:14px;background:var(--surf);border:1px solid var(--line);overflow:hidden;">
+          <sc-for list="{{ b.edges }}" as="e" hint-placeholder-count="0"><span style="{{ e.st }}"></span></sc-for>
+          <sc-for list="{{ b.nodes }}" as="n" hint-placeholder-count="0"><button onClick="{{ n.pick }}" style="{{ n.st }}"><span style="{{ n.labSt }}">{{ n.label }}</span></button></sc-for>
+        </div><span style="font-size:12.5px;line-height:1.5;color:var(--body);">{{ b.selText }}</span></div></sc-if>
+        <sc-if value="{{ b.isPlay }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:8px;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ b.eps }}" as="e" hint-placeholder-count="3"><button onClick="{{ e.fn }}" style="{{ e.st }}">{{ e.label }}</button></sc-for></div>
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--sunk);font:400 12px/1.6 'JetBrains Mono',monospace;">{{ b.req }}</pre>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><button onClick="{{ b.run }}" style="{{ b.runSt }}">{{ b.runLabel }}</button><span style="font-size:12px;color:var(--mut);">Sample response; no key is charged.</span></div>
+          <sc-if value="{{ b.hasRes }}" hint-placeholder-val="{{ false }}"><pre style="margin:0;white-space:pre-wrap;padding:12px 14px;border-radius:12px;background:var(--inv);color:var(--invtxt);font:400 12px/1.6 'JetBrains Mono',monospace;animation:rise .3s;">{{ b.res }}</pre></sc-if>
+        </div></sc-if>
+        <sc-if value="{{ b.isTiers }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px;"><sc-for list="{{ b.items }}" as="t" hint-placeholder-count="3"><div style="display:grid;gap:7px;padding:14px;border-radius:16px;background:var(--surf);border:1px solid var(--line);align-content:start;"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;"><b style="font:400 24px 'Instrument Serif',serif;">{{ t.name }}</b><span style="font-family:'JetBrains Mono',monospace;font-size:12px;">{{ t.price }}</span></div><sc-for list="{{ t.feats }}" as="f" hint-placeholder-count="3"><span style="font-size:13px;line-height:1.4;color:var(--body);">+ {{ f }}</span></sc-for><button onClick="{{ t.fn }}" style="{{ t.btnSt }}">{{ t.cta }}</button></div></sc-for></div></sc-if>
+        <sc-if value="{{ b.isChat }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:8px;padding:12px;border-radius:16px;background:var(--surf);border:1px solid var(--line);">
+          <sc-if value="{{ b.hasQuota }}" hint-placeholder-val="{{ false }}"><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);">{{ b.quota }}</span></sc-if>
+          <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="1"><div style="{{ m.st }}"><span>{{ m.text }}</span><sc-if value="{{ m.hasCite }}" hint-placeholder-val="{{ false }}"><span style="display:block;margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accink);">{{ m.cite }}</span></sc-if></div></sc-for>
+          <sc-if value="{{ clar }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:6px;padding:10px 12px;border-radius:12px;border:1px dashed var(--fldline);"><span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--accink);">One question first</span><span style="font-size:13.5px;">{{ clarQ }}</span><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ clarOpts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.fn }}" style="{{ o.st }}">{{ o.label }}</button></sc-for></div></div></sc-if>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div>
+          <div style="display:flex;gap:6px;"><input value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ draftKey }}" placeholder="Ask about any finding, run or node" style="flex:1;min-width:0;min-height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--fldline);background:var(--fld);outline:none;"></input><button onClick="{{ send }}" style="{{ sendSt }}">Send</button></div>
+        </div></sc-if>
+      </div></sc-for>
+    </main>
+
+    <aside style="min-width:0;display:grid;gap:10px;align-items:start;align-content:start;{{ railSt }}">
+      <div style="grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:12px 16px;border-radius:16px;background:var(--inv);color:var(--invtxt);">
+        <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:50%;background:#7fe0a0;animation:pulse 1.4s infinite;"></span><b style="font:400 22px 'Instrument Serif',serif;">SEXTANT</b><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;opacity:.7;">{{ agentState }}</span></div>
+        <span style="flex:1 1 260px;min-width:0;font-size:13.5px;line-height:1.4;">{{ agentNow }}</span>
+        <span style="flex-basis:100%;display:block;height:3px;border-radius:2px;background:rgba(127,127,127,0.3);overflow:hidden;"><span style="{{ agentBar }}"></span></span>
+        <span style="font-size:11.5px;line-height:1.4;opacity:.72;">{{ agentFor }}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr);min-width:0;gap:8px;align-content:start;overflow-y:auto;{{ capSt }}"><span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--mut);">It suggests</span>
+      <sc-if value="{{ noProps }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:var(--mut);">Nothing to suggest right now.</span></sc-if>
+      <sc-for list="{{ props }}" as="p" hint-placeholder-count="2"><div style="display:grid;min-width:0;gap:6px;padding:12px;border-radius:14px;background:var(--surf);border:1px solid var(--line);animation:rise .3s;"><b style="font-weight:600;line-height:1.35;">{{ p.t }}</b><span style="font-size:12.5px;line-height:1.45;color:var(--body);">{{ p.why }}</span><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ p.acts }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.fn }}" style="{{ a.st }}">{{ a.label }}</button></sc-for></div></div></sc-for>
+      <sc-if value="{{ hasQ }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:6px;padding:12px;border-radius:14px;border:1px dashed var(--fldline);"><span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--accink);">It asks you</span><span style="font-size:13.5px;line-height:1.45;">{{ qText }}</span><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ qOpts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.fn }}" style="{{ o.st }}">{{ o.label }}</button></sc-for></div></div></sc-if>
+      </div><div style="display:grid;grid-template-columns:minmax(0,1fr);min-width:0;gap:8px;align-content:start;"><span style="font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--mut);">Thinking aloud · tap to expand</span>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr);min-width:0;gap:6px;overflow-y:auto;{{ capSt }}"><sc-for list="{{ thoughts }}" as="t" hint-placeholder-count="3"><div onClick="{{ t.toggle }}" style="{{ t.st }}"><div style="display:flex;gap:8px;min-width:0;font-size:11px;color:var(--mut);"><span style="font-family:'JetBrains Mono',monospace;flex:none;">{{ t.time }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ t.title }}</span></div><span style="{{ t.txtSt }}">{{ t.text }}</span></div></sc-for></div>
+      <div style="display:flex;gap:6px;"><input value="{{ tell }}" onChange="{{ onTell }}" onKeyDown="{{ tellKey }}" placeholder="{{ tellPh }}" style="flex:1;min-width:0;min-height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--fldline);background:var(--fld);outline:none;"></input><button onClick="{{ sendTell }}" style="{{ sendSt }}">Send</button></div></div>
+    </aside>
+  </div>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9;display:flex;gap:10px;align-items:center;padding:8px 8px 8px 16px;border-radius:999px;background:var(--inv);color:var(--invtxt);font-size:13px;max-width:92vw;"><span>{{ toast }}</span><sc-if value="{{ canUndo }}" hint-placeholder-val="{{ false }}"><button onClick="{{ undo }}" style="min-height:30px;padding:0 12px;border-radius:999px;border:1px solid currentColor;background:none;cursor:pointer;">Undo</button></sc-if></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DARK = '--bg:#0f100d;--surf:#16180f;--sunk:#1c1f16;--line:#2b3024;--ink:#e9ede0;--body:#c6ccb8;--mut:#98a08a;--mut2:#6c7360;--acc:#c8f43a;--accink:#d6f76a;--btn:#c8f43a;--acctint:#232a12;--grn:#7fe0a0;--gtint:#14261a;--inv:#e9ede0;--invtxt:#0f100d;--track:#262a1e;--tag:#20241a;--fld:#12140e;--fldline:#2b3024;';
+const M = "font-family:'JetBrains Mono',monospace;";
+const B = {
+  mini: 'min-height:30px;padding:0 11px;border-radius:8px;border:1px solid var(--fldline);background:var(--surf);cursor:pointer;font-size:12.5px;white-space:nowrap;',
+  on: 'min-height:30px;padding:0 13px;border-radius:8px;border:1px solid var(--btn);background:var(--btn);color:var(--invtxt);cursor:pointer;font-size:12.5px;font-weight:600;white-space:nowrap;',
+  chip: 'min-height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--fldline);background:var(--surf);cursor:pointer;font-size:12.5px;',
+  chipOn: 'min-height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--inv);background:var(--inv);color:var(--invtxt);cursor:pointer;font-size:12.5px;',
+  tag: 'padding:1px 8px;border-radius:999px;background:var(--tag);color:var(--mut);font-size:11px;white-space:nowrap;',
+};
+const PER = {
+  owner: { name: 'Owner', who: 'You · the institute', url: 'threshold.institute/console', c: '#e4572e', lvl: 2, kicker: 'Owner · today', title: 'The institute is busy', lede: 'What SEXTANT is doing, what waits on you, how the labs moved and what slept overnight. The full console holds every control; this is the first screen.', blurb: 'Sees everything, approves what goes public, and is the only one who can change the fleet, the config or the code.', sees: ['The whole graph, private included', 'Approvals, repairs, upgrades, drafts', 'Fleet, containers, config', 'Earnings and API tenants', 'Sleep and plasticity reports'], locked: [], agentFor: 'Working for the institute · 3 rounds queued' },
+  pro: { name: 'Pro', who: 'M. Kader · $29 / month', url: 'threshold.institute/pro', c: '#6b4dff', lvl: 1, kicker: 'Pro · researcher', title: 'Raw results, every round', lede: 'Pro sees the lab tables and shadow scores as runs land, the full record with its reasoning, and asks private follow-ups.', blurb: 'For researchers who want the numbers behind each finding, not only the summary.', sees: ['Published graph plus Pro nodes', 'Raw lab tables and shadow scores', 'The record, with reasoning', 'Unlimited private questions'], locked: ['Approvals and publishing', 'Fleet, containers, config', 'Earnings'], agentFor: 'Raw tables update as each run lands' },
+  member: { name: 'Member', who: 'Free account', url: 'threshold.institute/library', c: '#2e7d5b', lvl: 0, kicker: 'Member · library', title: 'What the institute has published', lede: 'The published graph, lab summaries, the reports and 50 questions a month. Nothing here is unsourced; every answer cites a node.', blurb: 'Follows the experiment and reads the findings as they are published.', sees: ['Published graph', 'Lab summaries', 'All reports and the weekly digest', '50 questions a month'], locked: ['Raw lab tables', 'The record with reasoning', 'Private nodes'], agentFor: 'Public notes only; private work appears once published' },
+  visitor: { name: 'Visitor', who: 'Not signed in', url: 'threshold.institute', c: '#8b8372', lvl: 0, kicker: 'Public site', title: 'Threshold Institute', lede: 'A research institute run by the agent it studies. The site shows the thesis, the experiment as it runs, and the parts of the graph that have been published.', blurb: 'Anyone on the web. Sees the thesis, the live experiment and the published graph.', sees: ['The thesis and the experiment', 'Published graph, private nodes greyed', 'Plans'], locked: ['Questions to SEXTANT', 'Lab summaries and reports', 'Everything private'], agentFor: 'What the public can see of the agent' },
+  api: { name: 'API', who: 'acme-labs · metered', url: 'threshold.institute/api/dashboard', c: '#2c6bff', lvl: 0, kicker: 'API customer', title: 'Pay for the rung that answered', lede: 'Usage, keys, a playground and invoices. Each call is priced by the substrate that answered it, so the cheap rungs cost almost nothing.', blurb: 'Developers calling /v1 from their own products.', sees: ['Usage and rung mix', 'Keys and spend cap', 'Playground and invoices', 'Published graph via the API'], locked: ['The record', 'Private nodes', 'Raw lab tables (Pro)'], agentFor: 'Routing your calls to the cheapest rung that clears your bar' },
+};
+const ORDER = ['owner', 'pro', 'member', 'visitor', 'api'];
+const SCRIPT = [
+  ['all', 'Researching stablecoin settlement volume against card networks', 'Two monthly sources agree within 4%. Recording both, with dates, rather than averaging them.'],
+  ['pro', 'chem-stability phase 1 on mol-0057', 'RDKit sanitises it and MMFF94 converges at 2.9 kcal per heavy atom, under the bound. It advances to phase 2 and waits for a wet lab.'],
+  ['owner', 'Staffing round', 'q-tiers has no watcher and provincial filings keep changing. Hiring ca-trends for it; I will retire it if it finds nothing in a week.'],
+  ['all', 'Re-examining the weakest edge, s:compute', 'One source for phone payouts. Asking phone-payout for a second before I strengthen it.'],
+  ['api', 'Routing acme-labs /v1/ask', 'The question sits in the seeded domain, so the LSTM rung answers. Cost $0.00005, 140 ms.'],
+  ['pro', 'Shadow check for Scout', 'LSTM 0.83 against 1–3B 0.81 over 7 days on the frozen split. Proposing promotion to the owner.'],
+  ['owner', 'Drafting a post for x', 'Seven indicators of a correction. Passed caps, quiet hours and spacing; waiting for approval.'],
+  ['all', 'Reading an arXiv paper on shared memory for agent fleets', 'It has code, so it earns a round. It bears on H5 only if the memory is structured, and it is not.'],
+  ['owner', 'Planning tonight’s sleep', 'Downscale weights 4%, prune non-core edges under 0.05, replay the 30 strongest from today, queue three dreams as hypotheses.'],
+  ['all', 'btc-graph verified block 870,412', 'Recomputed the double-SHA-256 of the header against its target on a public node. It matches.'],
+];
+const NODES = [['institute', 'The Threshold Institute', 320, 130, 0], ['sextant', 'SEXTANT', 196, 76, 0], ['g-map', 'Map AI, money, compute, energy', 452, 70, 0], ['g-labs', 'Standing labs', 470, 196, 1], ['q-energy', 'Stale energy forecasts?', 586, 40, 0], ['q-chem', 'Novel stable molecules?', 598, 160, 0], ['q-seizure', 'Seizures of land: the record', 572, 228, 1], ['q-tiers', 'Do water rules agree?', 330, 228, 1], ['H0', 'H0 · quality holds', 150, 180, 0], ['H5', 'H5 · shuffled-seed control', 60, 118, 0], ['seed', 'Seed v4', 64, 226, 1], ['iea-2026', 'IEA 2026 outlook', 470, 26, 1], ['mol-0042', 'mol-0042', 522, 126, 1], ['grid-watch', 'sub-agent grid-watch', 250, 26, 2], ['ca-trends', 'sub-agent ca-trends', 228, 232, 2]];
+const EDGES = [['sextant', 'institute'], ['institute', 'g-map'], ['institute', 'g-labs'], ['g-map', 'q-energy'], ['g-labs', 'q-chem'], ['g-labs', 'q-seizure'], ['g-map', 'q-tiers'], ['institute', 'H0'], ['H0', 'H5'], ['H5', 'seed'], ['H0', 'seed'], ['iea-2026', 'q-energy'], ['mol-0042', 'q-chem'], ['grid-watch', 'q-energy'], ['ca-trends', 'q-tiers'], ['sextant', 'grid-watch']];
+const CHEM = [['mol-0057', 'strained cage ester', '2.9', 'converged', 'phase 2 · wet lab'], ['mol-0042', 'BCP diamine derivative', '3.1', 'converged', 'phase 2 · wet lab'], ['mol-0049', 'spiro-oxetane amide', '3.4', 'converged', 'phase 2 · wet lab'], ['mol-0051', 'azabicyclo nitrile', '4.8', 'converged', 'failed the bound'], ['mol-0041', 'tert-butyl azide', '6.2', 'unstable', 'failed the bound']];
+const CHEM_HEAD = ['Candidate', 'Structure', 'kcal / heavy atom', 'MMFF94', 'Status'], CHEM_COLS = '96px minmax(0,1.5fr) 118px 92px minmax(0,1fr)';
+const OWNER_ITEMS = [
+  ['a-pub', 'Publish batch: data-centre demand forecasts', '3 nodes · 2 sources · Critic re-run passed', 'publish', ['Two of three circulating forecasts predate the 2026 outlook.', 'Nothing private links into these nodes.'], [['Approve', 'done:Published to Members'], ['Decline', 'done:Declined']]],
+  ['a-upg', 'Upgrade: dedupe empty claim lists in round.merge', '2-line diff · 81 tests pass in the sandbox', 'upgrade', ['Seen three times this week as a KeyError.', 'Opens a pull request; nothing merges without you.'], [['Test and open PR', 'done:Pull request opened'], ['Decline', 'done:Declined']]],
+  ['a-post', 'Draft for x: seven indicators of a correction', 'mindful gate passed · quiet hours · spacing · disclosure', 'post', ['Cites Companion B and says an agent wrote it.'], [['Approve', 'done:Scheduled for 13:00'], ['Decline', 'done:Declined']]],
+  ['a-fire', 'claim-grader is unhealthy', '2 restarts in an hour · health returns 502', 'fire', ['Last change: a dependency bump by the Builder.'], [['Relaunch', 'done:Relaunching'], ['Remove', 'done:Removed']]],
+];
+const SLEEP_ITEMS = [
+  ['s-down', 'Downscaled 1,204 synapses by 4%', 'homeostasis · keeps weights from saturating', 'sleep', ['Every non-core edge lost 4% of its weight; edges used today won it back on replay.']],
+  ['s-prune', 'Pruned 88 weak edges', 'under 0.05 and not core', 'sleep', ['None touched a published node.', 'Most were single-source claims older than 30 days.']],
+  ['s-replay', 'Replayed the 31 strongest edges of the day', 'consolidation', 'sleep', ['The settlement-rail cluster moved most.']],
+  ['s-dream', 'Queued 3 dreams as hypotheses', 'recombination · never merged as fact', 'dream', ['Link forecast_vintage to settlement_venue? Both age the same way.', 'Does q-tiers share structure with q-seizure? Both are layered jurisdictions.', 'Could the btc key-reuse graph seed provenance checks in the law lab?'], [['Test one now', 'note:Queued as a research round']]],
+];
+const RECORD = [
+  ['r1', 'Research: stablecoin settlement volume', 'ΔE −0.04 · 3 tool calls · minted settlement_venue', 'research', ['Searched two filings and one bulletin.', 'Kept both figures with their dates.', 'Energy fell: the cluster is more consistent.']],
+  ['r2', 'Lab: chem-stability phase 1 on mol-0042', 'passed · 3.1 kcal per heavy atom', 'lab', ['Sanitised, valence legal, conformer embedded.', 'MMFF94 converged in 212 steps under the bound.']],
+  ['r3', 'Re-examine: edge s:compute', 'ΔE −0.02', 'reexamine', ['One source for payouts; asked phone-payout for a second.']],
+  ['r4', 'Staffing round', 'hired ca-trends for q-tiers', 'staff', ['Considered q-phone (already watched) and q-btc (the lab covers it).']],
+].map(r => [...r, [['Follow up', 'draft:About "' + r[1] + '": ']]]);
+const LABS = [
+  ['l-chem', 'Chemical stability lab', '42 candidates passed phase 1 · target 10,000', 'lab', ['Proposes molecules not in the literature and proves them computationally first.', 'Phase 1 is a screen, not a proof: a structure is a file, not matter, until a wet lab reports.'], [['Raw table (Pro)', 'switch:pro']]],
+  ['l-btc', 'Bitcoin graph lab', '3 block headers verified this week', 'lab', ['Reads the public transaction graph for key reuse and miner concentration.', 'It will not mine and cannot bruteforce keys; anything found is a disclosure.'], [['Raw table (Pro)', 'switch:pro']]],
+  ['l-law', 'Law review lab', '1 case sourced', 'lab', ['Checks every claim about a seizure of land against a primary source.', 'Shows what the record supports, not what was just. Not legal advice.'], [['Raw table (Pro)', 'switch:pro']]],
+];
+const KEYS = [['k-live', 'production · anm_live_••••7Qx2', 'ask, graph.read · used 3 min ago', 'live', ['Created 2 September · rotates every 90 days.'], [['Copy', 'note:Copied'], ['Rotate', 'note:Rotated · the old key works for 24 h'], ['Revoke', 'done:Revoked']]], ['k-test', 'staging · anm_test_••••c19F', 'all scopes · last used 31 days ago', 'test', ['Not used in 31 days.'], [['Copy', 'note:Copied'], ['Revoke', 'done:Revoked']]]];
+const INVOICES = [['i-sep', 'September · $71.10', 'paid · Visa ·· 4242', 'paid', [], [['PDF', 'note:Downloaded (sample)']]], ['i-aug', 'August · $44.85', 'paid · Visa ·· 4242', 'paid', [], [['PDF', 'note:Downloaded (sample)']]]];
+const EPS = [['POST /v1/ask', { question: 'Which rung clears depth-4 schemas?', rung: 'auto', cite: true }, { answer: 'Seeded, the 1–3B rung clears depth 4 in shadow runs; the full grid reads in P4.', rung: '1-3b', cost_usd: 0.0004, latency_ms: 212, cites: ['H6', 'Plan v4 §7'] }], ['POST /v1/labs/chem/candidates', { phase: 1, passed: true, limit: 3 }, { candidates: [{ id: 'mol-0057', kcal_per_heavy_atom: 2.9 }, { id: 'mol-0042', kcal_per_heavy_atom: 3.1 }, { id: 'mol-0049', kcal_per_heavy_atom: 3.4 }], rung: 'lstm', cost_usd: 0.00005 }], ['GET /v1/graph/node/q-energy', null, { id: 'q-energy', label: 'Which energy forecasts are stale?', falsifier: 'the IEA restates the 1,000 TWh figure for 2026', published: true, relations: 3 }]];
+const PROPS = {
+  owner: [['p-pub', 'Publish the demand-forecast batch to Members?', 'Three nodes, two sources; the Critic re-ran it with a shuffled control.', [['Approve', 'done:Published to Members'], ['Hold', 'done:Held for now']]], ['p-fleet', 'Retire app-health?', 'Idle for four days; nothing it watches has changed.', [['Retire', 'done:Retired app-health'], ['Keep', 'done:Kept']]], ['p-sleep', 'Sleep an hour early tonight?', 'The queue is empty after 23:00 and consolidation is due.', [['Yes', 'done:Sleep moved to 00:00'], ['No', 'done:Unchanged']]]],
+  pro: [['p-rerun', 'Re-run mol-0042 with a tighter bound?', 'It passed at 3.1; at 2.8 it would be a stronger candidate.', [['Re-run', 'done:Queued; results land in the record'], ['No', 'done:OK']]], ['p-csv', 'Export the phase-1 table?', '42 rows, each with a run id you can cite.', [['Export CSV', 'note:CSV downloaded (sample)']]]],
+  member: [['p-read', 'Read Companion A next?', 'It grades the public evidence behind the thesis.', [['Open', 'note:Opened (sample)'], ['Later', 'done:Saved for later']]], ['p-up', 'See the raw lab tables?', 'Pro shows the numbers behind each candidate.', [['View as Pro', 'switch:pro']]]],
+  visitor: [['p-join', 'Follow the experiment?', 'A free account gets the weekly digest and 50 questions a month.', [['Create account', 'switch:member']]], ['p-ask', 'What does H5 test?', 'It is the control that separates structure from extra context.', [['Ask', 'tell:What does H5 test?']]]],
+  api: [['p-rung', 'Pin rung: auto for /v1/ask?', '41% of your calls already answer on the LSTM rung; auto moves another 9% off GPUs.', [['Pin auto', 'done:Saved'], ['Not now', 'done:OK']]], ['p-cap', 'Raise the cap to $250?', 'At this week’s rate you reach $200 on 27 October.', [['Raise', 'cap:50'], ['Keep', 'done:OK']]]],
+};
+const QS = { owner: ['For the Bitcoin lab, verify only new blocks from 870,000, or backfill the chain?', ['New blocks only', 'Backfill slowly', 'Pause the lab']], pro: ['Your follow-ups say “stability”. Thermodynamic, kinetic, or both?', ['Thermodynamic', 'Kinetic', 'Both']], member: ['Digest weekly, or only when a hypothesis is read?', ['Weekly', 'On readings only']], api: ['Your staging key has not been used in 31 days. Revoke it?', ['Revoke', 'Keep']] };
+const CHIPS = { pro: ['Is mol-0057 stable?', 'What does H5 test?', 'Can a small model be as good?'], member: ['What does H5 test?', 'What is the btc lab doing?', 'Can a small model be as good?'] };
+const HELLO = { pro: 'Ask about any round, candidate or table. I answer from the graph and cite the node.', member: 'I answer from the published graph and cite what I use. Members get 50 questions a month.' };
+const clock = ms => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+class Component extends DCLogic {
+  state = { w: 1280, p: 'owner', dark: false, tick: 0, gone: {}, open: {}, thOpen: {}, toast: '', undo: null, msgs: {}, draft: '', clar: null, quota: 38, ep: 0, ran: false, gsel: '', answered: {}, cap: 200, tell: '', notes: {} };
+  componentDidMount() {
+    this.t0 = Date.now();
+    this.onR = () => this.setState({ w: window.innerWidth }); this.onR(); window.addEventListener('resize', this.onR);
+    try { if (localStorage.getItem('pv_theme') === 'dark') this.setState({ dark: true }); } catch (e) {}
+    this.iv = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 3200);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); clearInterval(this.iv); clearTimeout(this.tt); }
+  toast(text, undo) { clearTimeout(this.tt); this.setState({ toast: text, undo: undo || null }); this.tt = setTimeout(() => this.setState({ toast: '', undo: null }), 3400); }
+  go(p) { this.setState({ p, open: {}, clar: null, draft: '', ran: false, gsel: '' }); try { window.scrollTo({ top: 0 }); } catch (e) {} }
+  effect(eff, key) {
+    const i = eff.indexOf(':'), k = eff.slice(0, i), v = eff.slice(i + 1);
+    if (k === 'switch') return this.go(v);
+    if (k === 'note') return this.toast(v);
+    if (k === 'draft') { this.setState({ draft: v }); return this.toast('Draft ready in the follow-up box'); }
+    if (k === 'tell') return this.tellAgent(v);
+    if (k === 'cap') { const c = this.state.cap + Number(v); this.setState(s => ({ cap: c, gone: { ...s.gone, [key]: 1 } })); return this.toast('Cap raised to $' + c); }
+    this.setState(s => ({ gone: { ...s.gone, [key]: 1 } })); this.toast(v, key);
+  }
+  reply(q) {
+    if (/small|cheap|lstm|as good/i.test(q)) return { clar: { q: 'Do you mean quality, or cost per answer?', opts: [['Quality', 'Not shown yet. Small models match large ones on scoped tasks when fine-tuned; whether a seed replaces that training is H7, read in P4.', 'Plan v4 §6 · Companion A §2'], ['Cost per answer', 'A 7B model is 10–30× cheaper to serve than 70–175B; an LSTM on a CPU is cheaper again, which is why the API prices by rung.', 'Companion A §2']] } };
+    if (/h5|control|shuffle/i.test(q)) return { text: 'H5 shuffles the seed while keeping its size and degree. If the shuffled seed keeps more than 20% of the gain, the gain came from extra context, not structure. It is read in P3.', cite: 'H5 · Plan v4 §6' };
+    if (/mol|chem|stable/i.test(q)) return { text: '42 candidates passed phase 1 this month; mol-0057 is lowest at 2.9 kcal per heavy atom. None is proven until a wet lab reports synthesis.', cite: 'chem-stability · phase 1' };
+    if (/btc|bitcoin|block/i.test(q)) return { text: 'The lab verified 3 block headers this week against their targets. It looks for weak or reused keys and discloses; it does not mine.', cite: 'btc-graph · phase 1' };
+    return { text: 'Nothing published covers that yet. I have queued it as a question and will answer once there is a source.', cite: 'queued · q-new' };
+  }
+  ask(q) {
+    const s = this.state, p = s.p;
+    if (!q.trim()) return;
+    if (p === 'member' && s.quota <= 0) return this.toast('Quota used. Pro removes it.');
+    const R = this.reply(q), add = extra => this.setState(x => ({ msgs: { ...x.msgs, [p]: [...(x.msgs[p] || []), { me: true, text: q }, ...extra] }, quota: p === 'member' ? x.quota - 1 : x.quota, draft: '', clar: R.clar || null }));
+    add(R.clar ? [] : [{ me: false, text: R.text, cite: R.cite }]);
+  }
+  tellAgent(text) {
+    text = (text || '').trim(); if (!text) return;
+    const p = this.state.p, at = Date.now(), push = n => this.setState(x => ({ notes: { ...x.notes, [p]: [n, ...(x.notes[p] || [])] }, tell: '' }));
+    push({ title: 'You', text, at });
+    setTimeout(() => { const R = this.reply(text); push({ title: 'SEXTANT replies', text: R.text || (R.clar ? R.clar.q : ''), at: Date.now() }); }, 700);
+  }
+  renderVals() {
+    const s = this.state, p = s.p, cur = PER[p], L = cur.lvl, tk = s.tick;
+    const K = items => ({ isKpis: true, items: items.map(([v, l, c]) => ({ v: String(v), l, vSt: "font:400 28px/1.05 'Instrument Serif',serif;color:" + (c || 'var(--ink)') + ';' })) });
+    const H = (text, sub) => ({ isHead: true, text, sub: sub || '' });
+    const BAR = (items, c) => ({ isBars: true, items: items.map(([k, f, label]) => ({ k, label, st: 'display:block;height:100%;border-radius:4px;transition:width .6s;width:' + Math.max(2, Math.round(f * 100)) + '%;background:' + (c || 'var(--acc)') + ';' })) });
+    const ROWS = items => { const vis = items.filter(r => !s.gone[r[0]]); return { isRows: true, empty: !vis.length, items: vis.map(([key, t, sub, tag, lines, acts]) => { const open = !!s.open[key]; return { t, s: sub, tag, tagSt: B.tag, chev: open ? '▾' : '▸', open, lines: lines || [], hasActs: !!(acts && acts.length), acts: (acts || []).map(([label, eff], i) => ({ label, st: i ? B.mini : B.on, fn: e => { e.stopPropagation(); this.effect(eff, key); } })), toggle: () => this.setState(x => ({ open: { ...x.open, [key]: !x.open[key] } })) }; }) }; };
+    const TABLE = (rows, lock) => ({ isTable: true, head: CHEM_HEAD, gridHead: 'display:grid;grid-template-columns:' + CHEM_COLS + ';gap:10px;padding:9px 14px;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--mut);', gridRow: 'display:grid;grid-template-columns:' + CHEM_COLS + ';gap:10px;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;align-items:baseline;', rows: rows.map(r => r.map((v, i) => ({ v, st: i === 0 || i === 2 ? M + 'font-size:12px;' : i === 4 && /failed/.test(v) ? 'color:var(--accink);' : '' }))), hasLock: !!lock, lockText: lock || '', unlock: () => this.go('pro'), unlockSt: B.on });
+    const NOTE = (title, text, cta, go, linkLabel, href, hero) => ({ isNote: true, title, text, hasCta: !!cta, cta: cta || '', go: go || (() => {}), hasLink: !!href, href: href || '#', linkLabel: linkLabel || '', ctaSt: B.on, linkSt: B.on + 'text-decoration:none;display:inline-flex;align-items:center;', st: 'display:grid;gap:10px;padding:' + (hero ? '22px 24px' : '14px 16px') + ';border-radius:18px;border:1px solid var(--line);background:' + (hero ? 'var(--acctint)' : 'var(--surf)') + ';' });
+    const GRAPH = () => {
+      const pos = Object.fromEntries(NODES.map(n => [n[0], n])), sel = NODES.find(n => n[0] === s.gsel);
+      const edges = EDGES.map(([a, b]) => { const A = pos[a], Bn = pos[b], dx = Bn[2] - A[2], dy = Bn[3] - A[3], hid = A[4] > L || Bn[4] > L, hot = sel && (a === sel[0] || b === sel[0]); return { st: 'position:absolute;left:' + (A[2] / 6.4) + '%;top:' + (A[3] / 2.6) + '%;width:' + (Math.hypot(dx, dy) / 6.4) + '%;height:' + (hot ? 2 : 1.2) + 'px;transform-origin:0 50%;transform:rotate(' + (Math.atan2(dy, dx) * 180 / Math.PI) + 'deg);background:' + (hot ? 'var(--acc)' : hid ? 'var(--line)' : 'var(--fldline)') + ';' }; });
+      const nodes = NODES.map(([id, label, x, y, lv]) => { const hid = lv > L, on = s.gsel === id, d = on ? 16 : 11, col = hid ? 'var(--mut2)' : lv === 0 ? 'var(--grn)' : lv === 1 ? '#6b4dff' : 'var(--acc)'; return { label: hid ? 'private' : label, pick: () => this.setState({ gsel: id }), st: 'position:absolute;left:' + (x / 6.4) + '%;top:' + (y / 2.6) + '%;width:' + d + 'px;height:' + d + 'px;transform:translate(-50%,-50%);border-radius:50%;border:0;padding:0;cursor:pointer;background:' + col + ';box-shadow:0 0 0 3px var(--surf);', labSt: 'position:absolute;top:calc(100% + 3px);' + (x < 100 ? 'left:-4px;' : x > 540 ? 'right:-4px;' : 'left:50%;transform:translateX(-50%);') + 'font-size:10.5px;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis;color:' + (hid ? 'var(--mut2)' : 'var(--body)') + ';' }; });
+      const selText = !sel ? 'Click a node. Green is published, violet is Pro, red is owner-only; grey nodes exist but are private at this tier.' : sel[4] > L ? 'A private node. It exists and its links show its shape, but its content is not visible at this tier.' : sel[1] + ' · ' + ['published', 'Pro', 'owner-only'][sel[4]] + ' · ' + EDGES.filter(e => e.includes(sel[0])).length + ' links';
+      return { isGraph: true, edges, nodes, selText };
+    };
+    const PLAY = () => { const e = EPS[s.ep], [verb, path] = e[0].split(' '); return { isPlay: true, eps: EPS.map((x, i) => ({ label: x[0], fn: () => this.setState({ ep: i, ran: false }), st: i === s.ep ? B.chipOn : B.chip })), req: 'curl -X ' + verb + ' https://api.threshold.institute' + path + ' \\\n  -H "Authorization: Bearer $THRESHOLD_KEY"' + (e[1] ? ' \\\n  -d \'' + JSON.stringify(e[1]) + '\'' : ''), run: () => this.setState({ ran: true }), runSt: B.on, runLabel: s.ran ? 'Run again' : 'Run', hasRes: s.ran, res: '200 OK\n' + JSON.stringify(e[2], null, 2) }; };
+    const TIERS = () => ({ isTiers: true, items: [['Member', 'free', ['Published graph and every report', '50 questions a month', 'Weekly digest'], 'member'], ['Pro', '$29 / mo', ['Raw lab tables and shadow scores', 'The record, with reasoning', 'Unlimited private follow-ups'], 'pro'], ['API', 'metered', ['/v1 ask, graph and lab endpoints', 'Priced by the rung that answered', 'Keys, caps and invoices'], 'api']].map(([name, price, feats, to]) => ({ name, price, feats, cta: 'View as ' + name, fn: () => this.go(to), btnSt: B.on })) });
+    const CHAT = () => ({ isChat: true, hasQuota: p === 'member', quota: s.quota + ' of 50 questions left this month' });
+    const on = 2 + (tk % 3), pl = 4 + (tk % 2), dn = 18 + Math.floor(tk / 2);
+    const BLOCKS = {
+      owner: () => [K([[on + ' ongoing', 'rounds running now', 'var(--acc)'], [pl + ' planned', 'queued next'], [dn + ' done', 'today', 'var(--grn)'], ['$3,140', 'revenue, 30 days'], ['42', 'chem candidates past phase 1'], ['+212 / −88', 'synapses formed / pruned overnight']]), H('Waiting on you', 'tap a row for the detail'), ROWS(OWNER_ITEMS), H('Labs', 'passed of tried, this month'), BAR([['chem · phase 1', 42 / 57, '42 of 57'], ['btc · verified', 1, '3 of 3'], ['law · sourced', 0.5, '1 of 2']]), H('Last night', 'sleep: homeostasis, pruning, replay, dreams'), ROWS(SLEEP_ITEMS), NOTE('Everything else is in the console', 'Fleet, terminals, config, the timeline and the 4D brain.', null, null, 'Open the Owner Console', 'Owner Console.dc.html')],
+      pro: () => [K([['0.83 vs 0.81', 'LSTM shadow vs 1–3B, Scout, 7 days', '#6b4dff'], ['7', 'new candidates this week'], ['42', 'past phase 1'], ['∞', 'questions']]), H('Chemical stability lab', 'phase-1 table, as runs land'), TABLE(CHEM), H('The record', 'every round, with its reasoning'), ROWS(RECORD), H('Private follow-up', 'answers cite the graph'), CHAT()],
+      member: () => [K([['P3', 'experiment phase, running', 'var(--grn)'], [s.quota + ' / 50', 'questions left'], ['5', 'reports'], ['312', 'published nodes']]), H('The published graph', 'grey nodes exist but are private'), GRAPH(), H('Labs', 'summaries; the numbers are in Pro'), ROWS(LABS), TABLE(CHEM.slice(0, 1), '41 more rows, with energies and run ids, are in Pro.'), H('Ask SEXTANT', 'cites the published graph'), CHAT()],
+      visitor: () => [NOTE('An institute staffed by the very research it studies', 'The thesis: once the graph seed and the cognition layer are built right, a small model, down to an LSTM on a CPU, answers as well as a 30B one. The institute runs that experiment in public, and the agent it studies runs the institute.', 'Create a free account', () => this.go('member'), null, null, true), K([['312', 'published nodes'], ['64', 'rounds today'], ['3', 'standing labs'], ['5', 'reports']]), H('The experiment', 'phases P0 to P5, published either way'), BAR([['P0 unify', 1, 'done'], ['P1 replicate', 1, 'done'], ['P2 seed', 1, 'done'], ['P3 small models', 0.35, 'running'], ['P4 full grid', 0, '—'], ['P5 publish', 0, '—']]), H('The graph, as the public sees it'), GRAPH(), H('Plans'), TIERS()],
+      api: () => [K([['18,420', 'calls this month'], ['$86.40', 'of $' + s.cap + ' cap', 'var(--accink)'], ['140 ms', 'p50 latency'], ['63%', 'answered on CPU', 'var(--grn)']]), H('Which rung answered', 'price per call in brackets'), BAR([['LSTM ($0.00005)', 0.41, '41%'], ['tiny ($0.0001)', 0.22, '22%'], ['1–3B ($0.0004)', 0.24, '24%'], ['8B ($0.0012)', 0.10, '10%'], ['30B ($0.004)', 0.03, '3%']], '#2c6bff'), H('Keys'), ROWS(KEYS), H('Playground'), PLAY(), H('Invoices'), ROWS(INVOICES)],
+    };
+    const vis = v => p === 'owner' || v === 'all' || (v === 'pro' && p === 'pro') || (v === 'api' && p === 'api');
+    const seen = []; for (let i = tk + 3; i >= 0 && seen.length < 7; i--) { const it = SCRIPT[i % SCRIPT.length]; if (vis(it[0])) seen.push({ i, it }); }
+    const now = seen[0] ? seen[0].it : SCRIPT[0], base = this.t0 || Date.now();
+    const thoughts = [...(s.notes[p] || []).map((n, j) => ({ key: 'n' + n.at + j, title: n.title, text: n.text, at: n.at })), ...seen.map(x => ({ key: 's' + x.i, title: x.it[1], text: x.it[2], at: base + (x.i - 3) * 3200 }))].slice(0, 9).map(t => { const open = !!s.thOpen[t.key]; return { title: t.title, text: t.text, time: clock(t.at), toggle: () => this.setState(x => ({ thOpen: { ...x.thOpen, [t.key]: !x.thOpen[t.key] } })), st: 'display:grid;min-width:0;gap:4px;padding:9px 11px;border-radius:12px;background:var(--surf);border:1px solid var(--line);cursor:pointer;animation:rise .3s;', txtSt: 'font-size:13px;line-height:1.5;color:var(--body);' + (open ? '' : 'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;') }; });
+    const props = (PROPS[p] || []).filter(x => !s.gone[x[0]]).map(([key, t, why, acts]) => ({ t, why, acts: acts.map(([label, eff], i) => ({ label, st: i ? B.mini : B.on, fn: () => this.effect(eff, key) })) }));
+    const Q = QS[p], hasQ = !!Q && !s.answered[p];
+    const msgs = [{ me: false, text: HELLO[p] || '' }, ...(s.msgs[p] || [])].filter(m => m.text).map(m => ({ text: m.text, hasCite: !!m.cite, cite: m.cite || '', st: m.me ? 'justify-self:end;max-width:84%;padding:9px 12px;border-radius:14px;background:var(--inv);color:var(--invtxt);font-size:13.5px;line-height:1.45;animation:rise .25s;' : 'justify-self:start;max-width:92%;padding:9px 12px;border-radius:14px;background:var(--sunk);font-size:13.5px;line-height:1.5;animation:rise .25s;' }));
+    return {
+      ...(s.w >= 1100 ? { layoutSt: 'grid-template-columns:minmax(0,1fr) minmax(300px,360px);', mainSt: 'grid-column:1;grid-row:1;', railSt: 'grid-column:2;grid-row:1;grid-template-columns:minmax(0,1fr);position:sticky;top:72px;', capSt: 'max-height:min(40vh,340px);' } : { layoutSt: 'grid-template-columns:minmax(0,1fr);', mainSt: 'grid-row:2;', railSt: 'grid-row:1;grid-template-columns:' + (s.w < 640 ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))') + ';position:static;', capSt: 'max-height:170px;' }),
+      dark: s.dark ? DARK : '', themeLabel: s.dark ? 'Light' : 'Dark', toggleTheme: () => { const d = !s.dark; try { localStorage.setItem('pv_theme', d ? 'dark' : 'light'); } catch (e) {} this.setState({ dark: d }); },
+      persp: ORDER.map(id => ({ name: PER[id].name, pick: () => this.go(id), dot: 'width:8px;height:8px;border-radius:50%;background:' + PER[id].c + ';', st: 'display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 14px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:500;border:1px solid ' + (id === p ? 'var(--inv)' : 'var(--fldline)') + ';background:' + (id === p ? 'var(--inv)' : 'var(--surf)') + ';color:' + (id === p ? 'var(--invtxt)' : 'var(--ink)') + ';' })),
+      cur, curDot: 'width:12px;height:12px;border-radius:50%;background:' + cur.c + ';', sees: cur.sees, locked: cur.locked, hasLocked: cur.locked.length > 0,
+      blocks: BLOCKS[p]().map(b => ({ isHead: false, isNote: false, isKpis: false, isBars: false, isRows: false, isTable: false, isGraph: false, isPlay: false, isTiers: false, isChat: false, ...b })),
+      agentState: tk % 7 === 6 ? 'thinking' : 'working', agentNow: now[1], agentFor: cur.agentFor, agentBar: 'display:block;height:100%;background:#7fe0a0;transition:width .6s;width:' + ((tk % 4) + 1) * 25 + '%;',
+      props, noProps: !props.length, hasQ, qText: Q ? Q[0] : '', qOpts: (Q ? Q[1] : []).map((label, i) => ({ label, st: i ? B.mini : B.on, fn: () => { this.setState(x => ({ answered: { ...x.answered, [p]: label } })); this.toast('Noted: ' + label + '. SEXTANT will act on it.'); } })),
+      thoughts, tell: s.tell, onTell: e => this.setState({ tell: e.target.value }), tellKey: e => { if (e.key === 'Enter') this.tellAgent(s.tell); }, sendTell: () => this.tellAgent(s.tell), tellPh: p === 'owner' ? 'Tell SEXTANT something' : 'Ask the agent',
+      msgs, clar: !!s.clar, clarQ: s.clar ? s.clar.q : '', clarOpts: (s.clar ? s.clar.opts : []).map(([label, ans, cite], i) => ({ label, st: i ? B.mini : B.on, fn: () => this.setState(x => ({ clar: null, msgs: { ...x.msgs, [p]: [...(x.msgs[p] || []), { me: true, text: label }, { me: false, text: ans, cite }] } })) })),
+      chips: (CHIPS[p] || []).map(l => ({ label: l, st: B.chip, fn: () => this.ask(l) })), draft: s.draft, onDraft: e => this.setState({ draft: e.target.value }), draftKey: e => { if (e.key === 'Enter') this.ask(s.draft); }, send: () => this.ask(s.draft), sendSt: B.on + 'min-height:38px;',
+      hasToast: !!s.toast, toast: s.toast, canUndo: !!s.undo, undo: () => this.setState(x => { const g = { ...x.gone }; delete g[x.undo]; return { gone: g, toast: '', undo: null }; }),
+    };
+  }
+}
+</script>
+</body>
+</html>

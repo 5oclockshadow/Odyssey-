@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=DM+Serif+Display&family=Syne:wght@800&family=Bricolage+Grotesque:wght@700&family=Archivo:wght@800&family=Playfair+Display:wght@500&family=DM+Mono&display=swap">
+<style>body{margin:0;overflow:hidden}</style>
+</helmet>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 380px;grid-template-rows:minmax(0,1fr);height:100vh;overflow:hidden;font-family:'Space Grotesk',sans-serif;background:#d9d8d3;">
+  <div style="display:flex;flex-direction:column;padding:14px;min-width:0;min-height:0;box-sizing:border-box;">
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 8px 30px #0003;">
+      <div style="display:flex;gap:12px;align-items:center;padding:9px 14px;background:#ecebe7;flex-wrap:wrap;font:500 12px 'DM Mono',monospace;"><sc-if value="{{ open }}" hint-placeholder-val="{{ false }}"><button onClick="{{ back }}" style="cursor:pointer;border:1px solid #999;background:none;border-radius:6px;padding:3px 9px;">All 50</button></sc-if><span style="white-space:nowrap;">{{ crumb }}</span><span style="margin-left:auto;display:flex;gap:6px;"><sc-for list="{{ tabs }}" as="b" hint-placeholder-count="3"><button onClick="{{ b.go }}" style="{{ b.s }}">{{ b.l }}</button></sc-for><button onClick="{{ doExport }}" style="cursor:pointer;border:0;background:#111;color:#fff;border-radius:6px;padding:4px 12px;white-space:nowrap;font:700 12px 'Space Grotesk',sans-serif;">Export</button></span></div>
+      <sc-if value="{{ showCode }}" hint-placeholder-val="{{ false }}"><div style="flex:1;min-height:0;display:flex;flex-direction:column;background:#0f0f12;color:#d8d8d2;"><div style="display:flex;gap:14px;align-items:center;padding:8px 16px;border-bottom:1px solid #2c2c31;font:500 12px 'DM Mono',monospace;color:#a8a8a2;"><span>{{ codeTitle }}</span><button onClick="{{ copy }}" style="margin-left:auto;cursor:pointer;border:1px solid #555;background:none;color:#d8d8d2;border-radius:6px;padding:3px 10px;">Copy</button></div><pre style="flex:1;overflow:auto;margin:0;padding:16px;font:12px/1.55 'DM Mono',monospace;white-space:pre;tab-size:2;">{{ code }}</pre></div></sc-if>
+      <sc-if value="{{ showSite }}" hint-placeholder-val="{{ false }}"><iframe srcdoc="{{ doc }}" style="flex:1;border:0;width:100%;"></iframe></sc-if>
+      <sc-if value="{{ showGrid }}" hint-placeholder-val="{{ true }}"><div style="flex:1;overflow:auto;background:#e9e8e4;padding:18px;display:grid;grid-template-columns:repeat(auto-fill,230px);gap:16px;align-content:start;justify-content:center;">
+        <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="8"><div onClick="{{ t.go }}" style="position:relative;width:230px;height:184px;overflow:hidden;cursor:pointer;border-radius:8px;box-shadow:0 2px 8px #0002;"><iframe srcdoc="{{ t.doc }}" style="position:absolute;left:0;top:0;width:1000px;height:800px;border:0;transform:scale(0.23);transform-origin:0 0;pointer-events:none;"></iframe><span style="position:absolute;left:6px;bottom:6px;background:#111;color:#fff;font:500 11px 'DM Mono',monospace;padding:2px 6px;border-radius:4px;">#{{ t.n }}</span></div></sc-for>
+      </div></sc-if>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;min-height:0;background:#17171a;color:#ececea;">
+    <div style="padding:14px 16px;border-bottom:1px solid #2c2c31;"><b>Style agent</b><div style="font-size:12px;color:#a8a8a2;margin-top:2px;">Describe a look, or say ship it to build and run it in Docker.</div></div>
+    <div style="flex:1;min-height:0;overflow:auto;padding:12px 16px;display:grid;gap:8px;align-content:start;"><sc-for list="{{ log }}" as="m" hint-placeholder-count="2"><div style="{{ m.s }}">{{ m.t }}</div></sc-for></div>
+    <div style="padding:10px 16px;border-top:1px solid #2c2c31;display:grid;gap:8px;">
+      <span style="font:500 11px 'DM Mono',monospace;color:#a8a8a2;">20 PROMPTS TO TRY</span>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow:auto;"><sc-for list="{{ ideas }}" as="i" hint-placeholder-count="4"><span onClick="{{ i.go }}" style="border:1px solid #4a4a52;border-radius:999px;padding:3px 9px;font-size:12px;line-height:1.3;white-space:nowrap;cursor:pointer;" style-hover="border-color:#d4ff3a;color:#d4ff3a;">{{ i.t }}</span></sc-for></div>
+      <div style="display:flex;gap:6px;"><input value="{{ draft }}" onInput="{{ onDraft }}" onKeyDown="{{ onKey }}" placeholder="e.g. poster, signal red, sextant" style="flex:1;min-width:0;background:#222226;color:#ececea;border:1px solid #3a3a40;border-radius:6px;padding:9px 10px;font:14px 'Space Grotesk',sans-serif;"><button onClick="{{ send }}" style="background:#d4ff3a;border:0;border-radius:6px;padding:0 14px;font-weight:700;cursor:pointer;">Send</button></div>
+      <div style="display:flex;gap:6px;"><sc-for list="{{ menus }}" as="m" hint-placeholder-count="3"><select value="{{ m.v }}" onChange="{{ m.set }}" style="flex:1;min-width:0;background:#222226;color:#ececea;border:1px solid #3a3a40;border-radius:6px;padding:5px;"><sc-for list="{{ m.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></sc-for></div>
+      <div style="display:flex;gap:6px;align-items:center;font-size:12px;"><span style="color:#a8a8a2;">MCP</span><input type="password" value="{{ token }}" onInput="{{ onToken }}" placeholder="MCP_TOKEN" style="flex:1;min-width:0;background:#222226;color:#ececea;border:1px solid #3a3a40;border-radius:6px;padding:5px 8px;"><button onClick="{{ ship }}" style="border:1px solid #d4ff3a;color:#d4ff3a;background:none;border-radius:6px;padding:5px 10px;cursor:pointer;">Ship</button><button onClick="{{ stop }}" style="border:1px solid #666;color:#ccc;background:none;border-radius:6px;padding:5px 10px;cursor:pointer;">Stop</button></div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { view: 'site', src: null, sel: null, o: {}, draft: '', token: '', name: 'unphz', log: [{ t: 'Pick a tile, then describe a change. "Ship it" writes the site with the MCP file tool and runs it in the agent\'s Docker.', me: 0 }] };
+  PAL = [['Acid', '#0c0c0c', '#f2f2ee', '#d4ff3a'], ['Ink blue', '#fbfaf6', '#14213d', '#2d4fd6'], ['Signal', '#e8452c', '#fff7ee', '#1c1210'], ['Paper', '#f4efe6', '#1c1917', '#c2410c'], ['Blueprint', '#0b1e2d', '#e6f1f5', '#5eead4'], ['Plum', '#1a1033', '#efe9ff', '#a78bfa'], ['Forest', '#e9f5ec', '#0f2a1c', '#16a34a'], ['Mono', '#ffffff', '#111111', '#ff3b00'], ['Rose', '#fde7ef', '#3b0d24', '#d6246e'], ['Gold', '#2b2b2b', '#f5e9d3', '#e2b04a']];
+  FONTS = ['Space Grotesk', 'DM Serif Display', 'Syne', 'Bricolage Grotesque', 'Archivo', 'Playfair Display']; LAYS = ['Left', 'Centered', 'Split', 'Terminal', 'Poster'];
+  COPY = { unphz: ['Unphz', ['Research that never waits.', 'Unphased. Always reading.', 'Read. Link. Approve.', 'A graph that shows its work.', 'Public only by approval.'], 'One agent reads papers and the web, grows a graph, and shows the public only what the owner approves.'],
+    tmpltz: ['Tmpltz', ['Every finding, a template.', 'Research, templatized.', 'Typed, not free text.', 'Share the shape, keep the data.', 'Read. Graph. Template.'], 'An agent turns what it reads into a typed graph, then into reusable notes, questions and small apps.'] };
+  PROMPTS = ['Sextant over a glowing graph, blueprint', 'Ink blue, serif, centered', 'Acid on black, poster', 'Forest, Playfair, split layout', 'Plum, Syne, centered', 'Terminal layout, gold', 'Open 12', 'Paper, warm, serif, no 3D', 'Signal red poster', 'Rose, Bricolage, centered', 'Use tmpltz, blueprint', 'Mono white, Archivo, terminal', 'Light and quiet, Space Grotesk, left', 'Dark night, Syne, poster', 'Split layout, ink blue', 'Use unphz, accent #ff3b00', 'Airy editorial, Playfair, paper', 'Gold, Archivo, split', 'Open 37, forest', 'Ship it'];
+  P = (i) => ({ pal: i % 10, font: (i * 3 + (i / 10 | 0)) % 6, lay: i / 10 | 0, scene: 1, ...this.state.o[i] });
+  mix = (a, b, t = .6) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.substr(i, 2), 16) * (1 - t) + parseInt(b.substr(i, 2), 16) * t).toString(16).padStart(2, '0')).join('');
+  cr = (a, b) => { const l = h => [1, 3, 5].reduce((s, k, j) => s + [.2126, .7152, .0722][j] * (v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)(parseInt(h.substr(k, 2), 16) / 255), 0), x = l(a), y = l(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  doc(p, i = 0) {
+    const [, bg, fg, ac] = p.c || this.PAL[p.pal], L = p.lay, [nm, H, lede] = this.COPY[this.state.name], hf = L == 3 ? 'DM Mono' : this.FONTS[p.font], ln = this.mix(bg, fg, .35), mu = this.mix(bg, fg, .78), on = this.cr(fg, ac) > this.cr(bg, ac) ? fg : bg, S0 = '<scr' + 'ipt', S1 = '</scr' + 'ipt>';
+    const words = (t, d0) => t.split(' ').map((w, k) => `<span class=w style="--d:${(d0 + k * .09).toFixed(2)}s">${w}</span>`).join(' ');
+    const step = (n, t, d, k) => `<div class="a card" style="--d:${.25 + k * .12}s"><b class=num>${n}</b><h3>${t}</h3><p>${d}</p></div>`;
+    const q = (k, t, a) => `<div class="a card" style="--d:${.2 + k * .12}s"><span class=kick>${k == 0 ? 'Curiosity' : k == 1 ? 'Frontier' : 'Debunk and warn'}</span>${a.map(x => `<p class=qq>${x}</p>`).join('')}</div>`;
+    const lock = (t, k) => `<div class="a card lk" style="--d:${.25 + k * .12}s"><span class=kick>Sample</span><h3 class=t>${t}</h3><p class=t>Sources attached. Visible once approved.</p></div>`;
+    const N = [[60, 140, 1], [150, 70, 1], [170, 170, 1], [270, 100, 1], [300, 200, 1], [380, 140, 1], [110, 240, 0], [230, 245, 0], [400, 60, 0], [30, 60, 0], [340, 20, 0]], E = [[0, 1], [0, 2], [1, 3], [2, 3], [2, 4], [3, 5], [4, 5], [0, 6], [4, 7], [5, 8], [1, 9], [3, 10]];
+    const svg = `<svg viewBox="0 0 430 270" style="width:100%;max-width:560px">${E.map(([a, b], k) => `<line class=e x1=${N[a][0]} y1=${N[a][1]} x2=${N[b][0]} y2=${N[b][1]} stroke="${N[a][2] && N[b][2] ? ac : ln}" stroke-width=2 style="--d:${.3 + k * .1}s"/>`).join('')}${N.map((n, k) => `<circle cx=${n[0]} cy=${n[1]} r=${n[2] ? 10 : 8} fill="${n[2] ? ac : ln}" class="${n[2] ? 'pu' : ''}" style="animation-delay:${k * .25}s"/>`).join('')}</svg>`;
+    const sc = p.scene ? `${S0} src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js">${S1}${S0}>
+const T=THREE,r=new T.WebGLRenderer({canvas:document.getElementById('c'),alpha:true,antialias:true}),c=new T.PerspectiveCamera(45,innerWidth/innerHeight,.1,60),sc=new T.Scene(),G=new T.Group(),W=new T.Group();
+r.setPixelRatio(Math.min(devicePixelRatio,2));r.setSize(innerWidth,innerHeight);c.position.z=6.5;sc.add(G,W);
+const sh=n=>{const a=[];for(let i=0;i<n;i++){const y=1-i/(n-1)*2,q=Math.sqrt(1-y*y);a.push(new T.Vector3(Math.cos(i*2.4)*q,y,Math.sin(i*2.4)*q).multiplyScalar(2.2+Math.random()*.5))}return a};
+const pts=(a,col,z)=>G.add(new T.Points(new T.BufferGeometry().setFromPoints(a),new T.PointsMaterial({color:col,size:z})));
+const A=sh(34),Gr=sh(70).filter((_,i)=>i%2);pts(A,'${ac}',.17);pts(Gr,'${ln}',.1);
+const sg=[];A.forEach((p,i)=>A.forEach((q,j)=>{if(j>i&&p.distanceTo(q)<1.5)sg.push(p,q)}));G.add(new T.LineSegments(new T.BufferGeometry().setFromPoints(sg),new T.LineBasicMaterial({color:'${ac}',transparent:true,opacity:.5})));
+const arm=new T.Mesh(new T.CylinderGeometry(.02,.02,1.5,6),new T.MeshBasicMaterial({color:'${ac}'}));arm.position.y=.75;W.add(arm,new T.Mesh(new T.TorusGeometry(1.5,.02,8,100,2),new T.MeshBasicMaterial({color:'${fg}'})));W.scale.setScalar(.8);
+const gx=[2.3,-2.8,2.6,0,0,0],gs=[1,.8,1.1,1.5,1.2,.7],wx=[2.3,-2.8,2.6,-4,4,0];let mx=0,my=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+(function f(){requestAnimationFrame(f);const k=window.K||0;G.position.x+=(gx[k]-G.position.x)*.05;W.position.x+=(wx[k]-W.position.x)*.05;const s=G.scale.x+(gs[k]-G.scale.x)*.05;G.scale.setScalar(s);c.position.x=mx*1.2;c.position.y=-my*.8;c.lookAt(0,0,0);G.rotation.y+=.0035;W.rotation.z=Math.sin(Date.now()/900)*.7;r.render(sc,c)})();
+addEventListener('resize',()=>{r.setSize(innerWidth,innerHeight);c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix()});${S1}` : '';
+    const css = `*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:${bg};color:${fg};font:17px/1.55 'Space Grotesk',sans-serif}
+body::before{content:"";position:fixed;inset:-20%;background:radial-gradient(40% 40% at 25% 30%,${this.mix(bg, ac, .22)},transparent 70%),radial-gradient(35% 35% at 80% 70%,${this.mix(bg, ac, .14)},transparent 70%);animation:dr 14s ease-in-out infinite alternate;z-index:0}@keyframes dr{to{transform:translate(6%,4%) scale(1.1)}}
+#c{position:fixed;inset:0;width:100%;height:100%;z-index:1}h1,h2,h3,.num,nav b{font-family:'${hf}',sans-serif;font-weight:700;letter-spacing:-.035em;margin:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:20px 5vw}nav b{font-size:22px}nav div{display:flex;gap:6px;flex-wrap:wrap}nav button{background:none;border:0;color:${mu};font:500 13px 'Space Grotesk';padding:6px 10px;border-radius:99px;cursor:pointer}nav button:hover,nav button.on{color:${fg};background:${this.mix(bg, fg, .12)}}
+.s{position:absolute;inset:0;z-index:2;display:grid;align-content:center;gap:26px;padding:96px 7vw 72px;overflow-y:auto;align-content:safe center;opacity:0;transform:translateY(6%) scale(.98);filter:blur(10px);transition:opacity .7s,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s;pointer-events:none}.s.on{opacity:1;transform:none;filter:none;pointer-events:auto}
+.a{opacity:0;transform:translateY(28px);transition:opacity .8s ease var(--d,0s),transform .9s cubic-bezier(.2,.8,.2,1) var(--d,0s)}.on .a{opacity:1;transform:none}
+.w{display:inline-block;opacity:0;transform:translateY(.7em) rotate(4deg);filter:blur(12px);transition:all .9s cubic-bezier(.2,.8,.2,1) var(--d)}.on .w{opacity:1;transform:none;filter:none}
+h1{font-size:clamp(40px,7vw,${L == 4 ? 124 : 96}px);line-height:.98;max-width:15ch}h2{font-size:clamp(30px,4.6vw,60px);line-height:1;max-width:18ch}h3{font-size:21px}p{margin:0;color:${mu};max-width:54ch}.lede{font-size:clamp(17px,1.6vw,21px)}
+.kick{font:500 12px 'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:${this.cr(ac, bg) >= 3 ? ac : fg}}.btn{justify-self:start;display:inline-flex;gap:10px;align-items:center;background:${ac};color:${on};padding:14px 24px;border:0;border-radius:${L == 1 ? 99 : 6}px;font:700 15px 'Space Grotesk';cursor:pointer;transition:transform .2s}.btn:hover{transform:translateY(-3px)}.btn.o{background:none;color:${fg};box-shadow:inset 0 0 0 1px ${fg}}.row{display:flex;gap:12px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{border:1px solid ${ln};border-radius:${L == 3 ? 0 : 14}px;padding:22px;display:grid;gap:10px;align-content:start;background:${this.mix(bg, fg, .05)};backdrop-filter:blur(6px)}.num{font-size:44px;color:${this.cr(ac, bg) >= 3 ? ac : fg};line-height:1}.qq{color:${fg};font-size:17px}
+.ln{height:2px;background:${ac};transform-origin:left;transform:scaleX(0);transition:transform 1.6s cubic-bezier(.2,.8,.2,1) .3s}.on .ln{transform:scaleX(1)}.split{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}@media(max-width:800px){.split{grid-template-columns:1fr}}
+.e{stroke-dasharray:320;stroke-dashoffset:320;transition:stroke-dashoffset 1.8s ease var(--d)}.on .e{stroke-dashoffset:0}.pu{animation:pu 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}@keyframes pu{50%{transform:scale(1.35)}}
+.lk .t{transition:filter .7s,opacity .7s;filter:blur(7px);opacity:.55}.ok .lk .t{filter:none;opacity:1}.lk{transition:border-color .7s}.ok .lk{border-color:${ac}}
+.hero{max-width:${L == 2 ? '52%' : '100%'}}${L == 1 ? '.s{text-align:center;justify-items:center}.s .row,.btn{justify-self:center;justify-content:center}h1,h2{margin-inline:auto}' : ''}${L == 3 ? `.hero{border:1px solid ${ac};padding:30px}.s p{font-family:'DM Mono',monospace;font-size:15px}` : ''}${L == 4 ? 'h1,h2{text-transform:uppercase;letter-spacing:-.055em}' : ''}
+.dots{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:5;display:grid;gap:10px}.dots i{width:9px;height:9px;border-radius:50%;background:${ln};cursor:pointer;transition:all .3s}.dots i.on{background:${ac};transform:scale(1.5)}#n{position:fixed;left:5vw;bottom:24px;z-index:5;font:500 12px 'DM Mono',monospace;color:${mu}}.hint{position:fixed;right:5vw;bottom:24px;z-index:5;font:500 12px 'DM Mono',monospace;color:${mu}}
+@media(max-height:700px){.s{padding:78px 6vw 56px;gap:16px}h2{font-size:clamp(26px,4vw,44px)}h1{font-size:clamp(34px,6vw,72px)}.card{padding:16px}.num{font-size:34px}.hero{gap:16px!important}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}`;
+    const T = ['Intro', 'How', 'Graph', 'Public', 'Questions', 'Follow'];
+    return `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>${nm}</title><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Serif+Display&family=Syne:wght@800&family=Bricolage+Grotesque:wght@700&family=Archivo:wght@800&family=Playfair+Display:wght@500&family=DM+Mono:wght@500&display=swap"><style>${css}</style>
+<canvas id=c></canvas><nav><b>${nm}</b><div id=m>${T.map((t, k) => `<button onclick="g(${k})">${t}</button>`).join('')}</div></nav>
+<section class=s><div class=hero style="display:grid;gap:26px"><span class="a kick">${nm} · autonomous research institute</span><h1>${words(H[i % 5], .1)}</h1><p class="a lede" style="--d:.7s">${lede}</p><div class="a row" style="--d:.9s"><button class=btn onclick="g(5)">Follow the research</button><button class="btn o" onclick="g(1)">How it works</button></div></div></section>
+<section class=s><span class="a kick">How it works</span><h2 class=a style="--d:.1s">One agent, four steps, one owner.</h2><div class=ln></div><div class=grid>${step('01', 'Read', 'Searches papers and the web, and fetches what it finds.', 0)}${step('02', 'Link', 'Writes claims and their sources into a typed graph, ranked by use.', 1)}${step('03', 'Propose', 'Lists what looks ready, each item with its sources.', 2)}${step('04', 'Approve', 'The owner publishes, retracts or holds. Nothing is public before that.', 3)}</div></section>
+<section class=s><div class=split><div style="display:grid;gap:22px"><span class="a kick">The graph</span><h2 class=a style="--d:.1s">Approved in colour. Withheld stays grey.</h2><p class=a style="--d:.2s">Visitors can explore one, two or three hops from any node. Unapproved nodes show their shape and nothing else.</p></div><div class=a style="--d:.3s">${svg}</div></div></section>
+<section class=s id=pub><span class="a kick">Public by approval</span><h2 class=a style="--d:.1s">Nothing leaves until you say so.</h2><div class="a row" style="--d:.2s"><button class=btn onclick="document.getElementById('pub').classList.toggle('ok');this.textContent=document.getElementById('pub').classList.contains('ok')?'Retract':'Approve all three'">Approve all three</button></div><div class=grid>${lock('A note on how retrieval structure affects answers', 0)}${lock('An open question and who supports it', 1)}${lock('A landscape report with its sources', 2)}</div></section>
+<section class=s><span class="a kick">What it works on</span><h2 class=a style="--d:.1s">Questions, each with a way to be wrong.</h2><div class=grid>${q(0, 0, ['What lets a model connect claims across many sources?', 'Which retrieved links actually change an answer?'])}${q(1, 0, ['Does ranking edges by use improve later answers?', 'How much does output field order change quality?'])}${q(2, 0, ['Which AI claims lose support when traced to sources?', 'Where do automated agents fail without anyone noticing?'])}</div></section>
+<section class=s><div style="display:grid;gap:26px"><span class="a kick">Follow the research</span><h2 class=a style="--d:.1s;font-size:clamp(44px,8vw,110px);max-width:none">${nm}</h2><p class="a lede" style="--d:.25s">One agent, one graph, one owner. ${this.state.name == 'unphz' ? 'Public notes, questions and reports appear here as they are approved.' : 'Shared structure appears here as it is approved. Data stays private.'}</p><div class="a row" style="--d:.4s"><button class=btn>Get updates</button><button class="btn o" onclick="g(0)">Back to start</button></div></div></section>
+<div class=dots id=d>${T.map((t, k) => `<i title="${t}" onclick="g(${k})"></i>`).join('')}</div><div id=n></div><div class=hint>scroll · arrows · click</div>
+${S0}>
+const S=[...document.querySelectorAll('.s')],D=[...document.getElementById('d').children],M=[...document.getElementById('m').children];let k=0,lk=0,y0=0;
+function g(n){k=Math.max(0,Math.min(S.length-1,n));window.K=k;[S,D,M].forEach(a=>a.forEach((e,j)=>e.classList.toggle('on',j==k)));document.getElementById('n').textContent='0'+(k+1)+' / 0'+S.length}
+addEventListener('keydown',e=>{if([' ','ArrowRight','ArrowDown','PageDown'].includes(e.key)){e.preventDefault();g(k+1)}if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();g(k-1)}});
+addEventListener('wheel',e=>{const s=S[k],mv=e.deltaY>0?s.scrollTop+s.clientHeight<s.scrollHeight-2:s.scrollTop>2;if(mv||Date.now()-lk<900||Math.abs(e.deltaY)<20)return;lk=Date.now();g(k+(e.deltaY>0?1:-1))},{passive:true});
+addEventListener('touchstart',e=>y0=e.touches[0].clientY);addEventListener('touchend',e=>{const d=y0-e.changedTouches[0].clientY;if(Math.abs(d)>50)g(k+(d>0?1:-1))});
+g(0);${S1}${sc}`;
+  }
+  componentDidMount() { fetch(location.href.split('#')[0]).then(r => r.text()).then(t => this.setState({ src: t.trim() })).catch(() => {}); }
+  download(name, text) { const u = URL.createObjectURL(new Blob([text], { type: 'text/html' })), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000); }
+  say = (t, me = 0) => this.setState(s => ({ log: [...s.log, { t, me }].slice(-40) }));
+  async mcp(name, args) {
+    const r = await fetch('http://localhost:8765', { method: 'POST', headers: { 'content-type': 'application/json', 'x-token': this.state.token }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: args } }) });
+    if (!r.ok) throw new Error(r.status === 401 ? 'token rejected' : 'HTTP ' + r.status);
+    const j = (await r.json()).result; this.say(`${name} ${JSON.stringify(args).slice(0, 80)}\n${j.content[0].text.slice(0, 300)}`); if (j.isError) throw new Error('tool refused'); return j.content[0].text;
+  }
+  async tools(steps) { try { for (const [n, a] of steps) await this.mcp(n, a); return true; } catch (e) { this.say(`Stopped: ${e.message}. Is the agent Docker up (agent/docker-compose.yml) and the token right?`); return false; } }
+  ship = async () => { const i = this.state.sel ?? 0; this.say('Shipping tile #' + (i + 1) + ' through the MCP tools.');
+    if (await this.tools([['fs.write', { path: 'site/index.html', content: this.doc(this.P(i), i) }], ['fs.write', { path: 'site/Dockerfile', content: 'FROM nginx:alpine\nCOPY index.html /usr/share/nginx/html/\n' }], ['terminal.run', { cmd: 'docker build -t unphz-site site' }]])) { await this.mcp('terminal.run', { cmd: 'docker rm -f unphz-site' }).catch(() => 0); if (await this.tools([['terminal.run', { cmd: 'docker run -d --name unphz-site -p 8088:80 unphz-site' }], ['terminal.run', { cmd: 'curl -s -o /dev/null -w %{http_code} http://dind:8088' }]])) this.say('Live inside the agent\'s Docker: http://localhost:8088'); } };
+  stop = async () => { await this.tools([['terminal.run', { cmd: 'docker rm -f unphz-site' }]]); };
+  parse(t) {
+    const q = t.toLowerCase(), o = {}, n = q.match(/\b(\d{1,2})\b/);
+    this.PAL.forEach((p, i) => { if (q.includes(p[0].toLowerCase())) o.pal = i; }); this.FONTS.forEach((f, i) => { if (q.includes(f.toLowerCase())) o.font = i; }); this.LAYS.forEach((l, i) => { if (q.includes(l.toLowerCase())) o.lay = i; });
+    if (/center/.test(q)) o.lay = 1; if (/mono|terminal/.test(q)) o.lay = 3; if (/serif|editorial/.test(q) && o.font == null) o.font = 1; if (/no 3d|flat/.test(q)) o.scene = 0; if (/sextant|glow|graph/.test(q)) o.scene = 1;
+    if (/dark|night/.test(q) && o.pal == null) o.pal = 0; if (/light|quiet|warm|paper/.test(q) && o.pal == null) o.pal = 3; const hx = q.match(/#[0-9a-f]{6}\b/); if (hx) o.accent = hx[0];
+    if (/tmpltz/.test(q)) o.name = 'tmpltz'; if (/unphz/.test(q)) o.name = 'unphz'; if (/\bopen\b/.test(q) && n) o.open = +n[1] - 1; if (/ship|deploy/.test(q)) o.ship = 1; if (/\bstop\b/.test(q)) o.halt = 1; if (/files/.test(q)) o.files = 1;
+    return o;
+  }
+  async run(t) {
+    t = t.trim(); if (!t) return; this.say(t, 1); this.setState({ draft: '' }); let o = this.parse(t), said = '';
+    if (window.claude && window.claude.complete) try { const j = JSON.parse(String(await window.claude.complete(`Restyle a website tile. Palettes by index: ${this.PAL.map((p, i) => i + '=' + p[0]).join(', ')}. Fonts: ${this.FONTS.map((f, i) => i + '=' + f).join(', ')}. Layouts 0 left,1 centered,2 split,3 terminal,4 poster. scene 0 none,1 sextant+graph. Tile ${this.state.sel ?? 'none'}. User: "${t}". Reply ONLY JSON, optional keys pal,font,lay,scene (ints), accent (#hex), open (1-50), name (unphz|tmpltz), ship, halt, files (true), say (one short sentence).`)).match(/\{[\s\S]*\}/)[0]); if (j.open) j.open -= 1; o = { ...o, ...j }; said = String(j.say || '').slice(0, 160); } catch (e) { /* local parse stands */ }
+    if (o.name) this.setState({ name: o.name }); let i = Number.isInteger(o.open) && o.open >= 0 && o.open < 50 ? o.open : this.state.sel; if (i == null) i = Math.floor(Math.random() * 50); this.setState({ sel: i });
+    const p = {}; ['pal', 'font', 'lay', 'scene'].forEach(k => { if (Number.isInteger(o[k])) p[k] = o[k]; }); if (p.pal != null) p.c = null;
+    if (/^#[0-9a-f]{6}$/i.test(o.accent || '')) { const [, bg, fg] = this.P(i).c || this.PAL[this.P(i).pal]; p.c = [null, bg, fg, o.accent]; }
+    if (Object.keys(p).length) this.setState(s => ({ o: { ...s.o, [i]: { ...s.o[i], ...p } } }));
+    this.say(said || (Object.keys(p).length || o.name ? `Updated tile #${i + 1}.` : o.ship || o.halt || o.files ? '' : 'No change found. Try a palette, font, layout or "ship it".'));
+    if (o.ship) this.ship(); else if (o.halt) this.stop(); else if (o.files) this.tools([['fs.list', { path: 'site' }]]);
+  }
+  renderVals() {
+    const S = this.state, i = S.sel, v = S.view, id = i ?? 0, site = this.doc(this.P(id), id), src = S.src, n = (s) => s.split('\n').filter(x => x.trim()).length;
+    let loc = '';
+    if (src) { const a = src.indexOf('  doc(p, i = 0) {'), b = src.indexOf('  say = (t, me = 0)'), sheet = a > 0 && b > a ? n(src.slice(a, b)) : 0; loc = `whole file ${n(src)} lines; ${n(src) - sheet} without the doc() design sheet (${sheet} lines, not counted)`; }
+    const tab = (k, l) => ({ l, go: () => this.setState({ view: k }), s: `cursor:pointer;border:1px solid #999;border-radius:6px;padding:3px 9px;white-space:nowrap;font:500 12px 'DM Mono',monospace;background:${v === k ? '#111' : 'none'};color:${v === k ? '#fff' : '#111'};` });
+    const out = {
+      tabs: [tab('site', 'Preview'), tab('code', 'Site'), tab('studio', 'Studio')], showCode: v !== 'site', showSite: v === 'site' && i != null, showGrid: v === 'site' && i == null,
+      code: v === 'studio' ? (src || 'The source could not be read from this page. Open the file from the project to see it.') : site, codeTitle: v === 'studio' ? 'Style Studio · ' + loc : `Site for tile #${id + 1} · ${n(site)} lines`,
+      copy: () => navigator.clipboard && navigator.clipboard.writeText(v === 'studio' ? (src || '') : site),
+      doExport: () => { this.download(`${S.name}-tile-${String(id + 1).padStart(2, '0')}.html`, site); this.say(`Exported ${S.name}-tile-${String(id + 1).padStart(2, '0')}.html, one self-contained file.`); } };
+    return { ...out, ...this.vals2() };
+  }
+  vals2() {
+    const S = this.state, i = S.sel, P = this.P(i ?? 0), opt = (a) => a.map((l, v) => ({ v: String(v), l })), set = (k) => (e) => { if (i != null) this.setState(s => ({ o: { ...s.o, [i]: { ...s.o[i], [k]: +e.target.value, ...(k == 'pal' ? { c: null } : {}) } } })); };
+    return { open: i != null, grid: i == null, back: () => this.setState({ sel: null }), crumb: i == null ? '50 designs · click one' : `#${i + 1} · ${S.name}`, doc: i == null ? '' : this.doc(this.P(i), i),
+      tiles: Array.from({ length: 50 }, (_, k) => ({ n: String(k + 1).padStart(2, '0'), doc: this.doc({ ...this.P(k), scene: 0 }, k), go: () => this.setState({ sel: k }) })),
+      log: S.log.map(m => ({ t: m.t, s: `white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.4;padding:8px 11px;border-radius:9px;max-width:88%;${m.me ? 'justify-self:end;background:#d4ff3a;color:#111;' : 'justify-self:start;background:#26262b;'}` })),
+      ideas: this.PROMPTS.map(t => ({ t, go: () => this.run(t) })), draft: S.draft, token: S.token, onDraft: e => this.setState({ draft: e.target.value }), onToken: e => this.setState({ token: e.target.value }), onKey: e => { if (e.key == 'Enter') this.run(S.draft); }, send: () => this.run(S.draft), ship: this.ship, stop: this.stop,
+      menus: [{ v: String(P.pal), opts: opt(this.PAL.map(p => p[0])), set: set('pal') }, { v: String(P.font), opts: opt(this.FONTS), set: set('font') }, { v: String(P.lay), opts: opt(this.LAYS), set: set('lay') }] };
+  }
+}
+</script>
+</body>
+</html>

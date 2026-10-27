@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <script src="../../marketing/studio-kit.js"></script>
+  <script src="./console-kit.js"></script>
+  <style>
+    html, body { margin: 0; background: var(--color-bg); }
+    *::-webkit-scrollbar { width: 9px; height: 9px; }
+    *::-webkit-scrollbar-thumb { background: var(--color-neutral-700); border-radius: 6px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    a { color: var(--color-accent-300); } a:hover { color: var(--color-accent-200); }
+    @keyframes shpulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    .hubsel { appearance: none; background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-neutral-700); border-radius: var(--radius-sm); padding: 6px 28px 6px 10px; font: inherit; font-size: 12.5px; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239397ab' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 9px center; }
+    .hubin { background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-neutral-700); border-radius: var(--radius-sm); padding: 6px 10px; font: inherit; font-size: 12.5px; }
+    .hubin:focus { border-color: var(--color-accent); }
+  </style>
+</helmet>
+<div data-screen-label="Studios Hub" style="min-height:100vh;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:13px;">
+
+  <!-- HEADER -->
+  <header style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 18px;background:linear-gradient(180deg,color-mix(in srgb,var(--color-accent) 7%,var(--color-surface)),var(--color-bg));box-shadow:0 1px 0 var(--color-neutral-800);position:sticky;top:0;z-index:6;">
+    <span style="display:inline-flex;align-items:center;gap:9px;"><span style="width:28px;height:28px;border-radius:8px;background:var(--color-accent);display:grid;place-items:center;color:var(--color-bg);font:800 15px Inter;">B</span><span style="font:600 13px ui-monospace,Menlo,monospace;letter-spacing:0.1em;">STUDIOS HUB</span></span>
+    <span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 55%,transparent);max-width:44ch;">Every studio in one place — view, test, and assign which UI each agent runs. Live against the TESTER backend.</span>
+    <div style="margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+      <span title="{{ statusTip }}" style="{{ statusPillSt }}"><span style="{{ statusDotSt }}"></span><span style="font:600 11.5px ui-monospace,Menlo,monospace;">{{ statusText }}</span></span>
+      <input class="hubin" style="width:190px;" value="{{ base }}" onInput="{{ setBase }}" placeholder="http://localhost:8090" aria-label="Backend URL">
+      <button type="button" class="btn btn-secondary" style="min-height:32px;font-size:12.5px;" onClick="{{ reconnect }}"><i class="ph ph-plugs-connected" style="margin-right:5px;"></i>Reconnect</button>
+      <button type="button" class="btn btn-ghost" style="min-height:32px;font-size:12.5px;" onClick="{{ toggleAuth }}" title="Owner token for write actions"><i class="ph ph-key"></i></button>
+    </div>
+    <sc-if value="{{ authOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="flex-basis:100%;display:flex;align-items:center;gap:8px;padding-top:4px;">
+        <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">Owner token</span>
+        <input class="hubin" type="password" style="width:280px;" value="{{ token }}" onInput="{{ setToken }}" placeholder="bearer token for /run, /files/write">
+        <span style="font-size:11px;color:color-mix(in srgb,var(--color-text) 45%,transparent);">Stored in this browser only. Needed for write + run actions.</span>
+      </div>
+    </sc-if>
+  </header>
+
+  <div style="flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:0;">
+
+    <!-- MAIN COLUMN -->
+    <main class="scroll" style="min-width:0;overflow:auto;padding:18px;display:grid;gap:22px;align-content:start;">
+
+      <!-- BACKEND -->
+      <section style="display:grid;gap:11px;">
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Backend</span><span style="height:1px;flex:1;background:linear-gradient(90deg,var(--color-neutral-800),transparent);"></span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--color-neutral-800);border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);overflow:hidden;">
+          <sc-for list="{{ health }}" as="h" hint-placeholder-count="5">
+            <div style="background:var(--color-surface);padding:12px 14px;display:grid;gap:3px;"><span style="font:600 10px ui-monospace,Menlo,monospace;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 52%,transparent);">{{ h.k }}</span><span style="font:14px ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;color:{{ h.color }};">{{ h.v }}</span></div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;">
+          <sc-for list="{{ endpoints }}" as="e" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-sm);background:var(--color-surface);">
+              <span style="{{ e.badgeSt }}">{{ e.method }}</span>
+              <span style="font:12px ui-monospace,Menlo,monospace;color:var(--color-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ e.path }}</span>
+              <span title="{{ e.liveTip }}" style="margin-left:auto;width:7px;height:7px;border-radius:50%;flex:none;background:{{ e.liveColor }};"></span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- STUDIOS -->
+      <section style="display:grid;gap:11px;">
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Studios</span><span style="font:11.5px ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ studioCount }} registered · {{ totalVariants }} variations</span><span style="height:1px;flex:1;background:linear-gradient(90deg,var(--color-neutral-800),transparent);"></span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;">
+          <sc-for list="{{ studios }}" as="s" hint-placeholder-count="4">
+            <div style="border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);overflow:hidden;background:var(--color-surface);display:flex;flex-direction:column;box-shadow:var(--shadow-sm);">
+              <div style="position:relative;aspect-ratio:16/10;overflow:hidden;background:#0d0e16;border-bottom:1px solid var(--color-neutral-800);">
+                <iframe src="{{ s.thumb }}" title="{{ s.name }}" loading="lazy" scrolling="no" sandbox="allow-scripts" style="position:absolute;top:0;left:0;width:200%;height:200%;transform:scale(0.5);transform-origin:top left;border:0;pointer-events:none;"></iframe>
+                <button type="button" onClick="{{ s.preview }}" title="Preview {{ s.name }}" style="position:absolute;inset:0;border:0;background:transparent;cursor:pointer;"></button>
+                <span style="position:absolute;top:9px;left:9px;display:inline-flex;align-items:center;gap:6px;font:600 10px ui-monospace,Menlo,monospace;padding:3px 8px;border-radius:999px;background:rgba(13,14,22,0.82);color:var(--color-accent-200);backdrop-filter:blur(4px);"><i class="ph {{ s.icon }}"></i>{{ s.kit }}</span>
+                <span style="position:absolute;top:9px;right:9px;font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 8px;border-radius:999px;background:rgba(13,14,22,0.82);color:var(--color-text);backdrop-filter:blur(4px);">{{ s.count }}</span>
+              </div>
+              <div style="padding:12px 13px;display:grid;gap:8px;flex:1;">
+                <div style="display:flex;align-items:baseline;gap:8px;"><b style="font-size:13.5px;font-weight:600;">{{ s.name }}</b></div>
+                <p style="margin:0;font-size:12px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 68%,transparent);">{{ s.desc }}</p>
+                <sc-if value="{{ s.tested }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--radius-sm);background:#0d0e16;border:1px solid var(--color-neutral-800);">
+                    <i class="ph {{ s.testIcon }}" style="color:{{ s.testColor }};"></i>
+                    <span style="font:11.5px ui-monospace,Menlo,monospace;color:{{ s.testColor }};overflow-wrap:anywhere;">{{ s.testText }}</span>
+                  </div>
+                </sc-if>
+                <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;padding-top:4px;">
+                  <button type="button" class="btn btn-primary" style="min-height:30px;font-size:12px;" onClick="{{ s.preview }}"><i class="ph ph-play" style="margin-right:4px;"></i>Open</button>
+                  <button type="button" class="btn btn-secondary" style="min-height:30px;font-size:12px;" onClick="{{ s.test }}"><i class="ph ph-flask" style="margin-right:4px;"></i>Test</button>
+                  <button type="button" class="btn btn-ghost" style="min-height:30px;font-size:12px;" onClick="{{ s.openTab }}"><i class="ph ph-arrow-square-out"></i></button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </main>
+
+    <!-- AGENTS SIDEBAR -->
+    <aside class="scroll" style="overflow:auto;border-left:1px solid var(--color-neutral-800);background:color-mix(in srgb,var(--color-surface) 60%,var(--color-bg));padding:18px 16px;display:grid;gap:14px;align-content:start;">
+      <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-users-three" style="color:var(--color-accent-300);font-size:17px;"></i><span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Agent UI</span></div>
+      <p style="margin:0;font-size:12px;line-height:1.55;color:color-mix(in srgb,var(--color-text) 62%,transparent);">Assign which studio UI each agent runs. Apply writes <code style="font-family:ui-monospace,Menlo,monospace;color:var(--color-accent-200);">agent-ui.json</code> through the live API when editing is on.</p>
+      <sc-for list="{{ agents }}" as="a" hint-placeholder-count="3">
+        <div style="display:grid;gap:9px;padding:13px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);background:var(--color-surface);">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:50%;background:{{ a.dot }};flex:none;"></span><b style="font-size:13px;">{{ a.name }}</b><span style="margin-left:auto;font:10.5px ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 48%,transparent);">{{ a.role }}</span></div>
+          <select class="hubsel" value="{{ a.studio }}" onChange="{{ a.setStudio }}">
+            <sc-for list="{{ studioOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.name }}</option></sc-for>
+          </select>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 58%,transparent);white-space:nowrap;">variant #</span>
+            <input class="hubin" type="number" min="1" max="{{ a.variantMax }}" value="{{ a.variant }}" onInput="{{ a.setVariant }}" style="width:76px;">
+            <span style="margin-left:auto;font:10.5px ui-monospace,Menlo,monospace;color:{{ a.statusColor }};">{{ a.status }}</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="btn btn-secondary" style="flex:1;min-height:30px;font-size:12px;" onClick="{{ a.view }}"><i class="ph ph-eye" style="margin-right:4px;"></i>View</button>
+            <button type="button" class="btn btn-primary" style="flex:1;min-height:30px;font-size:12px;" onClick="{{ a.apply }}"><i class="ph ph-check" style="margin-right:4px;"></i>Apply</button>
+          </div>
+        </div>
+      </sc-for>
+      <button type="button" class="btn btn-primary btn-block" style="min-height:36px;font-size:12.5px;" onClick="{{ applyAll }}"><i class="ph ph-cloud-arrow-up" style="margin-right:5px;"></i>Apply all to backend</button>
+      <sc-if value="{{ hasLog }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:5px;padding:11px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-sm);background:#0d0e16;">
+          <span style="font:10px ui-monospace,Menlo,monospace;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 45%,transparent);">Activity</span>
+          <sc-for list="{{ log }}" as="l" hint-placeholder-count="0"><span style="font:11px ui-monospace,Menlo,monospace;color:{{ l.color }};overflow-wrap:anywhere;">{{ l.t }}</span></sc-for>
+        </div>
+      </sc-if>
+    </aside>
+  </div>
+
+  <!-- EMBED OVERLAY -->
+  <sc-if value="{{ hasEmbed }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:rgba(9,10,16,0.88);backdrop-filter:blur(6px);">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 18px;background:var(--color-surface);box-shadow:0 1px 0 var(--color-neutral-800);">
+        <i class="ph {{ embedIcon }}" style="color:var(--color-accent-300);font-size:16px;"></i>
+        <span style="font:600 13px ui-monospace,Menlo,monospace;color:var(--color-accent-200);">{{ embedTitle }}</span>
+        <span style="font:11.5px ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ embedMeta }}</span>
+        <span style="margin-left:auto;display:flex;gap:6px;">
+          <button type="button" class="btn btn-ghost" style="min-height:30px;font-size:12px;" onClick="{{ embedTab }}"><i class="ph ph-arrow-square-out" style="margin-right:5px;"></i>Open in tab</button>
+          <button type="button" class="btn btn-primary" style="min-height:30px;font-size:12px;" onClick="{{ closeEmbed }}"><i class="ph ph-x" style="margin-right:5px;"></i>Close</button>
+        </span>
+      </div>
+      <iframe src="{{ embedUrl }}" title="{{ embedTitle }}" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" style="flex:1;width:100%;border:0;background:var(--color-bg);"></iframe>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1280, &quot;height&quot;: 820 },
+  &quot;apiBase&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;http://localhost:8090&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Backend&quot; },
+  &quot;pollSeconds&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 0, &quot;min&quot;: 0, &quot;max&quot;: 60, &quot;step&quot;: 5, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Backend&quot; }
+}">
+const BRIEF_TESTER = "A testing and QA dashboard for a whole software stack: pytest, a code audit and dependency graph, JavaScript syntax checks and browser QA, ranked by severity and blast radius, with launch readiness.";
+const BRIEF_BRIDAGO = "A research institute operating console for a seeded graph-intelligence brain: agents, plasticity, memory, labs, provenance and oversight, all as one graph.";
+
+const STUDIOS = [
+  { id: 'tester-dash', name: 'Tester Dashboard Studio', kit: 'SiteKit', icon: 'ph-squares-four', count: '50', file: 'Tester Dashboard Studio.dc.html', desc: 'Site-form dashboards for the tester, 12 archetypes × look × palette × font.' },
+  { id: 'console-graph', name: 'Console Studio · Graph', kit: 'ConsoleKit', icon: 'ph-graph', count: '200', file: 'Console Studio.dc.html', desc: 'TigerGraph-grade graph consoles — schema, GSQL, explore, agents, oversight. Nocturne family.' },
+  { id: 'console-modern', name: 'Console Studio · Modern', kit: 'ConsoleKit', icon: 'ph-sparkle', count: '200', file: 'Console Studio.dc.html', desc: 'Non-Nocturne consoles — 14 palettes × 8 skins × 13 frames, unique in form and style.' },
+  { id: 'style-studio', name: 'Style Studio', kit: 'SiteKit', icon: 'ph-pen-nib', count: 'brief→N', file: '../../marketing/Style Studio.dc.html', desc: 'Brief in, structurally different sites out, with a chat agent that edits only what you name.' }
+];
+
+const ENDPOINTS = [
+  ['GET', '/health', 1], ['GET', '/graph', 1], ['GET', '/findings', 1], ['GET', '/fixes', 1], ['GET', '/runs', 1], ['GET', '/edit', 1],
+  ['POST', '/run', 0], ['POST', '/ask', 0], ['POST', '/files/write', 0], ['POST', '/files/delete', 0]
+];
+
+class Component extends DCLogic {
+  state = {
+    base: '', token: '', authOpen: false,
+    health: null, edit: null, probing: false, status: 'init',
+    thumbs: {}, ready: false,
+    assign: { tester: { studio: 'console-graph', variant: 5 }, bridago: { studio: 'console-modern', variant: 12 }, sextant: { studio: 'console-graph', variant: 1 } },
+    tests: {}, embed: null, log: []
+  };
+
+  componentDidMount() {
+    const base = (this.props.apiBase ?? '') || localStorage.getItem('studioshub.base') || 'http://localhost:8090';
+    const token = localStorage.getItem('studioshub.token') || '';
+    let assign = this.state.assign;
+    try { const saved = JSON.parse(localStorage.getItem('studioshub.assign') || 'null'); if (saved) assign = Object.assign({}, assign, saved); } catch (e) {}
+    this.setState({ base, token, assign });
+    this.waitKits(() => { this.buildThumbs(); this.probe(base, token); });
+  }
+  componentWillUnmount() { clearTimeout(this._k); }
+
+  waitKits(cb) { if (window.SiteKit && window.ConsoleKit) { this.setState({ ready: true }, cb); return; } this._kt = (this._kt || 0) + 1; if (this._kt > 50) { this.setState({ ready: true }, cb); return; } this._k = setTimeout(() => this.waitKits(cb), 120); }
+  url(html) { return 'data:text/html;charset=utf-8,' + encodeURIComponent(html); }
+
+  buildThumbs() {
+    const t = {};
+    try { if (window.SiteKit) { t['tester-dash'] = this.url(window.SiteKit.build(window.SiteKit.plan(BRIEF_TESTER, 'Tester', 3, 1)[0], { thumb: true })); t['style-studio'] = this.url(window.SiteKit.build(window.SiteKit.plan(BRIEF_BRIDAGO, 'Bridago', 3, 4)[0], { thumb: true })); } } catch (e) {}
+    try { if (window.ConsoleKit) { t['console-graph'] = this.url(window.ConsoleKit.build(window.ConsoleKit.plan(6, 0, false)[2])); t['console-modern'] = this.url(window.ConsoleKit.build(window.ConsoleKit.plan(6, 7, true)[1])); } } catch (e) {}
+    this.setState({ thumbs: t });
+  }
+
+  async probe(base, token) {
+    base = base != null ? base : this.state.base;
+    this.setState({ probing: true, status: 'probing' });
+    try {
+      const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 2800);
+      const r = await fetch(base.replace(/\/$/, '') + '/health', { signal: ctrl.signal, headers: { accept: 'application/json' } });
+      clearTimeout(to);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const h = await r.json();
+      let edit = null; try { const er = await fetch(base.replace(/\/$/, '') + '/edit'); if (er.ok) edit = (await er.json()).edit; } catch (e) {}
+      this.setState({ health: h, edit, probing: false, status: 'live' });
+      this.pushLog('connected to ' + (base || 'same origin'), 'ok');
+    } catch (e) {
+      this.setState({ health: null, edit: null, probing: false, status: 'offline' });
+    }
+  }
+
+  pushLog(t, kind) { const color = kind === 'ok' ? '#8fcfb0' : kind === 'bad' ? '#e0a07e' : 'color-mix(in srgb,var(--color-text) 65%,transparent)'; this.setState(s => ({ log: [{ t: new Date().toLocaleTimeString() + '  ' + t, color }].concat(s.log).slice(0, 8) })); }
+
+  reconnect() { localStorage.setItem('studioshub.base', this.state.base); this.probe(this.state.base, this.state.token); }
+  setBase(e) { this.setState({ base: e.target.value }); }
+  setToken(e) { const v = e.target.value; localStorage.setItem('studioshub.token', v); this.setState({ token: v }); }
+  toggleAuth() { this.setState(s => ({ authOpen: !s.authOpen })); }
+
+  studioById(id) { return STUDIOS.find(s => s.id === id) || STUDIOS[0]; }
+  variantMax(id) { return id === 'tester-dash' ? 50 : id.indexOf('console') === 0 ? 200 : 50; }
+
+  buildVariant(id, variant) {
+    const i = Math.max(0, (variant | 0) - 1);
+    try {
+      if (id === 'console-graph') { const sp = window.ConsoleKit.plan(Math.max(i + 1, 6), 0, false)[i] || window.ConsoleKit.plan(6, 0, false)[0]; return this.url(window.ConsoleKit.build(sp)); }
+      if (id === 'console-modern') { const sp = window.ConsoleKit.plan(Math.max(i + 1, 6), 7, true)[i] || window.ConsoleKit.plan(6, 7, true)[0]; return this.url(window.ConsoleKit.build(sp)); }
+      if (id === 'tester-dash') { const sp = window.SiteKit.plan(BRIEF_TESTER, 'Tester', Math.max(i + 1, 6), 0)[i] || window.SiteKit.plan(BRIEF_TESTER, 'Tester', 6, 0)[0]; return this.url(window.SiteKit.build(sp)); }
+      const sp = window.SiteKit.plan(BRIEF_BRIDAGO, 'Bridago', Math.max(i + 1, 6), 4)[i] || window.SiteKit.plan(BRIEF_BRIDAGO, 'Bridago', 6, 4)[0]; return this.url(window.SiteKit.build(sp));
+    } catch (e) { return this.url('<body style="margin:0;background:#12131d;color:#e9e9ed;font:14px system-ui;display:grid;place-items:center;height:100vh">variant unavailable</body>'); }
+  }
+
+  preview(id) { const s = this.studioById(id); this.setState({ embed: { url: s.file, title: s.name, meta: 'live studio · ' + s.count + ' variations', icon: s.icon, tab: s.file } }); }
+  viewVariant(agentId) { const a = this.state.assign[agentId]; const s = this.studioById(a.studio); this.setState({ embed: { url: this.buildVariant(a.studio, a.variant), title: s.name + ' · #' + a.variant, meta: 'variant assigned to ' + agentId, icon: s.icon, tab: null } }); }
+  embedTab() { const e = this.state.embed; if (!e) return; const w = window.open('', '_blank'); if (!w) return; if (e.tab) { w.location = e.tab; } else { w.document.open(); w.document.write(decodeURIComponent(e.url.replace(/^data:text\/html;charset=utf-8,/, ''))); w.document.close(); } }
+
+  test(id) {
+    const K = id.indexOf('console') === 0 ? window.ConsoleKit : window.SiteKit;
+    let res;
+    try {
+      let specs;
+      if (id === 'console-graph') specs = window.ConsoleKit.plan(200, 0, false);
+      else if (id === 'console-modern') specs = window.ConsoleKit.plan(200, 0, true);
+      else specs = window.SiteKit.plan(id === 'tester-dash' ? BRIEF_TESTER : BRIEF_BRIDAGO, 'Test', 50, 0);
+      const keyer = id.indexOf('console') === 0 ? (s => [s.frame, s.primary, s.aux, s.aux2, s.skin].join('|')) : (s => [s.arch, s.look, s.pal, s.font].join('|'));
+      const uniq = new Set(specs.map(keyer)).size;
+      let errs = 0; for (const sp of specs) { try { const h = K.build(sp, id.indexOf('console') === 0 ? undefined : { thumb: true }); if (!h || h.length < 400) errs++; } catch (e) { errs++; } }
+      res = { ok: errs === 0, text: specs.length + ' built · ' + uniq + ' unique · ' + errs + ' errors' };
+    } catch (e) { res = { ok: false, text: 'kit error: ' + (e.message || e) }; }
+    this.setState(s => ({ tests: Object.assign({}, s.tests, { [id]: res }) }));
+    this.pushLog('tested ' + this.studioById(id).name + ' — ' + res.text, res.ok ? 'ok' : 'bad');
+  }
+
+  setAgentStudio(agentId, studio) { this.setState(s => ({ assign: Object.assign({}, s.assign, { [agentId]: Object.assign({}, s.assign[agentId], { studio, variant: Math.min(s.assign[agentId].variant, this.variantMax(studio)) }) }) })); }
+  setAgentVariant(agentId, v) { const n = Math.max(1, Math.min(this.variantMax(this.state.assign[agentId].studio), parseInt(v, 10) || 1)); this.setState(s => ({ assign: Object.assign({}, s.assign, { [agentId]: Object.assign({}, s.assign[agentId], { variant: n }) }) })); }
+
+  payload() { return JSON.stringify({ updated: new Date().toISOString(), note: 'Which studio UI each agent runs. Written by Studios Hub.', agents: this.state.assign, studios: STUDIOS.map(s => ({ id: s.id, name: s.name, file: s.file })) }, null, 2); }
+
+  async writeToBackend() {
+    const body = this.payload(); localStorage.setItem('studioshub.assign', JSON.stringify(this.state.assign));
+    if (this.state.status !== 'live') { this.pushLog('saved locally — backend offline', 'bad'); return; }
+    if (!this.state.edit) { this.pushLog('saved locally — editing is off (TESTER_EDIT=on to write)', 'bad'); return; }
+    try {
+      const r = await fetch(this.state.base.replace(/\/$/, '') + '/files/write', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, this.state.token ? { authorization: 'Bearer ' + this.state.token } : {}), body: JSON.stringify({ path: 'apps/tester/agent-ui.json', text: body }) });
+      if (r.ok) this.pushLog('wrote agent-ui.json via live API', 'ok');
+      else this.pushLog('write failed: HTTP ' + r.status + ' — saved locally', 'bad');
+    } catch (e) { this.pushLog('write error — saved locally', 'bad'); }
+  }
+  applyAgent(agentId) { this.pushLog('assigned ' + agentId + ' → ' + this.studioById(this.state.assign[agentId].studio).name + ' #' + this.state.assign[agentId].variant, 'ok'); this.writeToBackend(); }
+  applyAll() { this.pushLog('applying all agent UI assignments', 'ok'); this.writeToBackend(); }
+
+  renderVals() {
+    const s = this.state, live = s.status === 'live';
+    const statusMap = { live: ['#8fcfb0', 'LIVE'], offline: ['#8a8fa6', 'OFFLINE'], probing: ['#e3c27a', 'PROBING'], init: ['#8a8fa6', '—'] };
+    const [sc, stxt] = statusMap[s.status] || statusMap.init;
+    const healthRows = live && s.health ? [
+      { k: 'status', v: 'ok', color: '#8fcfb0' },
+      { k: 'model', v: String(s.health.model || '—'), color: 'var(--color-accent-200)' },
+      { k: 'busy', v: s.health.busy ? 'yes' : 'no', color: s.health.busy ? '#e3c27a' : 'var(--color-text)' },
+      { k: 'queued', v: String(s.health.queued != null ? s.health.queued : '—'), color: 'var(--color-text)' },
+      { k: 'editing', v: s.edit ? 'on' : 'off', color: s.edit ? '#8fcfb0' : '#e0a07e' }
+    ] : [
+      { k: 'status', v: s.status === 'probing' ? 'probing…' : 'offline', color: s.status === 'probing' ? '#e3c27a' : '#8a8fa6' },
+      { k: 'endpoint', v: (s.base || 'same origin').replace(/^https?:\/\//, ''), color: 'var(--color-text)' },
+      { k: 'model', v: '—', color: 'color-mix(in srgb,var(--color-text) 45%,transparent)' },
+      { k: 'editing', v: '—', color: 'color-mix(in srgb,var(--color-text) 45%,transparent)' },
+      { k: 'hint', v: 'serve on :8090', color: 'color-mix(in srgb,var(--color-text) 45%,transparent)' }
+    ];
+    const studioOpts = STUDIOS.map(x => ({ id: x.id, name: x.name + ' (' + x.count + ')' }));
+    const agentMeta = { tester: ['TESTER', 'house QA', '#9184d9'], bridago: ['Bridago', 'the brain', '#5bbfb0'], sextant: ['SEXTANT', 'fixer', '#e3c27a'] };
+
+    return {
+      base: s.base, token: s.token, authOpen: s.authOpen,
+      setBase: e => this.setBase(e), setToken: e => this.setToken(e), toggleAuth: () => this.toggleAuth(), reconnect: () => this.reconnect(),
+      statusText: stxt, statusTip: live ? 'Connected to ' + (s.base || 'same origin') : 'Not connected — start the TESTER container and Reconnect',
+      statusPillSt: 'display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border-radius:999px;background:color-mix(in srgb,' + sc + ' 15%,transparent);color:' + sc + ';',
+      statusDotSt: 'width:8px;height:8px;border-radius:50%;background:' + sc + ';' + (s.status === 'probing' ? 'animation:shpulse 1s infinite;' : ''),
+      health: healthRows,
+      endpoints: ENDPOINTS.map(([m, p, g]) => ({ method: m, path: p, badgeSt: 'font:600 9.5px ui-monospace,Menlo,monospace;letter-spacing:0.04em;padding:2px 6px;border-radius:5px;flex:none;background:color-mix(in srgb,' + (m === 'GET' ? '#5bbfb0' : '#9184d9') + ' 16%,transparent);color:' + (m === 'GET' ? '#8fd3c6' : 'var(--color-accent-200)') + ';', liveColor: live ? (g ? '#8fcfb0' : (s.edit || m !== 'POST' ? '#8fcfb0' : '#e3c27a')) : '#3a3d4d', liveTip: live ? 'reachable' : 'offline' })),
+      studioCount: String(STUDIOS.length), totalVariants: '450+',
+      studios: STUDIOS.map(x => { const tr = s.tests[x.id]; return {
+        name: x.name, kit: x.kit, icon: x.icon, count: x.count, desc: x.desc,
+        thumb: s.thumbs[x.id] || this.url('<body style="margin:0;background:#0d0e16"></body>'),
+        preview: () => this.preview(x.id), test: () => this.test(x.id), openTab: () => { const w = window.open('', '_blank'); if (w) w.location = x.file; },
+        tested: !!tr, testIcon: tr ? (tr.ok ? 'ph-check-circle' : 'ph-warning-circle') : 'ph-circle', testColor: tr ? (tr.ok ? '#8fcfb0' : '#e0a07e') : 'var(--color-text)', testText: tr ? tr.text : ''
+      }; }),
+      studioOpts,
+      agents: ['tester', 'bridago', 'sextant'].map(id => { const a = s.assign[id], m = agentMeta[id]; return {
+        name: m[0], role: m[1], dot: m[2], studio: a.studio, variant: String(a.variant), variantMax: String(this.variantMax(a.studio)),
+        setStudio: e => this.setAgentStudio(id, e.target.value), setVariant: e => this.setAgentVariant(id, e.target.value),
+        apply: () => this.applyAgent(id), view: () => this.viewVariant(id),
+        status: this.studioById(a.studio).kit, statusColor: 'color-mix(in srgb,var(--color-text) 50%,transparent)'
+      }; }),
+      applyAll: () => this.applyAll(),
+      hasLog: s.log.length > 0, log: s.log,
+      hasEmbed: !!s.embed, embedUrl: s.embed ? s.embed.url : '', embedTitle: s.embed ? s.embed.title : '', embedMeta: s.embed ? s.embed.meta : '', embedIcon: s.embed ? s.embed.icon : 'ph-play',
+      closeEmbed: () => this.setState({ embed: null }), embedTab: () => this.embedTab()
+    };
+  }
+}
+</script>
+</body>
+</html>

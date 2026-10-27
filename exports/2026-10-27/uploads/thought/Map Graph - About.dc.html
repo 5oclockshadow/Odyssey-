@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>html, body { margin: 0; background: #0b0e17; } * { box-sizing: border-box; } a { color: #27d3ff; } a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; }</style>
+</helmet>
+<div data-screen-label="About" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; line-height: 1.6;">
+  <dc-import name="Map Graph Nav" current="about" hint-size="100%,64px"></dc-import>
+  <main style="max-width: 900px; margin: 0 auto; padding: clamp(40px, 7vw, 88px) clamp(16px, 4vw, 40px); display: grid; gap: 44px;">
+    <h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(40px, 6.5vw, 84px); line-height: 0.96; letter-spacing: -0.035em;">We mark what we <span style="color: #ff3ea5;">do not know</span>.</h1>
+    <p style="margin: 0; font-size: 21px; color: #c9d0ee;">A map is only useful if you can tell what is known from what is guessed. Map Graph is built around that difference.</p>
+    <div style="display: grid; gap: 14px;"><sc-for list="{{ principles }}" as="p" hint-placeholder-count="4"><div style="padding: 22px 24px; border: 1px solid #252c42; border-radius: 16px; background: #131827; display: grid; gap: 6px;"><div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 22px; color: #27d3ff;">{{ p.t }}</div><div style="color: #c9d0ee;">{{ p.d }}</div></div></sc-for></div>
+    <div style="padding: 22px 24px; border: 1px dashed #ff3ea5; border-radius: 16px; color: #c9d0ee;"><b style="color: #ff3ea5;">Placeholder.</b> Team, company and location details go here once they exist. Nothing on this site names customers, figures or quotes, because none are real yet.</div>
+  </main>
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  async componentDidMount() { const API = await import('./tandem-api.js'); API.track('page_view', 'about'); }
+  renderVals() { return { principles: [{ t: 'Unverified until you confirm it', d: 'Anything the engine or Claude adds to a map is marked as a placeholder. You decide when it becomes a fact.' }, { t: 'Examples are not limits', d: 'Laws, recipes, DNA, coins, homes, companies, libraries, patents and logistics show what a map can be. Any topic works, and you can define your own context.' }, { t: 'Samples use invented names', d: 'Every sample is made up. We never present an invented record as a real one.' }, { t: 'Your maps stay yours', d: 'Maps live in your browser by default and export as plain JSON at any time.' }] }; }
+}
+
+</script>
+</body>
+</html>

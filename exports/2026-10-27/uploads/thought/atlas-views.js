@@ -1,0 +1,87 @@
+// Extra display styles for Atlas. Each takes an environment and returns the shapes it drew, for hit testing.
+let INK = '#1c1f1a', MUTE = '#6a7066', LINE = '#c4c9bf', PAPER = '#fffdf6', ACC = '#d2542a', INKRGB = '28,31,26', ACCRGB = '210,84,42', GHOST = '#9aa093';
+// The host passes its palette so every view follows the Paper / Night / Blueprint style. Universe keeps its own night sky.
+export function setTheme(T) { if (!T) return; INK = T.ink; MUTE = T.mute; LINE = T.line; PAPER = T.card; ACC = T.acc; INKRGB = T.inkRGB; ACCRGB = T.accRGB; GHOST = T.ghost; }
+const clip = (ctx, t, mw, size = 12) => { ctx.font = size + 'px "Hanken Grotesk", sans-serif'; if (ctx.measureText(t).width <= mw) return t; let s = t; while (s.length > 1 && ctx.measureText(s + '…').width > mw) s = s.slice(0, -1); return s + '…'; };
+const txt = (ctx, t, x, y, o = {}) => { ctx.font = (o.w || 400) + ' ' + (o.s || 12) + 'px ' + (o.f || '"Hanken Grotesk", sans-serif'); ctx.fillStyle = o.c || INK; ctx.textAlign = o.a || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y); };
+const area = (W, H) => ({ x: 24, y: 56, w: W - 48, h: H - 96 });
+
+export function matrix(env) {
+  const { ctx, a, A, lv, W, H, sel, hover } = env, shapes = [], R = area(W, H), ids = lv.nodes.map(n => n.id), n = ids.length; if (!n) return shapes;
+  const size = Math.min(R.w - 160, R.h - 10), cell = size / n, x0 = R.x + 160, y0 = R.y, pos = new Map(ids.map((id, i) => [id, i]));
+  ctx.fillStyle = PAPER; ctx.fillRect(x0, y0, size, size);
+  ids.forEach((id, i) => { const t = A.typeOf(a, id); ctx.fillStyle = t.color; ctx.fillRect(x0 + i * cell, y0 + i * cell, Math.max(1.5, cell - 1), Math.max(1.5, cell - 1)); if (cell >= 13) txt(ctx, clip(ctx, a.ents.get(id).label, 150), x0 - 8, y0 + i * cell + cell / 2, { a: 'right', c: sel === id ? ACC : INK, w: sel === id ? 600 : 400, s: Math.min(13, cell - 2) }); });
+  for (const l of lv.links) { const i = pos.get(l.a), j = pos.get(l.b); if (i == null || j == null) continue; ctx.fillStyle = l.ghost ? GHOST : A.typeOf(a, l.a).color; ctx.fillRect(x0 + j * cell, y0 + i * cell, Math.max(1.5, cell - 1), Math.max(1.5, cell - 1)); ctx.globalAlpha = 0.55; ctx.fillRect(x0 + i * cell, y0 + j * cell, Math.max(1.5, cell - 1), Math.max(1.5, cell - 1)); ctx.globalAlpha = 1; }
+  ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x0, y0, size, size);
+  const h = hover && pos.get(hover); if (h != null) { ctx.fillStyle = 'rgba(' + ACCRGB + ',0.16)'; ctx.fillRect(x0, y0 + h * cell, size, cell); ctx.fillRect(x0 + h * cell, y0, cell, size); }
+  shapes.push({ k: 'm', x0, y0, cell, ids }); txt(ctx, 'Rows and columns are the ideas at this level. A filled cell is a link, read from row to column.', R.x, H - 28, { c: MUTE, s: 12 });
+  return shapes;
+}
+export function treemap(env) {
+  const { ctx, a, A, lv, W, H, sel, hover } = env, shapes = [], R = area(W, H), items = lv.nodes.map(e => ({ id: e.id, v: 1 + A.descendants(a, e.id) * 1.2 + a.links.filter(l => l.a === e.id || l.b === e.id).length * 0.5 }));
+  if (!items.length) return shapes; const tiles = A.squarify(items, R.x, R.y, R.w, R.h);
+  for (const t of tiles) { const e = a.ents.get(t.id), ty = A.typeOf(a, t.id), x = t.x + 2, y = t.y + 2, w = t.w - 4, h = t.h - 4; if (w < 3 || h < 3) continue; ctx.globalAlpha = hover === t.id ? 1 : 0.86; ctx.fillStyle = ty.color; ctx.fillRect(x, y, w, h); ctx.globalAlpha = 1; if (e.unverified) { ctx.setLineDash([5, 4]); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(x + 2, y + 2, w - 4, h - 4); ctx.setLineDash([]); }
+    if (sel === t.id) { ctx.strokeStyle = INK; ctx.lineWidth = 4; ctx.strokeRect(x + 2, y + 2, w - 4, h - 4); }
+    if (w > 60 && h > 30) { txt(ctx, clip(ctx, ty.glyph + ' ' + e.label, w - 16, 14), x + 8, y + 16, { c: '#fff', w: 600, s: 14 }); if (h > 52) txt(ctx, ty.label + (e.kids.length ? ' · ' + e.kids.length + ' inside' : ''), x + 8, y + 36, { c: 'rgba(255,255,255,0.85)', s: 12, f: '"DM Mono", monospace' }); }
+    shapes.push({ k: 'r', x, y, w, h, id: t.id }); }
+  txt(ctx, 'Tile size shows how much sits inside and around each idea.', R.x, H - 28, { c: MUTE, s: 12 });
+  return shapes;
+}
+export function arcs(env) {
+  const { ctx, a, A, lv, W, H, sel, hover } = env, shapes = [], R = area(W, H), N = lv.nodes, n = N.length; if (!n) return shapes;
+  const base = R.y + R.h * 0.5, dx = Math.min(70, (R.w - 40) / Math.max(1, n - 1)), x0 = R.x + (R.w - dx * (n - 1)) / 2, pos = new Map(N.map((e, i) => [e.id, x0 + i * dx])), focus = hover || sel;
+  ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0 - 20, base); ctx.lineTo(x0 + dx * (n - 1) + 20, base); ctx.stroke();
+  for (const l of lv.links) { const xa = pos.get(l.a), xb = pos.get(l.b); if (xa == null || xb == null) continue; const up = xa < xb, r = Math.abs(xb - xa) / 2, on = focus && (l.a === focus || l.b === focus); ctx.strokeStyle = on ? ACC : 'rgba(' + INKRGB + ',' + (focus ? 0.1 : 0.35) + ')'; ctx.lineWidth = on ? 2.5 : 1.2; ctx.beginPath(); ctx.ellipse((xa + xb) / 2, base, Math.max(r, 1), Math.min(r, R.h * 0.42), 0, up ? Math.PI : 0, up ? Math.PI * 2 : Math.PI); ctx.stroke(); if (on) txt(ctx, l.rel, (xa + xb) / 2, base + (up ? -Math.min(r, R.h * 0.42) - 10 : Math.min(r, R.h * 0.42) + 10), { a: 'center', c: ACC, s: 12, f: '"DM Mono", monospace' }); }
+  N.forEach((e, i) => { const x = pos.get(e.id), t = A.typeOf(a, e.id), r = 8 + Math.min(8, e.kids.length); ctx.fillStyle = t.color; ctx.fillRect(x - r, base - r, r * 2, r * 2); ctx.strokeStyle = sel === e.id ? ACC : INK; ctx.lineWidth = sel === e.id ? 3 : 1.5; ctx.strokeRect(x - r, base - r, r * 2, r * 2); if (n <= 14 || hover === e.id || sel === e.id) { ctx.save(); ctx.translate(x, base + r + 10); ctx.rotate(Math.PI / 4); txt(ctx, clip(ctx, e.label, 150), 0, 0, { s: 12 }); ctx.restore(); } shapes.push({ k: 'r', x: x - r, y: base - r, w: r * 2, h: r * 2, id: e.id }); });
+  txt(ctx, 'Ideas in order along the line. Arcs above run left to right, arcs below run right to left.', R.x, H - 28, { c: MUTE, s: 12 });
+  return shapes;
+}
+export function tree(env) {
+  const { ctx, a, A, lv, W, H, sel, hover, collapsed, scroll } = env, shapes = [], R = area(W, H), RH = 26, rows = [], root = lv.focus ? [a.ents.get(lv.focus)] : lv.nodes;
+  const walk = (e, d) => { rows.push({ e, d }); if (!collapsed.has(e.id)) for (const k of e.kids) walk(a.ents.get(k), d + 1); }; for (const e of root) walk(e, 0);
+  const total = rows.length * RH, sc = Math.max(0, Math.min(scroll, Math.max(0, total - R.h))); env.setScroll(sc);
+  ctx.save(); ctx.beginPath(); ctx.rect(R.x - 4, R.y - 4, R.w + 8, R.h + 8); ctx.clip();
+  const nlinks = new Map(); for (const l of a.links) { nlinks.set(l.a, (nlinks.get(l.a) || 0) + 1); nlinks.set(l.b, (nlinks.get(l.b) || 0) + 1); }
+  rows.forEach(({ e, d }, i) => { const y = R.y + i * RH - sc + RH / 2; if (y < R.y - RH || y > R.y + R.h + RH) return; const x = R.x + 10 + d * 22, t = A.typeOf(a, e.id), on = sel === e.id;
+    if (on || hover === e.id) { ctx.fillStyle = on ? 'rgba(' + ACCRGB + ',0.18)' : 'rgba(' + INKRGB + ',0.06)'; ctx.fillRect(R.x, y - RH / 2 + 1, R.w, RH - 2); }
+    ctx.fillStyle = t.color; ctx.beginPath(); ctx.arc(x + 14, y, 6, 0, 7); ctx.fill();
+    if (e.kids.length) { const col = collapsed.has(e.id); ctx.fillStyle = INK; ctx.beginPath(); if (col) { ctx.moveTo(x, y - 5); ctx.lineTo(x + 7, y); ctx.lineTo(x, y + 5); } else { ctx.moveTo(x - 1, y - 3); ctx.lineTo(x + 8, y - 3); ctx.lineTo(x + 3.5, y + 5); } ctx.fill(); shapes.push({ k: 'r', x: x - 4, y: y - 11, w: 18, h: 22, id: e.id, act: 'toggle' }); }
+    txt(ctx, clip(ctx, e.label, R.w - d * 22 - 190), x + 26, y, { w: d === 0 ? 600 : 400, c: e.unverified ? ACC : INK }); txt(ctx, t.label, R.x + R.w - 70, y, { a: 'right', c: MUTE, s: 11, f: '"DM Mono", monospace' }); txt(ctx, nlinks.get(e.id) ? nlinks.get(e.id) + ' links' : '', R.x + R.w - 4, y, { a: 'right', c: MUTE, s: 11, f: '"DM Mono", monospace' });
+    shapes.unshift({ k: 'r', x: R.x, y: y - RH / 2, w: R.w, h: RH, id: e.id }); });
+  ctx.restore(); txt(ctx, 'The whole hierarchy as an outline. Click an arrow to fold, wheel to scroll, double-click to go inside.', R.x, H - 28, { c: MUTE, s: 12 });
+  return shapes;
+}
+export const hitMatrix = (s, x, y) => { const j = Math.floor((x - s.x0) / s.cell), i = Math.floor((y - s.y0) / s.cell); return i >= 0 && j >= 0 && i < s.ids.length && j < s.ids.length ? s.ids[i] : null; };
+
+// Universe: the level as a 3D space you can orbit, with time as the fourth axis (older ideas deeper, newer ones nearer).
+export function universe(env) {
+  const { ctx, a, A, lv, W, H, sel, hover, U, now } = env, shapes = [], N = (() => { const L = [...lv.nodes]; for (const e of lv.nodes) for (const k of e.kids) if (L.length < 320) L.push(a.ents.get(k)); return L; })(), cx = W / 2, cy = H / 2 - 10;
+  const g = ctx.createRadialGradient(cx, cy, 20, cx, cy, Math.max(W, H) * 0.75); g.addColorStop(0, '#171d3a'); g.addColorStop(1, '#05070f'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'lighter'; [[0.2, 0.3, '#3b2a8f', 0.22, 0.00011], [0.78, 0.65, '#0e6f9a', 0.2, 0.00009], [0.5, 0.9, '#8a1f66', 0.14, 0.00013]].forEach(([nx, ny, c, al, sp], i) => { const x = W * nx + Math.sin(now * sp + i * 2) * 60 - U.yaw * 30, y = H * ny + Math.cos(now * sp * 1.3 + i) * 40, rr = Math.max(W, H) * 0.42, ng = ctx.createRadialGradient(x, y, 0, x, y, rr); ng.addColorStop(0, c + Math.round(al * 255).toString(16).padStart(2, '0')); ng.addColorStop(1, c + '00'); ctx.fillStyle = ng; ctx.fillRect(0, 0, W, H); }); ctx.globalCompositeOperation = 'source-over';
+  for (const s of U.stars) { const x = ((s.x * W + U.yaw * 40 * s.z) % W + W) % W, y = ((s.y * H + U.pit * 30 * s.z) % H + H) % H; ctx.globalAlpha = 0.25 + 0.5 * s.z * (0.6 + 0.4 * Math.sin(now / 900 + s.x * 40)); ctx.fillStyle = '#dfe6ff'; ctx.fillRect(x, y, 1 + s.z * 1.5, 1 + s.z * 1.5); } ctx.globalAlpha = 1;
+  const order = new Map([...a.ents.keys()].map((id, i) => [id, i])), total = Math.max(1, a.ents.size), cut = U.time >= 1 ? 1e9 : Math.floor(U.time * total), vis = N.filter(e => order.get(e.id) <= cut);
+  for (const e of vis) { let p = U.p.get(e.id); if (!p) { const par = e.parent && U.p.get(e.parent), an = Math.random() * 6.283, el = Math.random() * 3.14 - 1.57; p = { x: (par ? par.x : 0) + Math.cos(an) * Math.cos(el) * 60, y: (par ? par.y : 0) + Math.sin(el) * 60, z: (par ? par.z : 0) + Math.sin(an) * Math.cos(el) * 60, vx: 0, vy: 0, vz: 0 }; U.p.set(e.id, p); } }
+  const P = vis.map(e => U.p.get(e.id)), by = new Map(vis.map((e, i) => [e.id, P[i]])), LK = [...lv.links.filter(l => by.has(l.a) && by.has(l.b)), ...a.links.filter(l => by.has(l.a) && by.has(l.b) && (a.ents.get(l.a).parent || a.ents.get(l.b).parent) && !lv.nodes.some(n => n.id === l.a) | !lv.nodes.some(n => n.id === l.b)).map(l => ({ a: l.a, b: l.b, rel: l.rel }))];
+  if (U.alpha > 0.02) { const al = U.alpha, tz = U.stretch;
+    for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) { const p = P[i], q = P[j]; let dx = q.x - p.x, dy = q.y - p.y, dz = q.z - p.z, d2 = dx * dx + dy * dy + dz * dz + 1; const d = Math.sqrt(d2), f = 5200 * al / d2; dx = dx / d * f; dy = dy / d * f; dz = dz / d * f; p.vx -= dx; p.vy -= dy; p.vz -= dz; q.vx += dx; q.vy += dy; q.vz += dz; }
+    for (const l of LK) { const p = by.get(l.a), q = by.get(l.b); if (!p || !q) continue; const dx = q.x - p.x, dy = q.y - p.y, dz = q.z - p.z, d = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1, f = (d - 130) * 0.03 * al; p.vx += dx / d * f; p.vy += dy / d * f; p.vz += dz / d * f; q.vx -= dx / d * f; q.vy -= dy / d * f; q.vz -= dz / d * f; }
+    vis.forEach((e, i) => { const p = P[i]; p.vx -= p.x * 0.006 * al; p.vy -= p.y * 0.006 * al; p.vz += ((order.get(e.id) / total - 0.5) * 420 * tz - p.z) * 0.04 * al; p.vx *= 0.82; p.vy *= 0.82; p.vz *= 0.82; p.x += p.vx; p.y += p.vy; p.z += p.vz; }); U.alpha *= 0.99; }
+  // Children orbit the idea that holds them, like a small solar system; the orbit never stops, even when the layout has settled.
+  { const rank = new Map(); for (const e of vis) { const par = e.parent && by.get(e.parent); if (!par) continue; const k = (rank.get(e.parent) || 0); rank.set(e.parent, k + 1); const p = by.get(e.id), r = 78 + 24 * k, ph = k * 2.399 + now * 0.00035 / (1 + k * 0.25); p.x += (par.x + Math.cos(ph) * r - p.x) * 0.045; p.z += (par.z + Math.sin(ph) * r - p.z) * 0.045; p.y += (par.y + Math.sin(ph * 0.7) * r * 0.3 - p.y) * 0.045; } }
+  const cyw = Math.cos(U.yaw), syw = Math.sin(U.yaw), cp = Math.cos(U.pit), sp = Math.sin(U.pit), F = 900, items = vis.map((e, i) => { const p = P[i], x1 = p.x * cyw - p.z * syw, z1 = p.x * syw + p.z * cyw, y2 = p.y * cp - z1 * sp, z2 = p.y * sp + z1 * cp, f = F / (F + z2 + 380) * U.zoom; return { e, x: cx + x1 * f, y: cy + y2 * f, z: z2, f }; }), pos = new Map(items.map(o => [o.e.id, o])), zs = items.map(o => o.z), z0 = Math.min(...zs, 0), z1m = Math.max(...zs, 1), fog = z => 1 - 0.6 * (z - z0) / (z1m - z0 + 1);
+  for (const l of LK) { const p = pos.get(l.a), q = pos.get(l.b); if (!p || !q) continue; const on = sel && (l.a === sel || l.b === sel); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = on ? '#ffb27a' : 'rgba(120,160,255,' + (0.1 + 0.26 * fog((p.z + q.z) / 2)) + ')'; ctx.lineWidth = on ? 2.2 : 1.1; ctx.shadowColor = on ? '#ffb27a' : '#5b8cff'; ctx.shadowBlur = on ? 10 : 4; ctx.beginPath(); const mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2 - 18 * Math.min(p.f, q.f); ctx.moveTo(p.x, p.y); ctx.quadraticCurveTo(mx, my, q.x, q.y); ctx.stroke(); ctx.shadowBlur = 0; ctx.globalCompositeOperation = 'source-over'; }
+  for (const l of LK) { const p = pos.get(l.a), q = pos.get(l.b); if (!p || !q) continue; let hs = 0; const key = l.a + l.b; for (let i = 0; i < key.length; i++) hs = (hs * 31 + key.charCodeAt(i)) % 997; const tt = ((now / 2600) + hs / 997) % 1, mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2 - 18 * Math.min(p.f, q.f), px = (1 - tt) * (1 - tt) * p.x + 2 * (1 - tt) * tt * mx + tt * tt * q.x, py = (1 - tt) * (1 - tt) * p.y + 2 * (1 - tt) * tt * my + tt * tt * q.y; ctx.globalAlpha = 0.5 + 0.5 * Math.sin(tt * 3.14); const pr = 2.2 * Math.min(1.6, (p.f + q.f) / 2 + 0.3), bg = ctx.createRadialGradient(px, py, 0, px, py, pr * 4); bg.addColorStop(0, l.ghost ? 'rgba(255,217,189,0.9)' : 'rgba(188,208,255,0.9)'); bg.addColorStop(1, 'rgba(120,160,255,0)'); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(px, py, pr * 4, 0, 7); ctx.fill(); ctx.globalCompositeOperation = 'source-over'; } ctx.globalAlpha = 1;
+  items.sort((p, q) => q.z - p.z); const labelCut = items.length > 22 ? items[items.length - 22].z : Infinity;
+  for (const o of items) { const e = o.e, t = A.typeOf(a, e.id), r = (9 + Math.min(14, e.kids.length * 2 + Math.sqrt(a.links.filter(l => l.a === e.id || l.b === e.id).length) * 2)) * o.f * 1.2, f = fog(o.z), born = Math.min(1, (now - (e.born || 0)) / 1200);
+    const rg = ctx.createRadialGradient(o.x - r * 0.3, o.y - r * 0.3, r * 0.1, o.x, o.y, r); rg.addColorStop(0, '#ffffff'); rg.addColorStop(0.25, t.color); rg.addColorStop(1, '#0a0d1c');
+    ctx.globalAlpha = (0.4 + 0.6 * f) * (e.unverified ? 0.7 : 1); const halo = ctx.createRadialGradient(o.x, o.y, r * 0.6, o.x, o.y, r * (2.2 + (1 - born) * 3)); halo.addColorStop(0, t.color + '88'); halo.addColorStop(1, t.color + '00'); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(o.x, o.y, r * (2.6 + (1 - born) * 3) * (1 + 0.04 * Math.sin(now / 700 + o.x)), 0, 7); ctx.fill(); ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(o.x, o.y, r, 0, 7); ctx.fill(); if (e.unverified) { ctx.setLineDash([4, 3]); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(o.x, o.y, r + 3, 0, 7); ctx.stroke(); ctx.setLineDash([]); }
+    if (A.canDescend(a, e.id)) { ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(o.x, o.y, r * 1.7, r * 0.55, -0.5, 0, 7); ctx.stroke(); }
+    if (sel === e.id) { ctx.strokeStyle = '#ffb27a'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(o.x, o.y, r + 8, 0, 7); ctx.stroke(); }
+    ctx.globalAlpha = 1; if ((f > 0.45 && o.z <= labelCut) || sel === e.id || hover === e.id) { ctx.font = '500 ' + Math.max(11, Math.min(15, 11 + o.f * 4)) + 'px "Hanken Grotesk", sans-serif'; ctx.fillStyle = sel === e.id || hover === e.id ? '#ffd9bd' : 'rgba(226,232,255,' + (0.5 + 0.5 * f) + ')'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.shadowColor = 'rgba(5,7,15,0.95)'; ctx.shadowBlur = 6; ctx.fillText(e.label.length > 34 ? e.label.slice(0, 33) + '…' : e.label, o.x, o.y + r + 6); ctx.shadowBlur = 0; }
+    shapes.push({ k: 'c', x: o.x, y: o.y, r: r + 6, id: e.id }); }
+  { const vg = ctx.createRadialGradient(cx, cy, Math.min(W, H) * 0.45, cx, cy, Math.max(W, H) * 0.8); vg.addColorStop(0, 'rgba(5,7,15,0)'); vg.addColorStop(1, 'rgba(5,7,15,0.65)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H); }
+  ctx.font = '12px "DM Mono", monospace'; ctx.fillStyle = 'rgba(200,210,255,0.7)'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText('Drag to orbit. Wheel to zoom. Older ideas sit deeper, newer ones nearer: scrub time below.', 24, H - 56);
+  return shapes;
+}
+export const newUniverse = () => ({ p: new Map(), yaw: 0.5, pit: -0.3, zoom: 1, alpha: 1, stretch: 1, time: 1, spin: true, stars: Array.from({ length: 260 }, (_, i) => ({ x: ((i * 0.618) % 1), y: ((i * 0.381 + 0.13) % 1), z: ((i * 0.271) % 1) })) });

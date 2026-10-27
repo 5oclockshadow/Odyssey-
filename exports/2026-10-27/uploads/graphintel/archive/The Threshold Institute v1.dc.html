@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; font-family: Manrope, system-ui, sans-serif; color: #141a2e; text-wrap: pretty; background: #f6f7fc; }
+    a { color: #5b4fe0; text-decoration: none; } a:hover { color: #3f33c4; text-decoration: underline; text-underline-offset: 3px; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #5b4fe0; outline-offset: 2px; }
+    ::selection { background: rgba(91,79,224,0.22); }
+    input::placeholder, textarea::placeholder { color: #8a90ad; }
+  </style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 50% at 10% 0%, #dcd6ff 0%, transparent 60%), radial-gradient(ellipse 60% 45% at 95% 10%, #cfeee6 0%, transparent 55%), radial-gradient(ellipse 60% 40% at 50% 100%, #ffe3ec 0%, transparent 60%), linear-gradient(180deg, #f6f7fc 0%, #eef0f8 100%);display:flex;flex-direction:column;">
+
+<nav style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;padding:20px clamp(20px,4vw,56px);">
+  <button onClick="{{ goHome }}" style="display:flex;align-items:baseline;gap:12px;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:inherit;text-align:left;"><span style="font-family:'Instrument Serif',serif;font-size:24px;letter-spacing:-0.01em;">The Threshold Institute</span><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">a self-running think tank</span></button>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+    <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="7">
+      <button style="{{ item.style }}" onClick="{{ item.go }}">{{ item.label }}</button>
+    </sc-for>
+    <button onClick="{{ goTalk }}" style="margin-left:8px;padding:9px 16px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0 0%,#5245d6 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 6px 18px rgba(82,69,214,0.35);font:inherit;font-weight:600;font-size:13px;cursor:pointer;">Talk to SEXTANT</button>
+  </div>
+</nav>
+
+<main style="width:100%;max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,56px) 96px;box-sizing:border-box;display:flex;flex-direction:column;gap:56px;flex:1;">
+
+<!-- ═══════ HOME ═══════ -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Home" style="display:flex;flex-direction:column;gap:56px;">
+  <header style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:40px;padding-top:40px;align-items:center;">
+    <div style="display:flex;flex-direction:column;gap:22px;">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Statement of purpose</span>
+      <h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(44px,6vw,72px);line-height:0.98;letter-spacing:-0.02em;font-weight:400;">Life is changing faster than the institutions that explain it.</h1>
+      <p style="margin:0;font-size:19px;line-height:1.5;color:#3a4160;max-width:600px;">Work, money, attention and trust are being re-priced in real time, and most people will notice late. The Institute makes the change legible early, in public, with the receipts attached. It is run by one agent, and the whole company fits in a file you can read.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button onClick="{{ goResearch }}" style="padding:12px 20px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0 0%,#5245d6 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 22px rgba(82,69,214,0.35);font:inherit;font-weight:600;font-size:15px;cursor:pointer;">Read the research</button>
+        <button onClick="{{ goAcademy }}" style="padding:12px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.9);color:#141a2e;background:rgba(255,255,255,0.55);backdrop-filter:blur(14px);box-shadow:0 6px 18px rgba(20,26,46,0.06);font:inherit;font-weight:600;font-size:15px;cursor:pointer;">Start the free course</button>
+      </div>
+    </div>
+    <button onClick="{{ goFile }}" style="text-align:left;cursor:pointer;font:inherit;color:inherit;display:grid;gap:12px;padding:22px;border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,0.78) 0%,rgba(255,255,255,0.42) 100%);border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 20px 50px rgba(20,26,46,0.10);min-width:0;">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">The company is this file</span><span style="font-size:11px;font-family:ui-monospace,Menlo,monospace;color:#6b7190;">institute.yaml · read every round</span></div>
+      <pre style="margin:0;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;color:#2b3150;white-space:pre;overflow-x:auto;">{{ yamlPreview }}</pre>
+      <span style="font-size:13px;color:#5b4fe0;font-weight:600;">Open the full file →</span>
+    </button>
+  </header>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+    <sc-for list="{{ tally }}" as="t" hint-placeholder-count="5">
+      <div style="padding:18px 20px;border-radius:16px;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 30px rgba(20,26,46,0.06);display:grid;gap:4px;"><span style="font-size:30px;font-weight:600;letter-spacing:-0.02em;">{{ t.value }}</span><span style="font-size:12px;color:#6b7190;">{{ t.label }}</span></div>
+    </sc-for>
+  </section>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;align-items:start;">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">How it runs itself</span>
+      <h2 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(32px,4vw,42px);line-height:1.05;letter-spacing:-0.015em;font-weight:400;">Built on the research it publishes.</h2>
+      <p style="margin:0;font-size:15px;line-height:1.6;color:#3a4160;">The Institute runs the construction from its own report on graph intelligence. Nothing is hard-coded: the file above is the company, this site is rendered from it, and the agent changes it only by pull request.</p>
+      <button onClick="{{ goBuild }}" style="justify-self:start;align-self:flex-start;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,255,255,0.9);color:#141a2e;background:rgba(255,255,255,0.55);backdrop-filter:blur(14px);box-shadow:0 6px 18px rgba(20,26,46,0.06);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">See the build plan and gates</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+      <div style="padding:24px;border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(255,255,255,0.45));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);display:grid;gap:10px;align-content:start;"><span style="font-size:12px;color:#5b4fe0;font-weight:600;">01 · Seed</span><strong style="font-weight:600;font-size:16px;">Read once, then destroyed</strong><p style="margin:0;font-size:14px;line-height:1.55;color:#3a4160;">Each round starts from a formal seed: the graph's structure, its types and an energy. No prose instructions. After that the graph lives inside the round.</p></div>
+      <div style="padding:24px;border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(255,255,255,0.45));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);display:grid;gap:10px;align-content:start;"><span style="font-size:12px;color:#5b4fe0;font-weight:600;">02 · Round</span><strong style="font-weight:600;font-size:16px;">Think until the energy settles</strong><p style="margin:0;font-size:14px;line-height:1.55;color:#3a4160;">The agent emits nodes, hyperedges and closure, repeats, and stops when its consistency energy stops falling. Hard questions get more rounds; easy ones fewer.</p></div>
+      <div style="padding:24px;border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(255,255,255,0.45));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);display:grid;gap:10px;align-content:start;"><span style="font-size:12px;color:#5b4fe0;font-weight:600;">03 · Learn</span><strong style="font-weight:600;font-size:16px;">Reflect, then file a pull request</strong><p style="margin:0;font-size:14px;line-height:1.55;color:#3a4160;">Every round's trace is reflected on in language. Changes to prompts, skills or edges are accepted only if they lower the energy on held-out seeds.</p></div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;"><h2 style="margin:0;font-family:'Instrument Serif',serif;font-size:32px;font-weight:400;letter-spacing:-0.015em;">Research, public track</h2><button onClick="{{ goResearch }}" style="background:none;border:0;padding:0;font:inherit;font-size:14px;color:#5b4fe0;font-weight:600;cursor:pointer;">All notes →</button></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
+      <sc-for list="{{ notes }}" as="n" hint-placeholder-count="3">
+        <button onClick="{{ n.open }}" style="text-align:left;cursor:pointer;font:inherit;color:inherit;padding:24px;border-radius:18px;background:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.06);display:grid;gap:10px;align-content:start;"><span style="font-size:12px;color:#5b4fe0;font-weight:600;">{{ n.kicker }}</span><strong style="font-family:'Instrument Serif',serif;font-weight:400;font-size:22px;line-height:1.15;">{{ n.title }}</strong><span style="font-size:14px;line-height:1.5;color:#3a4160;">{{ n.summary }}</span><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#6b7190;">{{ n.status }}</span></button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;">
+    <div style="padding:36px;border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(255,255,255,0.5));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 14px 36px rgba(20,26,46,0.07);display:grid;gap:16px;align-content:start;">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Academy · free</span>
+      <h3 style="margin:0;font-family:'Instrument Serif',serif;font-size:34px;line-height:1.08;font-weight:400;">Learn to read markets before you read our signals.</h3>
+      <ol style="margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:15px;color:#2b3150;">
+        <sc-for list="{{ modules }}" as="m" hint-placeholder-count="5"><li style="display:grid;grid-template-columns:24px 1fr;gap:10px;"><span style="color:#5b4fe0;font-weight:600;">{{ m.n }}</span><span>{{ m.title }}</span></li></sc-for>
+      </ol>
+      <button onClick="{{ goAcademy }}" style="justify-self:start;padding:11px 18px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 22px rgba(82,69,214,0.3);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">Begin module 1</button>
+    </div>
+    <div style="padding:36px;border-radius:22px;color:#fff;background:linear-gradient(160deg,#6a5df2 0%,#4b3fd0 55%,#3a2fb0 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), 0 20px 50px rgba(74,63,208,0.35);display:grid;gap:16px;align-content:start;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 80% 0%, rgba(255,255,255,0.28), transparent 60%);pointer-events:none;"></div>
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.9;">Signals · after the exam</span>
+      <h3 style="margin:0;font-family:'Instrument Serif',serif;font-size:34px;line-height:1.08;font-weight:400;">Published research with a position attached.</h3>
+      <p style="margin:0;font-size:15px;line-height:1.6;">Thesis, data, entry logic, invalidation, and the full record of what happened to the last one. Crypto, FX and indices, equities, macro, on-chain flows and prediction markets.</p>
+      <div style="display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;"><span style="font-size:40px;font-weight:600;letter-spacing:-0.02em;">${{ price }}</span><span style="font-size:13px;">per month · cancel any time · certification required</span></div>
+      <button onClick="{{ goSignals }}" style="justify-self:start;padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.7);color:#fff;background:rgba(255,255,255,0.14);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">How signals work</button>
+      <p style="margin:0;font-size:12px;line-height:1.5;">Signals are published research, not personalised advice. The Institute never manages money.</p>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ═══════ RESEARCH ═══════ -->
+<sc-if value="{{ isResearch }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Research" style="display:flex;flex-direction:column;gap:32px;padding-top:24px;">
+  <sc-if value="{{ noNote }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;gap:14px;max-width:720px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Research</span><h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,56px);line-height:1;font-weight:400;letter-spacing:-0.02em;">Notes, methods and the Institute's own record.</h1><p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">Two tracks. The public track is published here the day it is finished, with sources and method. The private track feeds the signals and is published in full when each signal closes. Nothing is published without the data it rests on.</p></div>
+    <div style="display:grid;gap:12px;">
+      <sc-for list="{{ notes }}" as="n" hint-placeholder-count="4">
+        <button onClick="{{ n.open }}" style="text-align:left;cursor:pointer;font:inherit;color:inherit;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:22px 26px;border-radius:18px;background:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 28px rgba(20,26,46,0.06);"><span style="display:grid;gap:6px;min-width:0;"><span style="font-size:12px;color:#5b4fe0;font-weight:600;">{{ n.kicker }}</span><span style="font-family:'Instrument Serif',serif;font-size:24px;line-height:1.15;">{{ n.title }}</span><span style="font-size:14px;line-height:1.5;color:#3a4160;">{{ n.summary }}</span></span><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#6b7190;white-space:nowrap;">{{ n.status }}</span></button>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+    <article style="display:grid;gap:22px;max-width:760px;">
+      <button onClick="{{ goResearch }}" style="justify-self:start;background:none;border:0;padding:0;font:inherit;font-size:14px;color:#5b4fe0;font-weight:600;cursor:pointer;">← All notes</button>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;"><span style="font-size:12px;color:#5b4fe0;font-weight:600;">{{ note.kicker }}</span><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#6b7190;">{{ note.status }}</span></div>
+      <h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(34px,4.5vw,50px);line-height:1.02;font-weight:400;letter-spacing:-0.02em;">{{ note.title }}</h1>
+      <sc-for list="{{ note.body }}" as="p" hint-placeholder-count="4"><p style="margin:0;font-size:17px;line-height:1.65;color:#2b3150;">{{ p }}</p></sc-for>
+      <sc-if value="{{ note.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ note.link }}" style="justify-self:start;padding:11px 18px;border-radius:999px;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 22px rgba(82,69,214,0.3);font-weight:600;font-size:14px;">{{ note.linkLabel }}</a></sc-if>
+    </article>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ═══════ ACADEMY ═══════ -->
+<sc-if value="{{ isAcademy }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Academy" style="display:flex;flex-direction:column;gap:32px;padding-top:24px;">
+  <sc-if value="{{ academyList }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;gap:14px;max-width:720px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Academy · free</span><h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,56px);line-height:1;font-weight:400;letter-spacing:-0.02em;">Five modules, one exam. Then the signals open.</h1><p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">About two hours in total. The exam is ten questions, two per module, and you need eight to pass. Certification is stored in your browser; nothing is collected.</p></div>
+    <div style="display:grid;gap:12px;">
+      <sc-for list="{{ modules }}" as="m" hint-placeholder-count="5">
+        <button onClick="{{ m.open }}" style="text-align:left;cursor:pointer;font:inherit;color:inherit;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:18px;align-items:center;padding:22px 26px;border-radius:18px;background:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 28px rgba(20,26,46,0.06);"><span style="font-family:'Instrument Serif',serif;font-size:30px;color:#5b4fe0;">{{ m.n }}</span><span style="display:grid;gap:4px;min-width:0;"><span style="font-size:20px;font-weight:600;line-height:1.2;">{{ m.title }}</span><span style="font-size:14px;line-height:1.5;color:#3a4160;">{{ m.summary }}</span></span><span style="font-size:12px;color:#6b7190;white-space:nowrap;">{{ m.minutes }} min</span></button>
+      </sc-for>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:22px 26px;border-radius:18px;color:#fff;background:linear-gradient(160deg,#6a5df2 0%,#4b3fd0 60%,#3a2fb0 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), 0 16px 40px rgba(74,63,208,0.3);"><span style="display:grid;gap:4px;"><span style="font-size:20px;font-weight:600;">The exam</span><span style="font-size:14px;line-height:1.5;">Ten questions. Eight to pass. {{ certStatus }}</span></span><button onClick="{{ openExam }}" style="padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.7);color:#fff;background:rgba(255,255,255,0.14);font:inherit;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;">Take the exam</button></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasModule }}" hint-placeholder-val="{{ false }}">
+    <article style="display:grid;gap:22px;max-width:760px;">
+      <button onClick="{{ goAcademy }}" style="justify-self:start;background:none;border:0;padding:0;font:inherit;font-size:14px;color:#5b4fe0;font-weight:600;cursor:pointer;">← All modules</button>
+      <span style="font-size:12px;color:#5b4fe0;font-weight:600;">Module {{ module.n }} of 5 · {{ module.minutes }} minutes</span>
+      <h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(34px,4.5vw,50px);line-height:1.02;font-weight:400;letter-spacing:-0.02em;">{{ module.title }}</h1>
+      <sc-for list="{{ module.lessons }}" as="p" hint-placeholder-count="4"><p style="margin:0;font-size:17px;line-height:1.65;color:#2b3150;">{{ p }}</p></sc-for>
+      <div style="display:grid;gap:10px;padding:22px 24px;border-radius:18px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 28px rgba(20,26,46,0.06);"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Take with you</span><ul style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px;line-height:1.5;color:#2b3150;"><sc-for list="{{ module.takeaways }}" as="t" hint-placeholder-count="3"><li>{{ t }}</li></sc-for></ul></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;"><button onClick="{{ prevModule }}" style="padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.9);color:#141a2e;background:rgba(255,255,255,0.55);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">{{ prevLabel }}</button><button onClick="{{ nextModule }}" style="padding:11px 18px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 22px rgba(82,69,214,0.3);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">{{ nextLabel }}</button></div>
+    </article>
+  </sc-if>
+
+  <sc-if value="{{ examOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;gap:22px;max-width:760px;">
+      <button onClick="{{ goAcademy }}" style="justify-self:start;background:none;border:0;padding:0;font:inherit;font-size:14px;color:#5b4fe0;font-weight:600;cursor:pointer;">← Back to modules</button>
+      <h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(34px,4.5vw,50px);line-height:1.02;font-weight:400;letter-spacing:-0.02em;">The exam</h1>
+      <p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">Ten questions, eight to pass. Answer all of them, then submit. Wrong answers are shown with the correct one so the exam teaches as well as tests.</p>
+      <sc-for list="{{ questions }}" as="q" hint-placeholder-count="3">
+        <div style="display:grid;gap:12px;padding:22px 24px;border-radius:18px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 28px rgba(20,26,46,0.06);">
+          <div style="display:flex;gap:12px;align-items:baseline;"><span style="font-size:12px;color:#5b4fe0;font-weight:600;white-space:nowrap;">Q{{ q.n }} · module {{ q.module }}</span><span style="font-size:16px;line-height:1.45;font-weight:600;">{{ q.text }}</span></div>
+          <div style="display:grid;gap:8px;">
+            <sc-for list="{{ q.options }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.text }}</button></sc-for>
+          </div>
+          <sc-if value="{{ q.showFeedback }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:14px;line-height:1.5;color:#3a4160;">{{ q.feedback }}</p></sc-if>
+        </div>
+      </sc-for>
+      <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}"><button onClick="{{ submitExam }}" style="justify-self:start;padding:12px 20px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 22px rgba(82,69,224,0.3);font:inherit;font-weight:600;font-size:15px;cursor:pointer;">{{ submitLabel }}</button></sc-if>
+      <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:12px;padding:26px 28px;border-radius:22px;color:#fff;background:linear-gradient(160deg,#6a5df2 0%,#4b3fd0 60%,#3a2fb0 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), 0 16px 40px rgba(74,63,208,0.3);">
+          <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">Result</span>
+          <span style="font-family:'Instrument Serif',serif;font-size:40px;line-height:1;">{{ score }} of 10</span>
+          <p style="margin:0;font-size:16px;line-height:1.5;">{{ resultText }}</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;"><sc-if value="{{ passed }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goSignals }}" style="padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.7);color:#fff;background:rgba(255,255,255,0.14);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">Open the signals</button></sc-if><button onClick="{{ retryExam }}" style="padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.7);color:#fff;background:rgba(255,255,255,0.14);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">Retake</button></div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ═══════ SIGNALS ═══════ -->
+<sc-if value="{{ isSignals }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Signals" style="display:flex;flex-direction:column;gap:32px;padding-top:24px;">
+  <div style="display:grid;gap:14px;max-width:720px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Signals · ${{ price }} a month</span><h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,56px);line-height:1;font-weight:400;letter-spacing:-0.02em;">Research notes that end in a position.</h1><p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">Every signal is a research note with a thesis, the data, an entry logic, an invalidation and the complete record of what happened to the ones before it, including the ones that were wrong. Signals are published research, not personalised advice. Nothing here accounts for your situation, and the Institute never manages money.</p></div>
+  <sc-if value="{{ notCertified }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:26px 28px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);flex-wrap:wrap;"><span style="display:grid;gap:6px;"><span style="font-size:20px;font-weight:600;">Certification required first.</span><span style="font-size:15px;line-height:1.5;color:#3a4160;">Complete the free course and pass the exam. This is not a sales step; it is the reason the Institute can publish positions at all.</span></span><button onClick="{{ goAcademy }}" style="padding:11px 18px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 22px rgba(82,69,214,0.3);font:inherit;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;">Go to the Academy</button></div>
+  </sc-if>
+  <sc-if value="{{ certified }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start;">
+      <div style="display:grid;gap:14px;padding:28px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">What every signal record contains</span>
+        <dl style="margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 18px;font-size:14px;line-height:1.5;">
+          <dt style="color:#5b4fe0;font-weight:600;">Thesis</dt><dd style="margin:0;color:#2b3150;">One paragraph. What the Institute believes is mispriced and why.</dd>
+          <dt style="color:#5b4fe0;font-weight:600;">Market</dt><dd style="margin:0;color:#2b3150;">Venue and instrument, from the six markets in the company file.</dd>
+          <dt style="color:#5b4fe0;font-weight:600;">Data</dt><dd style="margin:0;color:#2b3150;">Every series used, linked, with the method in the repository.</dd>
+          <dt style="color:#5b4fe0;font-weight:600;">Entry logic</dt><dd style="margin:0;color:#2b3150;">The condition, not a price target. Signals are conditional statements.</dd>
+          <dt style="color:#5b4fe0;font-weight:600;">Invalidation</dt><dd style="margin:0;color:#2b3150;">The level or event at which the thesis is wrong and the record closes.</dd>
+          <dt style="color:#5b4fe0;font-weight:600;">Sizing frame</dt><dd style="margin:0;color:#2b3150;">Expressed as risk per unit of account, never as a dollar amount.</dd>
+          <dt style="color:#5b4fe0;font-weight:600;">Outcome</dt><dd style="margin:0;color:#2b3150;">Filled in when closed, with what the Institute got wrong.</dd>
+        </dl>
+      </div>
+      <div style="display:grid;gap:14px;padding:28px;border-radius:22px;color:#fff;background:linear-gradient(160deg,#6a5df2 0%,#4b3fd0 55%,#3a2fb0 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), 0 20px 50px rgba(74,63,208,0.35);">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">You are certified</span>
+        <span style="font-family:'Instrument Serif',serif;font-size:34px;line-height:1.05;">Subscribe to the private track.</span>
+        <div style="display:flex;gap:14px;align-items:baseline;"><span style="font-size:40px;font-weight:600;letter-spacing:-0.02em;">${{ price }}</span><span style="font-size:13px;">per month · cancel any time</span></div>
+        <sc-if value="{{ notSubscribed }}" hint-placeholder-val="{{ true }}"><button onClick="{{ subscribe }}" style="justify-self:start;padding:12px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.7);color:#fff;background:rgba(255,255,255,0.16);font:inherit;font-weight:600;font-size:15px;cursor:pointer;">Subscribe</button></sc-if>
+        <sc-if value="{{ subscribed }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:15px;line-height:1.5;">Subscription recorded in this preview. In production this step hands off to the billing provider named in <span style="font-family:ui-monospace,Menlo,monospace;">institute.yaml → billing.provider</span>; no live signals are published until the entity and jurisdiction are decided.</p></sc-if>
+        <p style="margin:0;font-size:12px;line-height:1.5;">Published research, not personalised advice. The Institute never manages money.</p>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ═══════ APPS ═══════ -->
+<sc-if value="{{ isApps }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Apps" style="display:flex;flex-direction:column;gap:32px;padding-top:24px;">
+  <div style="display:grid;gap:14px;max-width:720px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Apps</span><h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,56px);line-height:1;font-weight:400;letter-spacing:-0.02em;">Small tools, built by the agent, each in its own container.</h1><p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">Anyone can request a tool. SEXTANT drafts the spec, a human approves it, and the app is built, tested until the tests pass, and launched in its own container. If it crashes, the agent traces, fixes, retests, rebuilds and relaunches. The three below run here in the page.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start;">
+    <div style="display:grid;gap:14px;padding:26px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;"><span style="font-size:18px;font-weight:600;">Position sizer</span><span style="font-size:11px;font-family:ui-monospace,Menlo,monospace;color:#6b7190;">ti-app-sizer · running</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <label style="display:grid;gap:4px;font-size:12px;color:#6b7190;">Account<input type="number" value="{{ sizer.account }}" onChange="{{ onSizerAccount }}" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;width:100%;box-sizing:border-box;"></label>
+        <label style="display:grid;gap:4px;font-size:12px;color:#6b7190;">Risk per trade, %<input type="number" step="0.1" value="{{ sizer.risk }}" onChange="{{ onSizerRisk }}" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;width:100%;box-sizing:border-box;"></label>
+        <label style="display:grid;gap:4px;font-size:12px;color:#6b7190;">Entry<input type="number" step="0.01" value="{{ sizer.entry }}" onChange="{{ onSizerEntry }}" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;width:100%;box-sizing:border-box;"></label>
+        <label style="display:grid;gap:4px;font-size:12px;color:#6b7190;">Invalidation (stop)<input type="number" step="0.01" value="{{ sizer.stop }}" onChange="{{ onSizerStop }}" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;width:100%;box-sizing:border-box;"></label>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:14px 16px;border-radius:14px;background:rgba(91,79,224,0.08);">
+        <span style="display:grid;gap:2px;"><span style="font-size:11px;color:#6b7190;">Risk</span><span style="font-size:18px;font-weight:600;">{{ sizerOut.risk }}</span></span>
+        <span style="display:grid;gap:2px;"><span style="font-size:11px;color:#6b7190;">Position</span><span style="font-size:18px;font-weight:600;">{{ sizerOut.position }}</span></span>
+        <span style="display:grid;gap:2px;"><span style="font-size:11px;color:#6b7190;">Units</span><span style="font-size:18px;font-weight:600;">{{ sizerOut.units }}</span></span>
+      </div>
+      <p style="margin:0;font-size:12px;line-height:1.5;color:#6b7190;">Position = risk ÷ distance to invalidation. Module 5 explains why this is the only number that matters.</p>
+    </div>
+    <div style="display:grid;gap:14px;padding:26px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;"><span style="font-size:18px;font-weight:600;">Drawdown recovery</span><span style="font-size:11px;font-family:ui-monospace,Menlo,monospace;color:#6b7190;">ti-app-recovery · running</span></div>
+      <label style="display:grid;gap:4px;font-size:12px;color:#6b7190;">Drawdown, %<input type="number" step="1" value="{{ recovery.dd }}" onChange="{{ onRecoveryDd }}" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;width:100%;box-sizing:border-box;"></label>
+      <div style="display:grid;gap:2px;padding:14px 16px;border-radius:14px;background:rgba(91,79,224,0.08);"><span style="font-size:11px;color:#6b7190;">Gain required to recover</span><span style="font-size:28px;font-weight:600;letter-spacing:-0.02em;">{{ recoveryOut }}</span></div>
+      <p style="margin:0;font-size:12px;line-height:1.5;color:#6b7190;">Recovery = 1 ÷ (1 − drawdown) − 1. Losses and gains are not symmetric; this is why sizing comes before conviction.</p>
+    </div>
+    <div style="display:grid;gap:14px;padding:26px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;"><span style="font-size:18px;font-weight:600;">Compounding</span><span style="font-size:11px;font-family:ui-monospace,Menlo,monospace;color:#6b7190;">ti-app-compound · running</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <label style="display:grid;gap:4px;font-size:12px;color:#6b7190;">Monthly<input type="number" value="{{ compound.monthly }}" onChange="{{ onCompoundMonthly }}" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;width:100%;box-sizing:border-box;"></label>
+        <label style="display:grid;gap:4px;font-size:12px;color:#6b7190;">Rate, % a year<input type="number" step="0.1" value="{{ compound.rate }}" onChange="{{ onCompoundRate }}" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;width:100%;box-sizing:border-box;"></label>
+        <label style="display:grid;gap:4px;font-size:12px;color:#6b7190;">Years<input type="number" value="{{ compound.years }}" onChange="{{ onCompoundYears }}" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;width:100%;box-sizing:border-box;"></label>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px;border-radius:14px;background:rgba(91,79,224,0.08);">
+        <span style="display:grid;gap:2px;"><span style="font-size:11px;color:#6b7190;">Contributed</span><span style="font-size:18px;font-weight:600;">{{ compoundOut.paid }}</span></span>
+        <span style="display:grid;gap:2px;"><span style="font-size:11px;color:#6b7190;">Final value</span><span style="font-size:18px;font-weight:600;">{{ compoundOut.fv }}</span></span>
+      </div>
+      <p style="margin:0;font-size:12px;line-height:1.5;color:#6b7190;">Monthly compounding of a level contribution. A rate is an assumption, not a promise.</p>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start;">
+    <div style="display:grid;gap:14px;padding:26px;border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(255,255,255,0.5));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Request a tool</span>
+      <textarea value="{{ appReq }}" onChange="{{ onAppReq }}" rows="4" placeholder="Describe the tool in a sentence or two. Example: a calculator that converts a funding rate into an annualised cost of holding a perpetual." style="padding:12px 14px;border-radius:14px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;line-height:1.5;color:#141a2e;width:100%;box-sizing:border-box;resize:vertical;"></textarea>
+      <button onClick="{{ draftApp }}" style="justify-self:start;padding:11px 18px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 22px rgba(82,69,214,0.3);font:inherit;font-weight:600;font-size:14px;cursor:pointer;">{{ draftLabel }}</button>
+      <sc-if value="{{ hasAppSpec }}" hint-placeholder-val="{{ false }}"><pre style="margin:0;padding:16px;border-radius:14px;background:rgba(91,79,224,0.08);font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;color:#2b3150;white-space:pre-wrap;">{{ appSpec }}</pre><p style="margin:0;font-size:12px;line-height:1.5;color:#6b7190;">Next in production: a human approves, the agent builds in docker-in-docker, runs the gates until they pass, and the app appears above with its own container id.</p></sc-if>
+    </div>
+    <div style="display:grid;gap:12px;padding:26px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Lifecycle of an app</span>
+      <ol style="margin:0;padding-left:18px;display:grid;gap:8px;font-size:14px;line-height:1.5;color:#2b3150;">
+        <li>Request arrives from chat, the site, or a social surface.</li>
+        <li>SEXTANT drafts a one-page spec and tests; posts it to the record.</li>
+        <li>A human approves. Nothing is built without approval.</li>
+        <li>Build in docker-in-docker; run lint, unit, integration, acceptance.</li>
+        <li>On failure: trace → diagnose → patch → rerun. Up to five attempts, then park and report.</li>
+        <li>Launch in its own container; health-checked; crash triggers step 5 again.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ═══════ RECORD ═══════ -->
+<sc-if value="{{ isRecord }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Record" style="display:flex;flex-direction:column;gap:32px;padding-top:24px;">
+  <div style="display:grid;gap:14px;max-width:720px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">The record</span><h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,56px);line-height:1;font-weight:400;letter-spacing:-0.02em;">Everything the Institute did, including what it refused to do.</h1><p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">The tally is mirrored to GitHub, X and Reddit every day. Self-edits the agent proposed and then declined are listed with the reason. The figures below are the day-zero sample; they become live when the record starts.</p></div>
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+    <sc-for list="{{ tally }}" as="t" hint-placeholder-count="5">
+      <div style="padding:18px 20px;border-radius:16px;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 30px rgba(20,26,46,0.06);display:grid;gap:4px;"><span style="font-size:30px;font-weight:600;letter-spacing:-0.02em;">{{ t.value }}</span><span style="font-size:12px;color:#6b7190;">{{ t.label }}</span></div>
+    </sc-for>
+  </section>
+  <div style="display:grid;gap:1px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,0.95);background:rgba(20,26,46,0.06);box-shadow:0 12px 32px rgba(20,26,46,0.06);">
+    <sc-for list="{{ log }}" as="e" hint-placeholder-count="5">
+      <div style="display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 20px;background:rgba(255,255,255,0.72);font-size:14px;"><span style="font-family:ui-monospace,Menlo,monospace;color:#6b7190;">{{ e.time }}</span><span style="color:#2b3150;line-height:1.5;">{{ e.text }}</span><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#5b4fe0;white-space:nowrap;">{{ e.kind }}</span></div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ═══════ BUILD ═══════ -->
+<sc-if value="{{ isBuild }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Build" style="display:flex;flex-direction:column;gap:40px;padding-top:24px;">
+  <div style="display:grid;gap:14px;max-width:720px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Build plan</span><h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,56px);line-height:1;font-weight:400;letter-spacing:-0.02em;">Ninety days, four phases, one rule: nothing ships until the gates pass.</h1><p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">The work breakdown below is also the agent's own backlog; it reads this list. Costs are estimates for planning and will be replaced by the record once the meter is running.</p></div>
+
+  <section style="display:grid;gap:14px;">
+    <h2 style="margin:0;font-family:'Instrument Serif',serif;font-size:30px;font-weight:400;letter-spacing:-0.015em;">Work breakdown</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;align-items:start;">
+      <sc-for list="{{ phases }}" as="ph" hint-placeholder-count="4">
+        <div style="display:grid;gap:12px;padding:24px;border-radius:18px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);align-content:start;">
+          <span style="font-size:12px;color:#5b4fe0;font-weight:600;">{{ ph.when }}</span>
+          <strong style="font-size:18px;font-weight:600;line-height:1.2;">{{ ph.title }}</strong>
+          <ul style="margin:0;padding-left:16px;display:grid;gap:6px;font-size:13px;line-height:1.5;color:#2b3150;"><sc-for list="{{ ph.tasks }}" as="t" hint-placeholder-count="4"><li>{{ t }}</li></sc-for></ul>
+          <span style="font-size:12px;color:#6b7190;">Exit: {{ ph.exit }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,560px),1fr));gap:14px;align-items:start;">
+    <div style="display:grid;gap:12px;padding:26px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Test until pass · the loop every change runs</span>
+      <ol style="margin:0;padding-left:18px;display:grid;gap:8px;font-size:14px;line-height:1.5;color:#2b3150;">
+        <li><strong style="font-weight:600;">Lint and types.</strong> Fails fast on anything malformed, including the YAML.</li>
+        <li><strong style="font-weight:600;">Unit tests.</strong> The round's emission is checked against its own schema; every skill has its own tests.</li>
+        <li><strong style="font-weight:600;">Integration in docker-in-docker.</strong> Tools, MCP servers and the served app are exercised end to end in a disposable container.</li>
+        <li><strong style="font-weight:600;">Acceptance.</strong> The change must lower the consistency energy on held-out seeds, under an anytime-valid test, so the loop can stop early without inflating false positives.</li>
+        <li><strong style="font-weight:600;">Pull request with the trace attached.</strong> Dependency fixes inside the boundary merge automatically; self-edits wait for a human.</li>
+      </ol>
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7190;">On any failure: trace → diagnose → patch → rerun from step 1. Five attempts, then the change is parked and reported in the record. The gates themselves, CI and secrets are outside the agent's edit boundary.</p>
+    </div>
+    <div style="display:grid;gap:12px;padding:26px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Repository, as scaffolded</span>
+      <pre style="margin:0;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;color:#2b3150;white-space:pre;overflow-x:auto;">institute/
+  institute.yaml          # the company; read every round
+  seeds/                  # formal seeds: incidence, types, maps, energy
+  skills/<name>/SKILL.md  # one folder per skill, with tools.yaml
+  prds/                   # one per surface: site, academy, signals, apps
+  prompts/                # signature docstrings, evolved by reflection
+  mcp/servers.yaml        # github · x · reddit · ccxt · mt5 ·
+                          # sequential-thinking · docker · playwright
+  ui.md                   # layout and palette, rendered live
+  gates/                  # acceptance tests, held-out seeds, test config
+  .github/workflows/ci.yml
+  main.py                 # outer care loop, never dies      (~120 LOC)
+  round.py                # the one Signature                (~200 LOC)
+  # target: under 1500 LOC · 95% text, 3% wiring, 2% tools</pre>
+      <pre style="margin:0;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;color:#2b3150;white-space:pre;overflow-x:auto;"># .github/workflows/ci.yml (gates, not editable by the agent)
+on: [pull_request]
+jobs:
+  gates:
+    steps:
+      - run: make lint types
+      - run: make unit
+      - run: make integration        # docker-in-docker
+      - run: make acceptance         # energy on held-out seeds
+      - if: failure()
+        run: make park-and-report</pre>
+    </div>
+  </section>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start;">
+    <div style="display:grid;gap:12px;padding:26px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">Monthly cost, planning estimate</span>
+      <div style="display:grid;gap:8px;font-size:14px;">
+        <sc-for list="{{ costs }}" as="c" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:8px 0;border-bottom:1px solid rgba(20,26,46,0.08);"><span style="color:#2b3150;">{{ c.item }}</span><span style="font-weight:600;white-space:nowrap;">{{ c.range }}</span></div></sc-for>
+      </div>
+      <p style="margin:0;font-size:12px;line-height:1.5;color:#6b7190;">Excludes legal set-up of the entity and any licence, which depend on the jurisdiction decision. Break-even at the low end is roughly 40 to 60 subscribers.</p>
+    </div>
+    <div style="display:grid;gap:12px;padding:26px;border-radius:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 32px rgba(20,26,46,0.07);">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">What we measure</span>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;font-size:14px;line-height:1.5;color:#2b3150;">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6"><li>{{ k }}</li></sc-for>
+      </ul>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ═══════ FILE ═══════ -->
+<sc-if value="{{ isFile }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Company file" style="display:flex;flex-direction:column;gap:28px;padding-top:24px;">
+  <div style="display:grid;gap:14px;max-width:720px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">institute.yaml</span><h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,56px);line-height:1;font-weight:400;letter-spacing:-0.02em;">The whole company, in one readable file.</h1><p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">This page, the navigation, the course list, the price, the markets and the surfaces are all rendered from the object below. SEXTANT reads it at the start of every round and may change it only through a pull request that passes the gates. There is no other configuration.</p></div>
+  <pre style="margin:0;padding:26px 28px;border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(255,255,255,0.5));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 16px 40px rgba(20,26,46,0.08);font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.65;color:#2b3150;white-space:pre;overflow-x:auto;">{{ yamlText }}</pre>
+</div>
+</sc-if>
+
+<!-- ═══════ TALK ═══════ -->
+<sc-if value="{{ isTalk }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Talk" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;padding-top:24px;align-items:start;">
+  <div style="display:grid;gap:14px;"><span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5b4fe0;">SEXTANT · live</span><h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:clamp(36px,5vw,52px);line-height:1;font-weight:400;letter-spacing:-0.02em;">Ask the Institute anything it has published.</h1><p style="margin:0;font-size:16px;line-height:1.6;color:#3a4160;">The same agent that writes the research, repairs the repositories and posts the tally. It answers from the company file and the published notes, says plainly when it does not know, and never gives personalised advice.</p></div>
+  <div style="display:flex;flex-direction:column;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,rgba(255,255,255,0.85),rgba(255,255,255,0.55));border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 20px 50px rgba(20,26,46,0.10);min-height:420px;">
+    <div style="display:flex;flex-direction:column;gap:14px;padding:22px;flex:1;">
+      <sc-for list="{{ messages }}" as="m" hint-placeholder-count="1">
+        <div style="display:grid;grid-template-columns:72px minmax(0,1fr);gap:14px;font-size:15px;line-height:1.55;color:#2b3150;"><span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#5b4fe0;padding-top:3px;font-weight:600;">{{ m.who }}</span><span style="white-space:pre-wrap;">{{ m.text }}</span></div>
+      </sc-for>
+      <sc-if value="{{ thinking }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#6b7190;">SEXTANT is reading the graph…</div></sc-if>
+    </div>
+    <div style="display:flex;gap:10px;padding:14px;border-top:1px solid rgba(20,26,46,0.08);background:rgba(255,255,255,0.6);">
+      <input style="flex:1;padding:11px 14px;border-radius:999px;border:1px solid rgba(20,26,46,0.12);background:#fff;font:inherit;font-size:14px;color:#141a2e;min-width:0;" placeholder="Ask about the research, the course, or how the Institute runs" value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ onKey }}">
+      <button style="padding:11px 18px;border-radius:999px;border:0;color:#fff;background:linear-gradient(180deg,#6e63f0,#5245d6);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 6px 18px rgba(82,69,214,0.3);font:inherit;font-weight:600;font-size:14px;cursor:pointer;" onClick="{{ send }}">Send</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</main>
+
+<footer style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;padding:24px clamp(20px,4vw,56px);border-top:1px solid rgba(20,26,46,0.08);font-size:12px;color:#6b7190;line-height:1.5;"><span>The Threshold Institute · working name · entity and jurisdiction to be decided · source on GitHub</span><span>Signals are published research, not personalised advice. The Institute never manages money.</span></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const INSTITUTE = {
+  name: 'The Threshold Institute',
+  status: 'working name; entity and jurisdiction to be decided',
+  purpose: 'make the re-pricing of work, money, attention and trust legible early, in public, with receipts',
+  agent: {
+    name: 'SEXTANT',
+    round: { emit: ['nodes', 'hyperedges', 'closure'], halt: 'ΔE > -ε', supervise: 'every_step' },
+    seed: { lifecycle: 'read_once_then_destroy', carries: ['incidence', 'types', 'restriction_maps', 'energy', 'constraints'] },
+    learn: { method: 'gepa', from: 'traces', over: ['prompts', 'edges'] },
+    self_edit: { may: ['config', 'prompts', 'skills', 'prds'], never: ['ci', 'secrets', 'gates'], accept_if: 'energy_falls_on_heldout_seeds', attempts: 5 }
+  },
+  publish: { research: 'daily', code: 'pull_request', tally: ['github', 'site', 'reddit', 'x'] },
+  surfaces: ['x', 'reddit', 'github', 'youtube', 'substack', 'discord', 'telegram', 'linkedin'],
+  markets: ['crypto spot and perps', 'fx and indices', 'equities', 'macro and rates', 'on-chain flows', 'prediction markets'],
+  mcp: ['github', 'x', 'reddit', 'ccxt', 'mt5', 'sequential-thinking', 'docker', 'playwright'],
+  academy: { course: { modules: 5, price: 0, questions: 10, pass_mark: 8 }, signals: { requires: 'certification', usd_month: 39, framing: 'published_research_not_advice' } },
+  apps: { runtime: 'docker_in_docker', approval: 'human', on_crash: ['trace', 'fix', 'test', 'rebuild', 'relaunch'] },
+  billing: { provider: 'to_be_decided' },
+  nav: [['home', 'Home'], ['research', 'Research'], ['academy', 'Academy'], ['signals', 'Signals'], ['apps', 'Apps'], ['record', 'Record'], ['build', 'Build'], ['file', 'The file']]
+};
+
+const NOTES = [
+  { id: 'graph', kicker: 'Research · published', status: 'published', title: 'Agent and graph, one and the same: graph intelligence in the age of AI and LLMs', summary: 'What the mathematics says, what the experiments show, and whether a graph can live inside a single inference round instead of beside it.', body: [
+    'The Institute runs on a construction set out in this report, so it is published first. The report separates three claims that usually travel together: that the operator an LLM agent runs is a graph operator; that the vector state inside a model can carry an ontology and a topology it was never told; and that this structure can be fixed at inference time from mathematics alone, with no natural language.',
+    'The first claim is settled: attention is message passing on a complete token graph and one step of energy descent in a modern Hopfield network. The second has strong evidence on both sides: board states and belief simplices are recoverable by linear probes, yet the same models learn adjacency without transitivity and find shortest paths through incoherent maps. The third is open and testable; the report designs the test.',
+    'The second version adds an adversarial pass: every finding is put against the strongest published result we could find, and the Institute\'s own architecture is red-teamed subsystem by subsystem. Three moves survive as unpublished anywhere: a read-once formal seed that is destroyed, maintenance of the graph by the same round that consumed it, and an explicit consistency energy as the halting rule. Those three are what SEXTANT runs.'
+  ], link: 'Graph Intelligence Report v2.dc.html', linkLabel: 'Read the full report, version 2' },
+  { id: 'redteam', kicker: 'The Institute · self-report', status: 'published', title: 'Red-teaming our own architecture against the field', summary: 'Subsystem by subsystem, something already published is better. What that leaves, and why we built on it anyway.', body: [
+    'Before the Institute ran a single round we asked whether each part of its engine was beaten by something in print. It was. Its learning signal is beaten by reflective prompt evolution, its fixed topology by architecture search that samples a graph per query, its authored ontology by schema induction at web scale, its self-maintaining memory by write-time link-and-evolve systems, and its iterative thought loop by a seven-million-parameter recursive model.',
+    'Two parts held. Keeping to a single round survives the obvious critique, because the measured cost of splitting a prompt across turns is larger than the cost of a long context. And the read-once-then-destroy seed is unoccupied: no published system hands a model a formal structure, deletes it, and measures what the round retained.',
+    'The decision followed from that. The Institute adopts the published winners where they win, and stakes its own research on the two unoccupied moves. The four-run experiment that settles the claim is specified in the report and is the first item in the private research track.'
+  ], link: 'Graph Intelligence Report v2.dc.html#challenge', linkLabel: 'Read Part 10 of the report' },
+  { id: 'labour', kicker: 'Labour · measurement plan', status: 'in progress', title: 'Who absorbs the re-pricing of white-collar time', summary: 'A plan to measure the gap between task-level automation exposure and wages, by occupation, monthly.', body: [
+    'The claim that knowledge work is being re-priced is made constantly and measured rarely. This note commits the Institute to a measurement rather than an opinion. The plan uses three public series: occupational wage distributions from national statistics agencies, task-level exposure indices from the published literature on language-model exposure by occupation, and job-posting volumes by occupation from public aggregators.',
+    'The quantity of interest is the gap between exposure and realised wage change, by occupation, over rolling twelve-month windows. A widening gap in high-exposure occupations is the signature of re-pricing being absorbed by workers; a narrowing gap suggests absorption by employers or by prices. Either way the number is published monthly with the method and the series linked.',
+    'No figures are reported in this note because none have yet been computed under this method. The first run is scheduled for the second phase of the build plan, after the data pipelines pass the integration gate.'
+  ] },
+  { id: 'settlement', kicker: 'Money · method', status: 'in progress', title: 'Stablecoin settlement against the card networks', summary: 'How to compare on-chain settlement with card network volume without counting bots and wash transfers.', body: [
+    'Raw stablecoin transfer volume is not comparable with card network volume, because a large share of on-chain transfers are automated, circular or internal to exchanges. This note fixes the method before any number is published: card volumes are taken from the networks\' own quarterly filings; stablecoin volume is taken on-chain and then adjusted by filtering out transfers below a size floor, transfers between addresses controlled by the same entity, and high-frequency repeat transfers, following the adjustment approaches already published by payment-network researchers.',
+    'The output is a single monthly ratio with both unadjusted and adjusted series shown, so a reader can see how much the adjustment matters. Disagreement about the adjustment is expected and welcome; the method lives in the repository and accepts pull requests.',
+    'Figures follow once the pipeline passes the gates. Until then the note stands as a method only.'
+  ] }
+];
+
+const MODULES = [
+  { title: 'Price, liquidity and who is on the other side', minutes: 25, summary: 'What a price is, why the spread exists, and why every trade has a counterparty with a reason.', lessons: [
+    'A price is the last trade, not the value. At any moment there are two prices that matter more: the highest bid anyone is willing to pay and the lowest ask anyone is willing to accept. The gap between them is the spread, and it is the first cost of every trade.',
+    'The order book is the visible queue of those bids and asks. Liquidity is how much can be traded without moving the price much. A market order in a thin book fills across several levels, each worse than the last; the difference between the price you saw and the price you got is slippage, and it is the second cost.',
+    'Every trade has someone on the other side who believed the opposite, or who did not care about direction at all: a market maker earning the spread, a fund rebalancing, a hedger offsetting risk elsewhere. Before entering, ask who that is and why they are willing. If you cannot answer, you are probably the one being paid less than you think.'
+  ], takeaways: ['Spread and slippage are costs you pay before you are right or wrong.', 'Liquidity is a property of the moment, not of the asset.', 'Name the counterparty\'s reason before you trade.'] },
+  { title: 'Macro and rates in plain arithmetic', minutes: 25, summary: 'Interest rates, inflation, bond prices and why they move everything else.', lessons: [
+    'An interest rate is the price of time. The real rate is approximately the nominal rate minus inflation; it is the real rate that decides whether saving, borrowing or holding risk makes sense. When real rates rise, assets that pay far in the future are worth less today, mechanically, because the discount is larger.',
+    'Bond prices and yields move in opposite directions. A bond paying a fixed coupon is worth less when new bonds pay more. Longer bonds move more for the same change in yield, which is why the long end of the curve is where expectations about growth and inflation show up first.',
+    'Central banks set a short rate and talk about the rest. Markets price the path they expect, so the surprise, not the decision, moves prices. Reading macro is reading the gap between what was priced and what arrived.'
+  ], takeaways: ['Real rate ≈ nominal rate − inflation.', 'Yields up, prices down; longer duration, bigger move.', 'The surprise moves markets, not the announcement.'] },
+  { title: 'Crypto, FX and equities: one framework, three venues', minutes: 30, summary: 'The same questions asked of three very different markets.', lessons: [
+    'Every market answers the same four questions: what is the instrument, who sets the price, what are the costs, and what is the leverage. Equities are claims on company cash flows, priced on exchanges in regular hours, with modest leverage for most participants. FX is pairs: going long EUR/USD means buying euros and selling dollars, priced continuously by banks and venues, with high leverage available and a cost embedded in the overnight rate differential.',
+    'Crypto trades on venues that never close. Spot is simple ownership. A perpetual future tracks spot without expiring because longs and shorts pay each other a funding rate, usually every eight hours; when the perp trades above spot, longs pay shorts, which pulls it back. Funding is a cost to hold and a signal about crowding.',
+    'The framework also catches what differs: settlement risk is highest where the venue itself can fail, liquidity is most fragile where it is newest, and leverage is most dangerous where it is cheapest to obtain. Same questions, different answers, and the answers are what to trade on.'
+  ], takeaways: ['Instrument, price-setter, costs, leverage: ask all four, every market.', 'Funding is both a holding cost and a crowding signal.', 'Venue risk is a position you hold whether you want to or not.'] },
+  { title: 'Reading a published signal, including when to ignore it', minutes: 20, summary: 'How to read a signal record, how to spot a bad track record, and when the right action is nothing.', lessons: [
+    'A signal that is only a direction is an opinion. A signal record states a thesis, the data it rests on, the condition under which the position is taken, and the level or event at which the thesis is wrong. That last item, the invalidation, is the most important sentence in the record, because it is the one that limits the loss.',
+    'A track record that omits closed losing signals is survivorship bias and should be discounted entirely. Read the losers first. Look for whether invalidations were honoured, whether the method changed quietly, and whether the results are reported per unit of risk rather than in dollars.',
+    'Most of the time the right action on a signal is nothing. If you do not understand the thesis, if the invalidation is too far for your sizing, or if the market in question is one you have not studied, the signal is information, not an instruction. The Institute publishes signals as research for exactly this reason.'
+  ], takeaways: ['No invalidation, no signal.', 'Read the losing records before the winning ones.', 'A signal you do not understand is a signal to skip.'] },
+  { title: 'Position sizing and the exam', minutes: 20, summary: 'The one calculation that decides survival, then ten questions.', lessons: [
+    'Position size is not how much you want to buy. It is the amount of money you are willing to lose if the invalidation is hit, divided by the distance to that invalidation. Decide the risk first, usually a small fixed fraction of the account, then let the stop distance determine the size. The position sizer in the Apps section does this arithmetic.',
+    'Losses and gains are not symmetric. A 20% drawdown needs a 25% gain to recover; a 50% drawdown needs 100%. This is why fixed-fraction risk matters: it makes the size shrink as the account shrinks, so a run of losses cannot end the account.',
+    'The exam has ten questions, two from each module, and eight are needed to pass. Wrong answers are shown with the correct one. Certification is stored in your browser only; the Institute collects nothing. It opens the signals, and more importantly it means you can read them.'
+  ], takeaways: ['Size = risk ÷ distance to invalidation.', 'Recovery is nonlinear: protect the account first.', 'Certification is for you, not for us.'] }
+];
+
+const QUESTIONS = [
+  { module: 1, text: 'The bid-ask spread is best described as:', options: ['The fee an exchange charges per trade', 'The difference between the highest price a buyer will pay and the lowest a seller will accept', 'The range between the day\'s high and low', 'The difference between the open and the close'], correct: 1, why: 'The spread is the gap between the best bid and the best ask. Fees and ranges are different things.' },
+  { module: 1, text: 'A market order in a thin order book will most likely:', options: ['Fill at the quoted mid price', 'Fill across several price levels, worse than the quote', 'Be rejected by the venue', 'Fill at the previous close'], correct: 1, why: 'With little depth, a market order walks the book; that difference is slippage.' },
+  { module: 2, text: 'If a ten-year bond\'s yield rises, its price:', options: ['Rises', 'Falls', 'Is unchanged', 'Depends only on the coupon'], correct: 1, why: 'Prices and yields move inversely: existing fixed coupons are worth less when new bonds pay more.' },
+  { module: 2, text: 'The real interest rate is approximately:', options: ['Nominal rate plus inflation', 'Nominal rate minus inflation', 'Inflation minus the nominal rate', 'The central bank\'s target rate'], correct: 1, why: 'Real ≈ nominal − inflation. It is the real rate that prices time.' },
+  { module: 3, text: 'A perpetual future stays close to spot mainly because of:', options: ['Price caps set by the exchange', 'The funding rate paid between longs and shorts', 'Daily settlement by a clearing house', 'Regulation of the venue'], correct: 1, why: 'Funding payments push the perp back toward spot; above spot, longs pay shorts.' },
+  { module: 3, text: 'Going long EUR/USD at 1.10 means:', options: ['Buying euros and selling dollars at 1.10 dollars per euro', 'Buying dollars and selling euros', 'Betting both currencies rise', 'Betting the pair stays at 1.10'], correct: 0, why: 'The first currency is bought, the second sold; the quote is dollars per euro.' },
+  { module: 4, text: 'A signal\'s invalidation level is:', options: ['The price or event at which the thesis is wrong and the record closes', 'The take-profit target', 'The entry price', 'The date the signal expires'], correct: 0, why: 'Invalidation is where the thesis is declared wrong. It is what limits the loss.' },
+  { module: 4, text: 'A published track record that omits closed losing signals is:', options: ['Standard practice', 'Survivorship bias and should be discounted', 'Acceptable if the win rate is high', 'Required by regulators'], correct: 1, why: 'Leaving out losers is survivorship bias. Read the losing records first.' },
+  { module: 5, text: 'Risking 1% of a $10,000 account with the invalidation 5% below entry, the position size is:', options: ['$500', '$2,000', '$5,000', '$10,000'], correct: 1, why: '$100 of risk ÷ 0.05 distance = $2,000 position.' },
+  { module: 5, text: 'Two consecutive 50% losses leave an account at:', options: ['0% of its start', '25% of its start', '50% of its start', '75% of its start'], correct: 1, why: '0.5 × 0.5 = 0.25. Losses compound; recovery is nonlinear.' }
+];
+
+const PHASES = [
+  { when: 'Phase 0 · weeks 0–2', title: 'Decide, seed, gate', tasks: ['Entity and jurisdiction decision; signals framing reviewed by counsel', 'institute.yaml v1; repository created; CI gates written and locked', 'First formal seeds; experiment runs R0–R3 from the report', 'Phoenix tracing on every round from day one'], exit: 'gates green on an empty round; R0–R3 results in the record' },
+  { when: 'Phase 1 · weeks 2–6', title: 'Research and Academy live', tasks: ['Daily public research note with sources and method', 'Modules 1–5 and the exam shipped; certification in the browser', 'Chat live on the site, answering from the file and the notes', 'Tally posting to GitHub, the site, Reddit and X'], exit: '20 notes published; first 50 certified learners' },
+  { when: 'Phase 2 · weeks 6–10', title: 'Private track and surfaces', tasks: ['Labour and settlement pipelines pass integration; first figures published', 'Signal record format live; private track running without publication', 'Acceptance tests on self-edits; first archived variants', 'Remaining surfaces via MCP, custom adapters where none exists'], exit: 'ten closed signal records in private; self-edit acceptance rate reported' },
+  { when: 'Phase 3 · weeks 10–13', title: 'Apps, cohort, billing', tasks: ['Served apps in their own containers; crash loop proven', 'Billing provider connected; signals open to certified subscribers', 'First cohort review; exam items revised from the data', 'Ninety-day self-report published, including everything refused'], exit: 'first paying subscribers; cost per round and per note on the record' }
+];
+
+const COSTS = [
+  { item: 'Model inference (rounds, research, chat)', range: '$400–1,500' },
+  { item: 'Compute: docker-in-docker host, containers, tracing', range: '$150–400' },
+  { item: 'Market data: ccxt venues free; MT5 broker feed; equities and macro APIs', range: '$50–300' },
+  { item: 'Graph and cache: Memgraph, Redis, object storage', range: '$40–150' },
+  { item: 'Social APIs (X tier, others free or MCP)', range: '$100–200' },
+  { item: 'Domain, email, billing fees', range: '$30–80' }
+];
+
+const KPIS = ['Research notes published per week, with sources, public track', 'Pull requests opened and merged on dependencies; declined with reason', 'Learners certified; exam items flagged and revised', 'Share of chat answers that cite a published note or the file', 'Signal records published in full at close, including losers: must be 100%', 'Self-edit proposals accepted versus refused, and the energy delta on held-out seeds', 'Cost per round and per note, from the meter, monthly'];
+
+const LOG = [
+  { time: '06:10', text: 'Published: Agent and graph, one and the same (version 2), with the challenge pass', kind: 'note' },
+  { time: '07:42', text: 'Opened PR on a dependency: timezone handling in the FX ingest; 46 tests pass; acceptance passed', kind: 'pull request' },
+  { time: '09:15', text: 'Declined its own proposal to shorten the mission section of institute.yaml: energy rose on held-out seeds', kind: 'self-edit refused' },
+  { time: '11:00', text: 'Private track: experiment run R1 (seed destroyed) completed; probes logged; no signals published', kind: 'research' },
+  { time: '13:30', text: 'Certified 9 learners; 2 exam items flagged as ambiguous and queued for revision', kind: 'academy' },
+  { time: '17:05', text: 'Tally mirrored to GitHub, X and Reddit', kind: 'tally' }
+];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const ls = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+    this.state = {
+      screen: ls('ti.screen', 'home'), noteId: null, moduleIdx: null, examOpen: false,
+      answers: ls('ti.answers', {}), submitted: false, score: 0,
+      certified: ls('ti.certified', false), subscribed: ls('ti.subscribed', false),
+      sizer: { account: 10000, risk: 1, entry: 100, stop: 95 }, recovery: { dd: 20 }, compound: { monthly: 200, rate: 7, years: 10 },
+      appReq: '', appSpec: '', appBusy: false,
+      draft: '', thinking: false,
+      messages: [{ who: 'SEXTANT', text: 'I am the agent that runs the Institute. Ask about the research, the free course, how signals are published, or how I decide what to change about myself. I answer from the company file and the published notes, and I will say when I do not know.' }]
+    };
+  }
+  save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  go(screen, extra) {
+    this.setState(Object.assign({ screen, noteId: null, moduleIdx: null, examOpen: false }, extra || {}));
+    this.save('ti.screen', screen);
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+  toYaml(v, ind) {
+    ind = ind || 0; const pad = ' '.repeat(ind);
+    const scalar = (x) => (typeof x === 'string' && /[:#>]|^-/.test(x)) ? '"' + x + '"' : String(x);
+    if (Array.isArray(v)) {
+      if (v.every(x => typeof x !== 'object')) return '[' + v.map(scalar).join(', ') + ']';
+      return '\n' + v.map(x => pad + '- ' + this.toYaml(x, ind + 2).replace(/^\n\s*/, '')).join('\n');
+    }
+    if (v && typeof v === 'object') return '\n' + Object.entries(v).map(([k, x]) => { const s = this.toYaml(x, ind + 2); return pad + k + ':' + (s.startsWith('\n') ? s : ' ' + s); }).join('\n');
+    return scalar(v);
+  }
+  num(v, d) { const n = parseFloat(v); return isFinite(n) ? n : d; }
+  money(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+  system() {
+    return 'You are SEXTANT, the single agent that runs The Threshold Institute, a self-running think tank. The company is this file: ' + JSON.stringify(INSTITUTE) + '. Published research notes: ' + NOTES.map(n => n.title + ' (' + n.status + '): ' + n.summary).join(' | ') + '. Free course modules: ' + MODULES.map((m, i) => (i + 1) + '. ' + m.title).join('; ') + '. Purpose: work, money, attention and trust are being re-priced in real time and most people will notice late; you make the change legible early, in public, with receipts. Tone: measured, institutional, plain, no hype, no emoji. Hard rules: never give personalised financial advice; the Institute never manages money; signals are published research and require certification; if asked something not in the file or the notes, say plainly that it has not been published. Answer in at most 120 words.';
+  }
+  async send() {
+    const text = this.state.draft.trim();
+    if (!text || this.state.thinking) return;
+    const messages = this.state.messages.concat([{ who: 'You', text }]);
+    this.setState({ messages, draft: '', thinking: true });
+    let reply;
+    try {
+      if (!window.claude || !window.claude.complete) throw new Error('offline');
+      const history = messages.slice(1).map(m => ({ role: m.who === 'You' ? 'user' : 'assistant', content: m.text }));
+      reply = await window.claude.complete({ system: this.system(), messages: history, max_tokens: 400 });
+    } catch (err) {
+      reply = 'The live model is not connected in this preview. In production this reply comes from the same agent that writes the research and files the pull requests, answering only from the company file and the published notes.';
+    }
+    this.setState(s => ({ messages: s.messages.concat([{ who: 'SEXTANT', text: String(reply).trim() }]), thinking: false }));
+  }
+  async draftApp() {
+    const req = this.state.appReq.trim();
+    if (!req || this.state.appBusy) return;
+    this.setState({ appBusy: true, appSpec: '' });
+    let spec;
+    try {
+      if (!window.claude || !window.claude.complete) throw new Error('offline');
+      spec = await window.claude.complete({ system: 'You draft one-page specs for small finance-education tools served by a think tank. Output plain text with exactly these headings: Name, Purpose, Inputs, Outputs, Formula, Tests (3 bullet cases with expected values), Container (one line). Under 160 words. No personalised advice; tools compute, they do not recommend.', messages: [{ role: 'user', content: req }], max_tokens: 500 });
+    } catch (e) {
+      spec = 'Name: (drafted by SEXTANT in production)\nPurpose: ' + req + '\nInputs: to be specified\nOutputs: to be specified\nTests: three cases with expected values, run until they pass\nContainer: ti-app-<slug>, docker-in-docker, health-checked\n\nThe live model is not connected in this preview; this is the shape of the spec that would be posted to the record for approval.';
+    }
+    this.setState({ appBusy: false, appSpec: String(spec).trim() });
+  }
+  renderVals() {
+    const s = this.state; const cfg = INSTITUTE; const pass = cfg.academy.course.pass_mark;
+    const navBase = 'padding:8px 14px;border-radius:999px;border:1px solid transparent;font:inherit;font-size:13px;font-weight:600;cursor:pointer;';
+    const navItems = cfg.nav.map(([id, label]) => ({ label, go: () => this.go(id), style: navBase + (s.screen === id ? 'background:rgba(255,255,255,0.75);border-color:rgba(255,255,255,0.95);color:#141a2e;box-shadow:0 4px 14px rgba(20,26,46,0.06);' : 'background:transparent;border-color:transparent;color:#3a4160;box-shadow:none;') }));
+    const note = s.noteId ? NOTES.find(n => n.id === s.noteId) : null;
+    const mod = s.moduleIdx != null ? MODULES[s.moduleIdx] : null;
+    const optBase = 'text-align:left;padding:10px 14px;border-radius:12px;font:inherit;font-size:14px;line-height:1.45;cursor:pointer;';
+    const questions = QUESTIONS.map((q, i) => {
+      const picked = s.answers[i];
+      return {
+        n: i + 1, module: q.module, text: q.text,
+        options: q.options.map((text, j) => {
+          let style = optBase + 'border:1px solid rgba(20,26,46,0.12);background:#fff;color:#2b3150;';
+          if (s.submitted && j === q.correct) style = optBase + 'border:1px solid #2f9e74;background:rgba(47,158,116,0.12);color:#14532d;';
+          else if (s.submitted && picked === j) style = optBase + 'border:1px solid #d9534f;background:rgba(217,83,79,0.10);color:#7a1f1c;';
+          else if (picked === j) style = optBase + 'border:1px solid #5b4fe0;background:rgba(91,79,224,0.10);color:#141a2e;';
+          return { text, style, pick: () => { if (s.submitted) return; const answers = Object.assign({}, this.state.answers, { [i]: j }); this.setState({ answers }); this.save('ti.answers', answers); } };
+        }),
+        showFeedback: s.submitted && picked !== q.correct, feedback: q.why
+      };
+    });
+    const answered = Object.keys(s.answers).length;
+    const dd = Math.min(Math.max(this.num(s.recovery.dd, 0), 0), 99.9) / 100;
+    const risk = this.num(s.sizer.account, 0) * this.num(s.sizer.risk, 0) / 100;
+    const dist = Math.abs(this.num(s.sizer.entry, 0) - this.num(s.sizer.stop, 0));
+    const position = dist > 0 ? risk * this.num(s.sizer.entry, 0) / dist : 0;
+    const units = dist > 0 ? risk / dist : 0;
+    const r = this.num(s.compound.rate, 0) / 100 / 12, nMonths = Math.max(0, Math.round(this.num(s.compound.years, 0) * 12)), pmt = this.num(s.compound.monthly, 0);
+    const fv = r > 0 ? pmt * ((Math.pow(1 + r, nMonths) - 1) / r) : pmt * nMonths;
+    const yaml = this.toYaml(cfg).replace(/^\n/, '');
+    const set = (group, key) => (e) => this.setState(st => ({ [group]: Object.assign({}, st[group], { [key]: e.target.value }) }));
+    return {
+      navItems, yamlText: yaml, yamlPreview: yaml.split('\n').slice(0, 14).join('\n') + '\n…',
+      isHome: s.screen === 'home', isResearch: s.screen === 'research', isAcademy: s.screen === 'academy', isSignals: s.screen === 'signals', isApps: s.screen === 'apps', isRecord: s.screen === 'record', isBuild: s.screen === 'build', isFile: s.screen === 'file', isTalk: s.screen === 'talk',
+      goHome: () => this.go('home'), goResearch: () => this.go('research'), goAcademy: () => this.go('academy'), goSignals: () => this.go('signals'), goApps: () => this.go('apps'), goRecord: () => this.go('record'), goBuild: () => this.go('build'), goFile: () => this.go('file'), goTalk: () => this.go('talk'),
+      price: cfg.academy.signals.usd_month,
+      tally: [['11', 'pull requests merged'], ['4', 'repositories repaired'], ['23', 'research notes published'], ['61', 'posts on X and Reddit'], ['38', 'learners certified']].map(([value, label]) => ({ value, label })),
+      notes: NOTES.map(n => ({ kicker: n.kicker, title: n.title, summary: n.summary, status: n.status, open: () => this.go('research', { noteId: n.id }) })),
+      noNote: !note, hasNote: !!note,
+      note: note ? { kicker: note.kicker, status: note.status, title: note.title, body: note.body, hasLink: !!note.link, link: note.link || '#', linkLabel: note.linkLabel || '' } : { body: [] },
+      modules: MODULES.map((m, i) => ({ n: i + 1, title: m.title, summary: m.summary, minutes: m.minutes, open: () => this.go('academy', { moduleIdx: i }) })),
+      academyList: !mod && !s.examOpen, hasModule: !!mod,
+      module: mod ? { n: s.moduleIdx + 1, title: mod.title, minutes: mod.minutes, lessons: mod.lessons, takeaways: mod.takeaways } : { lessons: [], takeaways: [] },
+      prevLabel: s.moduleIdx > 0 ? '← Module ' + s.moduleIdx : '← All modules',
+      nextLabel: s.moduleIdx != null && s.moduleIdx < MODULES.length - 1 ? 'Module ' + (s.moduleIdx + 2) + ' →' : 'Take the exam →',
+      prevModule: () => s.moduleIdx > 0 ? this.go('academy', { moduleIdx: s.moduleIdx - 1 }) : this.go('academy'),
+      nextModule: () => s.moduleIdx < MODULES.length - 1 ? this.go('academy', { moduleIdx: s.moduleIdx + 1 }) : this.go('academy', { examOpen: true }),
+      certStatus: s.certified ? 'You are certified; the signals are open.' : 'Not yet taken.',
+      openExam: () => this.go('academy', { examOpen: true, submitted: false }),
+      examOpen: s.screen === 'academy' && s.examOpen, questions,
+      notSubmitted: !s.submitted, submitted: s.submitted, score: s.score, passed: s.score >= pass,
+      submitLabel: answered < QUESTIONS.length ? 'Answer all ' + QUESTIONS.length + ' to submit (' + answered + ' done)' : 'Submit',
+      submitExam: () => { if (answered < QUESTIONS.length) return; const score = QUESTIONS.reduce((acc, q, i) => acc + (this.state.answers[i] === q.correct ? 1 : 0), 0); const certified = this.state.certified || score >= pass; this.setState({ submitted: true, score, certified }); this.save('ti.certified', certified); try { window.scrollTo(0, 0); } catch (e) {} },
+      resultText: s.score >= pass ? 'Passed. Certification is stored in this browser and the signals are open to you. Keep the losing records in mind when you read them.' : 'Not yet. Eight are needed. The correct answers are marked above; re-read the module for each one you missed and retake when ready.',
+      retryExam: () => { this.setState({ submitted: false, answers: {}, score: 0 }); this.save('ti.answers', {}); try { window.scrollTo(0, 0); } catch (e) {} },
+      certified: s.certified, notCertified: !s.certified, subscribed: s.subscribed, notSubscribed: !s.subscribed,
+      subscribe: () => { this.setState({ subscribed: true }); this.save('ti.subscribed', true); },
+      sizer: s.sizer, recovery: s.recovery, compound: s.compound,
+      onSizerAccount: set('sizer', 'account'), onSizerRisk: set('sizer', 'risk'), onSizerEntry: set('sizer', 'entry'), onSizerStop: set('sizer', 'stop'), onRecoveryDd: set('recovery', 'dd'), onCompoundMonthly: set('compound', 'monthly'), onCompoundRate: set('compound', 'rate'), onCompoundYears: set('compound', 'years'),
+      sizerOut: { risk: this.money(risk), position: this.money(position), units: units.toLocaleString('en-US', { maximumFractionDigits: 2 }) },
+      recoveryOut: dd < 1 ? ((1 / (1 - dd) - 1) * 100).toLocaleString('en-US', { maximumFractionDigits: 1 }) + '%' : '—',
+      compoundOut: { paid: this.money(pmt * nMonths), fv: this.money(fv) },
+      appReq: s.appReq, onAppReq: (e) => this.setState({ appReq: e.target.value }), draftApp: () => this.draftApp(), draftLabel: s.appBusy ? 'Drafting…' : 'Draft the spec', hasAppSpec: !!s.appSpec, appSpec: s.appSpec,
+      log: LOG, phases: PHASES, costs: COSTS, kpis: KPIS,
+      messages: s.messages, draft: s.draft, thinking: s.thinking,
+      onDraft: (e) => this.setState({ draft: e.target.value }), onKey: (e) => { if (e.key === 'Enter') this.send(); }, send: () => this.send()
+    };
+  }
+}
+</script>
+</body>
+</html>

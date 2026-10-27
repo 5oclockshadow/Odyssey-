@@ -1,0 +1,9 @@
+[project]
+name = "tendergraph"
+version = "0.1.0"
+description = "Self-maintaining, bid-seeking tender & public/private intelligence agent-graph (Skilld framework)."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]

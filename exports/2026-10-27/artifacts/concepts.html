@@ -1,0 +1,1515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Odyssey Concepts</title>
+<style>
+  :root{
+    --bg:#060a10; --bg2:#0a0f17; --panel:#0c131d; --panel2:#0e1725; --line:#1a2740; --line2:#243552;
+    --text:#dbe8ff; --dim:#7488a3; --dim2:#45566e;
+    --acc:#39ff9f; --acc2:#79ffc6; --acc3:#1a7f55; --cyan:#45d6ff; --mag:#ff5db1; --amb:#ffb347; --vio:#b58cff;
+    --ok:#39ff9f; --warn:#ffb347; --bad:#ff6b7d;
+    --mono: ui-monospace,SFMono-Regular,Menlo,"Cascadia Code",monospace;
+    --font: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--font);overflow:hidden;}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;}
+  .top{display:flex;align-items:center;gap:14px;padding:0 16px;height:50px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--bg2),var(--bg));flex:0 0 auto;}
+  .brand{font-weight:700;letter-spacing:.03em;font-size:14px;white-space:nowrap;}
+  .brand .dot{color:var(--acc);}
+  .tabs{display:flex;gap:3px;flex-wrap:wrap;}
+  .tabs button{border:1px solid transparent;background:transparent;color:var(--dim);font:inherit;font-size:12.5px;
+    padding:6px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  .tabs button:hover{color:var(--text);background:rgba(255,255,255,.04);}
+  .tabs button.on{color:var(--text);background:color-mix(in srgb,var(--acc) 14%,transparent);border-color:color-mix(in srgb,var(--acc) 35%,transparent);}
+  .tabs .ix{font-size:9.5px;color:var(--dim2);font-variant-numeric:tabular-nums;}
+  .tabs button.on .ix{color:var(--acc2);}
+  .top .right{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;}
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--panel);}
+  .pill b{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 7px var(--acc);animation:bl 1.5s infinite;}
+  @keyframes bl{50%{opacity:.3;}}
+  .stage{flex:1;min-height:0;overflow:auto;}
+  .pane{display:none;padding:14px 16px 28px;} .pane.on{display:block;}
+  .subnav{position:sticky;top:0;z-index:5;display:flex;gap:4px;flex-wrap:wrap;padding:10px 0 12px;margin-bottom:4px;
+    background:linear-gradient(180deg,var(--bg) 70%,transparent);}
+  .subnav button{border:1px solid var(--line);background:var(--panel);color:var(--dim);font:inherit;font-size:11.5px;
+    padding:6px 12px;border-radius:999px;cursor:pointer;}
+  .subnav button.on{color:#08110b;background:var(--acc);border-color:var(--acc);font-weight:600;}
+  .view{display:none;} .view.on{display:block;}
+  .head{display:flex;align-items:baseline;gap:12px;margin:2px 0 14px;flex-wrap:wrap;}
+  .head h1{margin:0;font-size:19px;font-weight:650;letter-spacing:-.01em;}
+  .head p{margin:0;color:var(--dim);font-size:12.5px;max-width:78ch;line-height:1.5;}
+  .grid{display:grid;gap:12px;}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr));}
+  .g5{grid-template-columns:repeat(5,minmax(0,1fr));}
+  .g23{grid-template-columns:2fr 3fr;} .g32{grid-template-columns:3fr 2fr;}
+  .span2{grid-column:span 2;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px;min-width:0;}
+  .card.glow{box-shadow:0 0 0 1px color-mix(in srgb,var(--acc) 22%,transparent),0 14px 40px -24px var(--acc);}
+  .card.pad0{padding:0;overflow:hidden;}
+  .ck{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .ck .r{color:var(--dim);letter-spacing:.02em;text-transform:none;font-size:10.5px;}
+  .big{font-size:23px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+  .big.sm{font-size:17px;} .big.xs{font-size:14px;}
+  .sub{font-size:11.5px;color:var(--dim);margin-top:3px;}
+  .up{color:var(--ok);} .down{color:var(--bad);}
+  .row{display:flex;align-items:center;gap:9px;padding:6.5px 0;border-top:1px solid var(--line);font-size:12.5px;}
+  .row:first-of-type{border-top:0;} .row.tight{padding:4px 0;}
+  .row .mono{font-family:var(--mono);font-size:11.5px;color:var(--dim);}
+  .grow{flex:1;min-width:0;}
+  .mono{font-family:var(--mono);} .nowrap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tag{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--dim);white-space:nowrap;}
+  .tag.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent);background:color-mix(in srgb,var(--ok) 10%,transparent);}
+  .tag.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent);}
+  .tag.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent);background:color-mix(in srgb,var(--bad) 10%,transparent);}
+  .tag.cy{color:var(--cyan);border-color:color-mix(in srgb,var(--cyan) 40%,transparent);}
+  .tag.mg{color:var(--mag);border-color:color-mix(in srgb,var(--mag) 40%,transparent);}
+  .tag.vi{color:var(--vio);border-color:color-mix(in srgb,var(--vio) 40%,transparent);}
+  .bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc3),var(--acc));}
+  .bar.amb i{background:linear-gradient(90deg,#8f5e1a,var(--amb));}
+  .bar.cy i{background:linear-gradient(90deg,#1a6a8f,var(--cyan));}
+  .bar.bad i{background:linear-gradient(90deg,#7a2530,var(--bad));}
+  .mut{color:var(--dim);} .mut2{color:var(--dim2);}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th{text-align:left;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);font-weight:500;padding:0 8px 7px 0;border-bottom:1px solid var(--line);}
+  td{padding:7px 8px 7px 0;border-bottom:1px solid var(--line);color:var(--text);vertical-align:middle;}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:11.5px;}
+  tr:last-child td{border-bottom:0;}
+  tr:hover td{background:rgba(255,255,255,.02);}
+  .term{background:#05080d;border:0;border-radius:11px;font-family:var(--mono);font-size:11px;color:#9fb4cf;overflow:hidden;}
+  .term .bar2{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--line);background:var(--panel2);font-size:10.5px;}
+  .term .bar2 .d{width:8px;height:8px;border-radius:50%;}
+  .term .body{padding:10px 11px;line-height:1.55;max-height:220px;overflow:auto;white-space:pre-wrap;}
+  .term .body .g{color:var(--acc);} .term .body .c{color:var(--cyan);} .term .body .y{color:var(--amb);}
+  .term .body .m{color:var(--mag);} .term .body .d2{color:var(--dim2);} .term .body .v{color:var(--vio);}
+  canvas{display:block;width:100%;}
+  .spark{height:40px;}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--dim);margin-top:8px;}
+  .legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+  .note{font-size:11.5px;color:var(--dim);line-height:1.5;}
+  .kbd{font-family:var(--mono);font-size:10.5px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--acc2);white-space:nowrap;}
+  .ctl{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--dim);}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel2);}
+  .seg button{border:0;background:transparent;color:var(--dim);font:inherit;font-size:11px;padding:5px 10px;cursor:pointer;}
+  .seg button.on{background:color-mix(in srgb,var(--acc) 18%,transparent);color:var(--text);}
+  .toggle{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);border:1px solid var(--line);
+    background:var(--panel2);border-radius:8px;padding:5px 10px;cursor:pointer;}
+  .toggle .d{width:6px;height:6px;border-radius:50%;background:var(--dim2);}
+  .toggle.on{color:var(--text);} .toggle.on .d{background:var(--acc);box-shadow:0 0 6px var(--acc);}
+  .slider{appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;flex:1;}
+  .slider::-webkit-slider-thumb{appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 6px var(--acc);}
+  h3.sec{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);margin:18px 0 9px;}
+  .split{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:13px;overflow:hidden;}
+  .split .half{padding:14px;} .split .half.pub{background:color-mix(in srgb,var(--acc) 7%,var(--panel));}
+  .split .half.alpha{background:color-mix(in srgb,var(--mag) 7%,var(--panel));border-left:1px solid var(--line);}
+  .lock{color:var(--mag);}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,92vw);background:var(--panel);border-left:1px solid var(--line2);
+    box-shadow:-20px 0 60px -30px #000;transform:translateX(100%);transition:transform .25s ease;z-index:30;overflow:auto;padding:18px;}
+  .drawer.on{transform:translateX(0);}
+  .drawer .x{position:absolute;top:14px;right:14px;cursor:pointer;color:var(--dim);border:1px solid var(--line);border-radius:8px;width:28px;height:28px;display:grid;place-items:center;background:var(--panel2);}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:29;opacity:0;pointer-events:none;transition:opacity .25s;}
+  .scrim.on{opacity:1;pointer-events:auto;}
+  .clickable{cursor:pointer;} .clickable:hover td{background:color-mix(in srgb,var(--acc) 7%,transparent);}
+  .mini{font-size:10.5px;color:var(--dim2);}
+  .dotlist{display:flex;flex-direction:column;gap:5px;font-size:11.5px;}
+  .dotlist span::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--acc);margin-right:8px;vertical-align:middle;}
+  @media(max-width:980px){.g5,.g4{grid-template-columns:repeat(2,minmax(0,1fr));}.g3{grid-template-columns:1fr 1fr;}.g23,.g32{grid-template-columns:1fr;}.span2{grid-column:span 1;}}
+  @media(max-width:620px){.g5,.g4,.g3,.g2{grid-template-columns:1fr;}.split{grid-template-columns:1fr;}.tabs .lbl{display:none;}}
+
+  /* ===== 12-round upgrade: theme, platform, polish ===== */
+  /* light theme (dark-first design → light under system-light and explicit light) */
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+    --bg:#eef3fa;--bg2:#e5ecf6;--panel:#ffffff;--panel2:#eef4fb;--line:#d6e0ee;--line2:#bdd0e6;
+    --text:#0f1e36;--dim:#51657f;--dim2:#8698ae; color-scheme:light; }}
+  :root[data-theme="light"]{
+    --bg:#eef3fa;--bg2:#e5ecf6;--panel:#ffffff;--panel2:#eef4fb;--line:#d6e0ee;--line2:#bdd0e6;
+    --text:#0f1e36;--dim:#51657f;--dim2:#8698ae; color-scheme:light; }
+  :root[data-theme="dark"]{ color-scheme:dark; }
+  /* top-bar platform controls */
+  .tbtn{display:grid;place-items:center;height:30px;min-width:30px;padding:0 8px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel);color:var(--dim);cursor:pointer;font:inherit;font-size:12px;}
+  .tbtn:hover{border-color:var(--acc);color:var(--text);}
+  .swrow{display:flex;gap:5px;align-items:center;}
+  .sw{width:15px;height:15px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
+  .sw.on{border-color:var(--text);}
+  .ticker{max-width:220px;overflow:hidden;white-space:nowrap;font-size:11px;color:var(--dim2);font-family:var(--mono);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);}
+  @media(max-width:720px){.ticker{display:none;}}
+  /* command palette */
+  .pal{position:fixed;inset:0;background:rgba(2,5,10,.5);z-index:50;display:none;align-items:flex-start;justify-content:center;padding-top:12vh;}
+  .pal.on{display:flex;}
+  .palbox{width:min(560px,92vw);background:var(--panel);border:1px solid var(--line2);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px -30px #000;}
+  .palbox input{width:100%;border:0;background:var(--panel2);color:var(--text);font:inherit;font-size:15px;padding:14px 16px;outline:none;}
+  .palist{max-height:46vh;overflow:auto;}
+  .palrow{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;border-top:1px solid var(--line);}
+  .palrow.sel,.palrow:hover{background:color-mix(in srgb,var(--acc) 15%,transparent);}
+  .palrow .k{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim2);margin-left:auto;}
+  /* toasts */
+  .toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:60;}
+  .toast{background:var(--panel);border:1px solid var(--line2);border-left:3px solid var(--acc);border-radius:10px;
+    padding:9px 13px;font-size:12.5px;color:var(--text);box-shadow:0 14px 40px -22px #000;animation:tin .25s ease;max-width:300px;}
+  @keyframes tin{from{opacity:0;transform:translateY(8px);}}
+  /* polish */
+  :focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px;}
+  .tabs button,.subnav button,.tbtn,.sw,.seg button,.toggle,.row,.palrow{transition:background .15s,border-color .15s,color .15s;}
+  .view.on{animation:vfade .28s ease;}
+  @keyframes vfade{from{opacity:0;transform:translateY(6px);}}
+  [data-ep]{cursor:pointer;} [data-ep]:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);}
+  /* density */
+  :root[data-density="compact"] .card{padding:9px;}
+  :root[data-density="compact"] .row{padding:4px 0;}
+  :root[data-density="compact"] .subnav{padding:7px 0 9px;}
+  :root[data-density="compact"] .big{font-size:20px;}
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <div class="brand">ODYSSEY<span class="dot">◆</span>CONCEPTS</div>
+    <div class="tabs" id="tabs">
+      <button data-t="codegen" class="on"><span class="ix">01</span><span class="lbl">Codegen</span></button>
+      <button data-t="router"><span class="ix">02</span><span class="lbl">Fleet Router</span></button>
+      <button data-t="money"><span class="ix">03</span><span class="lbl">Money Engine</span></button>
+      <button data-t="api"><span class="ix">04</span><span class="lbl">Graph API</span></button>
+      <button data-t="sdk"><span class="ix">05</span><span class="lbl">Open-Core SDK</span></button>
+      <button data-t="health"><span class="ix">06</span><span class="lbl">Institute Health</span></button>
+    </div>
+    <div class="right">
+      <span class="ticker" id="ticker">● live</span>
+      <span class="swrow" id="swrow"></span>
+      <button class="tbtn" id="themeBtn" title="Theme: system / dark / light">◐</button>
+      <button class="tbtn" id="densBtn" title="Density">▦</button>
+      <button class="tbtn" id="palBtn" title="Command palette (⌘K)">⌘K</button>
+      <span class="pill"><b></b>concept</span><span id="clock">--:--:--</span>
+    </div>
+  </div>
+  <div class="stage">
+
+  <!-- ==================================================================== CODEGEN -->
+  <section class="pane on" data-p="codegen">
+    <div class="subnav">
+      <button data-v="c_over" class="on">Overview</button>
+      <button data-v="c_reason">Reasoning</button>
+      <button data-v="c_graph">Graph &amp; Memory</button>
+      <button data-v="c_self">Self-Improve</button>
+      <button data-v="c_ops">Lanes · MCP · Autonomy</button>
+    </div>
+
+    <div class="view on" data-v="c_over">
+      <div class="head"><h1>Codegen</h1><p>Owned, self-referential code engine. It ingests its own source into the same graph it retrieves from, reasons through one structured contract, routes every call across the fleet + rentals, and can rewrite itself under the tester's gate. Every surface below is a real endpoint.</p></div>
+      <div class="grid g5" style="margin-bottom:12px">
+        <div class="card glow"><div class="ck">skills</div><div class="big">28</div><div class="sub">/api/v3/skills</div></div>
+        <div class="card"><div class="ck">endpoints</div><div class="big">60+</div><div class="sub">FastAPI · /api/v3/*</div></div>
+        <div class="card"><div class="ck">self-ingest</div><div class="big sm">app/**</div><div class="sub">own code → graph</div></div>
+        <div class="card"><div class="ck">autonomy</div><div class="big sm">pause-only</div><div class="sub">/autonomy/*</div></div>
+        <div class="card"><div class="ck">reasoning conf</div><div class="big" id="cg_conf">0.82</div><div class="sub">StructuredThought</div></div>
+      </div>
+      <div class="grid g32">
+        <div class="card"><div class="ck">real endpoints<span class="r">click to copy a call</span></div>
+          <div class="row tight" data-ep="/api/v3/think"><span class="tag cy">POST</span><span class="mono grow">/api/v3/think</span><span class="mut">structured reasoning</span></div>
+          <div class="row tight" data-ep="/api/v3/sessions/{sid}/chat"><span class="tag cy">POST</span><span class="mono grow">/sessions/{sid}/chat</span><span class="mut">chat loop</span></div>
+          <div class="row tight" data-ep="/api/v3/brain/ingest/self"><span class="tag ok">POST</span><span class="mono grow">/ingest/self</span><span class="mut">ingest own source</span></div>
+          <div class="row tight" data-ep="/api/v3/connectome/4d"><span class="tag ok">GET</span><span class="mono grow">/connectome/4d</span><span class="mut">graph nodes+edges</span></div>
+          <div class="row tight" data-ep="/api/v3/rewrite/propose"><span class="tag vi">POST</span><span class="mono grow">/rewrite/propose</span><span class="mut">self-rewrite · gated</span></div>
+          <div class="row tight" data-ep="/api/v3/lanes"><span class="tag ok">GET</span><span class="mono grow">/lanes</span><span class="mut">osiiso lanes</span></div>
+          <div class="row tight" data-ep="/api/v3/mcp/servers"><span class="tag ok">GET</span><span class="mono grow">/mcp/servers</span><span class="mut">MCP-of-MCP</span></div>
+          <div class="row tight" data-ep="/api/v3/route-health"><span class="tag warn">GET</span><span class="mono grow">/route-health</span><span class="mut">router state</span></div>
+        </div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">/api/v3/think — live</span></div>
+          <div class="body" id="cg_log"></div></div></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="c_reason">
+      <div class="head"><h1>Structured Reasoning</h1><p>One output contract for every call — a single JSON object the parser can't fail on. This is what makes the agent composable: thinking, the answer, an optional tool call, and its own confidence.</p></div>
+      <div class="grid g2">
+        <div class="card"><div class="ck">StructuredThought — the 6 fields</div>
+          <div class="row"><span class="mono grow">reasoning</span><span class="mut">step-by-step thinking</span></div>
+          <div class="row"><span class="mono grow">answer</span><span class="mut">final answer</span></div>
+          <div class="row"><span class="mono grow">tool</span><span class="mut">next tool, or null</span></div>
+          <div class="row"><span class="mono grow">tool_input</span><span class="mut">args dict</span></div>
+          <div class="row"><span class="mono grow">confidence</span><span class="mut">0.0–1.0 (clamped)</span></div>
+          <div class="row"><span class="mono grow">needs_more_steps</span><span class="mut">loop or stop</span></div>
+        </div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">think trace</span></div>
+          <div class="body"><span class="c">{</span>
+  <span class="y">"reasoning"</span>: <span class="g">"parse req → pick tool → verify"</span>,
+  <span class="y">"answer"</span>: <span class="g">"added index mig_014"</span>,
+  <span class="y">"tool"</span>: <span class="g">"apply_patch"</span>,
+  <span class="y">"tool_input"</span>: <span class="c">{</span> <span class="y">"file"</span>:<span class="g">"db.py"</span> <span class="c">}</span>,
+  <span class="y">"confidence"</span>: 0.82,
+  <span class="y">"needs_more_steps"</span>: false
+<span class="c">}</span></div></div></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="c_graph">
+      <div class="head"><h1>Graph &amp; Memory</h1><p>Retrieval <b>is</b> the graph — and the graph holds its own self-ingested code, so when it generates it can surface its own modules, functions and patterns. RAPTOR summarizes, Hebbian links co-used nodes, the Q-table reranks on reward.</p></div>
+      <div class="grid g32">
+        <div class="card glow pad0"><div class="ck" style="padding:13px 13px 0">live graph · recall + 1 Hebbian hop + RAPTOR</div>
+          <canvas id="brainCode" height="360"></canvas>
+          <div class="legend" style="padding:0 13px 13px"><span><i style="background:var(--acc)"></i>recall cascade</span><span><i style="background:var(--cyan)"></i>code nodes</span><span><i style="background:var(--vio)"></i>RAPTOR summaries</span></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:12px"><div class="ck">GraphRM</div>
+            <div class="row tight"><span class="grow">traverse()</span><span class="mut">recall seeds + edge hops</span></div>
+            <div class="row tight"><span class="grow">registered as</span><span class="mono">dspy.rm</span></div>
+            <div class="row tight"><span class="grow">store</span><span class="mono">redis-backed</span></div>
+          </div>
+          <div class="card" style="margin-bottom:12px"><div class="ck">self-ingest</div>
+            <div class="row tight"><span class="grow">globs</span><span class="mono">app/**/*.py</span></div>
+            <div class="row tight"><span class="grow">extracts</span><span class="mut">modules·classes·fns·imports</span></div>
+            <div class="row tight"><span class="grow">endpoint</span><span class="mono">POST /ingest/self</span></div>
+          </div>
+          <div class="card"><div class="ck">plasticity</div>
+            <div class="row tight"><span class="grow">Hebbian</span><span class="mut">bounded coactivation</span></div>
+            <div class="row tight"><span class="grow">Q-table</span><span class="mut">ε-greedy · real reward</span></div>
+            <div class="row tight"><span class="grow">RAPTOR</span><span class="mut">recursive summaries</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="c_self">
+      <div class="head"><h1>Self-Improvement</h1><p>Because its own code is in its graph, it can code better <i>on tasks about itself</i> — and we measure it. The baseline steps up only when a self-change is <b>proven</b> on the eval harness; the live line jitters per task. A self-rewrite that only "passes because nothing broke" never moves the baseline.</p></div>
+      <div class="grid g32">
+        <div class="card glow pad0"><div class="ck" style="padding:13px 13px 0">self-grounding lift<span class="r">baseline steps on proof · live jitters</span></div>
+          <canvas id="selfImprove" height="150"></canvas>
+          <div class="legend" style="padding:0 13px 13px"><span><i style="background:var(--acc)"></i>baseline (measured)</span><span><i style="background:var(--acc2)"></i>live per-task</span></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:12px"><div class="ck">how it's measured</div>
+            <div class="row tight"><span class="tag ok">lift</span><span class="grow">score(self-RAG on) − off</span></div>
+            <div class="row tight"><span class="tag cy">yield</span><span class="grow">% self-rewrites with +Δ</span></div>
+            <div class="row tight"><span class="tag vi">curve</span><span class="grow">score vs episodes</span></div>
+          </div>
+          <div class="card"><div class="ck">the gate</div><div class="note">A self-rewrite ships only with a measured positive delta on <span class="mono">app/eval</span> — not just "tests still pass". That closes the known false-pass in rewrite.py.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="c_ops">
+      <div class="head"><h1>Lanes · Routing · MCP · Autonomy</h1><p>How work actually executes: routed by nature into osiiso lanes, across fleet + DMR + cloud, through one permissive MCP server, under pause-only autonomy.</p></div>
+      <div class="grid g4" style="margin-bottom:12px">
+        <div class="card"><div class="ck">osiiso lanes</div><div class="row tight"><span class="tag ok">ASYNC</span><span class="grow mut">io / net</span></div><div class="row tight"><span class="tag cy">THREAD</span><span class="grow mut">cpu-light</span></div><div class="row tight"><span class="tag vi">PROCESS</span><span class="grow mut">embed / vLLM</span></div></div>
+        <div class="card"><div class="ck">router + DMR</div><div class="row tight"><span class="grow">RoutingDecision</span><span class="mut">explainable</span></div><div class="row tight"><span class="grow">DMR</span><span class="mono">dmr/&lt;model&gt;</span></div><div class="row tight"><span class="grow">health</span><span class="mono">/route-health</span></div></div>
+        <div class="card"><div class="ck">MCP-of-MCP</div><div class="row tight"><span class="grow">servers</span><span class="mono">/mcp/servers</span></div><div class="row tight"><span class="grow">call</span><span class="mono">/{name}/call</span></div><div class="row tight"><span class="grow">tools</span><span class="mono">/{name}/tools</span></div></div>
+        <div class="card"><div class="ck">autonomy</div><div class="row tight"><span class="grow">pause / resume</span><span class="tag ok">live</span></div><div class="row tight"><span class="grow">halt</span><span class="tag bad">kill-switch</span></div><div class="row tight"><span class="grow">tick</span><span class="mono">/autonomy/tick</span></div></div>
+      </div>
+      <div class="card"><div class="ck">approvals &amp; warden</div>
+        <div class="row"><span class="tag warn">gate</span><span class="grow">patches never apply without approval — /api/v3/approvals</span><span class="mono">warden</span></div>
+        <div class="row"><span class="tag ok">tokens</span><span class="grow">SaaS owner/workspace auth — /api/v3/tokens</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================== ROUTER -->
+  <section class="pane" data-p="router">
+    <div class="subnav">
+      <button data-v="r_console" class="on">Console</button>
+      <button data-v="r_cascade">Cascade &amp; Models</button>
+      <button data-v="r_prov">Providers &amp; Keys</button>
+      <button data-v="r_topo">Topology</button>
+      <button data-v="r_desk">Cost Desk</button>
+      <button data-v="r_saas">SaaS / BYOK</button>
+      <button data-v="r_trace">Decision Trace</button>
+    </div>
+
+    <div class="view on" data-v="r_console">
+      <div class="head"><h1>Mission Control</h1><p>One pane of glass over the whole fleet — every inference, which tier served it, what it cost, and what recovered when a provider flaked.</p></div>
+      <div class="grid g5" style="margin-bottom:12px">
+        <div class="card glow"><div class="ck">throughput<span class="up">live</span></div><div class="big" id="m_rps">41.8</div><div class="sub">req/s · 7 nodes · 11 providers</div></div>
+        <div class="card"><div class="ck">blended $/1k</div><div class="big">$0.0004</div><div class="sub up">↓83% vs all-cloud</div></div>
+        <div class="card"><div class="ck">p50 / p99</div><div class="big sm" id="m_lat">214 / 980<span style="font-size:11px">ms</span></div><div class="sub">free tier 71%</div></div>
+        <div class="card"><div class="ck">cache hit</div><div class="big">34%</div><div class="sub">semantic + exact</div></div>
+        <div class="card"><div class="ck">fallbacks/min</div><div class="big">6</div><div class="sub up">all auto-recovered</div></div>
+      </div>
+      <div class="grid g32">
+        <div class="card">
+          <div class="ck">tier cascade<span class="r">free → paid → local spill</span></div>
+          <div class="row tight"><span class="tag ok">FREE</span><span class="grow nowrap">Groq · Gemini-flash · OR:free · Cerebras</span><span class="mono">71%</span></div>
+          <div class="bar" style="margin:2px 0 8px"><i style="width:71%"></i></div>
+          <div class="row tight"><span class="tag warn">PAID</span><span class="grow nowrap">Anthropic · OpenAI · OR:paid</span><span class="mono">18%</span></div>
+          <div class="bar amb" style="margin:2px 0 8px"><i style="width:18%"></i></div>
+          <div class="row tight"><span class="tag cy">LOCAL</span><span class="grow nowrap">fleet:204 vLLM · fleet:201 Ollama</span><span class="mono">11%</span></div>
+          <div class="bar cy" style="margin:2px 0 0"><i style="width:11%"></i></div>
+          <div class="grid g3" style="margin-top:12px;gap:8px">
+            <div><div class="mini">tokens in</div><div class="big xs mono">8.4M</div></div>
+            <div><div class="mini">tokens out</div><div class="big xs mono">2.1M</div></div>
+            <div><div class="mini">spend today</div><div class="big xs mono up">$3.14</div></div>
+          </div>
+        </div>
+        <div class="card pad0">
+          <div class="term">
+            <div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">live route stream</span></div>
+            <div class="body" id="r_log"></div>
+          </div>
+        </div>
+      </div>
+      <h3 class="sec">24h cost · latency · savings</h3>
+      <div class="grid g3">
+        <div class="card"><div class="ck">spend / hr</div><canvas class="spark" data-seed="3" data-col="amb"></canvas></div>
+        <div class="card"><div class="ck">p50 latency</div><canvas class="spark" data-seed="7" data-col="acc"></canvas></div>
+        <div class="card"><div class="ck">free-tier share</div><canvas class="spark" data-seed="11" data-col="cy"></canvas></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="r_cascade">
+      <div class="head"><h1>Cascade &amp; Models</h1><p>The candidate set the router picks from, per request — ranked live by a blend of cost, latency, context fit, quality and key health. These weights are what you tune.</p></div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="ck">model candidate table<span class="r">sorted by score for role=code</span></div>
+        <table>
+          <thead><tr><th>model</th><th>tier</th><th class="n">ctx</th><th class="n">$/1k in·out</th><th class="n">p50</th><th class="n">win%</th><th>health</th><th class="n">score</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">groq/llama-3.3-70b</td><td><span class="tag ok">free</span></td><td class="n">128k</td><td class="n">0·0</td><td class="n">38ms</td><td class="n">46</td><td><span class="tag ok">OK</span></td><td class="n">0.94</td></tr>
+            <tr><td class="mono">cerebras/llama-3.3</td><td><span class="tag ok">free</span></td><td class="n">64k</td><td class="n">0·0</td><td class="n">22ms</td><td class="n">12</td><td><span class="tag ok">OK</span></td><td class="n">0.90</td></tr>
+            <tr><td class="mono">fleet:204/qwen2.5-32b</td><td><span class="tag cy">local</span></td><td class="n">32k</td><td class="n">0·0</td><td class="n">61ms</td><td class="n">11</td><td><span class="tag ok">warm</span></td><td class="n">0.86</td></tr>
+            <tr><td class="mono">or:free/deepseek-v3</td><td><span class="tag ok">free</span></td><td class="n">64k</td><td class="n">0·0</td><td class="n">110ms</td><td class="n">9</td><td><span class="tag ok">OK</span></td><td class="n">0.81</td></tr>
+            <tr><td class="mono">anthropic/claude-haiku</td><td><span class="tag warn">paid</span></td><td class="n">200k</td><td class="n">0.8·4</td><td class="n">240ms</td><td class="n">14</td><td><span class="tag ok">OK</span></td><td class="n">0.74</td></tr>
+            <tr><td class="mono">gemini/flash</td><td><span class="tag ok">free</span></td><td class="n">1M</td><td class="n">0·0</td><td class="n">—</td><td class="n">8</td><td><span class="tag bad">429 22s</span></td><td class="n">0.31</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid g2">
+        <div class="card">
+          <div class="ck">scoring weights<span class="r">LLM-decided baseline, your override</span></div>
+          <div class="ctl" style="margin:8px 0"><span style="width:72px">cost</span><input class="slider" type="range" value="70"><span class="mono">0.70</span></div>
+          <div class="ctl" style="margin:8px 0"><span style="width:72px">latency</span><input class="slider" type="range" value="45"><span class="mono">0.45</span></div>
+          <div class="ctl" style="margin:8px 0"><span style="width:72px">quality</span><input class="slider" type="range" value="55"><span class="mono">0.55</span></div>
+          <div class="ctl" style="margin:8px 0"><span style="width:72px">ctx fit</span><input class="slider" type="range" value="80"><span class="mono">0.80</span></div>
+          <div class="ctl" style="margin:8px 0"><span style="width:72px">health</span><input class="slider" type="range" value="90"><span class="mono">0.90</span></div>
+          <div class="note">At runtime the LLM nudges these per request (a 300k-token prompt forces ctx fit to 1.0 and drops everything without a big window). You set the resting values and hard caps.</div>
+        </div>
+        <div class="card">
+          <div class="ck">spill &amp; retry rules</div>
+          <div class="row"><span class="tag ok">R1</span><span class="grow">free exhausted / 429 → next free, then paid</span></div>
+          <div class="row"><span class="tag cy">R2</span><span class="grow">ctx &gt; model window → local long-ctx or paid</span></div>
+          <div class="row"><span class="tag warn">R3</span><span class="grow">spend cap hit → local-only, page human</span></div>
+          <div class="row"><span class="tag">R4</span><span class="grow">timeout 8s → hedge to 2nd candidate</span></div>
+          <div class="row"><span class="tag">R5</span><span class="grow">3 fails → cooldown provider 30s, re-score</span></div>
+          <div class="ctl" style="margin-top:10px"><span class="toggle on"><span class="d"></span>hedging</span><span class="toggle on"><span class="d"></span>semantic cache</span><span class="toggle"><span class="d"></span>strict-cost</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px"><div class="ck">core logic · pick(request)</div>
+        <div class="term" style="border:0"><div class="body"><span class="v">def</span> pick(req):
+  cands = [m <span class="v">for</span> m <span class="v">in</span> models <span class="v">if</span> m.ctx &gt;= req.tokens
+           <span class="v">and</span> m.healthy <span class="v">and</span> spend_ok(m, req)]
+  <span class="v">for</span> m <span class="v">in</span> cands:
+    m.score = (w.cost*(1-m.norm_cost) + w.lat*(1-m.norm_p50)
+               + w.quality*m.elo + w.ctx*m.ctx_fit
+               + w.health*m.health) * tier_bonus[m.tier]
+  cands.sort(key=<span class="v">lambda</span> m: -m.score)
+  <span class="v">return</span> cands[0]      <span class="c"># spill to next on fail / 429 / timeout</span></div></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="r_prov">
+      <div class="head"><h1>Providers &amp; Keys</h1><p>Every provider, every key, live quota and spend, cooldowns, and rotation — the BYOK vault surfaced read-only.</p></div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="ck">provider pool<span class="r">11 providers · 18 keys</span></div>
+        <table>
+          <thead><tr><th>provider</th><th>kind</th><th class="n">keys</th><th class="n">rpm used</th><th class="n">spend/day</th><th class="n">p50</th><th>status</th></tr></thead>
+          <tbody>
+            <tr><td>Groq</td><td><span class="tag ok">free</span></td><td class="n">2</td><td class="n">420/1k</td><td class="n">$0.00</td><td class="n">38ms</td><td><span class="tag ok">OK</span></td></tr>
+            <tr><td>OpenRouter</td><td><span class="tag">hybrid</span></td><td class="n">1</td><td class="n">90/∞</td><td class="n">$0.41</td><td class="n">120ms</td><td><span class="tag ok">OK</span></td></tr>
+            <tr><td>Anthropic</td><td><span class="tag warn">paid</span></td><td class="n">1</td><td class="n">30/50</td><td class="n">$1.90</td><td class="n">240ms</td><td><span class="tag ok">OK</span></td></tr>
+            <tr><td>OpenAI</td><td><span class="tag warn">paid</span></td><td class="n">1</td><td class="n">12/60</td><td class="n">$0.83</td><td class="n">310ms</td><td><span class="tag ok">OK</span></td></tr>
+            <tr><td>Gemini</td><td><span class="tag ok">free</span></td><td class="n">3</td><td class="n">15/15</td><td class="n">$0.00</td><td class="n">—</td><td><span class="tag bad">429 · 22s</span></td></tr>
+            <tr><td>Cerebras</td><td><span class="tag ok">free</span></td><td class="n">1</td><td class="n">8/30</td><td class="n">$0.00</td><td class="n">22ms</td><td><span class="tag ok">OK</span></td></tr>
+            <tr><td>fleet:204 (vLLM)</td><td><span class="tag cy">local</span></td><td class="n">—</td><td class="n">—</td><td class="n">$0.00</td><td class="n">61ms</td><td><span class="tag ok">warm·3</span></td></tr>
+            <tr><td>fleet:201 (Ollama)</td><td><span class="tag cy">local</span></td><td class="n">—</td><td class="n">—</td><td class="n">$0.00</td><td class="n">54ms</td><td><span class="tag warn">cold·2</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid g3">
+        <div class="card"><div class="ck">key health</div>
+          <div class="row tight"><span class="mono grow">ANTHROPIC_1</span><span class="tag ok">87% cap</span></div>
+          <div class="row tight"><span class="mono grow">GROQ_1</span><span class="tag ok">fresh</span></div>
+          <div class="row tight"><span class="mono grow">GROQ_2</span><span class="tag warn">rotate 2d</span></div>
+          <div class="row tight"><span class="mono grow">GEMINI_3</span><span class="tag bad">quota out</span></div>
+        </div>
+        <div class="card"><div class="ck">spend caps</div>
+          <div class="row tight"><span class="grow">daily</span><span class="mono">$3.14 / $25</span></div>
+          <div class="bar amb" style="margin:3px 0 8px"><i style="width:12%"></i></div>
+          <div class="row tight"><span class="grow">per-request</span><span class="mono">$0.05 max</span></div>
+          <div class="row tight"><span class="grow">on cap</span><span class="tag cy">local-only + page</span></div>
+        </div>
+        <div class="card"><div class="ck">rotation schedule</div>
+          <div class="row tight"><span class="grow">GROQ_2</span><span class="mono">in 2d</span></div>
+          <div class="row tight"><span class="grow">OPENAI_1</span><span class="mono">in 9d</span></div>
+          <div class="row tight"><span class="grow">auto-rotate</span><span class="toggle on"><span class="d"></span>on</span></div>
+          <div class="note" style="margin-top:8px">Keys sealed in vault; rotation + kill-switch from ENV.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="r_topo">
+      <div class="head"><h1>Live Topology</h1><p>The fleet as a living graph — your machines on the left, the router core in the middle, free &amp; paid providers on the right. Each dot is one inference routed by nature into an async / thread / process lane.</p></div>
+      <div class="grid g32">
+        <div class="card glow pad0">
+          <div class="ck" style="padding:13px 13px 0">fleet topology</div>
+          <canvas id="topoCanvas" height="400"></canvas>
+          <div class="legend" style="padding:0 13px 13px">
+            <span><i style="background:var(--cyan)"></i>your machines</span><span><i style="background:var(--acc)"></i>router core</span>
+            <span><i style="background:var(--amb)"></i>paid</span><span><i style="background:var(--vio)"></i>free</span>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:12px"><div class="ck">lane breakdown<span class="r">osiiso</span></div>
+            <div class="row tight"><span class="tag ok">ASYNC</span><span class="grow">network / API calls</span><span class="mono">78%</span></div>
+            <div class="row tight"><span class="tag cy">THREAD</span><span class="grow">tokenize / rerank</span><span class="mono">14%</span></div>
+            <div class="row tight"><span class="tag vi">PROCESS</span><span class="grow">local embed / vLLM</span><span class="mono">8%</span></div>
+          </div>
+          <div class="card" style="margin-bottom:12px"><div class="ck">queue depths</div>
+            <div class="row tight"><span class="grow">async</span><div class="bar" style="width:100px"><i style="width:30%"></i></div><span class="mono">12</span></div>
+            <div class="row tight"><span class="grow">thread</span><div class="bar cy" style="width:100px"><i style="width:55%"></i></div><span class="mono">31</span></div>
+            <div class="row tight"><span class="grow">process</span><div class="bar vi" style="width:100px"><i style="width:18%;background:var(--vio)"></i></div><span class="mono">4</span></div>
+          </div>
+          <div class="card"><div class="ck">node inspector<span class="r">fleet:204</span></div>
+            <div class="row tight"><span class="grow">GPU</span><span class="mono">RTX 4090 · 71% · 64°C</span></div>
+            <div class="row tight"><span class="grow">models</span><span class="mono">qwen2.5-32b, nomic-embed</span></div>
+            <div class="row tight"><span class="grow">served</span><span class="mono">11% · 61ms p50</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="r_desk">
+      <div class="head"><h1>Cost Desk</h1><p>Trading-desk view of inference as a market — where it's cheapest to "buy" a token right now, latency heat, and the running P&amp;L of what the cascade saved you.</p></div>
+      <div class="grid g4" style="margin-bottom:12px">
+        <div class="card"><div class="ck">spend today</div><div class="big sm">$3.14</div><div class="sub">cap $25 · 12.5%</div></div>
+        <div class="card"><div class="ck">saved vs cloud</div><div class="big sm up">$18.90</div><div class="sub">by cascade, today</div></div>
+        <div class="card"><div class="ck">cheapest win</div><div class="big sm">Groq</div><div class="sub">$0.00 · 38ms</div></div>
+        <div class="card"><div class="ck">arb spread</div><div class="big sm up">214×</div><div class="sub">free vs frontier / 1k</div></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="ck">provider ledger<span class="r">cost · latency · win-rate</span></div>
+          <div class="row"><span style="width:110px">Groq</span><div class="bar grow"><i style="width:40%"></i></div><span class="mono">38ms</span><span class="tag ok">46%</span></div>
+          <div class="row"><span style="width:110px">fleet:204</span><div class="bar cy grow"><i style="width:61%"></i></div><span class="mono">61ms</span><span class="tag cy">11%</span></div>
+          <div class="row"><span style="width:110px">OpenRouter</span><div class="bar grow"><i style="width:30%"></i></div><span class="mono">120ms</span><span class="tag ok">22%</span></div>
+          <div class="row"><span style="width:110px">Anthropic</span><div class="bar amb grow"><i style="width:80%"></i></div><span class="mono">240ms</span><span class="tag warn">14%</span></div>
+          <div class="row"><span style="width:110px">Gemini</span><div class="bar bad grow"><i style="width:55%"></i></div><span class="mono">429</span><span class="tag bad">cooldown</span></div>
+        </div>
+        <div class="card"><div class="ck">latency heatmap<span class="r">last 60s</span></div>
+          <canvas id="heatCanvas" height="200"></canvas>
+          <div class="note" style="margin-top:9px">Darker = slower. Router drains traffic away from hot cells and reheats a lane when a provider recovers.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px"><div class="ck">cost P&amp;L — cumulative savings this week</div><canvas class="spark" data-seed="21" data-col="acc" height="70" style="height:70px"></canvas></div>
+    </div>
+
+    <div class="view" data-v="r_saas">
+      <div class="head"><h1>SaaS / BYOK</h1><p>The product view. OpenRouter fans one key to clouds; you add a <b>free-tier cascade</b> and <b>the customer's own fleet</b> as the cheapest lane — one OpenAI-compatible endpoint.</p></div>
+      <div class="grid g3" style="margin-bottom:12px">
+        <div class="card"><div class="ck">1 · bring keys <i>or</i> boxes</div>
+          <div class="row tight"><span class="mono grow">sk-ant-…</span><span class="tag ok">added</span></div>
+          <div class="row tight"><span class="mono grow">gsk_…groq</span><span class="tag ok">added</span></div>
+          <div class="row tight"><span class="mono grow">fleet.lan:8776</span><span class="tag cy">linked</span></div>
+          <div class="row tight"><span class="mut grow">+ add provider / node</span></div>
+          <div class="note" style="margin-top:8px">Or use one Odyssey key on our pooled free+paid keys.</div>
+        </div>
+        <div class="card glow"><div class="ck">2 · policy</div>
+          <div class="row tight"><span class="tag ok">cheapest-first</span><span class="grow mut">free → paid on fail</span><span class="tag">●</span></div>
+          <div class="row tight"><span class="tag cy">local-first</span><span class="grow mut">your fleet → cloud spill</span></div>
+          <div class="row tight"><span class="tag warn">fastest</span><span class="grow mut">lowest p50</span></div>
+          <div class="row tight"><span class="tag vi">quality-first</span><span class="grow mut">frontier, capped</span></div>
+          <div class="note" style="margin-top:8px"><span class="kbd">POST /v1/chat/completions</span> — drop-in.</div>
+        </div>
+        <div class="card"><div class="ck">3 · usage &amp; billing</div>
+          <div class="big sm">$42.10 <span style="font-size:11px" class="mut">/mo</span></div><div class="sub up">saved $310 vs direct</div>
+          <div class="bar" style="margin:10px 0 4px"><i style="width:62%"></i></div>
+          <div class="row tight" style="border:0"><span class="mut grow">free served</span><span class="mono">62%</span></div>
+          <div class="row tight" style="padding-top:0"><span class="mut grow">your local served</span><span class="mono">19%</span></div>
+        </div>
+      </div>
+      <div class="grid g4">
+        <div class="card"><div class="ck">plans</div>
+          <div class="row tight"><span class="grow">Free</span><span class="mono">1 key · 50 rpm</span></div>
+          <div class="row tight"><span class="grow">Pro $19</span><span class="mono">BYOK · 500 rpm</span></div>
+          <div class="row tight"><span class="grow">Fleet $49</span><span class="mono">+ your nodes</span></div>
+          <div class="row tight"><span class="grow">Team</span><span class="mono">seats · SSO</span></div>
+        </div>
+        <div class="card"><div class="ck">api keys</div>
+          <div class="row tight"><span class="mono grow">odsy_live_7f…</span><span class="tag ok">active</span></div>
+          <div class="row tight"><span class="mono grow">odsy_test_a2…</span><span class="tag">test</span></div>
+          <div class="row tight"><span class="mut grow">+ create key</span></div>
+        </div>
+        <div class="card"><div class="ck">rate limits</div>
+          <div class="row tight"><span class="grow">rpm</span><span class="mono">500</span></div>
+          <div class="row tight"><span class="grow">tpm</span><span class="mono">400k</span></div>
+          <div class="row tight"><span class="grow">concurrency</span><span class="mono">25</span></div>
+        </div>
+        <div class="card"><div class="ck">webhooks</div>
+          <div class="row tight"><span class="grow">spend.cap</span><span class="tag ok">on</span></div>
+          <div class="row tight"><span class="grow">provider.down</span><span class="tag ok">on</span></div>
+          <div class="row tight"><span class="grow">usage.daily</span><span class="tag">off</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="r_trace">
+      <div class="head"><h1>Decision Trace</h1><p>Why the router picked what it picked — one request, fully explained. This is the accountability surface: every pick is reconstructable.</p></div>
+      <div class="grid g23">
+        <div class="card"><div class="ck">request</div>
+          <div class="row tight"><span class="grow">role</span><span class="mono">code</span></div>
+          <div class="row tight"><span class="grow">prompt tokens</span><span class="mono">4,210</span></div>
+          <div class="row tight"><span class="grow">needs tools</span><span class="mono">yes</span></div>
+          <div class="row tight"><span class="grow">latency budget</span><span class="mono">2s</span></div>
+          <div class="row tight"><span class="grow">spend left</span><span class="mono">$21.86</span></div>
+        </div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">trace · req 9f2a1</span></div>
+          <div class="body"><span class="d2">14:22:07.114</span> score role=code tools=1
+ groq/llama-3.3   <span class="g">0.94</span>  <span class="d2">cost1.0 lat0.99 q0.71</span>
+ cerebras         <span class="g">0.90</span>  <span class="d2">no-tools → -0.1</span>
+ fleet:204/qwen   <span class="c">0.86</span>  <span class="d2">warm, 32k ok</span>
+ gemini/flash     <span class="y">0.31</span>  <span class="d2">429 cooldown 22s</span>
+<span class="g">PICK</span> groq/llama-3.3-70b  lane=ASYNC
+<span class="d2">14:22:07.152</span> 38ms · 512 tok · $0.00
+<span class="g">OK</span> served FREE · cache-set</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================== MONEY -->
+  <section class="pane" data-p="money">
+    <div class="subnav">
+      <button data-v="mo_scan" class="on">Scanners</button>
+      <button data-v="mo_plays">Plays</button>
+      <button data-v="mo_pipe">Pipeline &amp; Outreach</button>
+      <button data-v="mo_assets">Asset Forge</button>
+      <button data-v="mo_ctrl">Controls &amp; Gates</button>
+    </div>
+
+    <div class="view on" data-v="mo_scan">
+      <div class="head"><h1>Channel Scanners</h1><p>One viewing terminal per channel. Each scanner watches its source for <b>concrete executable plays</b> — a real offer with a buyer, not a listicle — scores it by $/effort, and surfaces it with the asset it already started building.</p></div>
+      <div class="grid g4" style="margin-bottom:12px">
+        <div class="card glow"><div class="ck">plays found<span class="up">live</span></div><div class="big" id="mo_plays">37</div><div class="sub">scored · deduped</div></div>
+        <div class="card"><div class="ck">pending approval</div><div class="big">8</div><div class="sub warn">awaiting your tap</div></div>
+        <div class="card"><div class="ck">shipped this wk</div><div class="big">5</div><div class="sub up">2 earning</div></div>
+        <div class="card"><div class="ck">est pipeline</div><div class="big sm up">$6.2k</div><div class="sub">realized $840</div></div>
+      </div>
+      <div class="grid g3">
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--mag)">● TikTok / Reels</span></div>
+          <div class="body"><span class="d2">scan#412</span> trend <span class="m">AI UGC ads</span> CPM↑
+faceless UGC for DTC brands
+<span class="g">PLAY</span> 20 UGC/mo @ $1.5k
+<span class="c">asset</span> hook-script ×12 drafted
+<span class="y">GATE</span> post CTA? → awaiting
+<span class="d2">fit 0.91 · effort LOW · $/eff 9.1</span></div></div></div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--cyan)">● X / LinkedIn</span></div>
+          <div class="body"><span class="d2">scan#419</span> pain <span class="c">inbox triage</span>
+SMB owners, 50+ replies/day
+<span class="g">PLAY</span> done-for-you AI triage
+<span class="c">product</span> n8n + MCP template
+<span class="y">GATE</span> 6 cold emails drafted
+<span class="d2">fit 0.87 · effort MED · $/eff 6.0</span></div></div></div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--vio)">● YouTube / Reddit</span></div>
+          <div class="body"><span class="d2">scan#421</span> gap <span class="v">faceless niche</span>
+AI-voiced doc channel
+<span class="g">PLAY</span> channel-in-a-box svc
+<span class="c">asset</span> 1 pilot video built
+<span class="y">GATE</span> publish? → awaiting
+<span class="d2">fit 0.83 · effort MED · $/eff 5.2</span></div></div></div>
+      </div>
+      <h3 class="sec">All channels · every social + local + marketplaces</h3>
+      <div class="grid g3">
+        <div class="card"><div class="ck"><span style="color:var(--mag)">● Instagram</span><span class="tag ok">0.88</span></div><div class="note" style="color:var(--text)">carousel lead-gen for coaches · $900/mo</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#431</span><span class="grow"></span><span class="tag warn">gate</span></div></div>
+        <div class="card"><div class="ck"><span style="color:var(--cyan)">● Facebook</span><span class="tag ok">0.72</span></div><div class="note" style="color:var(--text)">local-group offer bot · $250/mo</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#433</span><span class="grow"></span><span class="tag">draft</span></div></div>
+        <div class="card"><div class="ck"><span style="color:var(--amb)">● Pinterest</span><span class="tag ok">0.70</span></div><div class="note" style="color:var(--text)">AI pins → affiliate funnels · $</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#436</span><span class="grow"></span><span class="tag">scouting</span></div></div>
+        <div class="card"><div class="ck"><span style="color:var(--vio)">● Threads</span><span class="tag ok">0.69</span></div><div class="note" style="color:var(--text)">thought-leader ghostwrite · $600/mo</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#438</span><span class="grow"></span><span class="tag">draft</span></div></div>
+        <div class="card"><div class="ck"><span style="color:var(--amb)">● Snapchat</span><span class="tag ok">0.61</span></div><div class="note" style="color:var(--text)">AR filter promo service · $</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#440</span><span class="grow"></span><span class="tag">scouting</span></div></div>
+        <div class="card"><div class="ck"><span style="color:var(--vio)">● Twitch</span><span class="tag ok">0.66</span></div><div class="note" style="color:var(--text)">stream-clip repurposing · $400/mo</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#442</span><span class="grow"></span><span class="tag">draft</span></div></div>
+        <div class="card"><div class="ck"><span style="color:var(--cyan)">● Google Maps / Local</span><span class="tag ok">0.81</span></div><div class="note" style="color:var(--text)">AI receptionist for local biz · $300/mo</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#444</span><span class="grow"></span><span class="tag warn">gate</span></div></div>
+        <div class="card"><div class="ck"><span style="color:var(--mag)">● Etsy / Gumroad</span><span class="tag ok">0.75</span></div><div class="note" style="color:var(--text)">AI listing + SEO optimizer · $49</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#447</span><span class="grow"></span><span class="tag">draft</span></div></div>
+        <div class="card"><div class="ck"><span style="color:var(--acc)">● ProductHunt / HN</span><span class="tag ok">0.77</span></div><div class="note" style="color:var(--text)">launch-day RAG bot · $99/mo</div><div class="row tight" style="margin-top:7px"><span class="mono mini">scan#449</span><span class="grow"></span><span class="tag">scouting</span></div></div>
+      </div>
+      <h3 class="sec">Scanner config</h3>
+      <div class="grid g4">
+        <div class="card"><div class="ck">sources</div><div class="dotlist"><span>TikTok Creative CDN</span><span>X / Nitter firehose</span><span>Reddit subs ×14</span><span>YouTube trending API</span><span>ProductHunt / HN</span></div></div>
+        <div class="card"><div class="ck">play filter</div>
+          <div class="ctl" style="margin:7px 0"><span style="width:70px">min $/eff</span><input class="slider" type="range" value="50"><span class="mono">5.0</span></div>
+          <div class="ctl" style="margin:7px 0"><span style="width:70px">min fit</span><input class="slider" type="range" value="75"><span class="mono">0.75</span></div>
+          <div class="row tight"><span class="grow">reject listicles</span><span class="toggle on"><span class="d"></span>on</span></div>
+        </div>
+        <div class="card"><div class="ck">cadence</div>
+          <div class="row tight"><span class="grow">scan every</span><span class="mono">15 min</span></div>
+          <div class="row tight"><span class="grow">LLM rerank</span><span class="mono">hourly</span></div>
+          <div class="row tight"><span class="grow">dedupe window</span><span class="mono">7 days</span></div>
+        </div>
+        <div class="card pad0"><div class="ck" style="padding:13px 13px 0">scoring brain<span class="r"><span id="brainMini_active">0</span> active · <span id="brainMini_fires">0</span> fires</span></div>
+          <canvas id="brainMini" height="150"></canvas>
+          <div class="note" style="padding:0 13px 12px">Hebbian links a new play to past winners; Q-table reweights sources by realized revenue. The live cascade <i>is</i> the scorer firing.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px"><div class="ck">core logic · discover(signal)</div>
+        <div class="term" style="border:0"><div class="body"><span class="v">async def</span> discover(sig):
+  <span class="v">if</span> is_listicle(sig) <span class="v">or</span> seen(sig): <span class="v">return</span>
+  play = llm.extract_play(sig)          <span class="c"># offer + buyer + delivery</span>
+  play.fit = graph.recall_fit(play)     <span class="c"># Hebbian vs past wins</span>
+  play.score = play.fit * play.dollars / estimate_effort(play)
+  <span class="v">if</span> play.score &gt;= THRESH:
+    <span class="v">await</span> forge.build_assets(play)       <span class="c"># copy / video / product</span>
+    <span class="v">await</span> gate(play, channel=llm.pick_gateway(play))</div></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="mo_plays">
+      <div class="head"><h1>Play Queue</h1><p>Ranked by realized $/effort. Click a play to open its full brief — ICP, offer, funnel, projected economics, and the assets already built.</p></div>
+      <div class="card">
+        <div class="ck">ranked plays<span class="r">click a row for the brief</span></div>
+        <table id="playTable">
+          <thead><tr><th>#</th><th>play</th><th>channel</th><th class="n">fit</th><th class="n">effort</th><th class="n">$/mo</th><th>state</th></tr></thead>
+          <tbody>
+            <tr class="clickable" data-play="ugc"><td class="n">1</td><td>AI UGC ads for DTC — retainer</td><td><span class="tag mg">TikTok</span></td><td class="n">0.91</td><td class="n">LOW</td><td class="n up">$1.5k</td><td><span class="tag warn">gate</span></td></tr>
+            <tr class="clickable" data-play="triage"><td class="n">2</td><td>Inbox-triage DFY for SMBs</td><td><span class="tag cy">LinkedIn</span></td><td class="n">0.87</td><td class="n">MED</td><td class="n up">$600×N</td><td><span class="tag warn">gate</span></td></tr>
+            <tr class="clickable" data-play="channel"><td class="n">3</td><td>Faceless channel-in-a-box</td><td><span class="tag vi">YouTube</span></td><td class="n">0.83</td><td class="n">MED</td><td class="n">$2k setup</td><td><span class="tag">draft</span></td></tr>
+            <tr class="clickable" data-play="recept"><td class="n">4</td><td>Local-biz AI phone receptionist</td><td><span class="tag">GMaps</span></td><td class="n">0.79</td><td class="n">MED</td><td class="n">$300/mo</td><td><span class="tag">draft</span></td></tr>
+            <tr class="clickable" data-play="rag"><td class="n">5</td><td>Niche RAG chatbot licensing</td><td><span class="tag cy">X</span></td><td class="n">0.74</td><td class="n">LOW</td><td class="n">$99/mo</td><td><span class="tag">scouting</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" data-v="mo_pipe">
+      <div class="head"><h1>Pipeline &amp; Outreach</h1><p>CRM-lite. The engine finds its own clients, drafts the sequence, and every send waits on you. Attribution flows back to the Q-table so winning sources get hunted harder.</p></div>
+      <div class="grid g5" style="margin-bottom:12px">
+        <div class="card"><div class="ck">scouted</div><div class="big sm">214</div></div>
+        <div class="card"><div class="ck">drafted</div><div class="big sm">48</div></div>
+        <div class="card"><div class="ck">sent (approved)</div><div class="big sm">31</div></div>
+        <div class="card"><div class="ck">replied</div><div class="big sm up">9</div></div>
+        <div class="card"><div class="ck">won</div><div class="big sm up">3</div></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="ck">prospects<span class="r">auto-sourced</span></div>
+          <div class="row"><span class="grow nowrap">Northwind Supplements</span><span class="tag mg">DTC</span><span class="tag warn">draft 1/3</span></div>
+          <div class="row"><span class="grow nowrap">Acme Home Services</span><span class="tag">local</span><span class="tag ok">replied</span></div>
+          <div class="row"><span class="grow nowrap">Lumen Skincare</span><span class="tag mg">DTC</span><span class="tag ok">won $1.5k</span></div>
+          <div class="row"><span class="grow nowrap">BrightDesk SaaS</span><span class="tag cy">SMB</span><span class="tag">sent</span></div>
+        </div>
+        <div class="card"><div class="ck">outreach sequence<span class="r">Northwind · step 1/3</span></div>
+          <div class="term" style="border:0"><div class="body"><span class="d2">to</span> founder@northwind.co
+<span class="d2">subj</span> 20 UGC ads/mo, you approve each
+<span class="c">Hi {first} — your TikTok ads are</span>
+<span class="c">running but you post 2/wk. We ship</span>
+<span class="c">20 AI-made UGC variants monthly, you</span>
+<span class="c">approve, we only bill on what runs…</span>
+<span class="y">GATE</span> awaiting approval → <span class="g">Telegram</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="mo_assets">
+      <div class="head"><h1>Asset Forge</h1><p>The engine doesn't just suggest — it builds the thing. Copy, hooks, scripts, voiceover, thumbnails, landing pages, the product template. Media gen is first-class (this is where Broadcaster's audio/video skills plug in).</p></div>
+      <div class="grid g4" style="margin-bottom:12px">
+        <div class="card"><div class="ck">copy</div><div class="dotlist"><span>hook variants ×12</span><span>ad scripts</span><span>cold emails</span><span>landing page</span></div></div>
+        <div class="card"><div class="ck">video / audio</div><div class="dotlist"><span>UGC clips (vidIQ)</span><span>AI voiceover</span><span>b-roll gen</span><span>thumbnails</span></div></div>
+        <div class="card"><div class="ck">product</div><div class="dotlist"><span>n8n + MCP template</span><span>RAG bot</span><span>receptionist flow</span></div></div>
+        <div class="card"><div class="ck">funnel</div><div class="dotlist"><span>link-in-bio</span><span>Stripe checkout</span><span>booking page</span></div></div>
+      </div>
+      <div class="card"><div class="ck">build queue</div>
+        <div class="row"><span class="tag mg">VIDEO</span><span class="grow">UGC variant 7/12 — "before/after"</span><div class="bar grow" style="max-width:160px"><i style="width:60%"></i></div><span class="mono">rendering</span></div>
+        <div class="row"><span class="tag vi">VOICE</span><span class="grow">VO for pilot doc — natural EN-US</span><div class="bar grow" style="max-width:160px"><i style="width:90%"></i></div><span class="mono">90%</span></div>
+        <div class="row"><span class="tag cy">PAGE</span><span class="grow">landing: triage-DFY</span><div class="bar grow" style="max-width:160px"><i style="width:100%"></i></div><span class="tag ok">ready</span></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="mo_ctrl">
+      <div class="head"><h1>Controls &amp; Gates</h1><p>The safety spine. Nothing leaves the building without a tap. Perms, spend caps, and the gateway pool are set in ENV; the LLM only <i>chooses among</i> what you allowed.</p></div>
+      <div class="grid g2" style="margin-bottom:12px">
+        <div class="card"><div class="ck">approval inbox<span class="r warn">8 waiting</span></div>
+          <div class="row"><span class="tag mg">EMAIL</span><span class="grow">Cold outreach → 6 DTC founders</span><span class="tag ok">approve</span><span class="tag bad">edit</span></div>
+          <div class="row"><span class="tag cy">POST</span><span class="grow">TikTok CTA + link-in-bio</span><span class="tag ok">approve</span><span class="tag bad">hold</span></div>
+          <div class="row"><span class="tag vi">PUBLISH</span><span class="grow">YouTube pilot (faceless)</span><span class="tag ok">approve</span><span class="tag bad">hold</span></div>
+          <div class="row"><span class="tag warn">SPEND</span><span class="grow">$40 product sample order</span><span class="tag ok">approve</span><span class="tag bad">deny</span></div>
+          <div class="row"><span class="tag warn">SPEND</span><span class="grow">$12 domain + mailbox</span><span class="tag ok">approve</span><span class="tag bad">deny</span></div>
+        </div>
+        <div class="card"><div class="ck">CTA gateway<span class="r">LLM-decided per play</span></div>
+          <div class="row"><span class="tag cy">Telegram</span><span class="grow mut">@odyssey_cta_bot</span><span class="tag ok">live</span></div>
+          <div class="row"><span class="tag vi">Discord</span><span class="grow mut">#approvals</span><span class="tag ok">live</span></div>
+          <div class="row"><span class="grow mut">Slack / email fallback</span><span class="tag">env</span></div>
+          <div class="note" style="margin-top:8px">Gateway pool from <span class="kbd">CTA_GATEWAYS</span>; the agent routes each approval to the channel that fits the play &amp; urgency.</div>
+        </div>
+      </div>
+      <div class="grid g4">
+        <div class="card"><div class="ck">autonomy</div>
+          <div class="row tight"><span class="grow">mode</span><span class="tag ok">pause-only</span></div>
+          <div class="row tight"><span class="grow">auto-from-env</span><span class="tag ok">on</span></div>
+          <div class="row tight"><span class="grow">hard-stop</span><span class="tag bad">armed</span></div>
+        </div>
+        <div class="card"><div class="ck">tester peer</div>
+          <div class="row tight"><span class="grow">:9914</span><span class="tag ok">green</span></div>
+          <div class="row tight"><span class="grow">last run</span><span class="mono">42/42</span></div>
+          <div class="row tight"><span class="grow">builds/improves</span><span class="tag ok">on</span></div>
+        </div>
+        <div class="card"><div class="ck">MCP-of-MCP</div>
+          <div class="row tight"><span class="grow">tools mounted</span><span class="mono">31</span></div>
+          <div class="row tight"><span class="grow">web·social·email·pay</span><span class="tag ok">perms env</span></div>
+          <div class="row tight"><span class="grow">deny by default</span><span class="tag ok">on</span></div>
+        </div>
+        <div class="card"><div class="ck">guardrails</div>
+          <div class="row tight"><span class="grow">daily send cap</span><span class="mono">40</span></div>
+          <div class="row tight"><span class="grow">spend cap</span><span class="mono">$50/day</span></div>
+          <div class="row tight"><span class="grow">no-send domains</span><span class="mono">12</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================== GRAPH API -->
+  <section class="pane" data-p="api">
+    <div class="subnav">
+      <button data-v="a_over" class="on">Overview</button>
+      <button data-v="a_brain">Live 4D Brain</button>
+      <button data-v="a_tenant">Tenancy</button>
+      <button data-v="a_rummage">Remote Rummage</button>
+      <button data-v="a_play">Query Playground</button>
+    </div>
+
+    <div class="view on" data-v="a_over">
+      <div class="head"><h1>Graph-Intelligence API</h1><p>Your research graph, hosted, with its <b>own</b> graph-aware router. Feeds in — trading, cameras, corpora. Answers and live activation out.</p></div>
+      <div class="grid g4" style="margin-bottom:12px">
+        <div class="card glow"><div class="ck">active tenants</div><div class="big">14</div><div class="sub">isolated graph each</div></div>
+        <div class="card"><div class="ck">live sessions</div><div class="big" id="a_sess">9</div><div class="sub">trading·camera·research</div></div>
+        <div class="card"><div class="ck">graph ops/s</div><div class="big" id="a_ops">1.2k</div><div class="sub">traverse·recall·rerank</div></div>
+        <div class="card"><div class="ck">remote links</div><div class="big">3</div><div class="sub">rummage open</div></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="ck">endpoints</div>
+          <div class="row"><span class="tag ok">POST</span><span class="mono grow">/v1/graph/ingest</span><span class="mut">stream any feed</span></div>
+          <div class="row"><span class="tag cy">POST</span><span class="mono grow">/v1/graph/query</span><span class="mut">traverse + answer</span></div>
+          <div class="row"><span class="tag cy">WS</span><span class="mono grow">/v1/graph/watch</span><span class="mut">live activation push</span></div>
+          <div class="row"><span class="tag vi">POST</span><span class="mono grow">/v1/remote/attach</span><span class="mut">rummage a backend</span></div>
+          <div class="row"><span class="tag warn">GET</span><span class="mono grow">/v1/route/health</span><span class="mut">own router</span></div>
+        </div>
+        <div class="card"><div class="ck">live sessions</div>
+          <div class="row"><span class="tag ok">▶</span><span class="grow nowrap">northwind — live trading signals</span><span class="mono">214ms</span></div>
+          <div class="row"><span class="tag cy">▶</span><span class="grow nowrap">acme — camera anomaly watch</span><span class="mono">31fps</span></div>
+          <div class="row"><span class="tag vi">▶</span><span class="grow nowrap">lab7 — research RAPTOR corpus</span><span class="mono">4 lvl</span></div>
+          <div class="row"><span class="tag warn">⟳</span><span class="grow nowrap">acme — remote fix on staging</span><span class="tag warn">needs OK</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px"><div class="ck">why its own router</div><div class="note">Graph queries fan out — embed, traverse, rerank, summarize, sometimes a VLM on a frame. That needs a <b>graph-aware</b> cascade (cheap embed local, frontier only for final synthesis), distinct from chat routing, so the research API never fights customer chat for keys.</div></div>
+    </div>
+
+    <div class="view" data-v="a_brain">
+      <div class="head"><h1>Live 4D Brain</h1><p>The real thing — a 4-vector graph tumbling through its w-axis while activation fires continuously as a live process. This is the <span class="mono">activation[]</span> stream the query endpoint returns, rendered. Same engine as the Graph Atlas film.</p></div>
+      <div class="grid g32">
+        <div class="card glow pad0">
+          <div class="ck" style="padding:13px 13px 0">connectome · live cascade<span class="r"><span id="brainBig_active">0</span> nodes active · <span id="brainBig_fires">0</span> fires</span></div>
+          <div class="ctl" style="padding:8px 13px 0;gap:9px;flex-wrap:wrap">
+            <span class="seg" id="brainMode"><button data-m="4d" class="on">4D</button><button data-m="3d">3D</button></span>
+            <span class="toggle on" id="brainCube"><span class="d"></span>cube</span>
+            <span class="toggle on" id="brainTess"><span class="d"></span>tesseract</span>
+            <span class="toggle on" id="brainSpin"><span class="d"></span>auto-spin</span>
+            <span class="mini">drag orbit · wheel zoom · dbl-click reset</span>
+          </div>
+          <canvas id="brainBig" height="400"></canvas>
+          <div class="legend" style="padding:0 13px 13px"><span><i style="background:var(--acc)"></i>activation wave</span><span><i style="background:#9fb4cf"></i>3D cube frame</span><span><i style="background:var(--acc2)"></i>4D tesseract</span></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:12px"><div class="ck">what's firing</div>
+            <div class="row tight"><span class="tag ok">▶</span><span class="grow">query → seed → 4-hop BFS</span></div>
+            <div class="row tight"><span class="tag cy">◈</span><span class="grow">Hebbian edges strengthen on co-fire</span></div>
+            <div class="row tight"><span class="tag vi">∿</span><span class="grow">RAPTOR summaries pulse at level breaks</span></div>
+            <div class="row tight"><span class="tag warn">Q</span><span class="grow">reward reshapes next recall</span></div>
+          </div>
+          <div class="card" style="margin-bottom:12px"><div class="ck">graph stats</div>
+            <div class="row tight"><span class="grow">nodes</span><span class="mono">420 shown / 1.2M</span></div>
+            <div class="row tight"><span class="grow">dims</span><span class="mono">4 (x y z w)</span></div>
+            <div class="row tight"><span class="grow">rotation</span><span class="mono">6 planes</span></div>
+            <div class="row tight"><span class="grow">cascade</span><span class="mono">continuous</span></div>
+          </div>
+          <div class="card"><div class="ck">drives</div><div class="note">This same canvas embeds in any tenant dashboard over a WebSocket — a trading desk watches signals propagate, a camera tenant watches an anomaly light up its subgraph, in real time.</div></div>
+          <div class="card pad0" style="margin-top:12px"><div class="ck" style="padding:13px 13px 0">core logic · traverse(q)</div>
+            <div class="term" style="border:0"><div class="body"><span class="v">def</span> traverse(q, k=24, hops=3):
+  seeds = ann_search(embed(q), k)       <span class="c"># spatial recall</span>
+  frontier, sub = seeds, set(seeds)
+  <span class="v">for</span> h <span class="v">in</span> range(hops):
+    nxt = []
+    <span class="v">for</span> n <span class="v">in</span> frontier:
+      <span class="v">for</span> m <span class="v">in</span> graph.neighbors(n):
+        act[m] += W[n,m] * decay**h     <span class="c"># Hebbian spread</span>
+        <span class="v">if</span> m <span class="v">not in</span> sub: sub.add(m); nxt.append(m)
+    frontier = top(nxt, by=act)          <span class="c"># beam</span>
+  <span class="v">return</span> synth(raptor_rollup(sub), q)    <span class="c"># 4D → answer</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="view" data-v="a_tenant">
+      <div class="head"><h1>Tenancy</h1><p>Every customer gets an isolated graph, quota, and billing line. Connectors define what a tenant may stream in.</p></div>
+      <div class="card" style="margin-bottom:12px"><div class="ck">tenants</div>
+        <table><thead><tr><th>tenant</th><th>plan</th><th class="n">nodes</th><th class="n">ops/s</th><th class="n">$/mo</th><th>isolation</th></tr></thead><tbody>
+          <tr><td>northwind</td><td><span class="tag vi">trading</span></td><td class="n">1.2M</td><td class="n">410</td><td class="n">$890</td><td><span class="tag ok">vpc</span></td></tr>
+          <tr><td>acme</td><td><span class="tag cy">vision</span></td><td class="n">640k</td><td class="n">280</td><td class="n">$1.4k</td><td><span class="tag ok">vpc</span></td></tr>
+          <tr><td>lab7</td><td><span class="tag">research</span></td><td class="n">3.1M</td><td class="n">120</td><td class="n">$300</td><td><span class="tag ok">shared</span></td></tr>
+        </tbody></table>
+      </div>
+      <div class="grid g3">
+        <div class="card"><div class="ck">connectors</div><div class="dotlist"><span>WebSocket feed</span><span>S3 / GCS corpus</span><span>RTSP camera</span><span>Postgres CDC</span><span>Kafka topic</span></div></div>
+        <div class="card"><div class="ck">quotas</div><div class="row tight"><span class="grow">ingest</span><span class="mono">50k ev/s</span></div><div class="row tight"><span class="grow">query</span><span class="mono">500 rpm</span></div><div class="row tight"><span class="grow">graph size</span><span class="mono">5M nodes</span></div></div>
+        <div class="card"><div class="ck">billing / op</div><div class="row tight"><span class="grow">ingest</span><span class="mono">$0.02/1k</span></div><div class="row tight"><span class="grow">query</span><span class="mono">$0.004</span></div><div class="row tight"><span class="grow">rummage</span><span class="mono">$2/hr</span></div></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="a_rummage">
+      <div class="head"><h1>Remote Rummage</h1><p>The Teleport-style capability — the graph attaches to a customer backend and fixes things. <b>Every action is gated, scoped, time-boxed and logged.</b> This is the highest-trust surface; it gets the strictest controls.</p></div>
+      <div class="grid g32">
+        <div class="card"><div class="ck">session · acme/staging</div>
+          <div class="row tight"><span class="grow">scope</span><span class="mono">read + patch · staging only</span></div>
+          <div class="row tight"><span class="grow">ttl</span><span class="mono">38 min left</span></div>
+          <div class="row tight"><span class="grow">approver</span><span class="mono">acme-oncall</span></div>
+          <div class="row tight"><span class="grow">egress</span><span class="tag ok">pinned allowlist</span></div>
+          <div class="row tight"><span class="grow">kill-switch</span><span class="tag bad">armed</span></div>
+          <h3 class="sec" style="margin:14px 0 8px">gated action log</h3>
+          <div class="row tight"><span class="tag ok">✓</span><span class="grow">read logs /var/app</span><span class="mono">auto</span></div>
+          <div class="row tight"><span class="tag ok">✓</span><span class="grow">diagnose: N+1 query</span><span class="mono">auto</span></div>
+          <div class="row tight"><span class="tag warn">⏸</span><span class="grow">patch: add index mig_014</span><span class="tag warn">needs OK</span></div>
+          <div class="row tight"><span class="tag">○</span><span class="grow">restart worker</span><span class="mut">queued</span></div>
+        </div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">rummage transcript</span></div>
+          <div class="body"><span class="d2">attach</span> tenant=acme env=staging scope=ro+patch
+<span class="c">graph.ingest</span> code+logs+traces → 640k nodes
+<span class="c">query</span> "why is /checkout p99 8s?"
+<span class="g">finding</span> N+1 on orders→items (142 q/req)
+<span class="g">finding</span> missing idx items.order_id
+<span class="y">propose</span> migration mig_014 (add index)
+<span class="y">GATE</span> patch requires acme-oncall OK
+<span class="d2">—— awaiting approval ——</span></div></div></div>
+      </div>
+      <div class="card" style="margin-top:12px"><div class="ck">trust model</div><div class="note">Scoped credential (never the customer's root), pinned egress allowlist, read-first, every mutating action gated to <i>their</i> approver, hard TTL, full transcript they keep. The graph can look and propose freely; it cannot change anything live without their tap.</div></div>
+    </div>
+
+    <div class="view" data-v="a_play">
+      <div class="head"><h1>Query Playground</h1><p>Where a customer tries the API — ask the graph, watch it traverse, see the subgraph that produced the answer.</p></div>
+      <div class="grid g2">
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">POST /v1/graph/query</span></div>
+          <div class="body"><span class="c">{</span>
+  <span class="y">"q"</span>: <span class="g">"which suppliers slipped 2 wks running?"</span>,
+  <span class="y">"mode"</span>: <span class="g">"traverse+answer"</span>,
+  <span class="y">"hops"</span>: 3, <span class="y">"k"</span>: 24
+<span class="c">}</span>
+<span class="d2">——</span>
+<span class="g">answer</span> 3 suppliers: Kestrel, Vale, Orr
+<span class="c">path</span> order→shipment→supplier (δ lead-time)
+<span class="c">subgraph</span> 41 nodes · 6 RAPTOR summaries
+<span class="mono">212ms · local embed + haiku synth</span></div></div></div>
+        <div class="card"><div class="ck">response shape</div>
+          <div class="row tight"><span class="mono grow">answer</span><span class="mut">synthesized text</span></div>
+          <div class="row tight"><span class="mono grow">subgraph[]</span><span class="mut">nodes + edges used</span></div>
+          <div class="row tight"><span class="mono grow">activation[]</span><span class="mut">for live viz / cascade</span></div>
+          <div class="row tight"><span class="mono grow">trace</span><span class="mut">route + cost</span></div>
+          <div class="note" style="margin-top:8px">The <span class="mono">activation[]</span> array is exactly what the Graph Atlas cascade renders — the API can drive the live viz directly.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================== SDK -->
+  <section class="pane" data-p="sdk">
+    <div class="subnav">
+      <button data-v="s_core" class="on">Open-Core Split</button>
+      <button data-v="s_ref">Module Map &amp; API</button>
+      <button data-v="s_compat">Compatibility</button>
+      <button data-v="s_proof">Benchmarks &amp; Quickstart</button>
+    </div>
+
+    <div class="view on" data-v="s_core">
+      <div class="head"><h1>Open-Core Split</h1><p>Ship the mechanisms, keep the graph. The SDK never contains the alpha — only two decorators around a plain vector index. The hosted engine is a closed impl of the same interface.</p></div>
+      <div class="split" style="margin-bottom:12px">
+        <div class="half pub"><div class="ck" style="color:var(--acc2)">◇ public · pip install</div>
+          <div class="row tight"><span class="tag ok">open</span><span class="grow">Hebbian coactivation layer</span></div>
+          <div class="row tight"><span class="tag ok">open</span><span class="grow">Q-table reranker</span></div>
+          <div class="row tight"><span class="tag ok">open</span><span class="grow">FAISS / Chroma backend</span></div>
+          <div class="row tight"><span class="tag ok">open</span><span class="grow">LLM-lib adapters (all)</span></div>
+          <div class="row tight"><span class="tag ok">open</span><span class="grow"><span class="mono">GraphBackend</span> interface</span></div>
+          <div class="note" style="margin-top:8px">Useful + teachable. People get real lift and learn the ideas.</div>
+        </div>
+        <div class="half alpha"><div class="ck lock">🔒 closed · hosted only</div>
+          <div class="row tight"><span class="tag mg">alpha</span><span class="grow">real 4D spatio-temporal graph</span></div>
+          <div class="row tight"><span class="tag mg">alpha</span><span class="grow">RAPTOR hierarchy builder</span></div>
+          <div class="row tight"><span class="tag mg">alpha</span><span class="grow">router cascade policy</span></div>
+          <div class="row tight"><span class="tag mg">alpha</span><span class="grow">osiiso temporal scheduler</span></div>
+          <div class="row tight"><span class="tag mg">alpha</span><span class="grow">production graph weights</span></div>
+          <div class="note lock" style="margin-top:8px">Only reachable as a <span class="mono">GraphBackend</span> impl via API key.</div>
+        </div>
+      </div>
+      <div class="card"><div class="ck">the overlap you flagged</div><div class="note">Providers (OpenRouter, opencode, Ollama) and LLM libs (langchain, dspy…) overlap — langchain can itself route. The SDK keeps two axes: a <span class="kbd">Provider</span> is <i>where</i> inference runs; an <span class="kbd">LLMAdapter</span> is <i>which library</i> you call it through. langchain-as-router is just an adapter pointed at a provider — no double-routing.</div></div>
+    </div>
+
+    <div class="view" data-v="s_ref">
+      <div class="head"><h1>Module Map &amp; API</h1><p>What's in the box, and the surface you'd document.</p></div>
+      <div class="grid g2">
+        <div class="card"><div class="ck">modules</div>
+          <div class="row tight"><span class="mono grow">graphintel.core</span><span class="mut">GraphIntel, Memory</span></div>
+          <div class="row tight"><span class="mono grow">graphintel.layers</span><span class="mut">Hebbian, QRerank</span></div>
+          <div class="row tight"><span class="mono grow">graphintel.backends</span><span class="mut">FAISS, Chroma, <span class="lock">Hosted</span></span></div>
+          <div class="row tight"><span class="mono grow">graphintel.llm</span><span class="mut">adapters</span></div>
+          <div class="row tight"><span class="mono grow">graphintel.eval</span><span class="mut">recall@k harness</span></div>
+        </div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">same surface, swap engine</span></div>
+          <div class="body"><span class="c">from</span> graphintel <span class="c">import</span> GraphIntel, Hebbian, QRerank
+<span class="c">from</span> graphintel.backends <span class="c">import</span> ChromaBackend
+
+gi = GraphIntel(
+  backend=<span class="y">ChromaBackend</span>(),   <span class="d2"># open</span>
+  layers=[<span class="g">Hebbian</span>(), <span class="g">QRerank</span>()],
+  llm=<span class="y">"anthropic"</span>,          <span class="d2"># or dspy/langchain…</span>
+)
+gi.add(docs); gi.observe(reward=1.0)
+hits = gi.recall(<span class="g">"query"</span>, k=8)
+<span class="d2"># ── alpha: identical call ──</span>
+gi = GraphIntel.<span class="m">hosted</span>(api_key=KEY)</div></div></div>
+      </div>
+      <div class="card" style="margin-top:12px"><div class="ck">core logic · the two open mechanisms</div>
+        <div class="grid g2" style="gap:10px">
+          <div class="note"><b style="color:var(--acc2)">Hebbian</b> — co-retrieved pairs strengthen each recall:<br><span class="kbd">W[i,j] += η·(aᵢ·aⱼ) − λ·W[i,j]</span><br>bounded decay keeps it stable; hot links bias future recall.</div>
+          <div class="note"><b style="color:var(--acc2)">Q-rerank</b> — candidates reranked by learned value:<br><span class="kbd">Q[s,a] += α·(r + γ·maxQ′ − Q[s,a])</span><br>reward r from downstream use; ε-greedy keeps exploring.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="s_compat">
+      <div class="head"><h1>Compatibility</h1><p>LLM libraries × providers. The whole point: whatever you already use, it slots in.</p></div>
+      <div class="card"><div class="ck">adapter matrix</div>
+        <table><thead><tr><th>LLM lib</th><th>chat</th><th>embed</th><th>tools</th><th>stream</th><th>via providers</th></tr></thead><tbody>
+          <tr><td>anthropic</td><td><span class="tag ok">✓</span></td><td><span class="mut">—</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td class="mono">direct, OR, bedrock</td></tr>
+          <tr><td>openai</td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td class="mono">direct, OR, azure</td></tr>
+          <tr><td>groq</td><td><span class="tag ok">✓</span></td><td><span class="mut">—</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td class="mono">direct</td></tr>
+          <tr><td>langchain</td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td class="mono">any (as adapter)</td></tr>
+          <tr><td>langgraph</td><td><span class="tag ok">✓</span></td><td><span class="mut">—</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td class="mono">any</td></tr>
+          <tr><td>dspy</td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td><span class="tag warn">partial</span></td><td class="mono">any</td></tr>
+          <tr><td>pydantic-ai</td><td><span class="tag ok">✓</span></td><td><span class="mut">—</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td class="mono">any</td></tr>
+          <tr><td>magentic</td><td><span class="tag ok">✓</span></td><td><span class="mut">—</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td class="mono">openai, anthropic</td></tr>
+          <tr><td>ollama / vLLM</td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td><span class="tag warn">model-dep</span></td><td><span class="tag ok">✓</span></td><td class="mono">local</td></tr>
+          <tr><td>openrouter</td><td><span class="tag ok">✓</span></td><td><span class="mut">—</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td class="mono">provider, not lib</td></tr>
+        </tbody></table>
+        <div class="note" style="margin-top:9px">Last row makes the two-axis idea concrete: OpenRouter is a <b>provider</b> you reach <i>through</i> an adapter (e.g. the openai lib), never a lib itself.</div>
+      </div>
+    </div>
+
+    <div class="view" data-v="s_proof">
+      <div class="head"><h1>Benchmarks &amp; Quickstart</h1><p>What the open layers buy you over a bare vector store — and the 60-second start.</p></div>
+      <div class="grid g2" style="margin-bottom:12px">
+        <div class="card"><div class="ck">recall@10 · internal corpus</div>
+          <div class="row"><span style="width:160px">bare Chroma</span><div class="bar grow"><i style="width:58%"></i></div><span class="mono">0.58</span></div>
+          <div class="row"><span style="width:160px">+ Hebbian</span><div class="bar grow"><i style="width:69%"></i></div><span class="mono">0.69</span></div>
+          <div class="row"><span style="width:160px">+ Q-rerank</span><div class="bar grow"><i style="width:77%"></i></div><span class="mono up">0.77</span></div>
+          <div class="row"><span style="width:160px"><span class="lock">hosted 4D (alpha)</span></span><div class="bar grow"><i style="width:91%;background:linear-gradient(90deg,#8f2a63,var(--mag))"></i></div><span class="mono">0.91</span></div>
+          <div class="note" style="margin-top:8px">Open layers close ~half the gap to the alpha — real value, with headroom that sells the hosted engine.</div>
+        </div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">60-second start</span></div>
+          <div class="body"><span class="g">pip install</span> graphintel[chroma,anthropic]
+
+<span class="c">from</span> graphintel <span class="c">import</span> GraphIntel
+gi = GraphIntel.default()        <span class="d2"># chroma + both layers</span>
+gi.add_dir(<span class="g">"./docs"</span>)
+print(gi.ask(<span class="g">"summarize the refund policy"</span>))
+<span class="d2"># swap to hosted alpha later with one line</span></div></div></div>
+      </div>
+      <div class="card"><div class="ck">licensing</div><div class="note">Open core under Apache-2.0 (adoption, trust, contributions). Hosted engine + weights closed, reached only via API key. The <span class="mono">Hosted</span> backend stub in the package is a thin client — zero graph logic ships.</div></div>
+    </div>
+  </section>
+
+  <!-- ==================================================================== INSTITUTE HEALTH -->
+  <section class="pane" data-p="health">
+    <div class="subnav">
+      <button data-v="h_over" class="on">Overview</button>
+      <button data-v="h_proj">Projects</button>
+      <button data-v="h_files">Files &amp; Modules</button>
+      <button data-v="h_stack">Stacks</button>
+      <button data-v="h_mon">Monitors &amp; Incidents</button>
+      <button data-v="h_graph">Health Graph</button>
+    </div>
+
+    <div class="view on" data-v="h_over">
+      <div class="head"><h1>Institute Health</h1><p>A service the Institute runs on itself and the whole empire — deep, continuous health-checks across <b>projects → files → stacks</b>. It detects rot early, <b>auto-recovers what it safely can</b>, and hands off the rest as gated fixes, so you stop putting out fires. Revenue services (Broadcaster/Operator tiers, lounge ops) are first-class monitored subjects.</p></div>
+      <div class="grid g5" style="margin-bottom:12px">
+        <div class="card glow"><div class="ck">services up</div><div class="big">18<small style="font-size:13px">/21</small></div><div class="sub up">3 degraded, 0 down</div></div>
+        <div class="card"><div class="ck">open incidents</div><div class="big">2</div><div class="sub warn">both auto-recovering</div></div>
+        <div class="card"><div class="ck">auto-recovered 24h</div><div class="big">37</div><div class="sub up">0 reached you</div></div>
+        <div class="card"><div class="ck">health score</div><div class="big">48</div><div class="sub">measured · coverage 72%</div></div>
+        <div class="card"><div class="ck">MTTR</div><div class="big sm">3m12s</div><div class="sub up">↓ from 14m</div></div>
+      </div>
+      <div class="grid g32">
+        <div class="card"><div class="ck">right now<span class="r">status · measured or UNMEASURED</span></div>
+          <div class="row tight"><span class="grow">codegen-v3</span><span class="tag ok">healthy 61</span></div>
+          <div class="row tight"><span class="grow">fleet router</span><span class="tag ok">healthy 58</span></div>
+          <div class="row tight"><span class="grow">tester</span><span class="tag ok">healthy 55</span></div>
+          <div class="row tight"><span class="grow">broadcaster / operator</span><span class="tag warn">degraded · media-gen 3%</span></div>
+          <div class="row tight"><span class="grow">appbuilder / kiln</span><span class="tag warn">degraded · loop idle</span></div>
+          <div class="row tight"><span class="grow">graph API</span><span class="tag">UNMEASURED</span></div>
+          <div class="row tight"><span class="grow">money engine</span><span class="tag">UNMEASURED</span></div>
+          <div class="row tight"><span class="grow">lounge ops (deliveries/events)</span><span class="tag vi">planned</span></div>
+        </div>
+        <div class="card pad0"><div class="term"><div class="bar2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--amb)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">auto-recovery stream</span></div>
+          <div class="body"><span class="d2">05:41:02</span> <span class="g">HEAL</span> router: gemini 429 → failover or:free
+<span class="d2">05:39:50</span> <span class="g">HEAL</span> tester: restarted crashed worker
+<span class="d2">05:38:11</span> <span class="c">HEAL</span> codegen: cleared full /tmp (disk 94%→41%)
+<span class="d2">05:36:20</span> <span class="y">PROPOSE</span> broadcaster: media review gate patch · dry-run
+<span class="d2">05:33:04</span> <span class="g">HEAL</span> router: re-warmed cold vLLM model
+<span class="d2">05:30:48</span> <span class="r">PAGE</span> graphapi: no provider key · needs human</div></div></div>
+      </div>
+      <div class="card pad0" style="margin-top:12px"><div class="ck" style="padding:13px 13px 0">self-improvement · measured baseline<span class="r">steps only on a proven eval delta</span></div>
+        <canvas id="selfImproveHealth" height="120"></canvas>
+        <div class="legend" style="padding:0 13px 13px"><span><i style="background:var(--acc)"></i>baseline (measured)</span><span><i style="background:var(--acc2)"></i>live per-task</span><span class="mini" style="margin-left:auto">score(self-RAG on)−off · gated self-rewrites</span></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="h_proj">
+      <div class="head"><h1>Project Health</h1><p>Per-project deep check. Each dimension is probed live; a claimed status is never written.</p></div>
+      <div class="card"><div class="ck">projects × health dimensions</div>
+        <table><thead><tr><th class="l">project</th><th>build</th><th>tests</th><th>deps</th><th>security</th><th>uptime</th><th>drift</th><th>perf</th><th class="n">health</th></tr></thead><tbody>
+          <tr><td class="l">codegen-v3</td><td><span class="tag ok">ok</span></td><td><span class="tag ok">92%</span></td><td><span class="tag ok">ok</span></td><td><span class="tag ok">ok</span></td><td><span class="tag ok">99.8</span></td><td><span class="tag warn">2</span></td><td><span class="tag ok">ok</span></td><td class="n">61</td></tr>
+          <tr><td class="l">fleet router</td><td><span class="tag ok">ok</span></td><td><span class="tag ok">88%</span></td><td><span class="tag warn">1 CVE</span></td><td><span class="tag ok">ok</span></td><td><span class="tag ok">99.9</span></td><td><span class="tag ok">0</span></td><td><span class="tag ok">ok</span></td><td class="n">58</td></tr>
+          <tr><td class="l">tester</td><td><span class="tag ok">ok</span></td><td><span class="tag ok">95%</span></td><td><span class="tag ok">ok</span></td><td><span class="tag ok">ok</span></td><td><span class="tag ok">99.5</span></td><td><span class="tag ok">1</span></td><td><span class="tag warn">slow</span></td><td class="n">55</td></tr>
+          <tr><td class="l">broadcaster</td><td><span class="tag ok">ok</span></td><td><span class="tag bad">41%</span></td><td><span class="tag warn">3 old</span></td><td><span class="tag ok">ok</span></td><td><span class="tag ok">98.2</span></td><td><span class="tag bad">7</span></td><td><span class="tag warn">slow</span></td><td class="n">24</td></tr>
+          <tr><td class="l">appbuilder</td><td><span class="tag warn">flaky</span></td><td><span class="tag bad">30%</span></td><td><span class="tag ok">ok</span></td><td><span class="tag warn">2</span></td><td><span class="tag warn">94</span></td><td><span class="tag bad">9</span></td><td><span class="tag ok">ok</span></td><td class="n">30</td></tr>
+          <tr><td class="l">graph API</td><td><span class="tag">—</span></td><td><span class="tag">—</span></td><td><span class="tag">—</span></td><td><span class="tag">—</span></td><td><span class="tag">—</span></td><td><span class="tag">—</span></td><td><span class="tag">—</span></td><td class="n">n/a</td></tr>
+        </tbody></table>
+        <div class="note" style="margin-top:9px">Blank row = UNMEASURED (no probe reaches it yet) — shown as a gap, never filled with a hopeful number.</div>
+      </div>
+    </div>
+
+    <div class="view" data-v="h_files">
+      <div class="head"><h1>Files &amp; Modules</h1><p>File-level rot: churn hotspots, complexity, coverage, LOC trend, and "last-touched vs last-tested" drift. This is where silent decay hides.</p></div>
+      <div class="grid g32">
+        <div class="card"><div class="ck">hotspots<span class="r">high churn × low coverage</span></div>
+          <table><thead><tr><th class="l">file</th><th class="n">churn</th><th class="n">cx</th><th class="n">cov</th><th class="n">loc</th><th>flag</th></tr></thead><tbody>
+            <tr><td class="l mono">broadcaster/media_pipeline.py</td><td class="n">high</td><td class="n">38</td><td class="n">0%</td><td class="n">612</td><td><span class="tag bad">rot</span></td></tr>
+            <tr><td class="l mono">app/router.py</td><td class="n">high</td><td class="n">21</td><td class="n">74%</td><td class="n">340</td><td><span class="tag warn">watch</span></td></tr>
+            <tr><td class="l mono">appbuilder/engine.py</td><td class="n">med</td><td class="n">26</td><td class="n">30%</td><td class="n">455</td><td><span class="tag warn">watch</span></td></tr>
+            <tr><td class="l mono">app/legacy.py</td><td class="n">low</td><td class="n">44</td><td class="n">12%</td><td class="n">980</td><td><span class="tag bad">dead?</span></td></tr>
+            <tr><td class="l mono">app/graph/core.py</td><td class="n">med</td><td class="n">18</td><td class="n">81%</td><td class="n">270</td><td><span class="tag ok">ok</span></td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="ck">rot callouts</div>
+          <div class="row"><span class="tag bad">0% cov</span><span class="grow">media_pipeline.py — the 3% quality lives here, untested</span></div>
+          <div class="row"><span class="tag bad">dead?</span><span class="grow">legacy.py — 980 LOC, last-touched 94d, 12% cov</span></div>
+          <div class="row"><span class="tag warn">drift</span><span class="grow">7 files changed since last test run (broadcaster)</span></div>
+          <div class="row"><span class="tag warn">dup</span><span class="grow">router cascade logic duplicated in 3 apps</span></div>
+          <div class="note" style="margin-top:8px">Each callout is a dispatchable gated fix — "add tests to X", "delete dead Y", "dedupe into the spine".</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="h_stack">
+      <div class="head"><h1>Stacks</h1><p>Cross-cutting checks that no single file sees — the things that take a whole system down at 3am.</p></div>
+      <div class="grid g3">
+        <div class="card"><div class="ck">dependencies &amp; CVEs</div><div class="row tight"><span class="grow">transitive deps</span><span class="mono">1,204</span></div><div class="row tight"><span class="grow">known CVEs</span><span class="tag warn">3 (1 high)</span></div><div class="row tight"><span class="grow">stale &gt;1yr</span><span class="mono">14</span></div></div>
+        <div class="card"><div class="ck">CI / CD</div><div class="row tight"><span class="grow">last run</span><span class="tag ok">green</span></div><div class="row tight"><span class="grow">flaky jobs</span><span class="tag warn">2</span></div><div class="row tight"><span class="grow">deploy drift</span><span class="tag ok">none</span></div></div>
+        <div class="card"><div class="ck">containers</div><div class="row tight"><span class="grow">running</span><span class="mono">19/21</span></div><div class="row tight"><span class="grow">restarts 24h</span><span class="mono">6 (auto)</span></div><div class="row tight"><span class="grow">OOM</span><span class="tag ok">0</span></div></div>
+        <div class="card"><div class="ck">env / secrets</div><div class="row tight"><span class="grow">validated pre-start</span><span class="tag ok">on</span></div><div class="row tight"><span class="grow">missing</span><span class="tag bad">graphapi key</span></div><div class="row tight"><span class="grow">expiring</span><span class="tag warn">1 (9d)</span></div></div>
+        <div class="card"><div class="ck">API contract drift</div><div class="row tight"><span class="grow">producer/consumer</span><span class="tag ok">in sync</span></div><div class="row tight"><span class="grow">breaking changes</span><span class="tag ok">0</span></div><div class="row tight"><span class="grow">deprecations</span><span class="tag warn">2</span></div></div>
+        <div class="card"><div class="ck">SOC 2 evidence</div><div class="row tight"><span class="grow">per-release lineage</span><span class="tag ok">complete</span></div><div class="row tight"><span class="grow">audit trail</span><span class="tag ok">append-only</span></div><div class="row tight"><span class="grow">gaps</span><span class="tag warn">1 control</span></div></div>
+      </div>
+    </div>
+
+    <div class="view" data-v="h_mon">
+      <div class="head"><h1>Monitors &amp; Incidents</h1><p>Live signals, the incident timeline, and the recovery ladder the service climbs before it ever pages you.</p></div>
+      <div class="grid g4" style="margin-bottom:12px">
+        <div class="card"><div class="ck">p50 latency</div><canvas class="spark" data-seed="5" data-col="acc"></canvas></div>
+        <div class="card"><div class="ck">error rate</div><canvas class="spark" data-seed="13" data-col="amb"></canvas></div>
+        <div class="card"><div class="ck">disk free</div><canvas class="spark" data-seed="9" data-col="cy"></canvas></div>
+        <div class="card"><div class="ck">queue depth</div><canvas class="spark" data-seed="17" data-col="vio"></canvas></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="ck">incident timeline</div>
+          <div class="row"><span class="tag warn">05:36</span><span class="grow">broadcaster render queue backing up</span><span class="tag">recovering</span></div>
+          <div class="row"><span class="tag ok">05:33</span><span class="grow">router cold-model latency spike</span><span class="tag ok">resolved 1m</span></div>
+          <div class="row"><span class="tag ok">05:18</span><span class="grow">codegen disk 94%</span><span class="tag ok">resolved auto</span></div>
+          <div class="row"><span class="tag bad">04:50</span><span class="grow">graphapi missing key</span><span class="tag bad">paged</span></div>
+        </div>
+        <div class="card"><div class="ck">recovery ladder</div>
+          <div class="row"><span class="tag ok">1 · self-heal</span><span class="grow">restart · clear cache · failover lane · re-warm</span><span class="mini">ungated, safe-listed</span></div>
+          <div class="row"><span class="tag warn">2 · propose</span><span class="grow">code/config fix · dry-run · tester-verified</span><span class="mini">gated</span></div>
+          <div class="row"><span class="tag bad">3 · page</span><span class="grow">human, with evidence + attempted recoveries</span><span class="mini">last resort</span></div>
+          <div class="note" style="margin-top:8px">Reward = did the recovery restore health on the next probe? Hebbian strengthens <span class="mono">symptom→fix</span> that works, so repeats resolve faster.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" data-v="h_graph">
+      <div class="head"><h1>Health Graph</h1><p>The service <i>is</i> a graph: INSTITUTE → project → {file · module · stack-check} → evidence/incident/recovery. It walks to the highest-risk subject, re-probes it live, and the cascade lights the path. This is the alive, reactive surface.</p></div>
+      <div class="grid g32">
+        <div class="card glow pad0"><div class="ck" style="padding:13px 13px 0">live health graph<span class="r">risk = severity × blast-radius × staleness</span></div>
+          <canvas id="brainHealth" height="400"></canvas>
+          <div class="legend" style="padding:0 13px 13px"><span><i style="background:var(--acc)"></i>re-probe cascade</span><span><i style="background:#ff6b7d"></i>failing</span><span><i style="background:#ffb347"></i>degraded</span><span><i style="background:#45566e"></i>UNMEASURED</span></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:12px"><div class="ck">what it's doing</div>
+            <div class="row tight"><span class="tag ok">▸</span><span class="grow">rank subjects by risk</span></div>
+            <div class="row tight"><span class="tag cy">◈</span><span class="grow">probe the top one live (real check)</span></div>
+            <div class="row tight"><span class="tag vi">∿</span><span class="grow">write dated evidence; FLAG regressions</span></div>
+            <div class="row tight"><span class="tag warn">⟲</span><span class="grow">climb the recovery ladder if tripped</span></div>
+          </div>
+          <div class="card"><div class="ck">why this ends the firefighting</div><div class="note">Most incidents never reach you: rung-1 self-heals are automatic, rung-2 fixes arrive as gated PRs with evidence, and only a true stuck case pages — with everything it already tried. Jarvis hosts it; the empire grades and repairs itself.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </div>
+</div>
+
+<!-- play drawer -->
+<div class="pal" id="pal"><div class="palbox"><input id="palIn" placeholder="Jump to…  (tabs &amp; views)" aria-label="Command palette"><div class="palist" id="palList"></div></div></div>
+<div class="toasts" id="toasts"></div>
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer">
+  <div class="x" id="drawerX">✕</div>
+  <div id="drawerBody"></div>
+</div>
+
+<script>
+"use strict";
+setInterval(()=>{document.getElementById("clock").textContent=new Date().toTimeString().slice(0,8);},1000);
+setInterval(()=>{const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set("m_rps",(40+Math.random()*4).toFixed(1));
+  const lat=document.getElementById("m_lat"); if(lat)lat.innerHTML=(205+Math.random()*25|0)+" / "+(950+Math.random()*80|0)+'<span style="font-size:11px">ms</span>';
+  set("mo_plays",(35+Math.random()*5|0)); set("a_sess",(8+Math.random()*3|0)); set("a_ops",(1.1+Math.random()*0.4).toFixed(1)+"k");
+},1600);
+
+/* top tabs */
+const tabs=document.getElementById("tabs");
+tabs.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  [...tabs.children].forEach(x=>x.classList.toggle("on",x===b));
+  const t=b.dataset.t;document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("on",p.dataset.p===t));
+  kick(t);
+});
+/* sub navs (delegated) */
+document.querySelectorAll(".subnav").forEach(sn=>{
+  sn.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+    [...sn.children].forEach(x=>x.classList.toggle("on",x===b));
+    const v=b.dataset.v, pane=sn.closest(".pane");
+    pane.querySelectorAll(".view").forEach(x=>x.classList.toggle("on",x.dataset.v===v));
+    if(v==="r_topo")setTimeout(startTopo,30);
+    if(v==="r_desk")setTimeout(()=>{drawHeat();drawSparks();},30);
+    setTimeout(drawSparks,40);
+  });
+});
+function kick(t){ if(t==="router")setTimeout(()=>{drawSparks();},40); }
+
+/* sparklines */
+function drawSparks(){
+  document.querySelectorAll("canvas.spark").forEach(cv=>{
+    if(cv._done && cv.width>10)return;
+    const dpr=Math.min(2,window.devicePixelRatio||1), H=cv.getAttribute("height")?+cv.getAttribute("height"):40;
+    cv.width=cv.clientWidth*dpr; cv.height=H*dpr; const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+    const W=cv.clientWidth; const seed=+cv.dataset.seed||1; let s=seed>>>0;
+    const col=getComputedStyle(document.documentElement).getPropertyValue("--"+(cv.dataset.col||"acc")).trim()||"#39ff9f";
+    const n=48, pts=[]; let y=0.5; for(let i=0;i<n;i++){s=(s*1664525+1013904223)>>>0; y+=((s/4294967296)-0.5)*0.22; y=Math.max(0.08,Math.min(0.92,y)); pts.push(y);}
+    ctx.clearRect(0,0,W,H);
+    const grad=ctx.createLinearGradient(0,0,0,H); grad.addColorStop(0,col+"55"); grad.addColorStop(1,col+"00");
+    ctx.beginPath(); ctx.moveTo(0,H);
+    pts.forEach((p,i)=>ctx.lineTo(i/(n-1)*W,H-p*H)); ctx.lineTo(W,H); ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+    ctx.beginPath(); pts.forEach((p,i)=>{const x=i/(n-1)*W,yy=H-p*H; i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);});
+    ctx.strokeStyle=col; ctx.lineWidth=1.6; ctx.stroke();
+    cv._done=true;
+  });
+}
+
+/* topology */
+let topoRAF=null;
+function startTopo(){
+  const cv=document.getElementById("topoCanvas"); if(!cv)return;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  function size(){cv.width=cv.clientWidth*dpr;cv.height=400*dpr;cv.getContext("2d").setTransform(dpr,0,0,dpr,0,0);}
+  size();
+  const ctx=cv.getContext("2d"); const W=()=>cv.clientWidth, H=400;
+  const core={x:0.5,y:0.5,c:"#39ff9f"};
+  const left=[{x:.12,y:.28},{x:.12,y:.5},{x:.12,y:.72}].map(m=>({...m,c:"#45d6ff"}));
+  const right=[{x:.88,y:.2,c:"#ffb347"},{x:.88,y:.42,c:"#ffb347"},{x:.88,y:.64,c:"#b58cff"},{x:.88,y:.86,c:"#b58cff"}];
+  const packets=[];
+  function spawn(){const pool=Math.random()<.5?left:right;const src=pool[Math.random()*pool.length|0];packets.push({from:src,to:core,t:0,sp:0.012+Math.random()*0.02,c:src.c});}
+  function px(n){return {x:n.x*W(),y:n.y*H};}
+  function node(n,r){const p=px(n);ctx.beginPath();ctx.arc(p.x,p.y,r,0,7);ctx.fillStyle=n.c;ctx.shadowColor=n.c;ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;}
+  function edge(a,b){const pa=px(a),pb=px(b);ctx.strokeStyle="rgba(120,150,190,.12)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pa.x,pa.y);ctx.lineTo(pb.x,pb.y);ctx.stroke();}
+  let acc=0,last=performance.now();
+  function frame(now){ const vis=document.querySelector('.view[data-v="r_topo"]'); if(!vis||!vis.classList.contains("on")){topoRAF=null;return;}
+    topoRAF=requestAnimationFrame(frame); const dt=Math.min(.05,(now-last)/1000);last=now; acc+=dt;
+    ctx.clearRect(0,0,W(),H);
+    [...left,...right].forEach(m=>edge(m,core));
+    if(acc>0.09){acc=0;for(let i=0;i<2;i++)spawn();}
+    for(const pk of packets){pk.t+=pk.sp;const a=px(pk.from),b=px(pk.to);const x=a.x+(b.x-a.x)*pk.t,y=a.y+(b.y-a.y)*pk.t;
+      ctx.beginPath();ctx.arc(x,y,2.6,0,7);ctx.fillStyle=pk.c;ctx.shadowColor=pk.c;ctx.shadowBlur=8;ctx.fill();ctx.shadowBlur=0;}
+    for(let i=packets.length-1;i>=0;i--)if(packets[i].t>=1)packets.splice(i,1);
+    left.forEach(m=>node(m,7)); right.forEach(m=>node(m,7)); node(core,13+Math.sin(now/400)*1.5);
+    ctx.fillStyle="#dbe8ff";ctx.font="600 11px ui-sans-serif,system-ui";ctx.textAlign="center";ctx.fillText("ROUTER",px(core).x,px(core).y+28);
+  }
+  if(!topoRAF)topoRAF=requestAnimationFrame(frame); window.addEventListener("resize",size);
+}
+/* heatmap */
+function drawHeat(){
+  const cv=document.getElementById("heatCanvas");if(!cv)return;const dpr=Math.min(2,window.devicePixelRatio||1);
+  cv.width=cv.clientWidth*dpr;cv.height=200*dpr;const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);
+  const W=cv.clientWidth,H=200,cols=30,rows=5,cw=W/cols,ch=H/rows;const names=["Groq","fleet","OR","Anthropic","Gemini"];
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const v=Math.random()*(r===4?1:.6)+(r===3?.3:0);
+    ctx.fillStyle="rgba(57,255,159,"+(0.06+v*0.6)+")"; if(r>=3)ctx.fillStyle="rgba(255,"+(179-v*120|0)+",71,"+(0.08+v*0.6)+")";
+    if(r===4&&v>.8)ctx.fillStyle="rgba(255,107,125,"+(0.2+v*0.5)+")"; ctx.fillRect(c*cw+1,r*ch+1,cw-2,ch-2);}
+  ctx.fillStyle="#7488a3";ctx.font="10px ui-monospace,monospace";ctx.textAlign="left";names.forEach((n,r)=>ctx.fillText(n,4,r*ch+13));
+}
+/* route log */
+const LOGS=[['g','ROUTE','groq · llama-3.3 · 38ms · FREE'],['c','ROUTE','fleet:204 · vLLM · 61ms · LOCAL'],['y','FALL','gemini 429 → or:free'],['g','ROUTE','groq · 41ms · FREE · cache-set'],['m','SPILL','ctx>128k → anthropic · PAID'],['c','ROUTE','fleet:201 · qwen · 54ms · LOCAL'],['g','ROUTE','or:free · deepseek · 110ms'],['y','COOL','gemini recover 22s']];
+(function startLog(){const el=document.getElementById("r_log");if(!el)return;let i=0;
+  setInterval(()=>{const pane=document.querySelector('.pane[data-p="router"]');if(!pane.classList.contains("on"))return;
+    const c=document.querySelector('.view[data-v="r_console"]');if(!c||!c.classList.contains("on"))return;
+    const L=LOGS[i%LOGS.length];i++;const line=document.createElement("div");
+    line.innerHTML='<span class="d2">'+new Date().toTimeString().slice(0,8)+'</span> <span class="'+L[0]+'">'+L[1]+'</span> '+L[2];
+    el.appendChild(line);while(el.children.length>11)el.removeChild(el.firstChild);el.scrollTop=el.scrollHeight;},900);})();
+
+/* play drawer */
+const PLAYS={
+  ugc:{t:"AI UGC ads for DTC",tags:["TikTok","retainer","LOW effort"],body:[
+    ["ICP","DTC brands $50k–500k/mo spend, running paid but posting <3 organic/wk"],
+    ["Offer","20 AI-made UGC ad variants / month. You approve each; bill only on what runs."],
+    ["Why now","UGC CPMs rising; faceless AI UGC passes brand review at a fraction of creator cost"],
+    ["Assets built","12 hook scripts · 7 rendered clips · landing page · cold-email seq (1/3)"],
+    ["Economics","$1.5k/mo × 6 clients = $9k MRR · COGS ~$120 (render+voice) · ~92% margin"],
+    ["Funnel","cold email → Loom teardown → 3 free samples → retainer"],
+    ["Gate","post CTA + outbound emails await your approval via Telegram"]]},
+  triage:{t:"Inbox-triage DFY for SMBs",tags:["LinkedIn","$600×N","MED effort"],body:[
+    ["ICP","SMB owners / solo founders getting 50+ inbound/day they can't keep up with"],
+    ["Offer","Done-for-you AI triage: label, draft replies, route — you approve sends"],
+    ["Product","n8n + MCP template, hosted or self-host; 1-day setup"],
+    ["Assets built","workflow template · 6 cold emails · demo video (rendering)"],
+    ["Economics","$600 setup + $300/mo · low churn once wired into their inbox"],
+    ["Gate","6 cold emails to sourced prospects await approval"]]},
+  channel:{t:"Faceless channel-in-a-box",tags:["YouTube","$2k setup","MED effort"],body:[
+    ["ICP","Creators/marketers who want a faceless niche channel without doing the work"],
+    ["Offer","Full channel: niche pick, scripting, AI voice, b-roll, thumbnails, upload cadence"],
+    ["Assets built","1 pilot video · VO (90%) · thumbnail set · niche research"],
+    ["Economics","$2k setup + $800/mo ops · scales with Broadcaster/operator stack"],
+    ["Gate","publish of pilot awaits approval"]]},
+  recept:{t:"Local-biz AI phone receptionist",tags:["GMaps","$300/mo","MED effort"],body:[
+    ["ICP","Local service businesses (dental, HVAC, salons) missing after-hours calls"],
+    ["Offer","AI receptionist: books, answers FAQs, texts summary — from a local number"],
+    ["Assets built","call flow · voice · booking page · outreach list (sourced from Maps)"],
+    ["Economics","$300/mo × many · sticky; churn low once it books real jobs"],
+    ["Gate","outbound + number provisioning ($12) await approval"]]},
+  rag:{t:"Niche RAG chatbot licensing",tags:["X","$99/mo","LOW effort"],body:[
+    ["ICP","Niche communities / info-product owners with a docs corpus"],
+    ["Offer","White-label RAG bot over their content; monthly license"],
+    ["Assets built","bot scaffold · embed widget · 2 demo corpora"],
+    ["Economics","$99/mo × many · near-zero marginal cost on free-tier router"],
+    ["Gate","scouting prospects; nothing sent yet"]]}
+};
+const drawer=document.getElementById("drawer"),scrim=document.getElementById("scrim"),dbody=document.getElementById("drawerBody");
+function openDrawer(k){const p=PLAYS[k];if(!p)return;
+  dbody.innerHTML='<div class="ck">play brief</div><div class="big sm" style="margin-bottom:6px">'+p.t+'</div>'+
+    '<div style="margin-bottom:12px">'+p.tags.map(t=>'<span class="tag" style="margin-right:5px">'+t+'</span>').join("")+'</div>'+
+    p.body.map(r=>'<div class="ck" style="margin:12px 0 3px">'+r[0]+'</div><div class="note" style="color:var(--text)">'+r[1]+'</div>').join("")+
+    '<div style="margin-top:16px;display:flex;gap:8px"><span class="tag ok">approve all gates</span><span class="tag bad">hold</span></div>';
+  drawer.classList.add("on");scrim.classList.add("on");}
+function closeDrawer(){drawer.classList.remove("on");scrim.classList.remove("on");}
+document.getElementById("drawerX").onclick=closeDrawer; scrim.onclick=closeDrawer;
+const pt=document.getElementById("playTable");
+if(pt)pt.addEventListener("click",e=>{const tr=e.target.closest("tr[data-play]");if(tr)openDrawer(tr.dataset.play);});
+
+/* ---- real 4D brain (live cascade), self-gating on visibility ---- */
+const BRAINS={},CTRL={};
+function startBrain(id){
+  const cv=document.getElementById(id); if(!cv||BRAINS[id])return;
+  const dpr=Math.min(2,window.devicePixelRatio||1), H=cv.getAttribute("height")?+cv.getAttribute("height"):300;
+  function size(){cv.width=Math.max(2,cv.clientWidth*dpr);cv.height=H*dpr;cv.getContext("2d").setTransform(dpr,0,0,dpr,0,0);}
+  const ctx=cv.getContext("2d"); const N=id==="brainBig"?420:200, COMM=8;
+  const opts={mode:"4d",cube:true,tess:(id==="brainBig")}; const orbit={yaw:.6,pitch:.22,dist:3.4,auto:true};
+  const rnd=s=>()=>((s=(s*1664525+1013904223)>>>0)/4294967296); const R=rnd(7);
+  const nodes=[],hubs=[];
+  for(let c=0;c<COMM;c++)hubs.push([(c&1)?1:-1,(c&2)?1:-1,(c&4)?1:-1,(((c&1)^((c>>2)&1))?1:-1)]);
+  for(let i=0;i<N;i++){const c=i%COMM,h=hubs[c];nodes.push({c,deg:0,v:[h[0]*.9+(R()-.5),h[1]*.9+(R()-.5),h[2]*.9+(R()-.5),h[3]*.5+(R()-.5)*.5]});}
+  const adj=Array.from({length:N},()=>[]),edges=[];
+  function addE(a,b){if(a===b)return;edges.push([a,b]);adj[a].push(b);adj[b].push(a);nodes[a].deg++;nodes[b].deg++;}
+  for(let i=0;i<N;i++){const c=i%COMM;for(let k=0;k<3;k++){const j=(i+(1+Math.floor(R()*30))*COMM)%N;if(j%COMM===c)addE(i,j);}}
+  for(let c=0;c<COMM;c++)for(let k=0;k<5;k++)addE((c+k*COMM)%N,((c*37+7)+k*COMM*3)%N);
+  const lit=new Float32Array(N),pulses=[]; let nextAt=0,fires=0;
+  const COL=[[57,255,159],[69,214,255],[181,140,255],[255,93,177],[255,179,71],[122,230,160],[255,120,120],[140,200,255]];
+  const CUBE=[],CUBE_E=[];for(let i=0;i<8;i++)CUBE.push([(i&1?1:-1)*1.45,(i&2?1:-1)*1.45,(i&4?1:-1)*1.45,0]);
+  for(let i=0;i<8;i++)for(let j=i+1;j<8;j++){let d=0;for(let b=0;b<3;b++)if(((i>>b)&1)!==((j>>b)&1))d++;if(d===1)CUBE_E.push([i,j]);}
+  const TES=[],TES_E=[];for(let i=0;i<16;i++)TES.push([(i&1?1:-1)*1.15,(i&2?1:-1)*1.15,(i&4?1:-1)*1.15,(i&8?1:-1)*1.15]);
+  for(let i=0;i<16;i++)for(let j=i+1;j<16;j++){let d=0;for(let b=0;b<4;b++)if(((i>>b)&1)!==((j>>b)&1))d++;if(d===1)TES_E.push([i,j]);}
+  function drawWire(V,E,W,Hh,col){const Q=V.map(v=>proj(rot(v),W,Hh));ctx.strokeStyle=col;ctx.lineWidth=1;
+    for(const e of E){const a2=Q[e[0]],b2=Q[e[1]];ctx.beginPath();ctx.moveTo(a2.x,a2.y);ctx.lineTo(b2.x,b2.y);ctx.stroke();}}
+  let a={xw:0,yw:0,zw:0,xy:0,xz:0,yz:0},last=performance.now();
+  function rot(v){let x=v[0],y=v[1],z=v[2],w=(opts.mode==="4d"?v[3]:0),c,s,n1,n2;
+    if(opts.mode==="4d"){
+      c=Math.cos(a.xw);s=Math.sin(a.xw);n1=x*c-w*s;n2=x*s+w*c;x=n1;w=n2;
+      c=Math.cos(a.yw);s=Math.sin(a.yw);n1=y*c-w*s;n2=y*s+w*c;y=n1;w=n2;
+      c=Math.cos(a.zw);s=Math.sin(a.zw);n1=z*c-w*s;n2=z*s+w*c;z=n1;w=n2;}
+    c=Math.cos(a.xy);s=Math.sin(a.xy);n1=x*c-y*s;n2=x*s+y*c;x=n1;y=n2;
+    c=Math.cos(a.xz);s=Math.sin(a.xz);n1=x*c-z*s;n2=x*s+z*c;x=n1;z=n2;
+    c=Math.cos(a.yz);s=Math.sin(a.yz);n1=y*c-z*s;n2=y*s+z*c;y=n1;z=n2;
+    return [x,y,z,w];}
+  function proj(v,W,Hh){const w4=opts.mode==="4d"?1/(2.6-v[3]*.9):1;let x=v[0]*w4,y=v[1]*w4,z=v[2]*w4;
+    const cy=Math.cos(orbit.yaw),sy=Math.sin(orbit.yaw);let x1=x*cy-z*sy,z1=x*sy+z*cy;
+    const cp=Math.cos(orbit.pitch),sp=Math.sin(orbit.pitch);let y1=y*cp-z1*sp,z2=y*sp+z1*cp;
+    const zc=orbit.dist+z2,k=3.0/Math.max(.3,zc),sc=Math.min(W,Hh)*.4;
+    return{x:W/2+x1*k*sc,y:Hh/2-y1*k*sc,s:k,depth:z2};}
+  function fire(now){let seed=0,b=-1;for(let t=0;t<8;t++){const i=Math.random()*N|0;if(nodes[i].deg>b){b=nodes[i].deg;seed=i;}}
+    const lv=[[seed]],seen=new Set([seed]);for(let h=0;h<4;h++){const nx=[];for(const u of lv[h])for(const q of adj[u])if(!seen.has(q)){seen.add(q);nx.push(q);}if(!nx.length)break;lv.push(nx);}
+    lv.forEach((l,h)=>pulses.push({nodes:l,at:now+h*.16,life:0,dur:1.1,hop:h,seed}));fires++;}
+  function frame(now){ BRAINS[id]=requestAnimationFrame(frame);
+    if(cv.offsetParent===null)return;
+    if(Math.abs(cv.width/dpr-cv.clientWidth)>4||cv.width<3)size();
+    const dt=Math.min(.05,(now-last)/1000);last=now;
+    const spin=orbit.auto?1:0;
+    a.xw+=dt*.12*spin;a.yw+=dt*.08*spin;a.zw+=dt*.05*spin;a.xy+=dt*.03*spin;a.xz+=dt*.02*spin;a.yz+=dt*.015*spin;
+    if(orbit.auto)orbit.yaw+=dt*.05;
+    const nowS=now/1000; if(nowS>=nextAt){fire(nowS);nextAt=nowS+1.1;}
+    const dec=Math.pow(.12,dt);for(let i=0;i<N;i++)lit[i]*=dec;
+    for(let i=pulses.length-1;i>=0;i--){const p=pulses[i];if(nowS<p.at)continue;p.life+=dt;const f=Math.min(1,p.life/p.dur);for(const n of p.nodes)lit[n]=Math.max(lit[n],(1-f)*(1-p.hop*.12));if(p.life>=p.dur)pulses.splice(i,1);}
+    const W=cv.clientWidth,Hh=H;ctx.clearRect(0,0,W,Hh);
+    const P=nodes.map(n=>proj(rot(n.v),W,Hh));
+    for(const e of edges){const pa=P[e[0]],pb=P[e[1]],l=Math.max(lit[e[0]],lit[e[1]]);
+      if(l<.05){ctx.strokeStyle="rgba(120,150,190,.06)";ctx.lineWidth=1;}else{ctx.strokeStyle="rgba(121,255,198,"+(.15+.5*l)+")";ctx.lineWidth=.8+1.4*l;}
+      ctx.beginPath();ctx.moveTo(pa.x,pa.y);ctx.lineTo(pb.x,pb.y);ctx.stroke();}
+    ctx.lineWidth=1;
+    if(opts.cube)drawWire(CUBE,CUBE_E,W,Hh,"rgba(130,160,200,.16)");
+    if(opts.tess&&opts.mode==="4d")drawWire(TES,TES_E,W,Hh,"rgba(121,255,198,.14)");
+    const ord=[...P.keys()].sort((x,y)=>P[y].s-P[x].s);
+    for(const i of ord){const p=P[i],l=lit[i],col=COL[nodes[i].c],r=(1+Math.min(2.4,nodes[i].deg*.16))*p.s*1.1*(1+l);
+      const fog=Math.max(.18,Math.min(1,(2.5-p.depth)/3.4));
+      if(l>.05){ctx.beginPath();ctx.arc(p.x,p.y,r+l*6,0,7);ctx.fillStyle="rgba(57,255,159,"+(.1+l*.18)+")";ctx.fill();}
+      ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.6,r),0,7);
+      ctx.fillStyle=l>.1?"rgba(121,255,198,"+(.6+.4*l)+")":"rgba("+col[0]+","+col[1]+","+col[2]+","+((.2+.5*Math.min(1,p.s))*fog).toFixed(3)+")";ctx.fill();}
+    for(const p of pulses){if(p.hop!==0||nowS<p.at)continue;const sp=P[p.seed],f=Math.min(1,p.life/p.dur);
+      ctx.beginPath();ctx.arc(sp.x,sp.y,f*60*sp.s+5,0,7);ctx.strokeStyle="rgba(57,255,159,"+((1-f)*.5)+")";ctx.lineWidth=2*(1-f)+.5;ctx.stroke();}
+    ctx.lineWidth=1;
+    const ff=document.getElementById(id+"_fires");if(ff)ff.textContent=fires;
+    const la=document.getElementById(id+"_active");if(la){let act=0;for(let i=0;i<N;i++)if(lit[i]>.1)act++;la.textContent=act;}
+  }
+  CTRL[id]={opts,orbit};
+  if(id==="brainBig"){ let dg=null; cv.style.cursor="grab"; cv.style.touchAction="none";
+    cv.addEventListener("pointerdown",e=>{dg={x:e.clientX,y:e.clientY};orbit.auto=false;cv.style.cursor="grabbing";const sp=document.getElementById("brainSpin");if(sp)sp.classList.remove("on");});
+    window.addEventListener("pointermove",e=>{if(!dg)return;orbit.yaw-=(e.clientX-dg.x)*.006;orbit.pitch=Math.max(-1.3,Math.min(1.3,orbit.pitch+(e.clientY-dg.y)*.005));dg={x:e.clientX,y:e.clientY};});
+    window.addEventListener("pointerup",()=>{dg=null;cv.style.cursor="grab";});
+    cv.addEventListener("wheel",e=>{e.preventDefault();orbit.dist=Math.max(1.8,Math.min(8,orbit.dist*Math.exp(e.deltaY*.0012)));},{passive:false});
+    cv.addEventListener("dblclick",()=>{orbit.auto=true;orbit.pitch=.22;const sp=document.getElementById("brainSpin");if(sp)sp.classList.add("on");});
+  }
+  window.addEventListener("resize",size);
+  BRAINS[id]=requestAnimationFrame(frame);
+}
+
+/* initial paint */
+setTimeout(drawSparks,60);
+startBrain("brainMini"); startBrain("brainBig"); startBrain("brainHealth");
+(function(){
+  const seg=document.getElementById("brainMode");
+  if(seg)seg.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+    [...seg.children].forEach(x=>x.classList.toggle("on",x===b)); if(CTRL.brainBig)CTRL.brainBig.opts.mode=b.dataset.m;});
+  function tog(id,key){const el=document.getElementById(id);if(!el)return;
+    el.addEventListener("click",()=>{const on=!el.classList.contains("on");el.classList.toggle("on",on);
+      if(CTRL.brainBig){if(key==="auto")CTRL.brainBig.orbit.auto=on;else CTRL.brainBig.opts[key]=on;}});}
+  tog("brainCube","cube");tog("brainTess","tess");tog("brainSpin","auto");
+})();
+
+/* ===== platform layer: theme, palette, keyboard, toasts, codegen streams ===== */
+function startSelf(id){
+  const cv=document.getElementById(id); if(!cv) return;
+  const dpr=Math.min(2,window.devicePixelRatio||1), H=cv.getAttribute("height")?+cv.getAttribute("height"):150;
+  function size(){cv.width=Math.max(2,cv.clientWidth*dpr);cv.height=H*dpr;cv.getContext("2d").setTransform(dpr,0,0,dpr,0,0);}
+  const ctx=cv.getContext("2d"); let base=0.42, pts=[], t=0, lastStep=0, last=performance.now();
+  for(let i=0;i<160;i++)pts.push(0.42);
+  function frame(now){ requestAnimationFrame(frame); if(cv.offsetParent===null)return;
+    if(Math.abs(cv.width/dpr-cv.clientWidth)>4||cv.width<3)size();
+    const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
+    if(t-lastStep>3.2){lastStep=t; if(Math.random()<0.6) base=Math.min(0.9,base+0.02+Math.random()*0.03);}
+    const live=Math.max(0.05,Math.min(0.98,base+(Math.random()-0.5)*0.10));
+    pts.push(live); if(pts.length>160)pts.shift();
+    const W=cv.clientWidth,Hh=H; ctx.clearRect(0,0,W,Hh);
+    const acc=getComputedStyle(document.documentElement).getPropertyValue("--acc").trim()||"#39ff9f";
+    const a2=getComputedStyle(document.documentElement).getPropertyValue("--acc2").trim()||"#79ffc6";
+    ctx.beginPath();pts.forEach((p,i)=>{const x=i/(pts.length-1)*W,y=Hh-p*Hh;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+    ctx.strokeStyle=a2;ctx.globalAlpha=.5;ctx.lineWidth=1;ctx.stroke();ctx.globalAlpha=1;
+    ctx.beginPath();ctx.moveTo(0,Hh-base*Hh);ctx.lineTo(W,Hh-base*Hh);ctx.strokeStyle=acc;ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=acc;ctx.font="600 12px ui-sans-serif,system-ui";ctx.textAlign="right";
+    ctx.fillText("baseline "+Math.round(base*100)+" · live "+Math.round(live*100),W-7,15);
+  }
+  requestAnimationFrame(frame);
+}
+
+(function(){
+  const root=document.documentElement;
+  const ACC={neon:["#39ff9f","#79ffc6","#1a7f55"],cyan:["#45d6ff","#9ae9ff","#1a6a8f"],
+    magenta:["#ff5db1","#ffa6d6","#8f2a63"],amber:["#ffb347","#ffd79a","#8f5e1a"],violet:["#b58cff","#d6c2ff","#5e3f8f"]};
+  function setAccent(k){const a=ACC[k]||ACC.neon;root.style.setProperty("--acc",a[0]);root.style.setProperty("--acc2",a[1]);
+    root.style.setProperty("--acc3",a[2]);root.style.setProperty("--ok",a[0]);
+    document.querySelectorAll("#swrow .sw").forEach(s=>s.classList.toggle("on",s.dataset.k===k));
+    try{localStorage.setItem("oc-accent",k);}catch(e){}}
+  function setTheme(t){const b=document.getElementById("themeBtn");
+    if(t==="system"){root.removeAttribute("data-theme");}else{root.setAttribute("data-theme",t);}
+    if(b)b.textContent=t==="light"?"☀":t==="dark"?"☾":"◐"; try{localStorage.setItem("oc-theme",t);}catch(e){}}
+  function curTheme(){try{return localStorage.getItem("oc-theme")||"system";}catch(e){return "system";}}
+  function setDensity(d){root.setAttribute("data-density",d);const b=document.getElementById("densBtn");
+    if(b)b.textContent=d==="compact"?"▤":"▦"; try{localStorage.setItem("oc-density",d);}catch(e){}}
+  const swrow=document.getElementById("swrow");
+  if(swrow)Object.keys(ACC).forEach(k=>{const d=document.createElement("span");d.className="sw";d.dataset.k=k;
+    d.style.background=ACC[k][0];d.title=k;d.onclick=()=>setAccent(k);swrow.appendChild(d);});
+  const tb=document.getElementById("themeBtn"); if(tb)tb.onclick=()=>{const c=curTheme();setTheme(c==="system"?"dark":c==="dark"?"light":"system");};
+  const db=document.getElementById("densBtn"); if(db)db.onclick=()=>setDensity(root.getAttribute("data-density")==="compact"?"comfortable":"compact");
+  try{setAccent(localStorage.getItem("oc-accent")||"neon");}catch(e){setAccent("neon");}
+  try{const t=localStorage.getItem("oc-theme"); if(t&&t!=="system")setTheme(t);}catch(e){}
+  try{const d=localStorage.getItem("oc-density"); if(d)setDensity(d);}catch(e){}
+
+  const tc=document.getElementById("toasts");
+  window.toast=function(msg){ if(!tc)return; const el=document.createElement("div");el.className="toast";el.textContent=msg;tc.appendChild(el);
+    setTimeout(()=>{el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),320);},2200);};
+  document.addEventListener("click",e=>{
+    const ep=e.target.closest("[data-ep]"); if(ep){window.toast("GET "+ep.dataset.ep);return;}
+    const tag=e.target.closest(".tag"); if(!tag)return; const w=tag.textContent.trim().toLowerCase();
+    if(/^(approve|dispatch|probe|deploy|go)/.test(w))window.toast("✓ "+tag.textContent.trim());
+    else if(/^(hold|deny|edit)/.test(w))window.toast("● "+tag.textContent.trim());
+  });
+
+  const INDEX=[];
+  document.querySelectorAll(".tabs button").forEach(b=>{const tab=b.dataset.t,name=b.querySelector(".lbl")?b.querySelector(".lbl").textContent:tab;
+    INDEX.push({label:name,tab:tab,view:null});
+    document.querySelectorAll('.pane[data-p="'+tab+'"] .subnav button').forEach(sb=>INDEX.push({label:name+" › "+sb.textContent.trim(),tab:tab,view:sb.dataset.v}));});
+  const pal=document.getElementById("pal"),palIn=document.getElementById("palIn"),palList=document.getElementById("palList");
+  let palSel=0,palRows=[];
+  function renderPal(q){q=(q||"").toLowerCase();palRows=INDEX.filter(r=>r.label.toLowerCase().includes(q)).slice(0,40);palSel=0;
+    palList.innerHTML=palRows.map((r,i)=>'<div class="palrow'+(i===0?' sel':'')+'" data-i="'+i+'">'+r.label+'<span class="k">'+r.tab+'</span></div>').join("")||'<div class="palrow">no match</div>';}
+  function openPal(){if(!pal)return;pal.classList.add("on");palIn.value="";renderPal("");palIn.focus();}
+  function closePal(){if(pal)pal.classList.remove("on");}
+  function gotoIdx(r){if(!r)return;const tbn=document.querySelector('.tabs button[data-t="'+r.tab+'"]');if(tbn)tbn.click();
+    if(r.view){const sv=document.querySelector('.pane[data-p="'+r.tab+'"] .subnav button[data-v="'+r.view+'"]');if(sv)sv.click();}closePal();}
+  const pb=document.getElementById("palBtn"); if(pb)pb.onclick=openPal;
+  if(palIn)palIn.addEventListener("input",()=>renderPal(palIn.value));
+  if(palList)palList.addEventListener("click",e=>{const row=e.target.closest(".palrow");if(row&&palRows[row.dataset.i])gotoIdx(palRows[row.dataset.i]);});
+  if(pal)pal.addEventListener("click",e=>{if(e.target===pal)closePal();});
+  document.addEventListener("keydown",e=>{
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openPal();return;}
+    if(e.key==="Escape"){closePal();return;}
+    if(pal&&pal.classList.contains("on")){
+      if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();palSel=Math.max(0,Math.min(palRows.length-1,palSel+(e.key==="ArrowDown"?1:-1)));
+        [...palList.children].forEach((c,i)=>c.classList.toggle("sel",i===palSel));if(palList.children[palSel])palList.children[palSel].scrollIntoView({block:"nearest"});}
+      if(e.key==="Enter")gotoIdx(palRows[palSel]); return;}
+    if(e.target.tagName==="INPUT")return;
+    if(e.key>="1"&&e.key<="9"){const btns=document.querySelectorAll(".tabs button");if(btns[+e.key-1])btns[+e.key-1].click();}
+    if(e.key==="?")window.toast("⌘K palette · 1–6 tabs · Esc close");
+  });
+
+  const tk=document.getElementById("ticker");
+  const TKS=["think ok · conf 0.84","route→groq 38ms FREE","ingest/self +12 nodes","rewrite proposed · dry-run","lane ASYNC drained","mcp tool called","autonomy tick","q-reward +0.3","eval baseline step +2"];
+  if(tk){let i=0;setInterval(()=>{tk.textContent="● "+TKS[i%TKS.length];i++;},2200);}
+
+  const cl=document.getElementById("cg_log");
+  const CL=[['g','THINK','conf 0.84 · tool=apply_patch'],['c','ROUTE','groq 38ms · FREE'],['y','REWRITE','propose db.py · dry-run'],['g','INGEST','self +12 nodes'],['c','RECALL','traverse k=8 · 1 hop'],['g','THINK','conf 0.79 · answer ready']];
+  if(cl){let i=0;setInterval(()=>{const p=document.querySelector('.pane[data-p="codegen"]');if(!p||!p.classList.contains("on"))return;
+    const L=CL[i%CL.length];i++;const ln=document.createElement("div");
+    ln.innerHTML='<span class="d2">'+new Date().toTimeString().slice(0,8)+'</span> <span class="'+L[0]+'">'+L[1]+'</span> '+L[2];
+    cl.appendChild(ln);while(cl.children.length>10)cl.removeChild(cl.firstChild);cl.scrollTop=cl.scrollHeight;},1100);}
+  setInterval(()=>{const c=document.getElementById("cg_conf");if(c)c.textContent=(0.76+Math.random()*0.14).toFixed(2);},1600);
+
+  startBrain("brainCode"); startSelf("selfImprove"); startSelf("selfImproveHealth");
+})();
+</script>
+</body>
+</html>

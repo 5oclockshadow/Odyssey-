@@ -1,0 +1,58 @@
+/* Saltline suite theme — light & dark, shared by Console, Dossier Suite and Tester.
+   Ramps are expressed as distance from the ground: step 900 is closest to the background,
+   step 100 furthest from it, so the same token reads correctly in both modes. */
+:root,[data-theme="light"]{
+  color-scheme:light;
+  --color-bg:#f5f6f4;--color-surface:#ffffff;--color-surface-2:#fafbfa;--color-text:#121a16;
+  --color-accent:#0d8670;--color-on-accent:#ffffff;
+  --color-neutral-100:#121a16;--color-neutral-200:#1f2a25;--color-neutral-300:#34413b;--color-neutral-400:#4b5952;--color-neutral-500:#65726b;--color-neutral-600:#86918b;--color-neutral-700:#aab3ae;--color-neutral-800:#dde2df;--color-neutral-900:#eef0ee;
+  --color-accent-100:#052e27;--color-accent-200:#0a4a3f;--color-accent-300:#0b6656;--color-accent-400:#0c7a66;--color-accent-500:#0d8670;--color-accent-600:#3fb39d;--color-accent-700:#8ed3c5;--color-accent-800:#c8ebe3;--color-accent-900:#e5f5f1;
+  --color-section-ghost:#4a7fd0;--color-divider:#dde2df;
+  --ok:#1d8a4f;--warn:#a8650a;--bad:#c2413a;--info:#2f6fd0;
+  --shadow-sm:0 0 0 1px #e3e7e4,0 1px 2px rgba(18,26,22,.04);
+  --shadow-md:0 0 0 1px #dfe4e0,0 8px 24px rgba(18,26,22,.08);
+  --shadow-lg:0 0 0 1px #d9dfdb,0 18px 48px rgba(18,26,22,.16);
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --color-bg:#0c1210;--color-surface:#141c19;--color-surface-2:#111815;--color-text:#e7edea;
+  --color-accent:#34d3b1;--color-on-accent:#03201a;
+  --color-neutral-100:#f1f5f3;--color-neutral-200:#dde5e1;--color-neutral-300:#c1cbc6;--color-neutral-400:#9fabA5;--color-neutral-500:#7f8a85;--color-neutral-600:#636d68;--color-neutral-700:#49524e;--color-neutral-800:#2c3531;--color-neutral-900:#1c2421;
+  --color-accent-100:#e6fbf6;--color-accent-200:#c2f3e8;--color-accent-300:#8ee8d5;--color-accent-400:#56dcc1;--color-accent-500:#34d3b1;--color-accent-600:#22a98d;--color-accent-700:#187e6a;--color-accent-800:#105446;--color-accent-900:#0c362e;
+  --color-section-ghost:#6b9be6;--color-divider:#2c3531;
+  --ok:#5fd08f;--warn:#f0b351;--bad:#f07a72;--info:#7aa8f0;
+  --shadow-sm:0 0 0 1px #222b28;
+  --shadow-md:0 0 0 1px #2a3430,0 10px 28px rgba(0,0,0,.45);
+  --shadow-lg:0 0 0 1px #35403b,0 20px 50px rgba(0,0,0,.6);
+}
+:root{
+  --font-body:'Geist',ui-sans-serif,system-ui,sans-serif;--font-heading:var(--font-body);--font-heading-weight:600;--font-mono:'Geist Mono',ui-monospace,monospace;
+  --radius-sm:6px;--radius-md:9px;--radius-lg:14px;
+  --space-1:3px;--space-2:6px;--space-3:9px;--space-4:12px;--space-6:18px;--space-8:24px;
+}
+html{background:var(--color-bg)}
+body{font-family:var(--font-body);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+::selection{background:var(--color-accent-800);color:var(--color-accent-100)}
+:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}
+.mono,code{font-family:var(--font-mono)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;text-decoration:none;font:500 13px/1.2 var(--font-body);color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);padding:7px 12px;white-space:nowrap;transition:background .15s,border-color .15s,color .15s,filter .15s}
+.btn:hover{border-color:var(--color-neutral-700);background:var(--color-neutral-900);color:var(--color-text)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn i.ph{font-size:15px;line-height:1}
+.btn-primary{background:var(--color-accent);border-color:transparent;color:var(--color-on-accent)}
+.btn-primary:hover{background:var(--color-accent);border-color:transparent;color:var(--color-on-accent);filter:brightness(1.07)}
+.btn-secondary{background:var(--color-surface)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--color-neutral-300)}
+.btn-ghost:hover{background:var(--color-neutral-900);border-color:transparent}
+.btn-icon{width:34px;height:34px;padding:0}
+.btn-block{width:100%}
+.tag{display:inline-flex;align-items:center;gap:4px;font:500 11.5px/1.5 var(--font-body);padding:1px 8px;border-radius:999px;background:var(--color-neutral-900);color:var(--color-neutral-300);white-space:nowrap}
+.tag-accent,.tag-accent-2{background:var(--color-accent-900);color:var(--color-accent-300)}
+.tag-neutral{background:var(--color-neutral-900);color:var(--color-neutral-300)}
+.tag-outline{background:transparent;box-shadow:inset 0 0 0 1px var(--color-neutral-800)}
+.seg{display:inline-flex;background:var(--color-neutral-900);border-radius:var(--radius-md);padding:2px;gap:2px}
+.seg-opt{border:0;background:transparent;color:var(--color-neutral-400);font:500 12.5px var(--font-body);padding:5px 10px;border-radius:7px;cursor:pointer}
+.seg-opt:hover{color:var(--color-text)}
+.seg-opt.on{background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-sm)}
+.theme-btn{gap:6px}

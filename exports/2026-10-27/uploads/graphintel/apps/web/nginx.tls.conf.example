@@ -1,0 +1,34 @@
+# Terminate TLS in front of the stack (CC6.7). Put this in a second nginx (or a managed load balancer), with certificates from your CA.
+# The stack's own web container keeps listening on 80 inside your private network; do not publish port 80 to the internet once this is in place.
+server {
+  listen 80;
+  server_name institute.example.org;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name institute.example.org;
+  ssl_certificate     /etc/ssl/institute/fullchain.pem;
+  ssl_certificate_key /etc/ssl/institute/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers off;
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+  # the owner pages: only from addresses you trust
+  location ~ ^/(space|terminal|ops|api/owner|api/auth) {
+    # allow 203.0.113.0/24;     # your office or VPN
+    # deny  all;
+    proxy_pass http://web:80;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto https;
+  }
+
+  location / {
+    proxy_pass http://web:80;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto https;
+  }
+}

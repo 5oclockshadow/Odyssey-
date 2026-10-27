@@ -1,0 +1,53 @@
+{
+ "now": 1791540000,
+ "containers": [
+  {"daemon": "host", "id": "a1b2c3d4e5f6", "name": "web", "image": "threshold-web", "state": "running", "health": "", "started": "2026-10-08T21:02:11Z", "restarts": 0, "exit": 0, "ports": ["80→80"], "protected": true},
+  {"daemon": "host", "id": "b2c3d4e5f6a1", "name": "agent", "image": "threshold-agent", "state": "running", "health": "healthy", "started": "2026-10-08T21:02:19Z", "restarts": 0, "exit": 0, "ports": [], "protected": true},
+  {"daemon": "host", "id": "c3d4e5f6a1b2", "name": "ops", "image": "threshold-ops", "state": "running", "health": "healthy", "started": "2026-10-08T21:02:14Z", "restarts": 0, "exit": 0, "ports": [], "protected": true},
+  {"daemon": "host", "id": "d4e5f6a1b2c3", "name": "agent-dind", "image": "docker:27-dind", "state": "running", "health": "healthy", "started": "2026-10-08T21:01:58Z", "restarts": 0, "exit": 0, "ports": ["6006→6006"], "protected": true},
+  {"daemon": "host", "id": "e5f6a1b2c3d4", "name": "web-dind", "image": "docker:27-dind", "state": "running", "health": "healthy", "started": "2026-10-08T21:01:58Z", "restarts": 0, "exit": 0, "ports": [], "protected": true},
+  {"daemon": "agent", "id": "f6a1b2c3d4e5", "name": "phoenix", "image": "arizephoenix/phoenix:latest", "state": "running", "health": "", "started": "2026-10-08T21:03:40Z", "restarts": 0, "exit": 0, "ports": ["6006→6006", "4317→4317"], "protected": false},
+  {"daemon": "agent", "id": "0a1b2c3d4e5f", "name": "redis", "image": "redis:7-alpine", "state": "running", "health": "", "started": "2026-10-08T21:03:41Z", "restarts": 0, "exit": 0, "ports": ["6379→6379"], "protected": false},
+  {"daemon": "agent", "id": "1b2c3d4e5f6a", "name": "mcp-hub", "image": "threshold/hub:latest", "state": "running", "health": "healthy", "started": "2026-10-08T21:05:02Z", "restarts": 1, "exit": 0, "ports": ["8765→8765"], "protected": false},
+  {"daemon": "web", "id": "2c3d4e5f6a1b", "name": "app-regime-lens", "image": "threshold/app-regime-lens:1791500400", "state": "running", "health": "", "started": "2026-10-09T03:40:12Z", "restarts": 0, "exit": 0, "ports": ["8000→8101"], "protected": false},
+  {"daemon": "web", "id": "3d4e5f6a1b2c", "name": "app-lens-2", "image": "threshold/app-lens-2:1791520000", "state": "exited", "health": "", "started": "2026-10-09T07:11:30Z", "restarts": 3, "exit": 1, "ports": ["8000→8102"], "protected": false}
+ ],
+ "daemon_errors": {},
+ "engine": {"ok": true, "model": "anthropic/claude-sonnet-4-5", "concurrency": 4, "pending": 9, "sandbox": {"agent": true, "web": true}, "redis": true, "graph": {"nodes": 1842, "edges": 5210}},
+ "phoenix": "http://localhost:6006",
+ "spans": {
+  "spans": [
+   {"id": "span:1", "label": "round", "ms": 18420.5, "status": "OK", "kind": "drive", "ts": 1791539900},
+   {"id": "span:2", "label": "tools.web_search", "ms": 1210.3, "status": "OK", "kind": null, "ts": 1791539890},
+   {"id": "span:3", "label": "tools.fetch_url", "ms": 842.0, "status": "ERROR", "kind": null, "ts": 1791539880},
+   {"id": "span:4", "label": "sandbox.run", "ms": 41230.0, "status": "OK", "kind": null, "ts": 1791539700},
+   {"id": "span:5", "label": "round", "ms": 9112.0, "status": "OK", "kind": "research", "ts": 1791539600},
+   {"id": "span:6", "label": "tools.read_source", "ms": 3.2, "status": "OK", "kind": null, "ts": 1791539590},
+   {"id": "span:7", "label": "heal.locate", "ms": 12.4, "status": "OK", "kind": null, "ts": 1791539400}
+  ],
+  "logs": [
+   {"id": "log:1", "label": "mcp hub attached: ['servers_list', 'tools_list', 'tools_call', 'market_search', 'terminal_run']", "level": "INFO", "ts": 1791539000},
+   {"id": "log:2", "label": "KeyError: 'content-type' in fetch_url", "level": "ERROR", "ts": 1791539880}
+  ],
+  "incidents": [
+   {"id": "incident:7f3a9c2e1b", "type": "KeyError", "message": "'content-type'", "code": "code:tools.fetch_url", "status": "waiting", "outcome": "pr_opened", "ts": "2026-10-09T03:12:00+00:00"}
+  ]
+ },
+ "logs": {
+  "app-lens-2": "2026-10-09T07:11:31Z listening on :8000\n2026-10-09T07:11:44Z GET /data 200\n2026-10-09T07:12:02Z Traceback (most recent call last):\n2026-10-09T07:12:02Z   File \"main.py\", line 31, in handle\n2026-10-09T07:12:02Z     rows = json.load(open('data.json'))\n2026-10-09T07:12:02Z FileNotFoundError: [Errno 2] No such file or directory: 'data.json'",
+  "redis": "1:M 09 Oct 2026 08:58:01.003 * Background saving started\n1:M 09 Oct 2026 08:58:01.120 * DB saved on disk",
+  "agent": "INFO:     172.20.0.5:41222 - \"GET /health HTTP/1.1\" 200 OK\n[heal] incident:7f3a9c2e1b KeyError at code:tools.fetch_url attempt 1 → repair queued"
+ },
+ "files": {
+  "README.md": "# The Threshold Institute\n\nA self-running think tank. One agent, one Signature, one graph.\n\ncp .env.example .env\ndocker compose up -d\n",
+  "docker-compose.yml": "services:\n  agent:\n    build: .\n    read_only: true\n    mem_limit: 2g\n  ops:\n    build: apps/ops\n    volumes:\n      - ./:/workspace\n",
+  "apps/engine/institute.yaml": "model: anthropic/claude-sonnet-4-5\nconcurrency: 4\nresearch:\n  every_seconds: 30\n",
+  "apps/engine/tools.py": "def fetch_url(url: str, chars: int = 6000) -> str:\n    \"\"\"Fetch a web page and return its visible text.\"\"\"\n    r = httpx.get(url, timeout=20, follow_redirects=True)\n    if r.headers['content-type'].startswith('text'):\n        return r.text[:chars]\n    return ''\n",
+  "apps/mcp-hub/servers.json": "{\n \"servers\": {\n  \"filesystem\": {\"command\": \"npx\"}\n }\n}\n"
+ },
+ "chat": [
+  {"who": "ops", "text": "Two things need you. app-lens-2 (site docker) has exited with code 1 three times: data.json is missing, from main.py line 31. fetch_url raised a KeyError at 03:12 on a response without a content-type header; a pull request is open for it. Everything else is healthy: 8 of 10 containers running, Redis and Phoenix reachable.", "proposals": [
+   {"kind": "container", "why": "app-lens-2 has crashed three times on a missing data.json; restarting will not help until the file ships, but a remove clears the restart loop.", "daemon": "web", "name": "app-lens-2", "action": "remove", "path": "", "content": ""}
+  ]}
+ ]
+}

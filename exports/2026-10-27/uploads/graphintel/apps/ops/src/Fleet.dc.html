@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #f5f1e8; color: #1d1a15; font-family: "DM Sans", system-ui, sans-serif; font-size: 14px; }
+    a { color: #b8401b; text-decoration-color: #e9b5a2; text-underline-offset: 3px; } a:hover { color: #e4572e; }
+    ::selection { background: #f6c9b8; }
+    button, input, textarea, select { font: inherit; color: inherit; }
+    button { transition: background .15s, border-color .15s; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-thumb { background: #d9d0bd; border-radius: 4px; }
+    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.8); } }
+    @keyframes slide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  </style>
+</helmet>
+<div data-screen-label="Fleet console" style="min-height:100vh;background:#f5f1e8;color:#1d1a15;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;">
+  <header style="position:sticky;top:0;z-index:6;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:12px 20px;background:rgba(245,241,232,0.92);backdrop-filter:blur(8px);border-bottom:1px solid #e4ddcf;">
+    <span style="font:400 26px/1 'Instrument Serif',serif;letter-spacing:-0.01em;">Threshold <i style="color:#e4572e;">console</i></span><a href="/" target="_blank" style="font-size:12.5px;color:#7a7265;white-space:nowrap;">Institute site ↗</a><a href="{{ phoenix }}" target="_blank" style="font-size:12.5px;color:#7a7265;white-space:nowrap;">Phoenix ↗</a>
+    <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:#fff;border:1px solid #e4ddcf;font-size:13px;white-space:nowrap;"><span style="{{ beat }}"></span>{{ busy }}</span>
+    <div style="margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+      <span style="font-size:12px;color:#7a7265;white-space:nowrap;">{{ conn }}</span>
+      <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}"><button onClick="{{ logout }}" style="{{ ghost }}">Sign out</button></sc-if></div>
+  </header>
+
+  <sc-if value="{{ offline }}" hint-placeholder-val="{{ true }}"><div style="margin:24px auto;max-width:720px;padding:20px 22px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:12px;">
+    <b style="font:400 26px/1.1 'Instrument Serif',serif;">The engine is not answering</b>
+    <p style="margin:0;line-height:1.55;color:#5b5448;">This console shows only what the running Institute reports: its own work, its own sub-agents and its own graph. Nothing here is simulated, so with the engine down there is nothing to show.</p>
+    <pre style="margin:0;padding:12px 14px;border-radius:12px;background:#1d1a15;color:#e9e3d3;font:400 12px/1.7 'JetBrains Mono',monospace;white-space:pre-wrap;">cp .env.example .env   # set OWNER_PASSWORD and ANTHROPIC_API_KEY
+docker compose up -d   # web, agent, ops, two dockers
+open http://localhost/terminal</pre>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;"><input value="{{ api }}" onChange="{{ onApi }}" style="{{ fld }}min-width:240px;" placeholder="/api or http://localhost:8000"></input><button onClick="{{ reload }}" style="{{ btnOn }}">Retry</button></div>
+    <span style="font-size:12.5px;color:#7a7265;">{{ err }}</span></div></sc-if>
+
+  <sc-if value="{{ needLogin }}" hint-placeholder-val="{{ false }}"><div style="margin:24px auto;max-width:380px;padding:20px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:10px;"><b style="font:400 24px 'Instrument Serif',serif;">Owner sign-in</b><span style="color:#7a7265;font-size:13px;line-height:1.5;">OWNER_PASSWORD from your .env.</span><input type="password" value="{{ pw }}" onChange="{{ onPw }}" onKeyDown="{{ pwKey }}" placeholder="Owner password" style="{{ fld }}"></input><sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}"><span style="color:#b8401b;">{{ err }}</span></sc-if><button onClick="{{ login }}" style="{{ btnOn }}">Sign in</button></div></sc-if>
+
+  <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-wrap:wrap;gap:16px;padding:16px 20px 40px;align-items:flex-start;">
+
+    <aside style="flex:1 1 250px;max-width:340px;display:grid;gap:10px;position:sticky;top:76px;">
+      <span style="font-size:11px;letter-spacing:0.07em;color:#7a7265;">STAFF</span>
+      <div style="display:grid;gap:4px;"><sc-for list="{{ roster }}" as="r" hint-placeholder-count="2">
+        <button onClick="{{ r.pick }}" style="{{ r.st }}"><span style="{{ r.av }}">{{ r.ini }}</span>
+          <span style="min-width:0;display:grid;gap:3px;text-align:left;"><span style="display:flex;align-items:center;gap:6px;"><b style="font-weight:600;">{{ r.name }}</b><span style="{{ r.badge }}">{{ r.status }}</span></span>
+            <span style="font-size:12px;color:#7a7265;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.now }}</span>
+            <sc-if value="{{ r.hasFrom }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:#b8401b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">staffs {{ r.from }}</span></sc-if></span></button></sc-for></div>
+      <sc-if value="{{ aloneNote }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 12px;border-radius:12px;background:#ece6d6;font-size:12.5px;line-height:1.5;color:#5b5448;">No sub-agents yet. The brain holds a staffing round every {{ staffMins }} minutes: it reads the questions in its own graph that nothing is watching and hires for one of them if a standing watch would settle it.</div></sc-if>
+      <button onClick="{{ newAgent }}" style="{{ btn }}border-style:dashed;">+ New sub-agent</button>
+      <span style="font-size:12px;color:#7a7265;line-height:1.5;">{{ agentCount }}. Child runs in the brain's docker, sibling beside the apps.</span>
+    </aside>
+
+    <section style="flex:3 1 520px;min-width:0;display:grid;gap:14px;">
+      <nav style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.fn }}" style="{{ t.st }}">{{ t.label }}<span style="{{ t.badge }}">{{ t.n }}</span></button></sc-for></nav>
+
+      <sc-if value="{{ needsYou }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:8px;padding:12px 14px;border-radius:14px;background:#fff4ee;border:1px solid #f0c3b3;">
+        <b style="font-size:12px;color:#b8401b;letter-spacing:0.05em;">WAITING ON YOU</b>
+        <sc-for list="{{ approvals }}" as="a" hint-placeholder-count="1"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;"><span style="flex:1 1 240px;line-height:1.4;">{{ a.title }}<span style="display:block;font-size:12px;color:#7a7265;">{{ a.note }}</span></span><button onClick="{{ a.yes }}" style="{{ btnOn }}">{{ a.yesLabel }}</button><button onClick="{{ a.no }}" style="{{ btn }}">{{ a.noLabel }}</button></div></sc-for></div></sc-if>
+
+      <sc-if value="{{ isWork }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ boardEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:16px 18px;border-radius:14px;background:#fffdf8;border:1px solid #e4ddcf;color:#5b5448;line-height:1.55;">The engine is up and has not queued anything yet. It researches each topic at boot, so work appears within a minute; the staffing round runs {{ staffAfter }} after start.</div></sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px;align-items:start;">
+          <sc-for list="{{ cols }}" as="c" hint-placeholder-count="3"><div style="display:grid;gap:8px;padding:12px;border-radius:16px;background:#ece6d6;">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="{{ c.dot }}"></span><b style="font-size:13px;">{{ c.title }}</b><span style="margin-left:auto;font-size:12px;color:#7a7265;">{{ c.n }}</span></div>
+            <sc-if value="{{ c.empty }}" hint-placeholder-val="{{ false }}"><span style="color:#8b8372;font-size:13px;padding:4px 2px;">Nothing here.</span></sc-if>
+            <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="2"><div style="padding:10px 12px;border-radius:12px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:6px;animation:slide .3s;">
+              <span style="line-height:1.35;font-weight:500;">{{ t.title }}</span>
+              <sc-if value="{{ t.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:#5b5448;line-height:1.45;">{{ t.note }}</span></sc-if>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;color:#7a7265;"><span style="{{ t.chip }}">{{ t.who }}</span><span>{{ t.when }}</span><sc-if value="{{ t.hasE }}" hint-placeholder-val="{{ false }}"><span style="{{ t.eSt }}">ΔE {{ t.e }}</span></sc-if></div></div></sc-for></div></sc-for></div>
+      </sc-if>
+
+      <sc-if value="{{ isLive }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:10px;padding:14px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"><span style="font-size:12px;color:#7a7265;">Show</span><sc-for list="{{ filters }}" as="f" hint-placeholder-count="3"><button onClick="{{ f.fn }}" style="{{ f.st }}">{{ f.label }}</button></sc-for></div>
+          <div style="display:grid;gap:8px;max-height:56vh;overflow-y:auto;padding-right:4px;">
+            <sc-if value="{{ noFeed }}" hint-placeholder-val="{{ false }}"><span style="color:#8b8372;line-height:1.5;">Nothing said yet. Sub-agents report here when they find something, the brain assigns and thinks aloud, and your messages land here too.</span></sc-if>
+            <sc-for list="{{ feed }}" as="m" hint-placeholder-count="3"><div style="{{ m.row }}"><div style="{{ m.bubble }}"><div style="display:flex;gap:6px;align-items:baseline;font-size:11.5px;margin-bottom:2px;"><b style="color:{{ m.c }};">{{ m.from }}</b><span style="color:#8b8372;">→ {{ m.to }}</span><span style="margin-left:auto;color:#a39b89;font-family:'JetBrains Mono',monospace;">{{ m.time }}</span></div><span style="{{ m.txt }}">{{ m.text }}</span></div></div></sc-for></div>
+          <div style="display:flex;gap:8px;"><input value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ draftKey }}" placeholder="Message SEXTANT" style="{{ fld }}flex:1;min-width:0;"></input><button onClick="{{ send }}" style="{{ btnOn }}">{{ sendLabel }}</button></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isMind }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 18px;border-radius:16px;background:#1d1a15;color:#f0ebdd;display:grid;gap:12px;">
+          <span style="font-size:11px;letter-spacing:0.07em;color:#a39b89;">THE THING THAT DOES THE THINKING</span>
+          <p style="margin:0;font:400 20px/1.4 'Instrument Serif',serif;max-width:60ch;">Intelligence lives in the graph seed and the cognition layer, not the weights. {{ mindLine }}</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;"><sc-for list="{{ mindStats }}" as="k" hint-placeholder-count="4"><div style="display:grid;gap:2px;"><span style="font:400 28px/1 'Instrument Serif',serif;color:#f6c9b8;">{{ k.v }}</span><span style="font-size:11.5px;color:#a39b89;">{{ k.l }}</span></div></sc-for></div>
+          <sc-if value="{{ hasEnergy }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:4px;"><span style="font-size:11px;letter-spacing:0.06em;color:#a39b89;">CONSISTENCY ENERGY, LAST {{ energyN }} ROUNDS</span>
+            <div style="display:flex;align-items:flex-end;gap:2px;height:54px;"><sc-for list="{{ energy }}" as="e" hint-placeholder-count="0"><span title="{{ e.title }}" style="{{ e.st }}"></span></sc-for></div>
+            <span style="font-size:11.5px;color:#a39b89;">{{ energyNote }}</span></div></sc-if>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;">
+          <sc-for list="{{ mindCols }}" as="c" hint-placeholder-count="2"><div style="padding:14px 16px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:8px;align-content:start;">
+            <div style="display:flex;align-items:baseline;gap:8px;"><b style="font:400 20px 'Instrument Serif',serif;">{{ c.title }}</b><span style="font-size:12px;color:#7a7265;">{{ c.sub }}</span></div>
+            <sc-if value="{{ c.empty }}" hint-placeholder-val="{{ false }}"><span style="color:#8b8372;font-size:13px;">{{ c.emptyText }}</span></sc-if>
+            <sc-for list="{{ c.items }}" as="i" hint-placeholder-count="3"><div style="display:grid;gap:3px;padding:8px 0;border-top:1px solid #efe9da;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;"><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#b8401b;">{{ i.id }}</span><sc-if value="{{ i.hasTag }}" hint-placeholder-val="{{ false }}"><span style="{{ tag }}">{{ i.tag }}</span></sc-if></div>
+              <span style="line-height:1.4;">{{ i.label }}</span>
+              <sc-if value="{{ i.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#7a7265;line-height:1.4;">{{ i.sub }}</span></sc-if></div></sc-for></div></sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isLabs }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ noLabs }}" hint-placeholder-val="{{ false }}"><div style="padding:16px 18px;border-radius:14px;background:#fffdf8;border:1px solid #e4ddcf;color:#5b5448;line-height:1.55;">No labs configured. They live in apps/engine/labs.yaml.</div></sc-if>
+        <sc-for list="{{ labs }}" as="L" hint-placeholder-count="2"><div style="display:grid;gap:12px;padding:16px 18px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;"><b style="font:400 24px 'Instrument Serif',serif;">{{ L.title }}</b><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#b8401b;">{{ L.question }}</span><span style="margin-left:auto;font-size:12px;color:#7a7265;">{{ L.counts }}</span></div>
+          <p style="margin:0;line-height:1.55;color:#5b5448;max-width:72ch;">{{ L.brief }}</p>
+          <div style="padding:10px 12px;border-radius:12px;background:#fff4ee;border:1px solid #f0c3b3;display:grid;gap:3px;"><span style="font-size:11px;letter-spacing:0.06em;color:#b8401b;">WHAT THIS LAB CANNOT DO</span><span style="line-height:1.55;font-size:13px;color:#5b5448;">{{ L.honest }}</span></div>
+          <sc-if value="{{ L.hasTarget }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:3px;"><div style="display:flex;justify-content:space-between;font-size:12px;color:#7a7265;"><span>Programme target</span><span style="font-family:'JetBrains Mono',monospace;">{{ L.progress }}</span></div><div style="height:7px;border-radius:4px;background:#ebe4d3;"><div style="height:100%;border-radius:4px;width:{{ L.pct }};background:#e4572e;"></div></div></div></sc-if>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;"><sc-for list="{{ L.phases }}" as="p" hint-placeholder-count="3"><div style="padding:10px 12px;border-radius:12px;background:#f5f1e8;display:grid;gap:4px;align-content:start;"><div style="display:flex;gap:6px;align-items:baseline;"><b style="font-size:13px;">{{ p.name }}</b><span style="margin-left:auto;{{ tag }}">{{ p.at }}</span></div><span style="font-size:12px;color:#7a7265;line-height:1.45;">{{ p.exit_test }}</span></div></sc-for></div>
+          <sc-if value="{{ L.noCands }}" hint-placeholder-val="{{ false }}"><span style="color:#8b8372;font-size:13px;">No candidates yet. The agent proposes them in its own lab rounds.</span></sc-if>
+          <div style="display:grid;gap:6px;"><sc-for list="{{ L.candidates }}" as="c" hint-placeholder-count="0"><div style="display:grid;gap:5px;padding:10px 12px;border-radius:12px;border:1px solid #e4ddcf;background:#fffdf8;">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;"><span style="{{ c.dot }}"></span><b style="font-weight:600;">{{ c.id }}</b><span style="min-width:0;flex:1 1 180px;color:#5b5448;overflow:hidden;text-overflow:ellipsis;">{{ c.label }}</span><span style="{{ c.stSt }}">{{ c.state }}</span><span style="{{ tag }}">phase {{ c.phase }}</span></div>
+            <sc-if value="{{ c.hasReport }}" hint-placeholder-val="{{ false }}"><span style="font:400 11.5px/1.6 'JetBrains Mono',monospace;color:#5b5448;word-break:break-word;">{{ c.report }}</span></sc-if>
+            <sc-if value="{{ c.hasEvidence }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#7a7265;line-height:1.45;">{{ c.evidence }}</span></sc-if>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-if value="{{ c.canRun }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.run }}" style="{{ mini }}">{{ c.runLabel }}</button></sc-if><button onClick="{{ c.close }}" style="{{ mini }}color:#b8401b;">Close</button></div></div></sc-for></div>
+          <sc-if value="{{ L.hasRuns }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:3px;"><span style="font-size:11px;letter-spacing:0.06em;color:#7a7265;">RECENT RUNS</span><div style="padding:8px 10px;border-radius:12px;background:#1d1a15;color:#e9e3d3;font:400 11.5px/1.6 'JetBrains Mono',monospace;display:grid;gap:1px;max-height:200px;overflow:auto;"><sc-for list="{{ L.runs }}" as="r" hint-placeholder-count="0"><div style="display:flex;gap:8px;"><span style="color:#8b8372;flex:none;">{{ r.time }}</span><span style="{{ r.st }}">{{ r.text }}</span></div></sc-for></div></div></sc-if>
+        </div></sc-for>
+      </sc-if>
+
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;"><b style="font:400 22px 'Instrument Serif',serif;">Display</b><span style="color:#7a7265;font-size:13px;">Arranged by you and by SEXTANT; the tag shows who changed it last.</span><button onClick="{{ toggleEdit }}" style="{{ btn }}margin-left:auto;">{{ editLabel }}</button></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;grid-auto-flow:dense;">
+          <sc-for list="{{ widgets }}" as="w" hint-placeholder-count="3"><section style="{{ w.st }}">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b>{{ w.title }}</b><span style="{{ tag }}">{{ w.by }}</span><span style="margin-left:auto;color:#a39b89;font-size:11px;">{{ w.count }}</span></div>
+            <sc-if value="{{ w.isList }}" hint-placeholder-val="{{ true }}"><div style="display:grid;"><sc-for list="{{ w.rows }}" as="r" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:6px 0;border-top:1px solid #efe9da;"><span style="min-width:0;display:grid;"><sc-if value="{{ r.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ r.link }}" target="_blank" style="overflow:hidden;text-overflow:ellipsis;">{{ r.t }}</a></sc-if><sc-if value="{{ r.noLink }}" hint-placeholder-val="{{ true }}"><span style="overflow:hidden;text-overflow:ellipsis;">{{ r.t }}</span></sc-if><span style="font-size:11.5px;color:#8b8372;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.s }}</span></span><sc-if value="{{ r.hasTag }}" hint-placeholder-val="{{ false }}"><span style="{{ r.tagSt }}">{{ r.tag }}</span></sc-if></div></sc-for></div></sc-if>
+            <sc-if value="{{ w.isTiles }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;"><sc-for list="{{ w.rows }}" as="r" hint-placeholder-count="0"><div style="padding:8px 10px;border-radius:10px;background:#f5f1e8;display:grid;gap:2px;min-width:0;"><span style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.t }}</span><sc-if value="{{ r.hasTag }}" hint-placeholder-val="{{ false }}"><span style="{{ r.tagSt }}">{{ r.tag }}</span></sc-if></div></sc-for></div></sc-if>
+            <sc-if value="{{ w.isBars }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:6px;"><sc-for list="{{ w.rows }}" as="r" hint-placeholder-count="0"><div style="display:grid;gap:2px;"><div style="display:flex;justify-content:space-between;gap:8px;font-size:12.5px;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.t }}</span><span style="font-family:'JetBrains Mono',monospace;color:#7a7265;">{{ r.tag }}</span></div><div style="height:7px;border-radius:4px;background:#ebe4d3;"><div style="height:100%;border-radius:4px;width:{{ r.bar }};background:#e4572e;"></div></div></div></sc-for></div></sc-if>
+            <sc-if value="{{ w.empty }}" hint-placeholder-val="{{ false }}"><span style="color:#8b8372;">{{ w.emptyText }}</span></sc-if>
+            <sc-if value="{{ edit }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:4px;padding-top:8px;border-top:1px dashed #d9d0bd;"><input value="{{ w.title }}" onChange="{{ w.rename }}" style="{{ fld }}min-height:30px;flex:1 1 100px;min-width:0;"></input><button onClick="{{ w.view }}" style="{{ mini }}">{{ w.viewLabel }}</button><button onClick="{{ w.size }}" style="{{ mini }}">size {{ w.sizeN }}</button><button onClick="{{ w.up }}" style="{{ mini }}">↑</button><button onClick="{{ w.down }}" style="{{ mini }}">↓</button><button onClick="{{ w.toggle }}" style="{{ mini }}">{{ w.onLabel }}</button><button onClick="{{ w.del }}" style="{{ mini }}color:#b8401b;">×</button></div></sc-if></section></sc-for></div>
+        <sc-if value="{{ edit }}" hint-placeholder-val="{{ false }}"><div style="padding:12px;border-radius:14px;border:1px dashed #d9d0bd;display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><b style="font-size:13px;">Add a widget</b><select value="{{ nw.type }}" onChange="{{ nwType }}" style="{{ fld }}"><option value="trends">Google Trends</option><option value="signals">Signals feed</option><option value="fleet">Sub-agents</option><option value="vitals">Brain vitals</option><option value="note">Note</option></select><input value="{{ nw.arg }}" onChange="{{ nwArg }}" placeholder="{{ nwHint }}" style="{{ fld }}flex:1 1 160px;min-width:0;"></input><button onClick="{{ addWidget }}" style="{{ btnOn }}">Add</button></div></sc-if>
+      </sc-if>
+
+      <sc-if value="{{ isSignals }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px;border-radius:14px;background:#fffdf8;border:1px solid #e4ddcf;"><select value="{{ ns.kind }}" onChange="{{ nsKind }}" style="{{ fld }}"><option value="rss">RSS / Atom feed</option><option value="trends">Google Trends</option></select><input value="{{ ns.target }}" onChange="{{ nsTarget }}" placeholder="{{ nsHint }}" style="{{ fld }}flex:1 1 200px;min-width:0;"></input><input value="{{ ns.label }}" onChange="{{ nsLabel }}" placeholder="label (optional)" style="{{ fld }}flex:1 1 110px;min-width:0;"></input><input type="number" value="{{ ns.every }}" onChange="{{ nsEvery }}" style="{{ fld }}width:84px;"></input><button onClick="{{ addSource }}" style="{{ btnOn }}">Watch</button></div>
+        <div style="display:grid;gap:6px;"><sc-for list="{{ sources }}" as="s" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;background:#fffdf8;border:1px solid #e4ddcf;opacity:{{ s.op }};"><div style="min-width:0;display:grid;gap:3px;"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="{{ s.dot }}"></span><b>{{ s.label }}</b><span style="{{ tag }}">{{ s.kind }}</span><span style="{{ tag }}">{{ s.by }}</span></div><span style="font-size:12px;color:#7a7265;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ s.detail }}</span></div><div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;"><button onClick="{{ s.run }}" style="{{ mini }}">Run now</button><button onClick="{{ s.toggle }}" style="{{ mini }}">{{ s.onLabel }}</button><sc-if value="{{ s.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ s.del }}" style="{{ mini }}color:#b8401b;">×</button></sc-if></div></div></sc-for></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><b style="font:400 20px 'Instrument Serif',serif;">Trending now</b><input value="{{ geo }}" onChange="{{ onGeo }}" maxlength="2" style="{{ fld }}width:56px;text-transform:uppercase;"></input><button onClick="{{ loadTrends }}" style="{{ btn }}">Load</button><span style="color:#7a7265;font-size:12px;">{{ trendNote }}</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:6px;"><sc-for list="{{ trends }}" as="r" hint-placeholder-count="0"><a href="{{ r.link }}" target="_blank" style="padding:9px 12px;border-radius:12px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:2px;color:#1d1a15;text-decoration:none;"><span style="display:flex;justify-content:space-between;gap:8px;"><b style="font-weight:500;">{{ r.t }}</b><span style="font-family:'JetBrains Mono',monospace;color:#b8401b;font-size:12px;">{{ r.tag }}</span></span><span style="font-size:12px;color:#7a7265;">{{ r.s }}</span></a></sc-for></div>
+      </sc-if>
+      <sc-if value="{{ isApi }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;"><sc-for list="{{ apiKpis }}" as="k" hint-placeholder-count="4"><div style="padding:14px 16px;border-radius:14px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:2px;"><span style="font:400 30px/1 'Instrument Serif',serif;color:{{ k.c }};">{{ k.v }}</span><span style="font-size:12px;color:#7a7265;">{{ k.l }}</span></div></sc-for></div>
+        <div style="padding:12px 14px;border-radius:14px;background:#fff4ee;border:1px solid #f0c3b3;font-size:13px;line-height:1.55;color:#5b5448;">Earnings are summed from real metered calls, nothing is invented. The point of the sheet is the rung mix: most calls answered on CPU rungs cost cents. The public /v1 API meters each call; while it is off, this sheet stays at zero.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px;border-radius:14px;background:#fffdf8;border:1px solid #e4ddcf;"><input value="{{ nt.name }}" onChange="{{ ntName }}" placeholder="tenant name" style="{{ fld }}flex:1 1 160px;min-width:0;"></input><select value="{{ nt.plan }}" onChange="{{ ntPlan }}" style="{{ fld }}"><sc-for list="{{ planOpts }}" as="p" hint-placeholder-count="2"><option value="{{ p.id }}">{{ p.label }}</option></sc-for></select><input type="number" value="{{ nt.cap_usd }}" onChange="{{ ntCap }}" style="{{ fld }}width:110px;" placeholder="cap $"></input><button onClick="{{ addTenant }}" style="{{ btnOn }}">New tenant</button></div>
+        <sc-if value="{{ secretShown }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 12px;border-radius:12px;background:#1d1a15;color:#9be3b5;font:400 12px/1.6 'JetBrains Mono',monospace;word-break:break-all;">New key (shown once): {{ secret }}<button onClick="{{ hideSecret }}" style="{{ mini }}margin-left:8px;color:#e9e3d3;background:transparent;">dismiss</button></div></sc-if>
+        <sc-if value="{{ noTenants }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;border-radius:12px;border:1px dashed #d9d0bd;color:#8b8372;">No tenants yet.</div></sc-if>
+        <div style="overflow-x:auto;"><table style="width:100%;min-width:620px;border-collapse:collapse;font-size:13px;"><thead><tr style="text-align:left;color:#7a7265;font-size:11px;letter-spacing:0.05em;"><th style="padding:6px 10px;">TENANT</th><th style="padding:6px 10px;">PLAN</th><th style="padding:6px 10px;">CALLS</th><th style="padding:6px 10px;">METERED</th><th style="padding:6px 10px;">TOTAL</th><th style="padding:6px 10px;">KEY</th><th style="padding:6px 10px;"></th></tr></thead><tbody>
+          <sc-for list="{{ tenants }}" as="t" hint-placeholder-count="2"><tr style="border-top:1px solid #efe9da;"><td style="padding:8px 10px;"><b>{{ t.name }}</b><span style="display:block;font-size:11px;color:#8b8372;">{{ t.sub }}</span></td><td style="padding:8px 10px;">{{ t.plan }}</td><td style="padding:8px 10px;font-family:'JetBrains Mono',monospace;">{{ t.calls }}</td><td style="padding:8px 10px;font-family:'JetBrains Mono',monospace;">{{ t.metered }}</td><td style="padding:8px 10px;font-family:'JetBrains Mono',monospace;color:#b8401b;">{{ t.total }}</td><td style="padding:8px 10px;font-family:'JetBrains Mono',monospace;color:#8b8372;">…{{ t.last4 }}</td><td style="padding:8px 10px;"><button onClick="{{ t.rotate }}" style="{{ mini }}">Rotate</button> <button onClick="{{ t.toggle }}" style="{{ mini }}">{{ t.onLabel }}</button> <button onClick="{{ t.del }}" style="{{ mini }}color:#b8401b;">×</button></td></tr></sc-for></tbody></table></div>
+        <div><span style="font-size:11px;letter-spacing:0.06em;color:#7a7265;">PRICE PER CALL BY RUNG · THE CHEAP BRAIN, PRICED</span><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;"><sc-for list="{{ rungPrices }}" as="r" hint-placeholder-count="5"><span style="{{ tag }}">{{ r.label }}</span></sc-for></div></div>
+      </sc-if>
+
+      <sc-if value="{{ isSite }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;"><b style="font:400 22px 'Instrument Serif',serif;">Site & shipped apps</b><span style="color:#7a7265;font-size:13px;">Apps the agent built, running in the site's docker. Open, relaunch or remove each.</span></div>
+        <sc-if value="{{ noApps }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;border-radius:12px;border:1px dashed #d9d0bd;color:#8b8372;line-height:1.5;">No apps shipped yet. The agent ships them with its sandbox; they appear here and under /a/&lt;port&gt;/ on the site.</div></sc-if>
+        <div style="display:grid;gap:8px;"><sc-for list="{{ apps }}" as="a" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;background:#fffdf8;border:1px solid #e4ddcf;"><div style="min-width:0;display:grid;gap:3px;"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="{{ a.dot }}"></span><b>{{ a.name }}</b><span style="{{ tag }}">{{ a.language }}</span><span style="{{ tag }}">port {{ a.port }}</span></div><span style="font-size:12px;color:#7a7265;">{{ a.meta }}</span></div><div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;"><a href="{{ a.url }}" target="_blank" style="{{ mini }}text-decoration:none;display:inline-flex;align-items:center;">Open</a><button onClick="{{ a.relaunch }}" style="{{ mini }}">Relaunch</button><button onClick="{{ a.remove }}" style="{{ mini }}color:#b8401b;">Remove</button></div></div></sc-for></div>
+        <div style="padding:12px 14px;border-radius:14px;background:#ece6d6;font-size:13px;line-height:1.55;color:#5b5448;">The site's own code lives in the repository (apps/web, apps/site). To change it, edit there and redeploy, or ask SEXTANT to plan an upgrade; its code is read-only to it and every change is a reviewed pull request.</div>
+      </sc-if>
+
+      <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ hasConfig }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;">
+          <div style="padding:14px 16px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:7px;align-content:start;"><b style="font:400 20px 'Instrument Serif',serif;">Engine</b><sc-for list="{{ cfgRows }}" as="r" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;border-top:1px solid #efe9da;padding-top:6px;"><span style="color:#7a7265;">{{ r.k }}</span><span style="font-family:'JetBrains Mono',monospace;text-align:right;min-width:0;">{{ r.v }}</span></div></sc-for></div>
+          <div style="padding:14px 16px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:8px;align-content:start;"><b style="font:400 20px 'Instrument Serif',serif;">Session</b><sc-for list="{{ sessRows }}" as="r" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;border-top:1px solid #efe9da;padding-top:6px;"><span style="color:#7a7265;">{{ r.k }}</span><span style="font-family:'JetBrains Mono',monospace;text-align:right;">{{ r.v }}</span></div></sc-for>
+            <button onClick="{{ logout }}" style="{{ btn }}">End this session</button>
+            <span style="font-size:12px;color:#7a7265;line-height:1.5;">The owner password is set in .env (OWNER_PASSWORD, or OWNER_PASSWORD_HASH for a hashed one). To change it, update .env and restart; this console cannot write your secrets.</span></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;"><b style="font:400 20px 'Instrument Serif',serif;">MCP servers</b><span style="color:#7a7265;font-size:13px;">Tools behind the agent's hub. You and SEXTANT install and remove the same ones.</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px;border-radius:14px;background:#fffdf8;border:1px solid #e4ddcf;"><input value="{{ mcpName }}" onChange="{{ onMcp }}" placeholder="server name from the market" style="{{ fld }}flex:1 1 200px;min-width:0;"></input><button onClick="{{ installMcp }}" style="{{ btnOn }}">Install</button></div>
+        <sc-if value="{{ noServers }}" hint-placeholder-val="{{ false }}"><div style="padding:14px;border-radius:12px;border:1px dashed #d9d0bd;color:#8b8372;line-height:1.5;">{{ serversNote }}</div></sc-if>
+        <div style="display:grid;gap:6px;"><sc-for list="{{ servers }}" as="m" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;background:#fffdf8;border:1px solid #e4ddcf;"><div style="min-width:0;"><b>{{ m.name }}</b><span style="display:block;font-size:12px;color:#7a7265;overflow:hidden;text-overflow:ellipsis;">{{ m.detail }}</span></div><button onClick="{{ m.remove }}" style="{{ mini }}color:#b8401b;">Remove</button></div></sc-for></div>
+        </sc-if>
+      </sc-if>
+
+    </section>
+
+    <aside style="flex:1.2 1 320px;max-width:440px;display:grid;gap:12px;position:sticky;top:76px;">
+      <sc-if value="{{ showNew }}" hint-placeholder-val="{{ false }}"><div style="padding:14px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:8px;">
+        <b style="font:400 22px 'Instrument Serif',serif;">New sub-agent</b>
+        <input value="{{ na.name }}" onChange="{{ naName }}" placeholder="name (a-z, 0-9, -)" style="{{ fld }}"></input><input value="{{ na.role }}" onChange="{{ naRole }}" placeholder="role, e.g. energy watcher" style="{{ fld }}"></input>
+        <select value="{{ na.from_node }}" onChange="{{ naFrom }}" style="{{ fld }}"><option value="">serves nothing in particular</option><sc-for list="{{ nodeOpts }}" as="n" hint-placeholder-count="0"><option value="{{ n.id }}">{{ n.label }}</option></sc-for></select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><select value="{{ na.where }}" onChange="{{ naWhere }}" style="{{ fld }}"><option value="child">child</option><option value="sibling">sibling</option></select><select value="{{ na.parent }}" onChange="{{ naParent }}" style="{{ fld }}"><option value="">no parent</option><sc-for list="{{ parentOpts }}" as="p" hint-placeholder-count="0"><option value="{{ p.id }}">under {{ p.id }}</option></sc-for></select></div>
+        <textarea value="{{ na.prompt }}" onChange="{{ naPrompt }}" rows="3" placeholder="Its one job, and what is worth sending to the brain" style="{{ fld }}resize:vertical;"></textarea>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ naChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div>
+        <button onClick="{{ createAgent }}" style="{{ btnOn }}">Create</button></div></sc-if>
+
+      <sc-if value="{{ showInspector }}" hint-placeholder-val="{{ true }}"><div style="padding:14px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;"><span style="{{ ins.av }}">{{ ins.ini }}</span><div style="min-width:0;display:grid;"><b style="font:400 24px/1.1 'Instrument Serif',serif;">{{ ins.name }}</b><span style="color:#7a7265;font-size:13px;">{{ ins.role }}</span></div></div>
+        <sc-if value="{{ ins.hasFrom }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 12px;border-radius:12px;background:#fff4ee;border:1px solid #f0c3b3;display:grid;gap:3px;"><span style="font-size:11px;letter-spacing:0.06em;color:#b8401b;">HIRED BY THE RESEARCH</span><span style="line-height:1.4;">{{ ins.fromLabel }}</span><span style="font-size:12px;color:#7a7265;line-height:1.4;">{{ ins.why }}</span></div></sc-if>
+        <div style="padding:10px 12px;border-radius:12px;background:#f5f1e8;display:grid;gap:4px;"><span style="font-size:11px;letter-spacing:0.06em;color:#7a7265;">NOW</span><span style="line-height:1.4;">{{ ins.now }}</span></div>
+        <div style="font-size:12px;color:#7a7265;line-height:1.55;">{{ ins.meta }}</div>
+        <sc-if value="{{ ins.hasPrompt }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#5b5448;line-height:1.5;">{{ ins.prompt }}</div></sc-if>
+        <sc-if value="{{ ins.isAgent }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><button onClick="{{ ins.toggle }}" style="{{ mini }}">{{ ins.toggleLabel }}</button><button onClick="{{ ins.restart }}" style="{{ mini }}">Restart</button><button onClick="{{ ins.edit }}" style="{{ mini }}">{{ ins.editLabel }}</button><button onClick="{{ ins.del }}" style="{{ mini }}color:#b8401b;">{{ ins.delLabel }}</button></div></sc-if>
+        <sc-if value="{{ ins.editing }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:8px;padding:10px;border-radius:12px;border:1px dashed #d9d0bd;">
+          <input value="{{ ed.role }}" onChange="{{ edRole }}" placeholder="role" style="{{ fld }}"></input><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><select value="{{ ed.where }}" onChange="{{ edWhere }}" style="{{ fld }}"><option value="child">child</option><option value="sibling">sibling</option></select><input type="number" value="{{ ed.every }}" onChange="{{ edEvery }}" style="{{ fld }}"></input></div>
+          <textarea value="{{ ed.prompt }}" onChange="{{ edPrompt }}" rows="3" style="{{ fld }}resize:vertical;"></textarea><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ edChips }}" as="c" hint-placeholder-count="0"><button onClick="{{ c.fn }}" style="{{ c.st }}">{{ c.label }}</button></sc-for></div><button onClick="{{ saveEdit }}" style="{{ btnOn }}">Save</button></div></sc-if>
+        <div style="display:flex;gap:6px;"><input value="{{ tell }}" onChange="{{ onTell }}" onKeyDown="{{ tellKey }}" placeholder="{{ tellHint }}" style="{{ fld }}flex:1;min-width:0;"></input><button onClick="{{ sendTell }}" style="{{ btn }}">Send</button></div>
+        <div style="display:grid;gap:4px;"><span style="font-size:11px;letter-spacing:0.06em;color:#7a7265;">{{ ins.logTitle }}</span>
+          <div style="max-height:300px;overflow-y:auto;padding:8px 10px;border-radius:12px;background:#1d1a15;color:#e9e3d3;font:400 11.5px/1.6 'JetBrains Mono',monospace;display:grid;gap:1px;">
+            <sc-if value="{{ noLogs }}" hint-placeholder-val="{{ true }}"><span style="color:#8b8372;">{{ logEmpty }}</span></sc-if>
+            <sc-for list="{{ logs }}" as="l" hint-placeholder-count="0"><div style="display:flex;gap:8px;"><span style="color:#8b8372;flex:none;">{{ l.time }}</span><span style="{{ l.st }}">{{ l.text }}</span></div></sc-for></div></div>
+      </div></sc-if>
+    </aside>
+  </div>
+  </sc-if>
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);padding:10px 18px;border-radius:999px;background:#1d1a15;color:#f5f1e8;font-size:13px;max-width:90vw;z-index:9;">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const P = { acc: '#e4572e', grn: '#2e7d5b', ink: '#1d1a15' };
+const PAL = ['#3b5bdb', '#2e7d5b', '#c98a1b', '#8a4fd6', '#0f8ba8', '#c2417a'];
+const short = n => String(n).replace(/^sub:/, '') || '?';
+const colorOf = n => { const s = short(n); return s === 'SEXTANT' || s === 'sextant' ? P.acc : s === 'owner' || s === 'you' ? P.ink : PAL[[...s].reduce((a, c) => a + c.charCodeAt(0), 0) % PAL.length]; };
+const clock = t => new Date(t * (t > 1e11 ? 1 : 1000)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+const ago = t => { if (!t) return 'never'; const s = Math.max(0, Date.now() / 1000 - (t > 1e11 ? t / 1000 : t)); return s < 90 ? Math.round(s) + 's ago' : s < 5400 ? Math.round(s / 60) + 'm ago' : s < 129600 ? Math.round(s / 3600) + 'h ago' : Math.round(s / 86400) + 'd ago'; };
+const CSS = { fld: "min-height:38px;padding:6px 12px;background:#fff;border:1px solid #ddd4c0;border-radius:10px;outline:none;font-size:13.5px;box-sizing:border-box;", btn: "min-height:38px;padding:0 16px;background:#fff;border:1px solid #ddd4c0;border-radius:10px;cursor:pointer;font-weight:500;white-space:nowrap;", btnOn: "min-height:38px;padding:0 18px;background:#e4572e;border:1px solid #e4572e;border-radius:10px;color:#fff;font-weight:600;cursor:pointer;white-space:nowrap;", ghost: "min-height:32px;padding:0 12px;background:transparent;border:1px solid #d9d0bd;border-radius:999px;cursor:pointer;font-size:12.5px;white-space:nowrap;", mini: "min-height:30px;padding:0 11px;background:#fff;border:1px solid #ddd4c0;border-radius:8px;cursor:pointer;font-size:12.5px;white-space:nowrap;", tag: "padding:1px 8px;border-radius:999px;background:#f0eadb;color:#7a7265;font-size:11px;white-space:nowrap;", chip: "min-height:32px;padding:0 12px;background:#fff;border:1px solid #ddd4c0;border-radius:999px;cursor:pointer;font-size:12.5px;" };
+const dot = c => 'width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;background:' + c + ';';
+const NEW_AGENT = { name: '', role: '', where: 'child', parent: '', every: 900, prompt: '', sources: [], from_node: '', why: '' };
+const NEW_SRC = { kind: 'rss', target: '', label: '', every: 900 };
+class Component extends DCLogic {
+  state = { api: '/api', token: '', pw: '', err: '', conn: 'connecting…', offline: false, up: false, tab: 'work', tasks: [], actors: [], counts: {}, pending: 0, messages: [], mind: null, labs: [], apiData: null, apps: [], config: null, hub: null, mcpName: '', nt: { name: '', plan: 'metered', cap_usd: 100 }, secret: '', widgets: [], agents: [], sources: [], status: {}, day: null, edit: false, na: { ...NEW_AGENT }, ns: { ...NEW_SRC }, nw: { type: 'trends', arg: 'US' }, sel: 'sextant', editing: '', ed: {}, confirm: '', toast: '', geo: 'US', trends: [], trendNote: '', fil: 'all', draft: '', tell: '', sending: false, logs: {}, staff: { every_seconds: 1800, first_after_seconds: 180 } };
+  componentDidMount() {
+    try { const a = localStorage.getItem('fleet_api'), t = sessionStorage.getItem('fleet_token'), q = new URLSearchParams(location.search).get('api'); this.setState({ api: q || a || '/api', token: t || '' }, () => this.load()); } catch (e) { this.load(); }
+    this.iv = setInterval(() => !this.state.edit && !this.state.editing && this.load(true), 5000);
+  }
+  componentWillUnmount() { clearInterval(this.iv); clearTimeout(this.tt); }
+  say(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  async req(method, path, body) {
+    const s = this.state, r = await fetch(s.api.replace(/\/$/, '') + path, { method, headers: { 'content-type': 'application/json', ...(s.token ? { authorization: 'Bearer ' + s.token } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 401) { this.setState({ token: '', conn: 'signed out' }); try { sessionStorage.removeItem('fleet_token'); } catch (e) {} throw new Error('Signed out'); }
+    if (!r.ok) throw new Error(typeof j.detail === 'string' ? j.detail : JSON.stringify(j.detail || j) || r.statusText);
+    return j;
+  }
+  async load(quiet) {
+    const base = this.state.api.replace(/\/$/, '');
+    try { const r = await fetch(base + '/health'), j = await r.json(); if (!r.ok || !j.ok) throw new Error('not the engine'); this.setState({ up: true, offline: false, err: '' }); }
+    catch (e) { return this.setState({ up: false, offline: true, conn: 'offline', err: 'Nothing answers at ' + this.state.api + ' (' + e.message + ').' }); }
+    if (!this.state.token) return this.setState({ conn: 'engine up · sign in' });
+    try {
+      const g = p => this.req('GET', p).catch(() => null);
+      const [b, st, f, s, d, mind, day, lb, api, ap, cfg2, hub] = await Promise.all([this.req('GET', '/owner/board'), g('/owner/stream?n=140'), this.req('GET', '/owner/fleet'), this.req('GET', '/owner/sources'), g('/owner/display'), g('/owner/mind'), g('/owner/day'), g('/owner/labs'), g('/owner/api'), g('/owner/apps'), g('/owner/config'), g('/owner/hub')]);
+      this.setState({ tasks: b.tasks, actors: b.actors, counts: b.counts, pending: b.pending, messages: (st || {}).messages || [], agents: f.agents, max: f.max, sources: s.sources, status: s.status, widgets: (d || {}).widgets || [], mind, day, labs: (lb || {}).labs || [], apiData: api, apps: (ap || {}).apps ? Object.values((ap || {}).apps) : (Array.isArray(ap) ? ap : []), config: cfg2, hub, conn: 'live · ' + new Date().toLocaleTimeString() });
+    } catch (e) { if (e.message !== 'Signed out' && !quiet) this.setState({ err: e.message }); }
+  }
+  async do(p, ok) { try { const r = await p(); ok && this.say(ok); await this.load(true); return r; } catch (e) { this.say(e.message); } }
+  f(form, key, num) { return e => { const v = num ? Number(e.target.value) : e.target.value; this.setState(s => ({ [form]: { ...s[form], [key]: v } })); }; }
+  chips(cur, set) { return this.state.sources.map(s => ({ label: s.label, st: CSS.mini + (cur.includes(s.id) ? 'background:#1d1a15;color:#fff;border-color:#1d1a15;' : ''), fn: () => set(cur.includes(s.id) ? cur.filter(x => x !== s.id) : [...cur, s.id]) })); }
+  async sendTo(text, to) {
+    text = (text || '').trim(); if (!text || this.state.sending) return;
+    this.setState({ sending: true, draft: '', tell: '' });
+    try { const r = await this.req('POST', '/owner/say', { text, to: to || 'sextant' }); this.say(String(r.answer || '').slice(0, 140)); } catch (e) { this.say(e.message); }
+    this.setState({ sending: false }); this.load(true);
+  }
+  async selectAgent(id) {
+    this.setState({ sel: id, editing: '' });
+    if (id === 'sextant') return;
+    try { const r = await this.req('GET', `/owner/fleet/${id}/logs?n=120`); this.setState(x => ({ logs: { ...x.logs, [id]: String(r.logs || '') } })); } catch (e) {}
+  }
+  renderVals() {
+    const s = this.state, authed = !!s.token && s.up, byId = Object.fromEntries(s.agents.map(a => [a.id, a]));
+    const ongoing = s.tasks.filter(t => t.state === 'ongoing'), planned = s.tasks.filter(t => t.state === 'planned'), done = s.tasks.filter(t => t.state === 'done' || t.state === 'failed');
+    const nowOf = who => s.tasks.find(t => t.who === who && t.state === 'ongoing');
+    const av = (n, big) => `width:${big ? 44 : 34}px;height:${big ? 44 : 34}px;border-radius:${big ? 14 : 11}px;background:${colorOf(n)};color:#fff;display:grid;place-items:center;font:400 ${big ? 22 : 17}px 'Instrument Serif',serif;flex:none;`;
+    const nodeById = Object.fromEntries(((s.mind || {}).questions || []).concat((s.mind || {}).goals || [], (s.mind || {}).hypotheses || []).map(n => [n.id, n]));
+    const roster = (s.actors.length ? s.actors : [{ id: 'sextant', name: 'SEXTANT', role: 'the brain', kind: 'brain', status: authed ? 'idle' : '—', now: null, depth: 0 }]).map(a => {
+      const sel = s.sel === a.id, agent = byId[a.id], run = a.status === 'running' || a.status === 'working';
+      return { name: a.name, ini: (a.name || '?')[0].toUpperCase(), av: av(a.name), status: a.status, from: agent ? agent.from_node : '', hasFrom: !!(agent && agent.from_node),
+        now: a.now ? a.now.title : a.kind === 'brain' ? (s.pending ? s.pending + ' queued' : 'idle') : a.status === 'paused' ? 'paused' : (a.role || 'watching its sources'),
+        badge: `font-size:10.5px;padding:1px 7px;border-radius:999px;background:${run ? '#e4f2ea' : '#eee8d8'};color:${run ? '#2e7d5b' : '#7a7265'};white-space:nowrap;`,
+        pick: () => this.selectAgent(a.id), st: `display:flex;gap:10px;align-items:center;padding:9px 11px;margin-left:${(a.depth || 0) * 18}px;border-radius:14px;border:1px solid ${sel ? '#e4572e' : '#e4ddcf'};background:${sel ? '#fff4ee' : '#fffdf8'};cursor:pointer;text-align:left;` };
+    });
+    const card = t => ({ title: t.title, note: t.note, hasNote: !!t.note, who: short(t.who), chip: `padding:1px 8px;border-radius:999px;background:${colorOf(t.who)}18;color:${colorOf(t.who)};font-weight:500;white-space:nowrap;`, when: t.state === 'planned' ? 'queued ' + ago(t.ts) : ago(t.ts), hasE: t.energy != null, e: t.energy > 0 ? '+' + t.energy : String(t.energy), eSt: CSS.tag + (t.energy < 0 ? 'background:#e4f2ea;color:#2e7d5b;' : '') });
+    const dayItems = ((s.day || {}).needs_you) || [];
+    const decide = (t, yes) => this.do(() => this.req('POST', '/owner/act', { id: t.id, action: yes ? ((t.actions || [])[0] || { id: 'approve' }).id : 'decline' }), yes ? 'Approved' : 'Declined');
+    const vis = s.messages.filter(m => s.fil === 'all' || (s.fil === 'you' ? m.from === 'owner' || m.to === 'owner' : m.kind !== 'thought'));
+    const feed = vis.slice(-90).map(m => { const me = m.from === 'owner', th = m.kind === 'thought'; return { from: short(m.from), to: short(m.to), c: colorOf(m.from), time: clock(m.ts), text: m.text, row: `display:flex;justify-content:${me ? 'flex-end' : 'flex-start'};animation:slide .25s;`, bubble: `max-width:88%;padding:8px 12px;border-radius:14px;background:${me ? '#1d1a15' : th ? 'transparent' : '#f5f1e8'};color:${me ? '#f5f1e8' : '#1d1a15'};border:${th ? '1px dashed #d9d0bd' : '0'};`, txt: `font-size:13.5px;line-height:1.45;${th ? 'font-style:italic;color:#7a7265;' : ''}` }; });
+    const sel = s.sel, isB = sel === 'sextant', a = byId[sel], tk = nowOf(isB ? 'sextant' : 'sub:' + sel), fn = a && a.from_node ? nodeById[a.from_node] : null;
+    const rawLog = isB ? '' : (s.logs[sel] || ''), lg = rawLog.split('\n').filter(Boolean).slice(-70).reverse().map(l => { let x = l; try { const j = JSON.parse(l); if (j.sub) x = (j.kind === 'item' ? 'item: ' + (j.title || '') : j.kind === 'error' ? 'error: ' + (j.message || '') : 'beat · ' + (j.seen || 0) + ' seen'); } catch (e) {} return { t: 0, text: x }; });
+    const brainLog = isB ? s.tasks.filter(t => t.who === 'sextant').slice(0, 60).map(t => ({ t: t.ts, text: (t.state === 'done' ? 'done: ' : t.state === 'failed' ? 'failed: ' : t.state === 'ongoing' ? 'start: ' : 'queued: ') + t.title })) : [];
+    const logs = (isB ? brainLog : lg).map(l => ({ time: l.t ? clock(l.t) : '·', text: l.text, st: /^done|item:|claim/.test(l.text) ? 'color:#9be3b5;' : /error|failed/.test(l.text) ? 'color:#ffb09c;' : /^start|^queued/.test(l.text) ? 'color:#f2d98a;' : '' }));
+    const ins = { av: av(sel, true), ini: short(sel)[0].toUpperCase(), name: isB ? 'SEXTANT' : sel, role: isB ? 'The brain. Plans, reads, decides, and hires.' : a ? a.role : '', isAgent: !!a,
+      now: tk ? tk.title : isB ? (s.pending ? s.pending + ' rounds queued' : 'Idle. The next research or staffing round will wake it.') : a && !a.enabled ? 'Paused.' : 'Watching its sources.',
+      hasFrom: !!(a && a.from_node), fromLabel: fn ? fn.id + ' · ' + fn.label : (a ? a.from_node : ''), why: a ? a.why : '',
+      meta: isB ? `${done.filter(t => t.who === 'sextant').length} rounds done · ${s.agents.length} sub-agents hired · ${(s.mind || { counts: {} }).counts.nodes || 0} nodes in its graph` : a ? `${a.where} · ${a.status} · hired by ${a.by} · ${a.items} items · ${a.errors} errors · last heard ${ago(a.last_seen)} · every ${a.every}s · ` + (a.sources.length ? a.sources.map(i => (s.sources.find(x => x.id === i) || { label: i }).label).join(', ') : 'no sources') + (a.parent ? ' · under ' + a.parent : '') : '',
+      hasPrompt: !!(a && a.prompt), prompt: a ? a.prompt : '',
+      toggleLabel: a && a.enabled ? 'Pause' : 'Resume', toggle: () => a && this.do(() => this.req('POST', `/owner/fleet/${a.id}/${a.enabled ? 'pause' : 'resume'}`)), restart: () => a && this.do(() => this.req('POST', `/owner/fleet/${a.id}/restart`), 'Restarted'),
+      editing: !!a && s.editing === sel, editLabel: s.editing === sel ? 'Cancel' : 'Edit', edit: () => a && this.setState(x => x.editing === a.id ? { editing: '' } : { editing: a.id, ed: { role: a.role, where: a.where, every: a.every, prompt: a.prompt, sources: [...a.sources] } }),
+      delLabel: a && s.confirm === a.id ? 'Confirm delete' : 'Delete', del: () => { if (!a) return; if (s.confirm !== a.id) { this.setState({ confirm: a.id }); setTimeout(() => this.setState({ confirm: '' }), 4000); return; } this.setState({ confirm: '', sel: 'sextant' }); this.do(() => this.req('DELETE', '/owner/fleet/' + a.id), 'Deleted ' + a.id); },
+      logTitle: isB ? 'BRAIN ROUNDS' : 'WORKER OUTPUT' };
+    const M = s.mind, mc = (M || {}).counts || {}, en = (M || {}).energy || [], mx = Math.max(0.01, ...en.map(e => Math.abs(e.delta)));
+    const hyp = (M || {}).hypotheses || [], qs = (M || {}).questions || [];
+    const mindCols = M ? [
+      { title: hyp.length ? 'Hypotheses' : 'Open questions', sub: (hyp.length ? hyp.length : qs.length) + ' held, each with a falsifier', empty: !(hyp.length || qs.length), emptyText: 'None yet.', items: (hyp.length ? hyp : qs).slice(0, 10).map(n => ({ id: n.id, label: n.label, hasTag: n.pub || n.core, tag: n.pub ? 'published' : 'core', hasSub: !!n.falsifier, sub: n.falsifier ? 'Wrong if: ' + n.falsifier : '' })) },
+      { title: 'Weakest edges', sub: 'what it re-examines next', empty: !((M.weakest || []).length), emptyText: 'No reasoning edges yet.', items: (M.weakest || []).map(e => ({ id: e.id, label: e.relation + ' · ' + e.members.join(', '), hasTag: true, tag: 'w ' + e.w, hasSub: false, sub: '' })) },
+      { title: 'Goals', sub: 'what the work is for', empty: !((M.goals || []).length), emptyText: '—', items: (M.goals || []).slice(0, 8).map(n => ({ id: n.id, label: n.label, hasTag: false, tag: '', hasSub: false, sub: '' })) },
+      { title: 'Types it minted', sub: 'vocabulary it grew itself', empty: !((M.minted || []).length), emptyText: 'Nothing minted beyond the seed yet.', items: (M.minted || []).slice(0, 10).map(t => ({ id: t, label: M.types[t] || '', hasTag: false, tag: '', hasSub: false, sub: '' })) },
+    ] : [];
+    const wd = s.widgets, mv = (i, d) => { const w = wd[i]; this.do(() => this.req('POST', '/owner/display', { id: w.id, order: Math.max(0, Math.min(wd.length - 1, i + d)) })); };
+    const widgets = wd.map((w, i) => { const mxv = Math.max(1, ...w.rows.map(r => r.value || 0)), upd = p => this.do(() => this.req('POST', '/owner/display', { id: w.id, ...p })); const rows = (w.view === 'bars' ? [...w.rows].sort((x, y) => (y.value || 0) - (x.value || 0)) : w.rows).map(r => ({ hasTag: !!r.tag, t: r.title, s: r.sub, tag: r.tag, link: r.link, hasLink: !!r.link, noLink: !r.link, bar: Math.max(3, Math.round((r.value || 0) / mxv * 100)) + '%', tagSt: CSS.tag + (r.tag === 'error' ? 'color:#b8401b;' : r.tag === 'running' ? 'background:#e4f2ea;color:#2e7d5b;' : '') })); return { title: w.title || w.type, by: w.by, rows, count: w.enabled ? w.rows.length + ' rows' : 'off', isList: w.view === 'list', isTiles: w.view === 'tiles', isBars: w.view === 'bars', empty: !w.rows.length, emptyText: w.enabled ? 'Nothing to show yet.' : 'Switched off.', st: `grid-column:span ${w.size};min-width:0;padding:14px 16px;border-radius:16px;background:#fffdf8;border:1px solid #e4ddcf;display:grid;gap:8px;align-content:start;opacity:${w.enabled ? 1 : 0.55};`, rename: e => upd({ title: e.target.value }), view: () => upd({ view: { list: 'tiles', tiles: 'bars', bars: 'list' }[w.view] }), viewLabel: w.view, size: () => upd({ size: w.size % 3 + 1 }), sizeN: w.size, up: () => mv(i, -1), down: () => mv(i, 1), toggle: () => upd({ enabled: !w.enabled }), onLabel: w.enabled ? 'on' : 'off', del: () => this.do(() => this.req('DELETE', '/owner/display/' + w.id), 'Removed') }; });
+    const sources = s.sources.map(x => { const st = s.status[x.id] || {}; return { label: x.label, kind: x.kind, by: x.by, op: x.enabled ? 1 : 0.55, dot: dot(!x.enabled ? '#bdb5a3' : st.ok === false ? '#c8402a' : st.ok ? '#2e7d5b' : '#c98a1b'), canDel: !x.seed, onLabel: x.enabled ? 'on' : 'off', detail: (x.kind === 'trends' ? 'country ' + x.geo : x.url) + ` · every ${x.every}s · ` + (st.ok === false ? 'failed: ' + st.err : st.last ? `${st.n} items, ${st.new} new, ${ago(st.last)}` : 'not fetched yet'), run: () => this.do(() => this.req('POST', `/owner/sources/${x.id}/run`), 'Fetched'), toggle: () => this.do(() => this.req('PUT', '/owner/sources/' + x.id, { enabled: !x.enabled })), del: () => this.do(() => this.req('DELETE', '/owner/sources/' + x.id), 'Removed') }; });
+    const na = s.na, ns = s.ns, mins = Math.round((s.staff.every_seconds || 1800) / 60);
+    return {
+      ...CSS, tag: CSS.tag, authed, offline: s.offline, needLogin: s.up && !s.token, err: s.err, hasErr: !!s.err, pw: s.pw, api: s.api, toast: s.toast,
+      busy: !authed ? 'not connected' : ongoing.length ? `busy · ${ongoing.length} ongoing, ${planned.length} queued` : s.pending ? s.pending + ' queued' : 'idle',
+      beat: dot(ongoing.length ? P.grn : '#bdb5a3') + (ongoing.length ? 'animation:pulse 1.4s infinite;' : ''), conn: s.conn,
+      onPw: e => this.setState({ pw: e.target.value }), pwKey: e => { if (e.key === 'Enter') this.doLogin(); }, onApi: e => { try { localStorage.setItem('fleet_api', e.target.value); } catch (x) {} this.setState({ api: e.target.value }); }, reload: () => this.load(),
+      login: () => this.doLogin(), logout: () => { try { sessionStorage.removeItem('fleet_token'); } catch (e) {} this.setState({ token: '', conn: 'signed out', tasks: [], actors: [], messages: [], agents: [], sources: [], widgets: [], mind: null }); },
+      roster, agentCount: s.agents.length + ' of ' + (s.max || 12) + ' sub-agents', aloneNote: authed && !s.agents.length, staffMins: mins, staffAfter: Math.round((s.staff.first_after_seconds || 180) / 60) + ' minutes',
+      newAgent: () => this.setState({ sel: '__new' }), showNew: sel === '__new', showInspector: sel !== '__new',
+      tabs: [['work', 'Work', planned.length + ongoing.length], ['live', 'Live', s.messages.length], ['mind', 'Mind', mc.reasoning_nodes || ''], ['labs', 'Labs', s.labs.reduce((n, l) => n + l.counts.total, 0)], ['overview', 'Display', ''], ['signals', 'Signals', s.sources.length], ['api', 'API & earnings', ''], ['site', 'Site', (s.apps || []).length], ['config', 'Config', '']].map(([id, label, n]) => ({ label, n, fn: () => this.setState({ tab: id }), st: `min-height:36px;padding:0 16px;border-radius:999px;border:1px solid ${s.tab === id ? '#1d1a15' : '#ddd4c0'};background:${s.tab === id ? '#1d1a15' : '#fffdf8'};color:${s.tab === id ? '#f5f1e8' : '#1d1a15'};cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;`, badge: n === '' || n === 0 ? 'display:none;' : `font-size:11px;padding:0 7px;border-radius:999px;background:${s.tab === id ? '#ffffff22' : '#f0eadb'};` })),
+      isWork: s.tab === 'work', isLive: s.tab === 'live', isMind: s.tab === 'mind', isLabs: s.tab === 'labs', isApi: s.tab === 'api', isSite: s.tab === 'site', isConfig: s.tab === 'config', noLabs: authed && !s.labs.length, phoenix: (s.config && s.config.phoenix) || '#',
+      labs: s.labs.map(L => ({ title: L.title, question: L.question, brief: L.brief, honest: L.honest,
+        counts: L.counts.total + ' candidates · ' + L.counts.proved + ' proved · ' + L.counts.failed + ' failed · ' + L.counts.runs + ' runs',
+        hasTarget: !!L.target, progress: L.counts.total + ' of ' + L.target, pct: Math.min(100, Math.round(L.counts.total / Math.max(1, L.target) * 100)) + '%',
+        phases: L.phases.map(p => ({ name: p.name, exit_test: p.exit_test, at: p.manual ? 'bench' : p.at + ' waiting' })),
+        noCands: !L.candidates.length,
+        candidates: L.candidates.map(c => { const r = c.results[String(c.phase)] || c.results[String(c.phase - 1)] || null, ph = L.phases[c.phase];
+          return { id: c.id, label: c.label, state: c.state, phase: c.phase + 1, dot: dot(c.state === 'proved' ? P.grn : (c.state === 'failed' || c.state === 'closed') ? '#c8402a' : P.acc),
+            stSt: CSS.tag + (c.state === 'proved' ? 'background:#e4f2ea;color:#2e7d5b;' : c.state === 'failed' ? 'color:#b8401b;' : ''),
+            hasReport: !!r, report: r ? (r.pass ? 'passed · ' : 'failed · ') + Object.entries(r.report || {}).filter(x => x[0] !== 'pass').slice(0, 8).map(x => x[0] + ' ' + JSON.stringify(x[1])).join('  ') : '',
+            hasEvidence: !!c.evidence, evidence: c.evidence, canRun: !!ph && !ph.manual && c.state === 'open', runLabel: 'Run phase ' + (c.phase + 1),
+            run: () => this.do(() => this.req('POST', '/owner/labs/' + L.id + '/' + c.id + '/run'), 'Ran ' + c.id),
+            close: () => this.do(() => this.req('POST', '/owner/labs/' + L.id + '/' + c.id + '/close?why=closed+by+the+owner'), 'Closed ' + c.id) }; }),
+        hasRuns: !!L.recent_runs.length, runs: L.recent_runs.map(r => ({ time: clock(r.ts), text: r.cid + ' phase ' + (r.phase + 1) + (r.pass ? ' pass · ' : ' fail · ') + JSON.stringify(r.report || {}).slice(0, 160), st: r.pass ? 'color:#9be3b5;' : 'color:#ffb09c;' })) })), isOverview: s.tab === 'overview', isSignals: s.tab === 'signals',
+      needsYou: dayItems.length > 0, approvals: dayItems.map(t => ({ title: t.title, note: (t.detail || '').slice(0, 160), yes: () => decide(t, true), no: () => decide(t, false), yesLabel: ((t.actions || [])[0] || { label: 'Approve' }).label, noLabel: 'Decline' })),
+      boardEmpty: authed && !s.tasks.length, cols: [{ title: 'Planned', dot: dot('#bdb5a3'), n: planned.length, empty: !planned.length, items: planned.map(card) }, { title: 'Ongoing', dot: dot(P.acc), n: ongoing.length, empty: !ongoing.length, items: ongoing.map(card) }, { title: 'Done', dot: dot(P.grn), n: done.length, empty: !done.length, items: done.map(card) }],
+      filters: [['all', 'Everything'], ['talk', 'Conversation'], ['you', 'You and SEXTANT']].map(([id, label]) => ({ label, fn: () => this.setState({ fil: id }), st: CSS.chip + (s.fil === id ? 'background:#1d1a15;color:#fff;border-color:#1d1a15;' : '') })),
+      feed, noFeed: !feed.length, draft: s.draft, onDraft: e => this.setState({ draft: e.target.value }), draftKey: e => { if (e.key === 'Enter') this.sendTo(s.draft); }, send: () => this.sendTo(s.draft), sendLabel: s.sending ? 'Thinking…' : 'Send',
+      mindLine: M ? `This graph holds ${mc.reasoning_nodes || 0} reasoning nodes over ${mc.types || 0} types, ${mc.inferred || 0} of its edges inferred by closure rather than stated.` : 'Waiting for the engine to report its graph.',
+      mindStats: [{ v: mc.reasoning_nodes || 0, l: 'reasoning nodes' }, { v: mc.edges || 0, l: 'hyperedges' }, { v: mc.types || 0, l: 'types' }, { v: (M || {}).minted ? M.minted.length : 0, l: 'minted by itself' }, { v: s.agents.length, l: 'posts it staffed' }],
+      hasEnergy: en.length > 0, energyN: en.length, energy: en.map(e => ({ title: `${e.kind}: ${e.title} (ΔE ${e.delta})`, st: `flex:1;min-width:2px;border-radius:2px;align-self:${e.delta <= 0 ? 'flex-end' : 'flex-start'};height:${Math.max(4, Math.round(Math.abs(e.delta) / mx * 50))}px;background:${e.delta <= 0 ? '#9be3b5' : '#f6c9b8'};` })),
+      energyNote: en.length ? `Green falls below the line: the round made the graph more consistent. Sum over these rounds: ${en.reduce((n, e) => n + e.delta, 0).toFixed(2)}.` : '',
+      mindCols,
+      apiKpis: (function(){ var a = s.apiData || {}; return [{ v: '$' + (a.revenue_month != null ? a.revenue_month : 0), l: 'revenue, 30 days', c: P.grn }, { v: '$' + (a.mrr || 0), l: 'subscriptions / mo', c: P.ink }, { v: (a.calls_month || 0).toLocaleString(), l: 'metered calls', c: P.ink }, { v: Math.round((a.cpu_share || 0) * 100) + '%', l: 'answered on CPU rungs', c: P.acc }]; })(),
+      noTenants: !!(s.apiData && !s.apiData.tenants.length), planOpts: s.apiData ? Object.entries(s.apiData.plans).map(x => ({ id: x[0], label: x[1].label })) : [{ id: 'metered', label: 'Metered' }],
+      rungPrices: s.apiData ? Object.entries(s.apiData.prices).map(x => ({ label: x[0] + ' · $' + x[1] + '/call' })) : [],
+      tenants: (s.apiData ? s.apiData.tenants : []).map(t => ({ name: t.name, sub: t.active ? 'active' : 'suspended', plan: t.plan, calls: (t.calls || 0).toLocaleString(), metered: '$' + t.metered_usd, total: '$' + t.total_usd, last4: t.last4, onLabel: t.active ? 'Suspend' : 'Resume', rotate: () => this.do(async () => { const r = await this.req('POST', '/owner/api/' + t.id + '/rotate'); this.setState({ secret: r.secret_shown_once }); }, 'Key rotated'), toggle: () => this.do(() => this.req('PUT', '/owner/api/' + t.id, { active: !t.active })), del: () => this.do(() => this.req('DELETE', '/owner/api/' + t.id), 'Removed ' + t.name) })),
+      nt: s.nt, ntName: this.f('nt', 'name'), ntPlan: this.f('nt', 'plan'), ntCap: this.f('nt', 'cap_usd', true),
+      addTenant: () => this.do(async () => { const r = await this.req('POST', '/owner/api', s.nt); this.setState({ nt: { name: '', plan: 'metered', cap_usd: 100 }, secret: r.secret_shown_once }); }, 'Tenant created'),
+      secretShown: !!s.secret, secret: s.secret, hideSecret: () => this.setState({ secret: '' }),
+      noApps: authed && !(s.apps || []).length, apps: (s.apps || []).map(a => ({ name: a.name, language: a.language, port: a.port, url: a.url || ('/a/' + a.port + '/'), dot: dot(a.healthy ? P.grn : '#c8402a'), meta: (a.healthy ? 'healthy' : 'unhealthy') + ' · ' + (a.restarts || 0) + ' restarts', relaunch: () => this.do(() => this.req('POST', '/owner/act', { id: 'app:' + a.name, action: 'relaunch' }), 'Relaunching'), remove: () => this.do(() => this.req('POST', '/owner/act', { id: 'app:' + a.name, action: 'remove' }), 'Removed') })),
+      hasConfig: !!s.config, cfgRows: s.config ? [{ k: 'model', v: s.config.model }, { k: 'concurrency', v: String(s.config.concurrency) }, { k: 'tools', v: String((s.config.tools || []).length) }, { k: 'labs', v: (s.config.labs || []).join(', ') || '—' }, { k: 'staffing', v: s.config.staffing && s.config.staffing.enabled ? 'every ' + Math.round(s.config.staffing.every_seconds / 60) + 'm' : 'off' }, { k: 'publishing', v: s.config.publish && s.config.publish.enabled ? 'live' : 'drafts to outbox' }, { k: 'github', v: (s.config.github && s.config.github.repo) || 'not set' }, { k: 'apps live', v: String((s.config.site || {}).apps_live || 0) }] : [],
+      sessRows: s.config ? [{ k: 'auth', v: s.config.session.auth }, { k: 'mode', v: s.config.session.hash_mode ? 'hashed' : 'plain' }, { k: 'session', v: s.config.session.hours + ' h' }, { k: 'retention', v: s.config.session.retention_days + ' d' }] : [],
+      mcpName: s.mcpName, onMcp: e => this.setState({ mcpName: e.target.value }), installMcp: () => { if (s.mcpName.trim()) this.do(() => this.req('POST', '/owner/hub/install', { name: s.mcpName.trim() }), 'Installing').then(() => this.setState({ mcpName: '' })); },
+      noServers: !!(s.hub && !(s.hub.servers || []).length), serversNote: s.hub ? 'The hub is up and no servers are installed. Add one from the market above.' : 'The MCP hub is not reachable; it starts inside the agent docker a moment after boot.',
+      servers: (s.hub ? s.hub.servers || [] : []).map(m => ({ name: m.name || m.id || 'server', detail: (m.description || m.url || '') + (m.tools ? ' · ' + (Array.isArray(m.tools) ? m.tools.length : m.tools) + ' tools' : ''), remove: () => this.do(() => this.req('POST', '/owner/hub/remove', { name: m.name || m.id }), 'Removed') })),
+      edit: s.edit, editLabel: s.edit ? 'Done' : 'Edit display', toggleEdit: () => this.setState(x => ({ edit: !x.edit })), widgets,
+      nw: s.nw, nwType: e => this.setState({ nw: { type: e.target.value, arg: { trends: 'US', signals: '', note: '' }[e.target.value] || '' } }), nwArg: e => this.setState(x => ({ nw: { ...x.nw, arg: e.target.value } })), nwHint: { trends: 'country code, e.g. CA', signals: 'source id (blank = all)', note: 'note text' }[s.nw.type] || 'no setting needed',
+      addWidget: () => { const t = s.nw.type, v = s.nw.arg; this.do(() => this.req('POST', '/owner/display', { type: t, title: { trends: 'Trending ' + v.toUpperCase(), signals: 'Signals', fleet: 'Sub-agents', vitals: 'The brain', note: 'Note' }[t], ...(t === 'trends' ? { geo: v, view: 'bars' } : t === 'signals' ? { source: v } : t === 'note' ? { text: v } : {}) }), 'Widget added'); },
+      ins, logs, noLogs: !logs.length, logEmpty: isB ? 'No rounds yet.' : 'No output yet. Workers print a line each cycle.',
+      na, parentOpts: s.agents.filter(x => (x.depth || 0) < 3), nodeOpts: [...qs, ...hyp, ...((M || {}).goals || [])].map(n => ({ id: n.id, label: n.id + ' · ' + String(n.label).slice(0, 60) })),
+      naName: this.f('na', 'name'), naRole: this.f('na', 'role'), naWhere: this.f('na', 'where'), naParent: this.f('na', 'parent'), naPrompt: this.f('na', 'prompt'), naFrom: this.f('na', 'from_node'), naChips: this.chips(na.sources, v => this.setState(x => ({ na: { ...x.na, sources: v } }))),
+      createAgent: () => this.do(async () => { await this.req('POST', '/owner/fleet', { ...na, parent: na.parent || undefined, from_node: na.from_node || undefined }); this.setState({ na: { ...NEW_AGENT }, sel: na.name }); }, 'Created ' + na.name),
+      ed: s.ed, edRole: this.f('ed', 'role'), edWhere: this.f('ed', 'where'), edEvery: this.f('ed', 'every', true), edPrompt: this.f('ed', 'prompt'), edChips: this.chips(s.ed.sources || [], v => this.setState(x => ({ ed: { ...x.ed, sources: v } }))), saveEdit: () => this.do(async () => { await this.req('PUT', '/owner/fleet/' + s.editing, s.ed); this.setState({ editing: '' }); }, 'Saved'),
+      tell: s.tell, onTell: e => this.setState({ tell: e.target.value }), tellKey: e => { if (e.key === 'Enter') this.sendTo(s.tell, isB ? 'sextant' : 'sub:' + sel); }, sendTell: () => this.sendTo(s.tell, isB ? 'sextant' : 'sub:' + sel), tellHint: isB ? 'Ask SEXTANT something' : 'New standing instruction for ' + sel,
+      ns, nsKind: this.f('ns', 'kind'), nsTarget: this.f('ns', 'target'), nsLabel: this.f('ns', 'label'), nsEvery: this.f('ns', 'every', true), nsHint: ns.kind === 'trends' ? 'country code, e.g. US, CA, GB' : 'feed url, https://…', sources,
+      addSource: () => this.do(async () => { await this.req('POST', '/owner/sources', { kind: ns.kind, [ns.kind === 'trends' ? 'geo' : 'url']: ns.target, label: ns.label || undefined, every: ns.every }); this.setState({ ns: { ...NEW_SRC, kind: ns.kind } }); }, 'Watching'),
+      geo: s.geo, onGeo: e => this.setState({ geo: e.target.value }), trends: s.trends, trendNote: s.trendNote, loadTrends: async () => { try { const r = await this.req('GET', '/owner/trends?geo=' + s.geo); this.setState({ trends: r.items.map(i => ({ t: i.title, tag: i.traffic, s: i.news[0] || '', link: i.link })), trendNote: r.items.length + ' trending in ' + r.geo }); } catch (e) { this.setState({ trends: [], trendNote: e.message }); } },
+    };
+  }
+  async doLogin() {
+    try { const r = await this.req('POST', '/auth/login', { password: this.state.pw }); try { sessionStorage.setItem('fleet_token', r.token); } catch (e) {} this.setState({ token: r.token, pw: '', err: '' }, () => this.load()); } catch (e) { this.setState({ err: e.message }); }
+  }
+}
+</script>
+</body>
+</html>

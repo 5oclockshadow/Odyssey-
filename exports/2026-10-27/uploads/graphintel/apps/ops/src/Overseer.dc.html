@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); } a { color: var(--color-accent-300); } a:hover { color: var(--color-accent-200); }</style>
+</helmet>
+<div data-screen-label="Overseer" style="min-height:100vh;padding:28px clamp(16px,4vw,48px) 80px;display:grid;gap:28px;align-content:start;max-width:1200px;">
+  <header style="display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;">
+    <div style="display:grid;gap:6px;">
+      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-300);">Overseer · Anima</span>
+      <h1 style="margin:0;font-size:34px;font-weight:500;letter-spacing:-0.02em;">{{ headline }}</h1>
+      <span style="font-size:14px;color:var(--color-neutral-400);">{{ sub }}</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <span class="tag tag-outline">{{ source }}</span>
+      <button class="btn btn-ghost" onClick="{{ reload }}">Refresh</button>
+      <a class="btn btn-ghost" href="Console.dc.html" style="text-decoration:none;">Console</a>
+    </div>
+  </header>
+
+  <section style="display:grid;gap:12px;">
+    <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">The agents</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
+      <sc-for list="{{ watchers }}" as="w" hint-placeholder-count="6">
+        <div class="card" style="display:grid;gap:4px;padding:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;font-weight:500;">{{ w.role }}</span><span class="{{ w.tag }}" style="font-size:10px;padding:1px 7px;">{{ w.state }}</span></div>
+          <span style="font-size:12px;color:var(--color-neutral-400);">{{ w.line }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <sc-if value="{{ hasBatches }}" hint-placeholder-val="{{ false }}">
+    <section style="display:flex;flex-wrap:wrap;gap:10px;">
+      <sc-for list="{{ batches }}" as="b" hint-placeholder-count="2">
+        <div class="card" style="display:flex;gap:10px;align-items:center;padding:10px 14px;"><span style="font-size:13px;">{{ b.n }} × {{ b.kind }}</span><sc-for list="{{ b.acts }}" as="a" hint-placeholder-count="2"><button class="btn btn-secondary" style="font-size:12px;" onClick="{{ a.fn }}">{{ a.label }} all</button></sc-for></div>
+      </sc-for>
+    </section>
+  </sc-if>
+
+  <section style="display:grid;gap:12px;">
+    <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">Look now</span>
+    <sc-if value="{{ calm }}" hint-placeholder-val="{{ false }}"><div class="card" style="padding:20px;font-size:15px;">Nothing burning. Every agent ran on time.</div></sc-if>
+    <sc-for list="{{ now }}" as="f" hint-placeholder-count="4">
+      <div class="card" style="display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px;">
+        <span style="font-size:22px;font-weight:500;color:var(--color-accent-200);font-variant-numeric:tabular-nums;">{{ f.score }}</span>
+        <div style="display:grid;gap:4px;min-width:0;">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span style="font-size:15px;font-weight:500;">{{ f.title }}</span><span class="tag tag-neutral" style="font-size:10px;padding:1px 7px;">{{ f.kind }}</span><span style="font-size:12px;color:var(--color-neutral-400);">from {{ f.source }} · {{ f.age }}</span></div>
+          <span style="font-size:13px;color:var(--color-neutral-300);overflow:hidden;text-overflow:ellipsis;">{{ f.detail }}</span>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:end;"><sc-for list="{{ f.acts }}" as="a" hint-placeholder-count="2"><button class="btn btn-secondary" style="font-size:12px;" onClick="{{ a.fn }}">{{ a.label }}</button></sc-for></div>
+      </div>
+    </sc-for>
+  </section>
+
+  <sc-if value="{{ hasLater }}" hint-placeholder-val="{{ false }}">
+    <details style="display:grid;gap:8px;">
+      <summary style="cursor:pointer;font-size:13px;color:var(--color-neutral-300);">Later · {{ laterN }} more, below the budget</summary>
+      <div style="display:grid;gap:6px;margin-top:10px;">
+        <sc-for list="{{ later }}" as="f" hint-placeholder-count="3"><div style="display:flex;gap:12px;font-size:13px;padding:8px 0;border-bottom:1px solid var(--color-neutral-800);"><span style="width:32px;color:var(--color-neutral-400);">{{ f.score }}</span><span style="flex:1;">{{ f.title }}</span><span style="color:var(--color-neutral-400);">{{ f.kind }}</span></div></sc-for>
+      </div>
+    </details>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;engineUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const SAMPLE = { total: 11, minutes: 22, calm: false,
+  look_now: [
+    { id: 'spend', kind: 'spend', source: 'owner', title: 'Spend near the monthly cap', detail: '$412 of $450 · 30B rounds are 71% of it', score: 80, age_h: 0, actions: ['raise', 'throttle'] },
+    { id: 'incident:a1', kind: 'incident', source: 'maintainer', title: 'KeyError in round.merge', detail: 'tests_failed · patch touched 2 files', score: 74, age_h: 4, actions: ['approve', 'decline', 'retry', 'mute'] },
+    { id: 'watch:theorist', kind: 'noisy', source: 'theorist', title: 'theorist is noisy', detail: '43% of 14 rounds failed', score: 66, age_h: 1, actions: ['pause'] },
+    { id: 'app:regime-lens', kind: 'app', source: 'maintainer', title: 'regime-lens unhealthy', detail: '4 restarts', score: 60, age_h: 0, actions: ['relaunch'] },
+    { id: 'watch:scout', kind: 'silent', source: 'scout', title: 'scout is silent', detail: 'no round for 14 h, expected every 6 h', score: 69, age_h: 14, actions: ['wake'] },
+    { id: 'upgrade:u7', kind: 'upgrade', source: 'upgrade', title: 'Cache fetch_url', detail: '64 calls at 842 ms', score: 52, age_h: 2, actions: ['approve', 'decline'] },
+    { id: 'shadow:substrate', kind: 'shadow', source: 'critic', title: 'LSTM beats 1–3B for substrate (Scout)', detail: '0.83 vs 0.81 on the frozen split', score: 45, age_h: 0, actions: ['promote', 'hold'] }],
+  later: [{ id: 'post:1', kind: 'post', title: 'Draft for x: H4 explained', score: 38 }, { id: 'post:2', kind: 'post', title: 'Draft for linkedin: why seed beats size', score: 36 }, { id: 'post:3', kind: 'post', title: 'Draft for reddit: open harness', score: 33 }, { id: 'post:4', kind: 'post', title: 'Draft for x: shuffled control', score: 31 }],
+  batches: [{ kind: 'post', n: 4, ids: ['post:1', 'post:2', 'post:3', 'post:4'], actions: ['approve', 'decline'] }],
+  watchers: [{ role: 'scout', state: 'silent', rounds_24h: 2, fail: 0, last_h: 14, every_h: 6 }, { role: 'theorist', state: 'noisy', rounds_24h: 14, fail: .43, last_h: 1, every_h: 12 }, { role: 'critic', state: 'ok', rounds_24h: 6, fail: .1, last_h: 3, every_h: 24 },
+    { role: 'maintainer', state: 'ok', rounds_24h: 3, fail: 0, last_h: 4, every_h: 72 }, { role: 'publisher', state: 'ok', rounds_24h: 4, fail: 0, last_h: 5, every_h: 48 }, { role: 'sextant', state: 'idle', rounds_24h: 31, fail: .03, last_h: 0.2, every_h: 0 }] };
+const TAG = { ok: 'tag tag-accent', silent: 'tag tag-outline', noisy: 'tag tag-outline', idle: 'tag tag-neutral' };
+const age = h => !h ? 'now' : h < 1 ? Math.round(h * 60) + ' min' : Math.round(h) + ' h';
+
+class Component extends DCLogic {
+  state = { d: null, live: false, gone: {} };
+  engine() { return this.props.engineUrl || (/\.dc\.html$/.test(location.pathname) ? '' : '/api'); }
+  componentDidMount() { this.load(); }
+  load() { if (!this.engine()) return this.setState({ d: SAMPLE, live: false });
+    fetch(this.engine() + '/owner/fires', { credentials: 'include' }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => this.setState({ d, live: true, gone: {} }), () => this.setState({ d: SAMPLE, live: false })); }
+  act(ids, action) { const gone = { ...this.state.gone }; ids.forEach(i => gone[i] = 1); this.setState({ gone });
+    if (this.state.live) ids.forEach(id => fetch(this.engine() + '/owner/act', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, action }) })); }
+  renderVals() {
+    const d = this.state.d || SAMPLE, g = this.state.gone, live = f => !g[f.id];
+    const now = d.look_now.filter(live).sort((a, b) => b.score - a.score), later = d.later.filter(live), open = now.length + later.length;
+    return {
+      headline: open ? `${open} fires · ${now.length} to look at now` : 'All quiet',
+      sub: open ? `About ${Math.round(now.reduce((m, f) => m + (f.kind === 'post' || f.kind === 'upgrade' ? 2 : 4), 0))} minutes. The rest can wait.` : 'The agents are on schedule and nothing waits on you.',
+      source: this.state.live ? 'live · /owner/fires' : 'sample data · engine offline', reload: () => this.load(), calm: !now.length,
+      watchers: d.watchers.map(w => ({ ...w, tag: TAG[w.state] || 'tag tag-neutral', line: `${w.rounds_24h} rounds / 24 h · ${Math.round(w.fail * 100)}% failed · last ${w.last_h == null ? 'never' : age(w.last_h)}` })),
+      now: now.map(f => ({ ...f, age: age(f.age_h), acts: f.actions.map(a => ({ label: a[0].toUpperCase() + a.slice(1), fn: () => this.act([f.id], a) })) })),
+      later, laterN: later.length, hasLater: later.length > 0,
+      batches: d.batches.map(b => ({ ...b, n: b.ids.filter(i => !g[i]).length, acts: b.actions.map(a => ({ label: a[0].toUpperCase() + a.slice(1), fn: () => this.act(b.ids, a) })) })).filter(b => b.n > 1),
+      hasBatches: d.batches.some(b => b.ids.filter(i => !g[i]).length > 1),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>
+    html, body { margin: 0; background: #0b0e17; scroll-behavior: smooth; }
+    * { box-sizing: border-box; }
+    a { color: #27d3ff; } a:hover { color: #ffffff; }
+    ::placeholder { color: #6d7699; }
+    button, input, select { font-family: 'Instrument Sans', sans-serif; }
+    input:focus-visible, button:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid #27d3ff; outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; scroll-behavior: auto !important; } }
+    @keyframes mg-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  </style>
+</helmet>
+<div data-screen-label="Home" style="min-height: 100vh; background: #0b0e17; color: #eef1ff; font-family: 'Instrument Sans', sans-serif; font-size: 16px; line-height: 1.55;">
+  <dc-import name="Map Graph Nav" current="home" hint-size="100%,64px"></dc-import>
+
+  <section style="position: relative; overflow: hidden; padding: clamp(40px, 8vw, 96px) clamp(16px, 4vw, 48px) clamp(48px, 8vw, 96px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 48px; align-items: center;">
+      <div style="display: grid; gap: 26px; position: relative; z-index: 2;">
+        <div style="display: inline-flex; width: fit-content; align-items: center; gap: 8px; padding: 5px 14px; border: 1px solid #252c42; border-radius: 999px; font-size: 13px; color: #c9d0ee;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ff3ea5;"></span>Early access, waitlist open</div>
+        <h1 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(44px, 7vw, 92px); line-height: 0.95; letter-spacing: -0.035em; text-wrap: balance;">Map anything, in the <span style="color: #27d3ff;">context</span> you steer.</h1>
+        <p style="margin: 0; font-size: clamp(17px, 2vw, 21px); color: #b9c1e0; max-width: 560px; text-wrap: pretty;">{{ sub }}</p>
+        <form id="join" onSubmit="{{ submitHero }}" style="display: grid; gap: 10px; max-width: 520px;">
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <input type="email" required value="{{ email }}" onChange="{{ onEmail }}" placeholder="you@example.com" aria-label="Email address" style="flex: 1 1 220px; min-width: 0; padding: 14px 18px; border-radius: 999px; border: 1px solid #3a4468; background: #131827; color: #eef1ff; font-size: 16px;">
+            <button type="submit" style="padding: 14px 26px; border: 0; border-radius: 999px; background: #27d3ff; color: #0b0e17; font-weight: 600; font-size: 16px; cursor: pointer;">{{ busyLabel }}</button>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 14px; color: #9aa3c4;"><span>I want:</span><sc-for list="{{ interests }}" as="i" hint-placeholder-count="3"><button type="button" onClick="{{ i.pick }}" style="{{ i.style }}">{{ i.label }}</button></sc-for></div>
+          <div style="min-height: 20px; font-size: 14px; color: #ff7ab8;">{{ error }}</div>
+        </form>
+      </div>
+      <div style="position: relative; min-height: 380px;" aria-hidden="true">
+        <svg viewBox="0 0 520 440" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+          <sc-for list="{{ edges }}" as="e" hint-placeholder-count="0"><line x1="{{ e.x1 }}" y1="{{ e.y1 }}" x2="{{ e.x2 }}" y2="{{ e.y2 }}" stroke="{{ e.c }}" stroke-width="1.4" stroke-opacity="0.7"></line></sc-for>
+          <sc-for list="{{ dots }}" as="d" hint-placeholder-count="0"><circle cx="{{ d.x }}" cy="{{ d.y }}" r="{{ d.r }}" fill="{{ d.c }}" fill-opacity="0.9"></circle></sc-for>
+        </svg>
+        <div style="position: absolute; left: 2%; top: 7%; width: min(300px, 70%); padding: 12px 14px; background: #131827; border: 1px solid #3a4468; border-radius: 12px; animation: mg-float 6s ease-in-out infinite;">
+          <div style="font-size: 11px; letter-spacing: 0.1em; color: #27d3ff;">DROPPED</div>
+          <div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 17px;">Dock C at Rotterdam Hub</div>
+          <div style="font-size: 13px; color: #9aa3c4;">Warehouse, inside Rotterdam Hub. It names a hub that is already on the map.</div>
+        </div>
+        <div style="position: absolute; right: 0; bottom: 6%; width: min(290px, 68%); padding: 12px 14px; background: #131827; border: 1px solid #ff3ea5; border-radius: 12px; animation: mg-float 7s ease-in-out infinite reverse;">
+          <div style="font-size: 11px; letter-spacing: 0.1em; color: #ff3ea5;">THIS NODE ASKS</div>
+          <div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 17px;">What does Truck 12 run on?</div>
+          <div style="font-size: 13px; color: #9aa3c4;">Answer in a word. The link is made.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 72px clamp(16px, 4vw, 48px); background: #0e1220; border-top: 1px solid #252c42; border-bottom: 1px solid #252c42;">
+    <div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 36px;">
+      <h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1;">Three moves.</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3"><div style="padding: 24px; border: 1px solid #252c42; border-radius: 16px; background: #131827; display: grid; gap: 10px;"><div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 40px; color: #ff3ea5; line-height: 1;">{{ s.n }}</div><div style="font-family: 'Syne', sans-serif; font-weight: 600; font-size: 24px;">{{ s.t }}</div><div style="color: #b9c1e0;">{{ s.d }}</div></div></sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 88px clamp(16px, 4vw, 48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 36px;">
+      <div style="display: grid; gap: 10px; max-width: 720px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1;">Sub-map any idea, four ways.</h2><p style="margin: 0; color: #b9c1e0; font-size: 18px;">Pick a node and look at it from the direction you need. Everything else dims.</p></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px;">
+        <sc-for list="{{ directions }}" as="d" hint-placeholder-count="4"><div style="padding: 22px; border-radius: 16px; background: #131827; border: 1px solid #252c42; display: grid; gap: 8px;"><div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; color: #27d3ff;">{{ d.k }}</div><div>{{ d.d }}</div><div style="font-size: 14px; color: #8f98bb;">{{ d.ex }}</div></div></sc-for>
+      </div>
+      <p style="margin: 0; color: #b9c1e0; max-width: 720px;">Pick two ideas and see every forward and reverse route between them. When there is none, the map adds the question that would bridge them.</p>
+    </div>
+  </section>
+
+  <section style="padding: 88px clamp(16px, 4vw, 48px); background: #0e1220; border-top: 1px solid #252c42;">
+    <div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 36px;">
+      <h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1;">Two engines, side by side.</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 20px;">
+        <div style="padding: 28px; border-radius: 20px; border: 1px solid #27d3ff; background: #131827; display: grid; gap: 12px;"><div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; color: #27d3ff;">Thoughts</div><div style="color: #c9d0ee;">Grows ideas from a seed. Shake it in plain words and new thoughts and links fall out as a numbered revision. Six views of the same graph.</div></div>
+        <div style="padding: 28px; border-radius: 20px; border: 1px solid #ff3ea5; background: #131827; display: grid; gap: 12px;"><div style="font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; color: #ff3ea5;">Atlas</div><div style="color: #c9d0ee;">Maps what you know into levels you can walk up and down. It learns the context, places what you drop, and asks about what is missing.</div></div>
+      </div>
+      <p style="margin: 0; color: #b9c1e0; max-width: 760px;">Run them in separate tabs. Auto mode and the live AI brain keep working in the background in both, and a thought can be sent across with one click.</p>
+    </div>
+  </section>
+
+  <section style="padding: 88px clamp(16px, 4vw, 48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 28px;">
+      <div style="display: grid; gap: 10px; max-width: 760px;"><h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1;">Start with a topic. Steer in plain words.</h2><p style="margin: 0; color: #b9c1e0; font-size: 18px;">{{ fieldsNote }}</p></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;"><sc-for list="{{ audiences }}" as="p" hint-placeholder-count="6"><span style="padding: 9px 16px; border: 1px solid #3a4468; border-radius: 999px; color: #dfe4fa;">{{ p.who }}</span></sc-for><span style="padding: 9px 16px; border: 1px dashed #27d3ff; border-radius: 999px; color: #27d3ff;">Add your own kinds</span></div>
+    </div>
+  </section>
+
+  <section style="padding: 88px clamp(16px, 4vw, 48px); background: #0e1220; border-top: 1px solid #252c42;">
+    <div style="max-width: 1180px; margin: 0 auto; display: grid; gap: 28px;">
+      <h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1;">Made for people who connect things.</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;"><sc-for list="{{ audiences }}" as="a" hint-placeholder-count="7"><div style="padding: 18px 20px; border-radius: 14px; border: 1px solid #252c42; background: #131827;"><div style="font-weight: 600; margin-bottom: 4px;">{{ a.who }}</div><div style="color: #9aa3c4; font-size: 15px;">{{ a.use }}</div></div></sc-for></div>
+    </div>
+  </section>
+
+  <section style="padding: 88px clamp(16px, 4vw, 48px);">
+    <div style="max-width: 860px; margin: 0 auto; display: grid; gap: 14px;">
+      <h2 style="margin: 0 0 12px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1;">Questions.</h2>
+      <sc-for list="{{ faq }}" as="f" hint-placeholder-count="6"><details style="padding: 16px 20px; border-radius: 14px; border: 1px solid #252c42; background: #131827;"><summary style="cursor: pointer; font-weight: 600; font-size: 17px;">{{ f.q }}</summary><div style="margin-top: 10px; color: #b9c1e0;">{{ f.a }}</div></details></sc-for>
+    </div>
+  </section>
+
+  <section style="padding: 80px clamp(16px, 4vw, 48px); background: #27d3ff; color: #0b0e17;">
+    <form onSubmit="{{ submitEnd }}" style="max-width: 760px; margin: 0 auto; display: grid; gap: 18px; text-align: center; justify-items: center;">
+      <h2 style="margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(34px, 5vw, 64px); letter-spacing: -0.03em; line-height: 1;">Be early.</h2>
+      <p style="margin: 0; font-size: 18px; max-width: 520px;">Waitlist members get access first. Every friend you invite moves you up ten places.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%;"><input type="email" required value="{{ email }}" onChange="{{ onEmail }}" placeholder="you@example.com" aria-label="Email address" style="flex: 1 1 260px; max-width: 360px; padding: 14px 18px; border-radius: 999px; border: 2px solid #0b0e17; background: #ffffff; color: #0b0e17; font-size: 16px;"><button type="submit" style="padding: 14px 28px; border: 0; border-radius: 999px; background: #0b0e17; color: #eef1ff; font-weight: 600; font-size: 16px; cursor: pointer;">{{ busyLabel }}</button></div>
+      <div style="min-height: 20px; font-size: 14px; color: #5a0b33; font-weight: 500;">{{ error }}</div>
+    </form>
+  </section>
+
+  <dc-import name="Map Graph Footer" hint-size="100%,260px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { email: '', interest: 'both', busy: false, error: '', C: null };
+  async componentDidMount() {
+    const C = await import('./tandem-core.js'); this.API = await import('./tandem-api.js'); this.setState({ C });
+    this.API.refFromUrl(); this.API.track('page_view', 'home');
+  }
+  async go(e) {
+    e.preventDefault(); if (this.state.busy) return; this.setState({ busy: true, error: '' }); const API = this.API;
+    API.track('signup_start', 'home', { interest: this.state.interest });
+    const r = await API.api('POST', '/api/waitlist', { email: this.state.email, interest: this.state.interest, ref: API.refFromUrl(), source: 'home' });
+    if (r.status >= 400) { this.setState({ busy: false, error: (r.json.errors && Object.values(r.json.errors)[0]) || 'Something went wrong. Try again.' }); return; }
+    API.member.set({ code: r.json.code, position: r.json.position, referralUrl: r.json.referralUrl, email: this.state.email, tier: r.json.tier });
+    API.track('signup_complete', 'home'); location.href = this.state.C.pageUrl('join');
+  }
+  renderVals() {
+    const s = this.state, C = s.C, pill = on => ({ padding: '5px 14px', borderRadius: 999, border: '1px solid ' + (on ? '#27d3ff' : '#3a4468'), background: on ? '#27d3ff' : 'transparent', color: on ? '#0b0e17' : '#dfe4fa', cursor: 'pointer', fontSize: 14, fontWeight: on ? 600 : 400 });
+    const pts = []; let seed = 11; const r = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let i = 0; i < 26; i++) { const left = i < 13, cx = left ? 150 : 370, cy = left ? 180 : 260, a = r() * 6.283, d = 20 + r() * 120; pts.push({ x: Math.round(cx + Math.cos(a) * d * 1.1), y: Math.round(cy + Math.sin(a) * d), r: 3 + Math.round(r() * 7), c: left ? '#27d3ff' : '#ff3ea5', left }); }
+    const edges = []; for (let i = 0; i < pts.length; i++) { const near = pts.map((p, j) => ({ j, d: Math.hypot(p.x - pts[i].x, p.y - pts[i].y) })).filter(o => o.j !== i && pts[o.j].left === pts[i].left).sort((a, b) => a.d - b.d).slice(0, 2); for (const o of near) if (o.j > i) edges.push({ x1: pts[i].x, y1: pts[i].y, x2: pts[o.j].x, y2: pts[o.j].y, c: pts[i].c }); }
+    edges.push({ x1: pts[3].x, y1: pts[3].y, x2: pts[16].x, y2: pts[16].y, c: '#eef1ff' }, { x1: pts[8].x, y1: pts[8].y, x2: pts[20].x, y2: pts[20].y, c: '#eef1ff' });
+    return { sub: C ? C.BRAND.sub : '', email: s.email, onEmail: e => this.setState({ email: e.target.value }), error: s.error, busyLabel: s.busy ? 'Joining…' : 'Join the waitlist', submitHero: e => this.go(e), submitEnd: e => this.go(e),
+      interests: [['thoughts', 'Thoughts'], ['atlas', 'Atlas'], ['both', 'Both']].map(([id, l]) => ({ label: l, style: pill(s.interest === id), pick: () => this.setState({ interest: id }) })),
+      steps: C ? C.STEPS : [], directions: C ? C.DIRECTIONS : [], packs: C ? C.PACKS : [], audiences: C ? C.AUDIENCES : [], faq: C ? C.FAQ : [], fieldsNote: C ? C.FIELDS_NOTE : '', dots: pts, edges };
+  }
+}
+
+</script>
+</body>
+</html>

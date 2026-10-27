@@ -1,0 +1,52 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/engine } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: apps/engine/requirements.txt }
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+  hub:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/mcp-hub } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: apps/mcp-hub/requirements.txt }
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .env.example .env && docker compose config -q
+  docker-tests:
+    runs-on: ubuntu-latest
+    strategy: { matrix: { svc: [engine, hub, ops] } }
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose -f docker-compose.test.yml run --rm ${{ matrix.svc }}
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: the production bundles must exist and be self-contained
+        run: |
+          for f in apps/web/dist/index.html apps/web/dist/terminal.html apps/web/dist/stack.html; do
+            test -s "$f" && ! grep -q 'src="\.\./' "$f" || { echo "$f missing or not self-contained"; exit 1; }
+          done
+      - name: the site image builds
+        run: docker build -q apps/web
+  agent-pr-gate:
+    if: github.event_name == 'pull_request' && github.actor == 'sextant-agent'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: pull requests opened by the agent need a human review before merge
+        run: echo "::notice::agent PR — requires one human approval (branch protection enforces it)"

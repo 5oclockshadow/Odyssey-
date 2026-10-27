@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Serif+Display&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:wght@500;700&family=Instrument+Serif&family=Unbounded:wght@500;700&family=Archivo:wght@500;800&family=Playfair+Display:ital,wght@0,500;1,500&family=Sora:wght@500;700&family=Outfit:wght@400;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<style>body{margin:0;overflow:hidden}a{color:inherit}</style>
+</helmet>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 380px;height:100vh;background:#d9d8d3;font-family:'Space Grotesk',sans-serif;">
+
+  <div style="display:flex;flex-direction:column;min-width:0;padding:16px;box-sizing:border-box;">
+    <div style="display:flex;flex-direction:column;flex:1;min-height:0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.18);">
+      <div style="display:flex;align-items:center;gap:14px;padding:10px 14px;background:#ecebe7;border-bottom:1px solid #d4d3ce;">
+        <span style="display:flex;gap:6px;"><i style="width:11px;height:11px;border-radius:50%;background:#ec6a5e;"></i><i style="width:11px;height:11px;border-radius:50%;background:#f4be4f;"></i><i style="width:11px;height:11px;border-radius:50%;background:#61c554;"></i></span>
+        <sc-if value="{{ inPreview }}" hint-placeholder-val="{{ false }}"><button onClick="{{ back }}" style="border:1px solid #9a9992;background:transparent;border-radius:6px;padding:4px 10px;font:500 12px 'Space Grotesk',sans-serif;cursor:pointer;" style-hover="background:#dddcd6;">All 50</button></sc-if>
+        <span style="font:500 12px 'DM Mono',monospace;color:#444;">{{ crumb }}</span>
+      </div>
+
+      <sc-if value="{{ inGrid }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;overflow:auto;background:#e9e8e4;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;align-content:start;">
+          <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="10">
+            <div onClick="{{ t.open }}" style="cursor:pointer;display:grid;gap:6px;">
+              <div style="{{ t.card }}" style-hover="transform:translateY(-3px);">
+                <div style="{{ t.deco }}"></div>
+                <span style="{{ t.hs }}">{{ t.head }}</span>
+                <span style="{{ t.btn }}">{{ t.cta }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font:500 11px 'DM Mono',monospace;color:#555;"><span>#{{ t.n }}</span><span>{{ t.meta }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ inPreview }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow:auto;{{ v.root }}">
+          <div style="{{ v.nav }}">
+            <span style="{{ v.brand }}">{{ v.name }}</span>
+            <span style="display:flex;gap:20px;flex-wrap:wrap;">
+              <sc-for list="{{ pages }}" as="g" hint-placeholder-count="5"><span onClick="{{ g.go }}" style="{{ g.style }}">{{ g.label }}</span></sc-for>
+            </span>
+          </div>
+
+          <sc-if value="{{ pHome }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ v.section }}">
+              <div style="{{ v.hero }}">
+                <div style="display:grid;gap:18px;{{ v.heroText }}">
+                  <span style="{{ v.kicker }}">{{ v.kick }}</span>
+                  <h1 style="{{ v.h1 }}">{{ v.head }}</h1>
+                  <p style="{{ v.lead }}">{{ v.lede }}</p>
+                  <span style="display:flex;gap:10px;flex-wrap:wrap;{{ v.btnRow }}"><span onClick="{{ goJoin }}" style="{{ v.btnA }}">Follow the research</span><span onClick="{{ goResearch }}" style="{{ v.btnB }}">Read the research</span></span>
+                </div>
+                <div ref="{{ box }}" style="{{ v.panel }}"></div>
+              </div>
+              <sc-if value="{{ pAch }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid;gap:14px;">
+                  <span style="{{ v.tag }}">Built into the design</span>
+                  <div style="{{ v.grid3 }}">
+                    <sc-for list="{{ built }}" as="b" hint-placeholder-count="4"><div style="{{ v.card }}"><span style="{{ v.stat }}">{{ b.n }}</span><span style="{{ v.muted }}">{{ b.l }}</span></div></sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <div style="{{ v.grid3 }}">
+                <sc-for list="{{ points }}" as="p" hint-placeholder-count="3"><div style="{{ v.card }}"><b style="{{ v.cardTitle }}">{{ p.t }}</b><span style="{{ v.muted }}">{{ p.d }}</span></div></sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ pResearch }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ v.section }}">
+              <h2 style="{{ v.h2 }}">Research</h2>
+              <div style="display:grid;gap:0;">
+                <sc-for list="{{ notes }}" as="n" hint-placeholder-count="4"><div style="{{ v.row }}"><span style="{{ v.tag }}">{{ n.tag }}</span><span style="display:grid;gap:4px;"><b style="{{ v.cardTitle }}">{{ n.title }}</b><span style="{{ v.muted }}">{{ n.body }}</span></span><span style="{{ v.mono }}">{{ n.date }}</span></div></sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ pGraph }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ v.section }}">
+              <h2 style="{{ v.h2 }}">The graph</h2>
+              <p style="{{ v.lead }}">Approved nodes in the accent colour. Withheld nodes appear only as grey shape.</p>
+              <div style="{{ v.card }}">
+                <svg viewBox="0 0 400 240" style="width:100%;max-height:340px;">
+                  <sc-for list="{{ links }}" as="l" hint-placeholder-count="8"><line x1="{{ l.x1 }}" y1="{{ l.y1 }}" x2="{{ l.x2 }}" y2="{{ l.y2 }}" stroke="{{ l.c }}" stroke-width="1.5"></line></sc-for>
+                  <sc-for list="{{ dots }}" as="d" hint-placeholder-count="9"><circle cx="{{ d.x }}" cy="{{ d.y }}" r="{{ d.r }}" fill="{{ d.c }}"></circle></sc-for>
+                </svg>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ pApps }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ v.section }}">
+              <h2 style="{{ v.h2 }}">Apps</h2>
+              <div style="{{ v.grid3 }}">
+                <sc-for list="{{ apps }}" as="a" hint-placeholder-count="3"><div style="{{ v.card }}"><span style="{{ v.tag }}">{{ a.tag }}</span><b style="{{ v.cardTitle }}">{{ a.title }}</b><span style="{{ v.muted }}">{{ a.body }}</span><span style="{{ v.btnB }}">Open</span></div></sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ pAbout }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ v.section }}">
+              <h2 style="{{ v.h2 }}">About</h2>
+              <p style="{{ v.lead }}">{{ v.about }}</p>
+              <div style="display:grid;gap:0;">
+                <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3"><div style="{{ v.row }}"><span style="{{ v.mono }}">{{ r.n }}</span><b style="{{ v.cardTitle }}">{{ r.t }}</b><span style="{{ v.muted }}">{{ r.d }}</span></div></sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="{{ v.foot }}">Demo content for choosing a style.</div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;min-height:0;background:#17171a;color:#ececea;border-left:1px solid #2c2c31;">
+    <div style="padding:16px 18px;border-bottom:1px solid #2c2c31;display:grid;gap:4px;">
+      <b style="font-size:15px;">Style agent</b>
+      <span style="font-size:12px;color:#a8a8a2;line-height:1.4;">Describe a look. It restyles the open tile live, or opens one for you.</span>
+    </div>
+    <div style="flex:1;min-height:0;overflow:auto;padding:14px 18px;display:grid;gap:10px;align-content:start;">
+      <sc-for list="{{ log }}" as="m" hint-placeholder-count="2"><div style="{{ m.style }}">{{ m.text }}</div></sc-for>
+    </div>
+    <div style="padding:12px 18px;border-top:1px solid #2c2c31;display:grid;gap:10px;">
+      <span style="font:500 11px 'DM Mono',monospace;letter-spacing:0.08em;color:#a8a8a2;">20 PROMPTS TO TRY</span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;max-height:132px;overflow:auto;">
+        <sc-for list="{{ ideas }}" as="i" hint-placeholder-count="4"><span onClick="{{ i.run }}" style="border:1px solid #4a4a52;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;color:#d8d8d2;" style-hover="border-color:#d4ff3a;color:#d4ff3a;">{{ i.label }}</span></sc-for>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <input value="{{ draft }}" onInput="{{ onDraft }}" onKeyDown="{{ onKey }}" placeholder="e.g. calm, warm, serif, soft corners" style="flex:1;min-width:0;background:#222226;color:#ececea;border:1px solid #3a3a40;border-radius:6px;padding:10px 12px;font:400 14px 'Space Grotesk',sans-serif;outline:none;">
+        <button onClick="{{ send }}" disabled="{{ busy }}" style="background:#d4ff3a;color:#111;border:0;border-radius:6px;padding:0 16px;font:700 13px 'Space Grotesk',sans-serif;cursor:pointer;">{{ sendLabel }}</button>
+      </div>
+    </div>
+    <div style="padding:14px 18px 18px;border-top:1px solid #2c2c31;display:grid;gap:12px;">
+      <span style="font:500 11px 'DM Mono',monospace;letter-spacing:0.08em;color:#a8a8a2;">MENU · {{ selLabel }}</span>
+      <div style="display:grid;grid-template-columns:70px 1fr;gap:8px 10px;align-items:center;font-size:13px;">
+        <span style="color:#a8a8a2;">Name</span>
+        <span style="display:flex;gap:6px;"><sc-for list="{{ nameOpts }}" as="o" hint-placeholder-count="2"><span onClick="{{ o.go }}" style="{{ o.style }}">{{ o.label }}</span></sc-for></span>
+        <span style="color:#a8a8a2;">Palette</span>
+        <select value="{{ palV }}" onChange="{{ onPal }}" style="background:#222226;color:#ececea;border:1px solid #3a3a40;border-radius:6px;padding:6px;font:400 13px 'Space Grotesk',sans-serif;"><sc-for list="{{ palOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select>
+        <span style="color:#a8a8a2;">Font</span>
+        <select value="{{ fontV }}" onChange="{{ onFont }}" style="background:#222226;color:#ececea;border:1px solid #3a3a40;border-radius:6px;padding:6px;font:400 13px 'Space Grotesk',sans-serif;"><sc-for list="{{ fontOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select>
+        <span style="color:#a8a8a2;">Layout</span>
+        <select value="{{ layV }}" onChange="{{ onLay }}" style="background:#222226;color:#ececea;border:1px solid #3a3a40;border-radius:6px;padding:6px;font:400 13px 'Space Grotesk',sans-serif;"><sc-for list="{{ layOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select>
+        <span style="color:#a8a8a2;">Corners</span>
+        <span style="display:flex;gap:6px;"><sc-for list="{{ radOpts }}" as="o" hint-placeholder-count="3"><span onClick="{{ o.go }}" style="{{ o.style }}">{{ o.label }}</span></sc-for></span>
+        <span style="color:#a8a8a2;">3D hero</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ sceneOpts }}" as="o" hint-placeholder-count="5"><span onClick="{{ o.go }}" style="{{ o.style }}">{{ o.label }}</span></sc-for></span>
+        <span style="color:#a8a8a2;">Motion</span>
+        <span style="display:flex;gap:6px;"><sc-for list="{{ animOpts }}" as="o" hint-placeholder-count="3"><span onClick="{{ o.go }}" style="{{ o.style }}">{{ o.label }}</span></sc-for></span>
+        <span style="color:#a8a8a2;">Numbers</span>
+        <span style="display:flex;gap:6px;"><sc-for list="{{ achOpts }}" as="o" hint-placeholder-count="2"><span onClick="{{ o.go }}" style="{{ o.style }}">{{ o.label }}</span></sc-for></span>
+        <span style="color:#a8a8a2;">Density</span>
+        <span style="display:flex;gap:6px;"><sc-for list="{{ denOpts }}" as="o" hint-placeholder-count="3"><span onClick="{{ o.go }}" style="{{ o.style }}">{{ o.label }}</span></sc-for></span>
+      </div>
+      <span onClick="{{ reset }}" style="font-size:12px;color:#a8a8a2;cursor:pointer;text-decoration:underline;">Reset this tile</span>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { cu: 1, name: 'unphz', sel: null, page: 'Home', over: {}, draft: '', busy: false, log: [{ who: 'agent', text: 'Pick a tile, then tell me what to change. I can also pick a tile for you.' }] };
+  PAL = [['Acid', '#0c0c0c', '#f2f2ee', '#d4ff3a'], ['Ink blue', '#fbfaf6', '#14213d', '#2d4fd6'], ['Signal', '#e8452c', '#fff7ee', '#1c1210'], ['Paper', '#f4efe6', '#1c1917', '#c2410c'], ['Blueprint', '#0b1e2d', '#e6f1f5', '#5eead4'],
+    ['Plum', '#1a1033', '#efe9ff', '#a78bfa'], ['Forest', '#e9f5ec', '#0f2a1c', '#16a34a'], ['Mono', '#ffffff', '#111111', '#ff3b00'], ['Rose', '#fde7ef', '#3b0d24', '#d6246e'], ['Gold', '#2b2b2b', '#f5e9d3', '#e2b04a']];
+  FONTS = [['Space Grotesk', 700], ['DM Serif Display', 400], ['Syne', 800], ['Bricolage Grotesque', 700], ['Instrument Serif', 400], ['Unbounded', 700], ['Archivo', 800], ['Playfair Display', 500], ['Sora', 700], ['Outfit', 700]];
+  LAYS = ['Left', 'Centered', 'Split', 'Terminal', 'Poster'];
+  PAGES = ['Home', 'Research', 'Graph', 'Apps', 'About'];
+  COPY = {
+    unphz: { kick: 'An autonomous research institute', head: ['Research that never waits.', 'Unphased. Always reading.', 'Read. Link. Approve.', 'A graph that shows its work.', 'Public only by approval.'], lede: 'One agent reads papers and the web, grows a graph of what it learns, and shows the public only what the owner approves.', about: 'Unphz is run by one agent, SEXTANT, and one owner. The agent reads and proposes. The owner decides what is public.' },
+    tmpltz: { kick: 'Research, templatized', head: ['Every finding, a template.', 'Research, templatized.', 'Typed, not free text.', 'Share the shape, keep the data.', 'Read. Graph. Template.'], lede: 'An agent turns what it reads into a typed graph, and the graph into reusable structures: notes, questions, checks and small apps.', about: 'tmpltz is run by one agent and one owner. Structure is shared. Data stays private until approved.' }
+  };
+  base(id) { const lay = Math.floor(id / 10); return { pal: id % 10, font: (id * 3 + lay) % 10, layout: lay, radius: 1, density: 1, custom: null, scene: 1 + (id % 4), anim: 1, ach: id % 2 }; }
+  P(id) { return { ...this.base(id), ...(this.state.over[id] || {}) }; }
+  set(id, patch) { this.setState(s => ({ over: { ...s.over, [id]: { ...(s.over[id] || {}), ...patch } } })); }
+  hex(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+  lum(h) { return this.hex(h).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0); }
+  cr(a, b) { const x = this.lum(a), y = this.lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  mix(a, b, t) { const A = this.hex(a), B = this.hex(b); return '#' + A.map((v, i) => Math.round(v * (1 - t) + B[i] * t).toString(16).padStart(2, '0')).join(''); }
+  sx(p) {
+    const c = p.custom || this.PAL[p.pal].slice(1), bg = c[0], fg = c[1], ac = c[2], f = this.FONTS[p.font], L = p.layout;
+    return { bg, fg, ac, L, hf: L === 3 ? "'DM Mono',monospace" : `'${f[0]}',sans-serif`, hw: L === 3 ? 500 : f[1], r: [0, 8, 18][p.radius], br: [0, 6, 999][p.radius], d: [0.8, 1, 1.3][p.density],
+      muted: this.mix(fg, bg, 0.3), line: this.mix(bg, fg, 0.18), onAc: this.cr(fg, ac) > this.cr(bg, ac) ? fg : bg, link: this.cr(ac, bg) >= 3 ? ac : fg };
+  }
+  vals(p, name, ti) {
+    const s = this.sx(p), C = this.COPY[name], L = s.L, pad = (n) => Math.round(n * s.d) + 'px', mono = "font-family:'DM Mono',monospace;";
+    const btn = `padding:${pad(11)} ${pad(20)};font-weight:600;font-size:14px;cursor:pointer;border-radius:${s.br}px;`;
+    return {
+      name, head: C.head[ti % 5], kick: C.kick, lede: C.lede, about: C.about,
+      root: `background:${s.bg};color:${s.fg};font-family:'Space Grotesk',sans-serif;`,
+      nav: `display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:${pad(20)} ${pad(36)};border-bottom:1px solid ${s.line};`,
+      brand: `font-family:${s.hf};font-weight:${s.hw};font-size:24px;letter-spacing:-0.03em;${L === 4 ? 'text-transform:uppercase;' : ''}`,
+      section: `padding:${pad(44)} ${pad(36)};display:grid;gap:${pad(32)};`,
+      hero: L === 2 ? `display:grid;grid-template-columns:1.2fr 1fr;gap:${pad(32)};align-items:stretch;` : `display:grid;gap:${pad(24)};`,
+      heroText: L === 1 ? 'text-align:center;justify-items:center;' : L === 3 ? `border:1px solid ${s.ac};padding:${pad(28)};` : 'align-content:center;',
+      btnRow: L === 1 ? 'justify-content:center;' : '',
+      kicker: `${mono}font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:${s.link};`,
+      h1: `margin:0;font-family:${s.hf};font-weight:${s.hw};font-size:${L === 4 ? 70 : L === 3 ? 36 : L === 1 ? 50 : 56}px;line-height:${L === 4 ? 0.92 : 1.02};letter-spacing:-0.04em;${L === 4 ? 'text-transform:uppercase;' : ''}`,
+      lead: `margin:0;max-width:560px;font-size:18px;line-height:1.55;color:${s.muted};`,
+      btnA: btn + `background:${s.ac};color:${s.onAc};border:1px solid ${s.ac};`, btnB: btn + `background:transparent;color:${s.fg};border:1px solid ${s.fg};`,
+      panel: `height:${L === 2 ? 'auto;min-height:300px' : '300px'};border-radius:${s.r}px;overflow:hidden;background:${this.mix(s.bg, s.fg, 0.06)};border:1px solid ${s.line};position:relative;`,
+      grid3: `display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:${pad(16)};`,
+      card: `border:1px solid ${s.line};border-radius:${s.r}px;padding:${pad(22)};display:grid;gap:8px;align-content:start;background:${this.mix(s.bg, s.fg, 0.04)};`,
+      cardTitle: `font-family:${s.hf};font-weight:${s.hw === 400 ? 400 : 600};font-size:19px;letter-spacing:-0.01em;`,
+      muted: `color:${s.muted};line-height:1.5;font-size:15px;`,
+      h2: `margin:0;font-family:${s.hf};font-weight:${s.hw};font-size:36px;letter-spacing:-0.03em;`,
+      row: `display:grid;grid-template-columns:90px 1fr auto;gap:16px;align-items:baseline;padding:${pad(16)} 0;border-bottom:1px solid ${s.line};`,
+      tag: `${mono}font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:${s.link};`,
+      mono: `${mono}font-size:12px;color:${s.muted};`,
+      foot: `padding:${pad(28)} ${pad(36)};border-top:1px solid ${s.line};font-size:13px;color:${s.muted};`,
+      stat: `font-family:${s.hf};font-weight:${s.hw};font-size:48px;letter-spacing:-0.04em;color:${s.link};line-height:1;`
+    };
+  }
+  // three.js hero: a sextant (arc, index arm) over a graph shell. Approved nodes take the accent; withheld nodes are grey.
+  mount = (el) => {
+    if (!el) { this.dispose(); return; }
+    if (this.el === el) return;
+    this.dispose(); this.el = el;
+    const go = () => { if (this.el !== el) return; if (!window.THREE) return void setTimeout(go, 150); this.scene3(el); };
+    go();
+  };
+  dispose() { if (this.ro) { this.ro.disconnect(); this.ro = null; } this.mats = null; this.key = undefined; if (this.raf) cancelAnimationFrame(this.raf); this.raf = 0; if (this.rend) { this.rend.dispose(); if (this.rend.domElement.parentNode) this.rend.domElement.parentNode.removeChild(this.rend.domElement); } this.rend = null; this.el = null; }
+  scene3(el) {
+    const kind = this.P(this.state.sel ?? 0).scene; this.key = kind; if (!kind) return;
+    const T = window.THREE, w = el.clientWidth || 600, h = el.clientHeight || 300, r = new T.WebGLRenderer({ antialias: true, alpha: true });
+    r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.setSize(w, h); el.appendChild(r.domElement); this.rend = r;
+    const sc = new T.Scene(), cam = new T.PerspectiveCamera(45, w / h, 0.1, 50); cam.position.set(0, 0, 6.2);
+    const rig = new T.Group(), A = [], G = [], F = [], rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+    const pts = (list, size, bag) => { const o = new T.Points(new T.BufferGeometry().setFromPoints(list), new T.PointsMaterial({ size, sizeAttenuation: true })); bag.push(o.material); return o; };
+    const lines = (list, bag, op, d) => { const a = []; for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) if (list[i].distanceTo(list[j]) < d) a.push(list[i], list[j]); const o = new T.LineSegments(new T.BufferGeometry().setFromPoints(a), new T.LineBasicMaterial({ transparent: true, opacity: op })); bag.push(o.material); return o; };
+    const shell = (N, R0, spread) => { const out = []; for (let i = 0; i < N; i++) { const y = 1 - (i / (N - 1)) * 2, rad = Math.sqrt(1 - y * y), th = i * 2.399963; out.push(new T.Vector3(Math.cos(th) * rad, y, Math.sin(th) * rad).multiplyScalar(R0 + rnd() * spread)); } return out; };
+    const split = (list) => { const a = [], g = []; list.forEach(v => (rnd() < 0.42 ? a : g).push(v)); return [a, g]; };
+    sc.add(rig); let extra = null;
+    if (kind === 1) {
+      const [a, g] = split(shell(70, 1.9, 0.5)); rig.add(pts(a, 0.16, A), pts(g, 0.12, G), lines(a, A, 0.55, 1.25), lines(g, G, 0.25, 1.25));
+      const sx = new T.Group(); sx.position.z = 0.6; sc.add(sx); const mm = (c) => { const m = new T.Mesh(c, new T.MeshBasicMaterial()); F.push(m.material); return m; };
+      const arc = mm(new T.TorusGeometry(1.5, 0.018, 8, 120, Math.PI / 1.6)); arc.rotation.z = Math.PI / 2 - Math.PI / 3.2; sx.add(arc);
+      const arm = new T.Group(), al = mm(new T.CylinderGeometry(0.014, 0.014, 1.5, 6)); al.position.y = 0.75; A.push(al.material); F.splice(F.indexOf(al.material), 1); arm.add(al); sx.add(arm);
+      [-1, 1].forEach(k => { const m = mm(new T.CylinderGeometry(0.014, 0.014, 1.5, 6)); m.position.set(k * 0.78, 0.65, 0); m.rotation.z = -k * 0.52; sx.add(m); });
+      extra = (t, mx) => { arm.rotation.z = Math.sin(t * 0.7) * 0.7; sx.rotation.y = mx * 0.3; };
+    } else if (kind === 2) {
+      const rings = [0, 1, 2].map(i => { const m = new T.Mesh(new T.TorusGeometry(1.2 + i * 0.55, 0.012, 8, 160), new T.MeshBasicMaterial()); (i === 0 ? A : G).push(m.material); m.rotation.x = 1.2 + i * 0.35; m.rotation.y = i * 0.6; rig.add(m); return m; });
+      const core = new T.Mesh(new T.IcosahedronGeometry(0.55, 1), new T.MeshBasicMaterial({ wireframe: true })); A.push(core.material); rig.add(core);
+      const dots = [0, 1, 2].map(i => { const m = new T.Mesh(new T.SphereGeometry(0.1, 12, 12), new T.MeshBasicMaterial()); (i === 1 ? G : A).push(m.material); rig.add(m); return m; });
+      extra = (t) => { rings.forEach((m, i) => { m.rotation.z = t * (0.2 + i * 0.1); }); dots.forEach((m, i) => { const R0 = 1.2 + i * 0.55, q = t * (0.7 - i * 0.15) + i * 2; const v = new T.Vector3(Math.cos(q) * R0, Math.sin(q) * R0, 0).applyEuler(new T.Euler(rings[i].rotation.x, rings[i].rotation.y, rings[i].rotation.z)); m.position.copy(v); }); };
+    } else if (kind === 3) {
+      const a = [], g = []; for (let i = 0; i < 700; i++) (rnd() < 0.3 ? a : g).push(new T.Vector3((rnd() - 0.5) * 9, (rnd() - 0.5) * 5, (rnd() - 0.5) * 6));
+      const pa = pts(a, 0.06, A), pg = pts(g, 0.04, G); rig.add(pa, pg); extra = (t) => { pa.position.x = Math.sin(t * 0.3) * 0.4; pg.position.y = Math.cos(t * 0.25) * 0.3; };
+    } else {
+      const geo = new T.IcosahedronGeometry(2.1, 2), wf = new T.Mesh(geo, new T.MeshBasicMaterial({ wireframe: true, transparent: true, opacity: 0.35 })); G.push(wf.material); rig.add(wf);
+      const pos = geo.attributes.position, a = [], seen = new Set(); for (let i = 0; i < pos.count; i += 1) { const k = [pos.getX(i), pos.getY(i), pos.getZ(i)].map(x => x.toFixed(2)).join(); if (!seen.has(k)) { seen.add(k); if (seen.size % 5 === 0) a.push(new T.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i))); } }
+      rig.add(pts(a, 0.18, A), lines(a, A, 0.7, 1.6));
+    }
+    this.mats = { A, G, F }; this.paint();
+    let mx = 0, my = 0; el.addEventListener('pointermove', e => { const b = el.getBoundingClientRect(); mx = ((e.clientX - b.left) / b.width - 0.5); my = ((e.clientY - b.top) / b.height - 0.5); });
+    const t0 = performance.now(), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; let tt = 0, last = t0;
+    const tick = () => { this.raf = requestAnimationFrame(tick); const now = performance.now(), sp = reduce ? 0 : [0, 1, 2.4][this.P(this.state.sel ?? 0).anim]; tt += (now - last) / 1000 * sp; last = now;
+      rig.rotation.y = tt * 0.12 + mx * 0.6; rig.rotation.x = 0.25 + my * 0.4; if (extra) extra(tt, mx); r.render(sc, cam); };
+    tick();
+    if (window.ResizeObserver) { this.ro = new ResizeObserver(() => { const W = el.clientWidth, H = el.clientHeight; if (W && H && this.rend) { r.setSize(W, H); cam.aspect = W / H; cam.updateProjectionMatrix(); } }); this.ro.observe(el); }
+  }
+  paint() { if (!this.mats) return; const s = this.sx(this.P(this.state.sel ?? 0)), T = window.THREE, ac = new T.Color(s.ac), gr = new T.Color(this.mix(s.bg, s.fg, 0.4)), fg = new T.Color(s.fg);
+    this.mats.A.forEach(m => m.color = ac); this.mats.G.forEach(m => m.color = gr); this.mats.F.forEach(m => m.color = fg); }
+  componentDidUpdate() {
+    this.paint();
+    const id = this.state.sel ?? 0, k = this.P(id).scene;
+    if (this.el && this.rend !== undefined && this.key !== undefined && k !== this.key && window.THREE) { const el = this.el; this.dispose(); this.el = el; this.scene3(el); }
+    const pk = this.state.sel + '|' + this.state.page; if (pk !== this.pk) { this.pk = pk; this.ramp(); }
+  }
+  ramp() { if (this.rt) clearInterval(this.rt); let c = 0; this.setState({ cu: 0 }); this.rt = setInterval(() => { c += 0.04; if (c >= 1) { c = 1; clearInterval(this.rt); } this.setState({ cu: 1 - Math.pow(1 - c, 3) }); }, 30); }
+  componentWillUnmount() { this.dispose(); if (this.rt) clearInterval(this.rt); }
+  say(who, text) { this.setState(s => ({ log: [...s.log, { who, text }].slice(-30) })); }
+  localParse(t) {
+    const q = t.toLowerCase(), o = {}, num = q.match(/#?\b(\d{1,2})\b/);
+    this.PAL.forEach((p, i) => { if (q.includes(p[0].toLowerCase())) o.pal = i; });
+    this.FONTS.forEach((f, i) => { if (q.includes(f[0].toLowerCase())) o.font = i; });
+    this.LAYS.forEach((l, i) => { if (q.includes(l.toLowerCase())) o.layout = i; });
+    if (/serif|editorial/.test(q) && o.font == null) o.font = q.includes('sans') ? 0 : 1; if (/mono|terminal|code/.test(q)) o.layout = 3;
+    if (/sharp|square|hard/.test(q)) o.radius = 0; if (/soft|round|pill/.test(q)) o.radius = 2; if (/compact|dense|tight/.test(q)) o.density = 0; if (/airy|spacious|loose|roomy/.test(q)) o.density = 2;
+    if (/dark|night|black/.test(q) && o.pal == null) o.pal = [0, 4, 5, 9][q.length % 4]; if (/light|bright|white|paper/.test(q) && o.pal == null) o.pal = [1, 3, 6, 7][q.length % 4];
+    if (/warm|orange|red/.test(q) && o.pal == null) o.pal = [2, 3][q.length % 2]; if (/calm|quiet|soft green|green/.test(q) && o.pal == null) o.pal = 6; if (/pink|rose/.test(q)) o.pal = 8; if (/blue|cool/.test(q) && o.pal == null) o.pal = [1, 4][q.length % 2];
+    if (/poster|loud|bold|huge/.test(q)) o.layout = 4; if (/centre|center/.test(q)) o.layout = 1;
+    if (/sextant|instrument|compass/.test(q)) o.scene = 1; if (/orbit|rings?|planet/.test(q)) o.scene = 2; if (/particle|field|stars?|dust/.test(q)) o.scene = 3; if (/globe|wireframe|sphere|constellation/.test(q)) o.scene = 4; if (/no 3d|flat|no scene|no animation/.test(q)) o.scene = 0;
+    if (/lively|alive|animated|energetic|motion|fast/.test(q)) o.anim = 2; if (/gentle|slow|calm|quiet/.test(q)) o.anim = 1; if (/still|static|frozen|no motion/.test(q)) o.anim = 0;
+    if (/achievement|milestone|numbers|stats|counting/.test(q)) o.ach = 1; if (/no stats|no numbers|no achievement/.test(q)) o.ach = 0;
+    const hx = q.match(/#([0-9a-f]{6})\b/); if (hx) o.accent = '#' + hx[1];
+    if (/tmpltz/.test(q)) o.name = 'tmpltz'; if (/unphz/.test(q)) o.name = 'unphz';
+    if (/\b(open|show|pick|go to)\b/.test(q) && num && +num[1] >= 1 && +num[1] <= 50) o.open = +num[1] - 1;
+    return o;
+  }
+  apply(o, id) {
+    if (o.name === 'unphz' || o.name === 'tmpltz') this.setState({ name: o.name });
+    const patch = {}; ['pal', 'font', 'layout', 'radius', 'density', 'scene', 'anim', 'ach'].forEach(k => { if (Number.isInteger(o[k])) patch[k] = o[k]; });
+    if (patch.pal != null) patch.custom = null;
+    let c = Array.isArray(o.custom) && o.custom.length === 3 && o.custom.every(x => /^#[0-9a-fA-F]{6}$/.test(x)) ? o.custom.slice() : null;
+    if (typeof o.accent === 'string' && /^#[0-9a-fA-F]{6}$/.test(o.accent)) { const b = this.sx(this.P(id)); c = c || [b.bg, b.fg, b.ac]; c[2] = o.accent; }
+    if (c) { if (this.cr(c[0], c[1]) < 4.5) c[1] = this.lum(c[0]) > 0.4 ? '#111111' : '#f5f5f0'; patch.custom = c; }
+    if (Object.keys(patch).length) this.set(id, patch);
+    return Object.keys(patch).length > 0 || !!o.name;
+  }
+  async run(text) {
+    const t = (text || '').trim(); if (!t || this.state.busy) return;
+    this.say('you', t); this.setState({ draft: '', busy: true });
+    let o = this.localParse(t), said = '';
+    if (window.claude && window.claude.complete) {
+      try {
+        const sel = this.state.sel == null ? 'none' : this.state.sel + 1;
+        const prompt = `You restyle a website design tile. Palettes by index: ${this.PAL.map((p, i) => i + '=' + p[0] + ' ' + p.slice(1).join('/')).join('; ')}. Fonts: ${this.FONTS.map((f, i) => i + '=' + f[0]).join(', ')}. Layouts: 0 Left, 1 Centered, 2 Split, 3 Terminal, 4 Poster. radius 0 sharp, 1 soft, 2 round. density 0 compact, 1 normal, 2 airy. scene is the 3D hero: 0 none, 1 sextant over graph, 2 orbit rings, 3 particle field, 4 wireframe globe. anim 0 still, 1 gentle, 2 lively. ach 1 shows the animated achievements band, 0 hides it. Selected tile: ${sel} of 50 (null means none). User says: "${t}". Reply with ONLY a JSON object, optional keys: pal, font, layout, radius, density (integers, including scene, anim, ach), custom ([bg,fg,accent] hex strings), open (tile number 1-50 to open), name ("unphz" or "tmpltz"), say (one short sentence describing what you changed).`;
+        const raw = await window.claude.complete(prompt), m = String(raw).match(/\{[\s\S]*\}/);
+        if (m) { const j = JSON.parse(m[0]); if (typeof j.open === 'number') j.open = j.open - 1; o = { ...o, ...j }; said = typeof j.say === 'string' ? j.say.slice(0, 200) : ''; }
+      } catch (e) { /* the local parser's result stands */ }
+    }
+    let id = this.state.sel;
+    if (Number.isInteger(o.open) && o.open >= 0 && o.open < 50) { id = o.open; this.setState({ sel: id, page: 'Home' }); }
+    if (id == null) { id = (this.state.sel ?? Math.floor(Math.random() * 50)); this.setState({ sel: id, page: 'Home' }); }
+    const changed = this.apply(o, id);
+    this.say('agent', said || (changed || Number.isInteger(o.open) ? `Updated tile #${String(id + 1).padStart(2, '0')}.` : 'I did not find a change in that. Try a palette, font, layout, corners or density.'));
+    this.setState({ busy: false });
+  }
+  renderVals() {
+    const S = this.state, sel = S.sel, name = S.name, mk = (label, on, go) => ({ label, go, style: `border:1px solid ${on ? '#d4ff3a' : '#4a4a52'};color:${on ? '#d4ff3a' : '#d8d8d2'};border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;` });
+    const tiles = [];
+    for (let i = 0; i < 50; i++) {
+      const v = this.vals(this.P(i), name, i), s = this.sx(this.P(i)), L = s.L, card = `position:relative;overflow:hidden;aspect-ratio:6/5;display:flex;flex-direction:column;gap:6px;padding:16px;box-sizing:border-box;border-radius:${s.r}px;background:${s.bg};color:${s.fg};transition:transform .15s;outline:${sel === i ? '3px solid #1b1b1b' : '0'};outline-offset:3px;${L === 2 ? 'justify-content:center;padding-right:42%;' : L === 1 ? 'justify-content:center;align-items:center;text-align:center;' : L === 4 ? 'padding-bottom:26px;' : 'justify-content:flex-end;'}`;
+      const deco = 'position:absolute;' + [`left:16px;top:16px;width:34px;height:4px;background:${s.ac};`, `left:50%;top:14px;width:9px;height:9px;margin-left:-4px;border-radius:50%;background:${s.ac};`, `right:0;top:0;bottom:0;width:38%;background:${s.ac};`, `inset:8px;border:1px solid ${s.ac};pointer-events:none;`, `left:0;right:0;bottom:0;height:12px;background:${s.ac};`][L];
+      tiles.push({ n: String(i + 1).padStart(2, '0'), head: (L === 3 ? '> ' : '') + v.head, cta: 'Follow', meta: `${this.LAYS[L]} · ${this.PAL[this.P(i).pal][0]}`, card, deco,
+        hs: `flex-shrink:0;font-family:${s.hf};font-weight:${s.hw};font-size:${L === 4 ? 24 : L === 3 ? 14 : L === 2 ? 18 : 22}px;line-height:${L === 4 ? 0.95 : 1.05};letter-spacing:-0.035em;${L === 4 ? 'text-transform:uppercase;' : ''}`,
+        btn: `flex-shrink:0;white-space:nowrap;align-self:${L === 1 ? 'center' : 'flex-start'};font:700 11px 'Space Grotesk',sans-serif;padding:5px 10px;border-radius:${s.br}px;${L === 3 ? `border:1px solid ${s.ac};color:${s.link};` : `background:${L === 2 || L === 4 ? s.fg : s.ac};color:${L === 2 || L === 4 ? s.bg : s.onAc};`}`,
+        open: () => this.setState({ sel: i, page: 'Home' }) });
+    }
+    const idx = sel ?? 0, p = this.P(idx), v = this.vals(p, name, idx), s = this.sx(p), pg = S.page;
+    const nodes = [[60, 120, 1], [140, 60, 1], [150, 150, 1], [240, 90, 1], [260, 190, 1], [330, 130, 1], [100, 210, 0], [200, 215, 0], [350, 50, 0], [30, 50, 0], [300, 25, 0]], edges = [[0, 1], [0, 2], [1, 3], [2, 3], [2, 4], [3, 5], [4, 5], [0, 6], [4, 7], [5, 8], [1, 9], [3, 10]];
+    const col = (a) => (nodes[a][2] ? s.ac : this.mix(s.bg, s.fg, 0.4));
+    return {
+      tiles, v, inGrid: sel == null || S.page === '__grid', inPreview: sel != null && S.page !== '__grid', pHome: pg === 'Home', pAch: !!p.ach, pResearch: pg === 'Research', pGraph: pg === 'Graph', pApps: pg === 'Apps', pAbout: pg === 'About',
+      crumb: sel == null ? '50 designs' : `#${String(sel + 1).padStart(2, '0')} · ${name} · ${pg}`, selLabel: sel == null ? 'no tile open' : `tile #${String(sel + 1).padStart(2, '0')}`,
+      back: () => this.setState({ sel: null, page: 'Home' }), reset: () => { if (sel != null) this.setState(st => { const o = { ...st.over }; delete o[sel]; return { over: o }; }); },
+      pages: this.PAGES.map(g => ({ label: g, go: () => this.setState({ page: g }), style: `cursor:pointer;font-size:14px;padding-bottom:3px;border-bottom:2px solid ${pg === g ? s.ac : 'transparent'};color:${pg === g ? s.fg : s.muted};` })),
+      goJoin: () => this.setState({ page: 'About' }), goResearch: () => this.setState({ page: 'Research' }), box: this.mount,
+      points: [{ t: 'Grows its own map', d: 'A fixed core of nodes and edges, plus a free edge the agent grows and ranks.' }, { t: 'Public is opt-in', d: 'Unapproved nodes appear as grey shapes. Visitors see structure, never content.' }, { t: 'Repairs itself with you', d: 'Errors become incidents, then a tested patch, then a pull request you merge.' }],
+      cu: S.cu, built: [{ k: '1', l: 'Signature, one input, one output' }, { k: '3', l: 'Hops in the graph view' }, { k: '2', l: 'Doors: public and owner' }, { k: '1', l: 'Owner who approves publishing' }].map((b) => ({ n: String(Math.round(+b.k * S.cu)), l: b.l })),
+      notes: [{ tag: 'Note', title: 'Sample: what the graph is for', body: 'Placeholder entry. Real notes appear here once approved.', date: 'sample' }, { tag: 'Question', title: 'Sample: an open question', body: 'Placeholder entry with its support count.', date: 'sample' }, { tag: 'Report', title: 'Sample: a landscape report', body: 'Placeholder entry linking to a full report.', date: 'sample' }, { tag: 'Note', title: 'Sample: a debunk', body: 'Placeholder entry with sources.', date: 'sample' }],
+      links: edges.map(([a, b]) => ({ x1: nodes[a][0], y1: nodes[a][1], x2: nodes[b][0], y2: nodes[b][1], c: nodes[a][2] && nodes[b][2] ? s.ac : this.mix(s.bg, s.fg, 0.3) })),
+      dots: nodes.map((n, i) => ({ x: n[0], y: n[1], r: n[2] ? 9 : 7, c: col(i) })),
+      apps: [{ tag: 'Sample', title: 'App one', body: 'Shipped by the agent, served from the site\'s docker.' }, { tag: 'Sample', title: 'App two', body: 'Health-checked every five minutes.' }, { tag: 'Sample', title: 'App three', body: 'Retired apps leave a note.' }],
+      rules: [{ n: '01', t: 'Agent reads', d: 'It never edits its own code.' }, { n: '02', t: 'Owner approves', d: 'Publishing and posts wait for a click.' }, { n: '03', t: 'Everything is logged', d: 'Rounds, tools and changes.' }],
+      log: S.log.map(m => ({ text: m.text, style: m.who === 'you' ? 'justify-self:end;background:#d4ff3a;color:#111;padding:8px 12px;border-radius:10px 10px 2px 10px;font-size:13px;max-width:85%;line-height:1.4;' : 'justify-self:start;background:#26262b;color:#ececea;padding:8px 12px;border-radius:10px 10px 10px 2px;font-size:13px;max-width:85%;line-height:1.4;' })),
+      ideas: ['Sextant over a glowing graph, blueprint, lively', 'Orbit rings, ink blue, airy, serif', 'Particle field, acid on black, poster layout', 'Wireframe globe, forest, calm, round corners', 'Show achievements with counting numbers, plum', 'Terminal layout, sextant, gold, compact', 'Open 12 and make it lively', 'Paper, warm, serif headline, still, no 3D', 'Signal red poster, particle field, bold', 'Centered, rose, orbit rings, soft corners', 'Use tmpltz, blueprint, wireframe globe', 'Sharp corners, mono, particle field, dense', 'Light and quiet, sextant, gentle motion', 'Dark night, constellation globe, achievements', 'Split layout, Sora, ink blue, sextant', 'Use unphz, loud and huge, accent #ff3b00', 'Airy editorial, Playfair, paper, orbit rings', 'Compact, Archivo, gold, particle field', 'Open 37 and show achievements', 'Mono white, orange accent, no stats, still'].map(l => ({ label: l, run: () => this.run(l) })),
+      draft: S.draft, onDraft: e => this.setState({ draft: e.target.value }), onKey: e => { if (e.key === 'Enter') this.run(this.state.draft); }, send: () => this.run(this.state.draft), busy: S.busy, sendLabel: S.busy ? '...' : 'Send',
+      nameOpts: ['unphz', 'tmpltz'].map(n => mk(n, name === n, () => this.setState({ name: n }))),
+      palV: String(p.custom ? '' : p.pal), palOpts: [...(p.custom ? [{ v: '', label: 'Custom' }] : []), ...this.PAL.map((x, i) => ({ v: String(i), label: x[0] }))], onPal: e => { if (sel == null) return; this.set(sel, { pal: +e.target.value, custom: null }); },
+      fontV: String(p.font), fontOpts: this.FONTS.map((x, i) => ({ v: String(i), label: x[0] })), onFont: e => { if (sel != null) this.set(sel, { font: +e.target.value }); },
+      layV: String(p.layout), layOpts: this.LAYS.map((x, i) => ({ v: String(i), label: x })), onLay: e => { if (sel != null) this.set(sel, { layout: +e.target.value }); },
+      radOpts: ['Sharp', 'Soft', 'Round'].map((l, i) => mk(l, p.radius === i, () => sel != null && this.set(sel, { radius: i }))),
+      sceneOpts: ['Off', 'Sextant', 'Orbit', 'Field', 'Globe'].map((l, i) => mk(l, p.scene === i, () => sel != null && this.set(sel, { scene: i }))),
+      animOpts: ['Still', 'Gentle', 'Lively'].map((l, i) => mk(l, p.anim === i, () => sel != null && this.set(sel, { anim: i }))),
+      achOpts: ['Hide', 'Show'].map((l, i) => mk(l, p.ach === i, () => sel != null && this.set(sel, { ach: i }))),
+      denOpts: ['Compact', 'Normal', 'Airy'].map((l, i) => mk(l, p.density === i, () => sel != null && this.set(sel, { density: i })))
+    };
+  }
+}
+</script>
+</body>
+</html>

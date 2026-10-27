@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <script src="testkit.js"></script>
+  <script src="../ops/src/connectome.js"></script>
+  <style>
+    /* Aperture — self-contained modern console theme (no external design system) */
+    :root {
+      --color-bg:#0a0b0f; --color-surface:#13151c; --color-raise:#171a22; --color-text:#e8eaf1;
+      --color-accent:#4f9dff; --color-accent-200:#bcd6ff; --color-accent-300:#8fbaff; --color-accent-400:#6fb0ff; --color-accent-600:#2f6fd6; --color-accent-700:#244f9e;
+      --color-neutral-600:#3b3f4d; --color-neutral-700:#2b2f3b; --color-neutral-800:#1f222c; --color-neutral-900:#16181f;
+      --ok:#3fcf8e; --bad:#ff6b6b; --warn:#f5b547; --info:#8fbaff; --idle:#6b7180;
+      --radius-sm:7px; --radius-md:11px; --radius-lg:15px;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.45); --shadow-md:0 8px 24px rgba(0,0,0,.5); --shadow-lg:0 20px 55px rgba(0,0,0,.6);
+      --font-body:'Hanken Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      --font-heading:'Hanken Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      --font-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    }
+    html, body { margin: 0; background: var(--color-bg); }
+    a { color: var(--color-accent-300); text-underline-offset: 3px; } a:hover { color: var(--color-accent-200); }
+    *::-webkit-scrollbar { width: 9px; height: 9px; }
+    *::-webkit-scrollbar-thumb { background: var(--color-neutral-700); border-radius: 6px; }
+    *::-webkit-scrollbar-thumb:hover { background: var(--color-neutral-600); }
+    *::-webkit-scrollbar-track { background: transparent; }
+    :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    ::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+    .tkv4 textarea { tab-size: 2; font-family: var(--font-mono); }
+    @keyframes tkpulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+    /* buttons */
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; font:600 13px var(--font-body); line-height:1; min-height:34px; padding:0 13px; border-radius:var(--radius-sm); border:1px solid var(--color-neutral-700); background:var(--color-raise); color:var(--color-text); cursor:pointer; transition:background .12s, border-color .12s, opacity .12s; white-space:nowrap; }
+    .btn:hover { border-color:var(--color-neutral-600); background:color-mix(in srgb,var(--color-text) 6%,var(--color-raise)); }
+    .btn:disabled { opacity:.42; cursor:default; }
+    .btn-primary { background:var(--color-accent); border-color:var(--color-accent); color:#071018; }
+    .btn-primary:hover { background:var(--color-accent-400); border-color:var(--color-accent-400); }
+    .btn-secondary { background:var(--color-raise); }
+    .btn-ghost { background:transparent; border-color:transparent; color:color-mix(in srgb,var(--color-text) 72%,transparent); }
+    .btn-ghost:hover { background:color-mix(in srgb,var(--color-text) 8%,transparent); border-color:transparent; }
+    .btn-icon { padding:0; width:34px; min-height:34px; }
+    .btn-block { width:100%; }
+    /* tags */
+    .tag { display:inline-flex; align-items:center; gap:5px; font:600 11px var(--font-mono); letter-spacing:.02em; padding:3px 9px; border-radius:999px; border:1px solid var(--color-neutral-700); color:color-mix(in srgb,var(--color-text) 70%,transparent); white-space:nowrap; }
+    .tag-accent { color:var(--color-accent-200); border-color:color-mix(in srgb,var(--color-accent) 50%,transparent); background:color-mix(in srgb,var(--color-accent) 12%,transparent); }
+    .tag-outline { color:var(--bad); border-color:color-mix(in srgb,var(--bad) 55%,transparent); }
+    .tag-neutral { color:color-mix(in srgb,var(--color-text) 62%,transparent); border-color:var(--color-neutral-700); }
+    /* inputs */
+    .input { width:100%; font:13px var(--font-body); min-height:34px; padding:0 11px; border-radius:var(--radius-sm); border:1px solid var(--color-neutral-700); background:var(--color-surface); color:var(--color-text); }
+    .input::placeholder { color:color-mix(in srgb,var(--color-text) 40%,transparent); }
+    .input:focus { outline:none; border-color:var(--color-accent); }
+    /* cards */
+    .card { background:var(--color-surface); border:1px solid var(--color-neutral-800); border-radius:var(--radius-md); padding:14px; }
+    .card-kicker { font:600 10.5px var(--font-mono); letter-spacing:.11em; text-transform:uppercase; color:color-mix(in srgb,var(--color-text) 52%,transparent); }
+    .elev-sm { box-shadow:var(--shadow-sm); } .elev-md { box-shadow:var(--shadow-md); } .elev-lg { box-shadow:var(--shadow-lg); }
+  </style>
+</helmet>
+<div class="tkv4" data-screen-label="Tester" style="display:flex;flex-direction:column;{{ shellH }}min-height:100vh;background:#0a0b0f;color:var(--color-text);font-family:var(--font-body);font-size:13px;">
+  <header style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:9px 14px;background:linear-gradient(180deg,#14161d,#0a0b0f);box-shadow:0 1px 0 var(--color-neutral-800);">
+    <span style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;"><i class="ph-fill ph-circuitry" style="font-size:20px;color:var(--color-accent-300);"></i><span style="font:600 12.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;">TESTER</span></span>
+    <span style="{{ liveDot }}"></span>
+    <span class="tag {{ modeCls }}" style="white-space:nowrap;">{{ modeLabel }}</span>
+    <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);white-space:nowrap;">{{ provenance }}</span>
+    <form onSubmit="{{ submitCmd }}" style="flex:1 1 300px;display:flex;gap:6px;min-width:0;">
+      <input class="input" aria-label="Command" value="{{ cmd }}" onChange="{{ onCmd }}" placeholder="run all · deep pass · reduce · open explorer · find 12 · ask: explain the architecture" style="min-height:32px;font-size:12.5px;">
+    </form>
+    <div style="display:flex;align-items:baseline;gap:5px;font-family:ui-monospace,Menlo,monospace;white-space:nowrap;">
+      <i class="ph {{ passIcon }}" style="color:{{ passColor }};font-size:14px;"></i>
+      <span style="font-size:17px;color:var(--color-accent-200);font-variant-numeric:tabular-nums;">{{ nPassed }}</span><span style="font-size:10.5px;color:color-mix(in srgb,var(--color-text) 50%,transparent);">pass</span>
+      <span style="font-size:17px;color:{{ failColor }};font-variant-numeric:tabular-nums;">{{ nFailed }}</span><span style="font-size:10.5px;color:color-mix(in srgb,var(--color-text) 50%,transparent);">fail</span>
+      <span style="font-size:14px;font-variant-numeric:tabular-nums;color:color-mix(in srgb,var(--color-text) 70%,transparent);">{{ clock }}</span>
+    </div>
+    <div style="position:relative;">
+      <button type="button" title="{{ readyTip }}" onClick="{{ toggleGaps }}" style="{{ readyPillSt }}">
+        <span style="{{ readyDotSt }}"></span>
+        <span style="{{ readyTxtSt }}">{{ readyVerdict }}</span>
+        <span style="{{ readyNumSt }}">{{ readyPct }}</span>
+        <sc-if value="{{ hasGaps }}" hint-placeholder-val="{{ false }}"><i class="ph ph-caret-down" style="{{ readyCaretSt }}"></i></sc-if>
+      </button>
+      <sc-if value="{{ gapsOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;z-index:40;top:calc(100% + 7px);left:0;width:340px;max-width:82vw;display:grid;gap:8px;padding:12px;border:1px solid var(--color-neutral-700);border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-lg);">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <i class="ph ph-target" style="color:var(--color-accent-300);"></i>
+            <span style="font-weight:500;">Gaps to fill</span>
+            <sc-if value="{{ hasGaps }}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-primary" style="margin-left:auto;min-height:28px;font-size:12px;" onClick="{{ fillAll }}" disabled="{{ running }}"><i class="ph ph-magic-wand" style="margin-right:4px;"></i>Fill all</button></sc-if>
+          </div>
+          <sc-for list="{{ readyGaps }}" as="g" hint-placeholder-count="0">
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-sm);background:#0c0d12;">
+              <span style="flex:1;min-width:0;font-size:12px;overflow-wrap:anywhere;">{{ g.label }}</span>
+              <button type="button" class="btn btn-secondary" style="min-height:26px;font-size:11.5px;white-space:nowrap;" onClick="{{ g.go }}">{{ g.cta }}</button>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noGaps }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 2px;font-size:12px;color:color-mix(in srgb,var(--color-text) 65%,transparent);"><i class="ph ph-check-circle" style="color:#3fcf8e;"></i>No gaps — stack and sites are clear and within budget.</div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;">
+      <sc-if value="{{ idle }}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-primary" style="min-height:32px;padding:0 13px;font-size:12.5px;" onClick="{{ runAll }}"><i class="ph ph-play" style="margin-right:5px;"></i>Run all</button></sc-if>
+      <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-primary" style="min-height:32px;padding:0 13px;font-size:12.5px;" onClick="{{ stop }}"><i class="ph ph-stop" style="margin-right:5px;"></i>Stop</button></sc-if>
+      <button type="button" class="btn btn-secondary" style="min-height:32px;padding:0 10px;font-size:12.5px;" onClick="{{ deepPass }}" disabled="{{ running }}">{{ deepLabel }}</button>
+      <button type="button" class="btn btn-secondary" style="min-height:32px;padding:0 10px;font-size:12.5px;" onClick="{{ threePasses }}" disabled="{{ running }}">3 clean passes</button>
+      <span style="display:flex;gap:4px;align-items:center;margin-left:2px;"><sc-for list="{{ passChips }}" as="p" hint-placeholder-count="3"><span style="{{ p.st }}">{{ p.label }}</span></sc-for></span>
+    </div>
+  </header>
+
+  <div style="flex:1 1 auto;display:flex;min-height:0;">
+    <nav aria-label="Views" style="flex:none;width:{{ railW }};display:flex;flex-direction:column;gap:3px;padding:8px 6px;background:#0e0f14;box-shadow:1px 0 0 var(--color-neutral-800);">
+      <sc-for list="{{ railTabs }}" as="t" hint-placeholder-count="7">
+        <button type="button" aria-current="{{ t.on }}" onClick="{{ t.pick }}" title="{{ t.label }}" style="{{ t.st }}"><i class="ph {{ t.icon }}" style="font-size:18px;"></i><span style="{{ t.lblSt }}">{{ t.label }}</span><sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;font:10.5px ui-monospace,Menlo,monospace;color:var(--color-accent-200);">{{ t.badge }}</span></sc-if></button>
+      </sc-for>
+    </nav>
+
+    <main style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;overflow:hidden;">
+
+      <!-- VERDICT -->
+      <section style="flex:1 1 auto;min-height:0;{{ verdictVis }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:9px 14px;box-shadow:0 1px 0 var(--color-neutral-800);">
+          <span style="{{ verdictDotSt }}"></span>
+          <span style="{{ verdictHeadSt }}">{{ verdictHead }}</span>
+          <span style="font:600 16px ui-monospace,Menlo,monospace;color:var(--color-accent-200);font-variant-numeric:tabular-nums;">{{ verdictPct }}</span>
+          <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">reasoned from the graph — severity × blast radius</span>
+          <span style="margin-left:auto;display:flex;gap:6px;">
+            <button type="button" class="btn btn-ghost" style="min-height:28px;font-size:12px;" onClick="{{ verdictAsk }}"><i class="ph ph-brain" style="margin-right:4px;"></i>Ask why</button>
+            <button type="button" class="btn btn-secondary" style="min-height:28px;font-size:12px;" onClick="{{ verdictRefresh }}" disabled="{{ running }}"><i class="ph ph-play" style="margin-right:4px;"></i>Run all</button>
+          </span>
+        </div>
+        <div style="flex:1 1 auto;min-height:0;overflow:auto;padding:16px 14px;display:grid;align-content:start;gap:16px;max-width:1040px;">
+          <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-text);text-wrap:pretty;max-width:80ch;">{{ verdictPlan }}</p>
+
+          <sc-if value="{{ verdictHasItems }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;gap:9px;">
+              <span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">What matters now</span>
+              <sc-for list="{{ verdictItems }}" as="v" hint-placeholder-count="0">
+                <div style="display:flex;gap:12px;padding:12px 14px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);background:var(--color-surface);">
+                  <span style="flex:none;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font:600 13px ui-monospace,Menlo,monospace;background:color-mix(in srgb,var(--color-accent) 14%,transparent);color:var(--color-accent-200);">{{ v.rank }}</span>
+                  <div style="flex:1;min-width:0;display:grid;gap:4px;">
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+                      <span class="{{ v.sevCls }}" style="white-space:nowrap;">{{ v.sev }}</span>
+                      <span style="font-size:13.5px;font-weight:500;overflow-wrap:anywhere;min-width:0;">{{ v.title }}</span>
+                    </div>
+                    <div style="font:11.5px ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 60%,transparent);overflow-wrap:anywhere;">{{ v.where }} · {{ v.blast }}</div>
+                    <div style="font-size:12.5px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 72%,transparent);">{{ v.why }}</div>
+                  </div>
+                  <button type="button" class="btn btn-secondary" style="flex:none;align-self:center;min-height:30px;font-size:12px;white-space:nowrap;" onClick="{{ v.go }}">{{ v.actLabel }}</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ verdictClear }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:10px;padding:14px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);background:var(--color-surface);">
+              <i class="ph-fill ph-check-circle" style="font-size:22px;color:#3fcf8e;"></i>
+              <span style="font-size:13.5px;">No open failures to rank. Gaps below are what still stands between here and launch.</span>
+            </div>
+          </sc-if>
+
+          <div style="display:grid;gap:9px;">
+            <span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Gaps before launch</span>
+            <sc-for list="{{ verdictGaps }}" as="g" hint-placeholder-count="0">
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-sm);background:#0c0d12;">
+                <i class="ph ph-target" style="color:var(--color-accent-300);"></i>
+                <span style="flex:1;min-width:0;font-size:12.5px;overflow-wrap:anywhere;">{{ g.label }}</span>
+                <button type="button" class="btn btn-ghost" style="min-height:28px;font-size:12px;white-space:nowrap;" onClick="{{ g.go }}">{{ g.cta }}</button>
+              </div>
+            </sc-for>
+            <sc-if value="{{ verdictNoGaps }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">No gaps — everything in scope has run and is within budget.</span>
+            </sc-if>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONSOLE -->
+      <section style="flex:1 1 auto;min-height:0;{{ consoleVis }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:9px 14px;box-shadow:0 1px 0 var(--color-neutral-800);">
+          <i class="ph ph-terminal-window" style="color:var(--color-accent-300);"></i><span style="font-weight:500;">Commands &amp; output</span>
+          <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ runNote }}</span>
+          <span style="margin-left:auto;display:flex;gap:6px;">
+            <button type="button" aria-pressed="{{ autoscroll }}" onClick="{{ flipScroll }}" style="{{ scrollSt }}">Follow</button>
+            <button type="button" class="btn btn-ghost" style="min-height:28px;font-size:12px;" onClick="{{ copyReport }}">Copy report</button>
+            <button type="button" class="btn btn-ghost" style="min-height:28px;font-size:12px;" onClick="{{ downloadReport }}">Download</button>
+            <button type="button" class="btn btn-ghost" style="min-height:28px;font-size:12px;" onClick="{{ clearRuns }}">Clear</button>
+          </span>
+        </div>
+        <div ref="{{ consoleRef }}" style="flex:1 1 auto;min-height:0;overflow:auto;padding:12px 14px;display:grid;align-content:start;gap:10px;">
+          <sc-for list="{{ runs }}" as="r" hint-placeholder-count="0">
+            <div style="border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);background:#0c0d12;overflow:hidden;">
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 11px;background:#15171f;box-shadow:0 1px 0 var(--color-neutral-800);">
+                <span style="{{ r.dot }}"></span>
+                <span style="font:12px ui-monospace,Menlo,monospace;color:var(--color-accent-200);overflow-wrap:anywhere;min-width:0;">$ {{ r.cmd }}</span>
+                <span style="margin-left:auto;display:flex;gap:9px;font:11px ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 52%,transparent);white-space:nowrap;"><span>{{ r.at }}</span><span style="color:{{ r.stColor }};">{{ r.state }}</span><span>{{ r.secs }}</span></span>
+              </div>
+              <div style="padding:9px 12px;max-height:360px;overflow:auto;display:grid;gap:1px;">
+                <sc-for list="{{ r.out }}" as="o" hint-placeholder-count="0"><span style="font:11.5px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:{{ o.color }};">{{ o.t }}</span></sc-for>
+                <sc-if value="{{ r.pending }}" hint-placeholder-val="{{ false }}"><span style="font:11.5px ui-monospace,Menlo,monospace;color:var(--color-accent-300);animation:tkpulse 1s infinite;">▌ running…</span></sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noRuns }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;gap:8px;padding:28px 6px;max-width:560px;">
+              <i class="ph ph-terminal-window" style="font-size:30px;color:color-mix(in srgb,var(--color-text) 35%,transparent);"></i>
+              <span style="font-size:15px;font-weight:500;">Nothing has run in this tab yet.</span>
+              <span style="font-size:12.5px;line-height:1.6;color:color-mix(in srgb,var(--color-text) 65%,transparent);">Press <b>Run all</b>. Every command the tester issues — pytest, the graph audit, the JavaScript parse, the browser QA — appears here with its real output, exit status, timestamp and duration. Every number in this dashboard comes from a command you can read here.</span>
+            </div>
+          </sc-if>
+        </div>
+      </section>
+
+      <!-- TESTS -->
+      <section style="flex:1 1 auto;min-height:0;overflow:auto;padding:14px;{{ testsVis }}">
+        <sc-if value="{{ noDetail }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;">
+            <sc-for list="{{ cards }}" as="c" hint-placeholder-count="6">
+              <div style="display:flex;flex-direction:column;gap:9px;padding:14px;border:1px solid {{ c.border }};border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);">
+                <div style="display:flex;align-items:center;gap:9px;"><span style="{{ c.iconSt }}"><i class="ph {{ c.icon }}"></i></span><span style="font-weight:500;overflow-wrap:anywhere;min-width:0;">{{ c.name }}</span><span class="{{ c.pillCls }}" style="margin-left:auto;white-space:nowrap;">{{ c.state }}</span></div>
+                <div style="display:flex;align-items:baseline;gap:8px;"><span style="font:600 26px ui-monospace,Menlo,monospace;color:{{ c.bigColor }};font-variant-numeric:tabular-nums;">{{ c.big }}</span><span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 58%,transparent);">{{ c.bigSub }}</span></div>
+                <span style="height:3px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden;"><span style="display:block;height:100%;background:{{ c.barColor }};width:{{ c.pct }};"></span></span>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:11px;font-family:ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 48%,transparent);"><span style="overflow-wrap:anywhere;">{{ c.cmd }}</span><span style="margin-left:auto;white-space:nowrap;">{{ c.time }}</span></div>
+                <div style="display:flex;gap:6px;margin-top:2px;"><button type="button" class="btn btn-secondary" style="min-height:30px;font-size:12px;flex:1;" onClick="{{ c.run }}" disabled="{{ running }}"><i class="ph ph-play" style="margin-right:4px;"></i>Run</button><button type="button" class="btn btn-primary" style="min-height:30px;font-size:12px;flex:1;" onClick="{{ c.open }}">Details<i class="ph ph-arrow-right" style="margin-left:4px;"></i></button></div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasDetail }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:12px;max-width:1040px;">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+              <button type="button" class="btn btn-ghost" onClick="{{ closeDetail }}"><i class="ph ph-arrow-left" style="margin-right:5px;"></i>All tests</button>
+              <span style="{{ dIconSt }}"><i class="ph {{ dIcon }}"></i></span>
+              <span style="font-size:19px;font-weight:500;">{{ dName }}</span>
+              <span class="{{ dPillCls }}">{{ dState }}</span>
+              <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary" style="font-size:12px;" onClick="{{ dRun }}" disabled="{{ running }}"><i class="ph ph-arrows-clockwise" style="margin-right:4px;"></i>Re-run</button>
+                <button type="button" class="btn btn-secondary" style="font-size:12px;" onClick="{{ dAsk }}" disabled="{{ brainBusy }}"><i class="ph ph-brain" style="margin-right:4px;"></i>Ask the brain</button>
+                <button type="button" class="btn btn-secondary" style="font-size:12px;" onClick="{{ dSend }}"><i class="ph ph-paper-plane-tilt" style="margin-right:4px;"></i>To SEXTANT</button>
+              </span>
+            </div>
+            <span style="font-size:12.5px;line-height:1.5;color:color-mix(in srgb,var(--color-text) 70%,transparent);">{{ dLine }}</span>
+            <div style="display:grid;gap:4px;">
+              <sc-for list="{{ dRows }}" as="r" hint-placeholder-count="0">
+                <button type="button" onClick="{{ r.go }}" style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:baseline;width:100%;padding:7px 10px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-sm);background:{{ r.bg }};color:inherit;font:inherit;text-align:left;cursor:pointer;" style-hover="border-color:var(--color-accent-700);">
+                  <span style="{{ r.dot }}"></span><span style="font-size:12.5px;overflow-wrap:anywhere;">{{ r.a }}</span><span style="font:11.5px ui-monospace,Menlo,monospace;color:{{ r.color }};white-space:nowrap;">{{ r.b }}</span>
+                </button>
+              </sc-for>
+              <sc-if value="{{ dNoRows }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);padding:8px 2px;">{{ dEmpty }}</span></sc-if>
+            </div>
+            <sc-if value="{{ dHasOut }}" hint-placeholder-val="{{ false }}">
+              <span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:color-mix(in srgb,var(--color-text) 52%,transparent);margin-top:4px;">LAST OUTPUT</span>
+              <div style="border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);background:#0c0d12;padding:9px 12px;max-height:300px;overflow:auto;display:grid;gap:1px;">
+                <sc-for list="{{ dOut }}" as="o" hint-placeholder-count="0"><span style="font:11.5px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:{{ o.color }};">{{ o.t }}</span></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </section>
+
+      <!-- MINDMAP -->
+      <section style="flex:1 1 auto;min-height:0;{{ mapVis }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:9px 14px;box-shadow:0 1px 0 var(--color-neutral-800);">
+          <i class="ph ph-tree-structure" style="color:var(--color-accent-300);"></i><span style="font-weight:500;">Map of the institute</span>
+          <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">{{ mapNote }}</span>
+          <span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-ghost" style="min-height:28px;font-size:12px;" onClick="{{ mapExpand }}">Expand all</button><button type="button" class="btn btn-ghost" style="min-height:28px;font-size:12px;" onClick="{{ mapCollapse }}">Collapse</button></span>
+        </div>
+        <div style="flex:1 1 auto;min-height:0;overflow:auto;padding:8px 10px;">
+          <sc-for list="{{ mmRows }}" as="n" hint-placeholder-count="12">
+            <button type="button" onClick="{{ n.act }}" style="{{ n.st }}"><span style="width:16px;flex:none;text-align:center;color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ n.caret }}</span><i class="ph {{ n.icon }}" style="font-size:14px;color:{{ n.iconColor }};"></i><span style="overflow-wrap:anywhere;min-width:0;">{{ n.label }}</span><sc-if value="{{ n.count }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;font:11px ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 45%,transparent);">{{ n.count }}</span></sc-if></button>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- FILES -->
+      <section style="flex:1 1 auto;min-height:0;{{ filesVis }}">
+        <div style="flex:none;width:{{ fileListW }};display:flex;flex-direction:column;box-shadow:1px 0 0 var(--color-neutral-800);">
+          <div style="display:flex;gap:6px;padding:9px 10px;box-shadow:0 1px 0 var(--color-neutral-800);">
+            <input class="input" aria-label="Find file" value="{{ fileQ }}" onChange="{{ onFileQ }}" placeholder="Find a file…" style="min-height:30px;font-size:12px;">
+            <button type="button" class="btn btn-secondary btn-icon" title="New file" onClick="{{ newFile }}" style="min-height:30px;"><i class="ph ph-file-plus"></i></button>
+          </div>
+          <div style="flex:1 1 auto;min-height:0;overflow:auto;padding:4px;">
+            <sc-for list="{{ fileRows }}" as="f" hint-placeholder-count="0">
+              <button type="button" onClick="{{ f.open }}" style="{{ f.st }}"><i class="ph {{ f.icon }}" style="font-size:13px;color:{{ f.iconColor }};flex:none;"></i><span style="overflow-wrap:anywhere;min-width:0;">{{ f.label }}</span><sc-if value="{{ f.dirty }}" hint-placeholder-val="{{ false }}"><span title="unsaved" style="margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--color-accent);flex:none;"></span></sc-if></button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;">
+          <sc-if value="{{ fileOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:9px 12px;box-shadow:0 1px 0 var(--color-neutral-800);">
+              <i class="ph ph-file" style="color:color-mix(in srgb,var(--color-text) 55%,transparent);"></i><span style="font:12px ui-monospace,Menlo,monospace;overflow-wrap:anywhere;min-width:0;">{{ filePath }}</span>
+              <sc-if value="{{ fileStaged }}" hint-placeholder-val="{{ false }}"><span class="tag tag-outline">staged</span></sc-if>
+              <sc-if value="{{ fileDirty }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">unsaved</span></sc-if>
+              <span style="margin-left:auto;display:flex;flex-wrap:wrap;gap:6px;">
+                <sc-if value="{{ isPage }}" hint-placeholder-val="{{ false }}"><button type="button" aria-pressed="{{ filePreview }}" onClick="{{ togglePreview }}" style="{{ previewSt }}"><i class="ph ph-eye" style="margin-right:4px;"></i>Preview</button></sc-if>
+                <button type="button" class="btn btn-ghost" style="font-size:12px;" onClick="{{ downloadFile }}"><i class="ph ph-download-simple"></i></button>
+                <button type="button" class="btn btn-ghost" style="font-size:12px;color:var(--color-accent-300);" onClick="{{ deleteFile }}"><i class="ph ph-trash"></i></button>
+                <button type="button" class="btn btn-secondary" style="font-size:12px;" onClick="{{ revertFile }}" disabled="{{ revertOff }}">Revert</button>
+                <button type="button" class="btn btn-primary" style="font-size:12px;" onClick="{{ saveFile }}" disabled="{{ saveOff }}">{{ saveLabel }}</button>
+              </span>
+            </div>
+            <sc-if value="{{ editNoteOn }}" hint-placeholder-val="{{ false }}"><span style="padding:6px 12px;font-size:11.5px;line-height:1.5;color:var(--color-accent-200);background:color-mix(in srgb,var(--color-accent) 10%,transparent);">{{ editNote }}</span></sc-if>
+            <div style="flex:1 1 auto;min-height:0;display:flex;">
+              <textarea aria-label="File contents" value="{{ fileDraft }}" onChange="{{ onDraft }}" spellcheck="false" style="flex:1 1 auto;min-width:0;resize:none;border:0;outline:none;padding:12px 14px;background:#0c0d12;color:color-mix(in srgb,var(--color-text) 90%,transparent);font:12px/1.6 ui-monospace,Menlo,monospace;{{ editorVis }}"></textarea>
+              <iframe ref="{{ previewRef }}" title="Preview" style="flex:1 1 auto;min-width:0;border:0;background:#13151c;{{ previewVis }}"></iframe>
+            </div>
+          </sc-if>
+          <sc-if value="{{ noFile }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:1;display:grid;place-content:center;justify-items:center;gap:8px;padding:30px;text-align:center;"><i class="ph ph-folder-open" style="font-size:30px;color:color-mix(in srgb,var(--color-text) 35%,transparent);"></i><span style="font-size:13px;color:color-mix(in srgb,var(--color-text) 60%,transparent);">Pick a file to read, edit or delete it.</span></div>
+          </sc-if>
+        </div>
+      </section>
+
+      <!-- REDUCE -->
+      <section style="flex:1 1 auto;min-height:0;overflow:auto;padding:14px;{{ reduceVis }}">
+        <div style="display:grid;gap:12px;max-width:940px;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+            <i class="ph ph-scissors" style="font-size:18px;color:var(--color-accent-300);"></i><span style="font-size:18px;font-weight:500;">What the tester would tell SEXTANT to cut and fix</span>
+            <span style="margin-left:auto;display:flex;gap:6px;"><button type="button" class="btn btn-secondary" style="font-size:12px;" onClick="{{ collect }}" disabled="{{ running }}">{{ collectLabel }}</button><button type="button" class="btn btn-primary" style="font-size:12px;" onClick="{{ sendAll }}" disabled="{{ noProps }}"><i class="ph ph-paper-plane-tilt" style="margin-right:4px;"></i>Send all</button></span>
+          </div>
+          <span style="font-size:12.5px;line-height:1.6;color:color-mix(in srgb,var(--color-text) 72%,transparent);">Every item below is grounded in the real graph and audit: files nothing references, identical copies, the biggest files, functions no test reaches and routes no page calls. {{ evLine }}</span>
+          <sc-for list="{{ proposals }}" as="p" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:start;padding:11px 13px;border:1px solid var(--color-neutral-800);border-radius:var(--radius-md);background:var(--color-surface);">
+              <span class="{{ p.cls }}" style="white-space:nowrap;">{{ p.kind }}</span>
+              <span style="display:grid;gap:2px;min-width:0;"><span style="font-size:13px;font-weight:500;overflow-wrap:anywhere;">{{ p.title }}</span><span style="font-size:12px;line-height:1.45;color:color-mix(in srgb,var(--color-text) 62%,transparent);overflow-wrap:anywhere;">{{ p.msg }}</span></span>
+              <button type="button" class="btn btn-ghost" style="font-size:12px;white-space:nowrap;" onClick="{{ p.send }}"><i class="ph ph-paper-plane-tilt"></i></button>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noProps }}" hint-placeholder-val="{{ true }}"><span style="font-size:12.5px;color:color-mix(in srgb,var(--color-text) 58%,transparent);padding:4px 2px;">Run the audit (Run all) and press “Collect evidence”, then the reduction and clean-up targets appear here.</span></sc-if>
+          <sc-if value="{{ hasOutbox }}" hint-placeholder-val="{{ false }}">
+            <span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.12em;color:color-mix(in srgb,var(--color-text) 52%,transparent);margin-top:6px;">SENT TO SEXTANT · copied to clipboard</span>
+            <sc-for list="{{ outbox }}" as="o" hint-placeholder-count="0"><div style="display:flex;gap:8px;font-size:12px;"><span style="font-family:ui-monospace,Menlo,monospace;color:color-mix(in srgb,var(--color-text) 48%,transparent);">{{ o.at }}</span><span>{{ o.label }}</span></div></sc-for>
+          </sc-if>
+        </div>
+      </section>
+
+      <!-- LIVE -->
+      <section style="{{ liveWrapSt }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:9px 14px;box-shadow:0 1px 0 var(--color-neutral-800);">
+          <i class="ph ph-monitor-play" style="color:var(--color-accent-300);"></i><span style="font-weight:600;">Live view</span>
+          <sc-if value="{{ liveRunning }}" hint-placeholder-val="{{ false }}"><span class="tag" style="color:var(--warn);border-color:color-mix(in srgb,var(--warn) 55%,transparent);"><span style="width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block;animation:tkpulse 1s infinite;"></span>testing</span></sc-if>
+          <span style="font-size:11.5px;color:color-mix(in srgb,var(--color-text) 55%,transparent);">The real browser-QA iframe — every page opens and is clicked through here.</span>
+          <span style="margin-left:auto;display:flex;gap:6px;">
+            <button type="button" class="btn btn-primary" style="min-height:30px;font-size:12px;" onClick="{{ runAll }}" disabled="{{ running }}"><i class="ph ph-play" style="margin-right:4px;"></i>Run all</button>
+          </span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 14px;box-shadow:0 1px 0 var(--color-neutral-800);">
+          <sc-for list="{{ widthOpts }}" as="w" hint-placeholder-count="6"><button type="button" title="{{ w.title }}" aria-pressed="{{ w.on }}" onClick="{{ w.pick }}" style="{{ w.st }}"><i class="ph {{ w.icon }}"></i>{{ w.label }}</button></sc-for>
+          <span style="margin-left:auto;display:flex;gap:6px;">
+            <button type="button" class="btn btn-secondary" style="min-height:30px;font-size:12px;" onClick="{{ checkPage }}" disabled="{{ running }}"><i class="ph ph-check-circle" style="margin-right:4px;"></i>Check this page</button>
+            <a class="btn btn-ghost" style="min-height:30px;font-size:12px;" href="{{ liveHref }}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out" style="margin-right:4px;"></i>Open</a>
+          </span>
+        </div>
+        <div ref="{{ liveBox }}" style="flex:1 1 auto;min-height:360px;position:relative;overflow:hidden;background:#0c0d12;">
+          <iframe ref="{{ liveRef }}" title="QA runner" style="position:absolute;left:0;top:0;border:0;background:#13151c;transform-origin:0 0;{{ liveSt }}"></iframe>
+          <div style="position:absolute;left:10px;bottom:10px;display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:999px;background:rgba(10,11,15,.82);backdrop-filter:blur(4px);font:11.5px var(--font-mono);color:color-mix(in srgb,var(--color-text) 75%,transparent);pointer-events:none;"><span class="tag tag-accent" style="padding:1px 7px;">{{ livePageLabel }}</span>{{ liveSizeLabel }}{{ liveScalePct }}</div>
+        </div>
+      </section>
+
+      <!-- GRAPH -->
+      <section style="flex:1 1 auto;min-height:0;position:relative;overflow:hidden;background:radial-gradient(120% 90% at 60% 40%, #161922 0%, #0a0b0f 62%);{{ graphVis }}">
+        <div ref="{{ graphRef }}" style="position:absolute;inset:0;"></div>
+        <div style="position:absolute;left:12px;top:10px;right:12px;z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:6px;pointer-events:none;">
+          <input class="input" aria-label="Find node" value="{{ gq }}" onChange="{{ onGq }}" onKeyDown="{{ onGqKey }}" placeholder="Find a node…" style="pointer-events:auto;width:180px;min-height:28px;font-size:12px;background:color-mix(in srgb,#0a0b0f 85%,transparent);">
+          <sc-for list="{{ laneChips }}" as="c" hint-placeholder-count="8"><button type="button" aria-pressed="{{ c.on }}" onClick="{{ c.flip }}" style="{{ c.st }}"><span style="{{ c.dot }}"></span>{{ c.label }}</button></sc-for>
+          <button type="button" aria-pressed="{{ motionOn }}" onClick="{{ flipMotion }}" style="{{ motionSt }}">Motion</button>
+        </div>
+        <sc-if value="{{ hitsOpen }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:12px;top:44px;z-index:6;width:min(360px,calc(100% - 24px));display:grid;gap:2px;padding:6px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-md);"><sc-for list="{{ hits }}" as="h" hint-placeholder-count="0"><button type="button" class="btn btn-ghost" style="justify-content:flex-start;text-align:left;font-size:12.5px;overflow-wrap:anywhere;" onClick="{{ h.go }}">{{ h.label }}</button></sc-for></div></sc-if>
+        <div style="position:absolute;left:12px;bottom:12px;z-index:5;max-width:min(360px,calc(100% - 24px));display:grid;gap:4px;padding:11px 13px;border-radius:var(--radius-md);background:color-mix(in srgb,#0a0b0f 86%,transparent);box-shadow:var(--shadow-md);">
+          <span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.1em;color:var(--color-accent-300);">{{ selKind }}</span>
+          <span style="font-size:15px;font-weight:500;overflow-wrap:anywhere;">{{ selTitle }}</span>
+          <sc-if value="{{ selHasRel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;"><sc-for list="{{ selRel }}" as="i" hint-placeholder-count="0"><button type="button" onClick="{{ i.go }}" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border:1px solid var(--color-neutral-800);border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:11px;cursor:pointer;overflow-wrap:anywhere;"><span style="{{ i.dot }}"></span>{{ i.label }}</button></sc-for></div></sc-if>
+        </div>
+        <span style="position:absolute;right:12px;bottom:14px;z-index:5;font:10.5px ui-monospace,Menlo,monospace;letter-spacing:0.05em;color:color-mix(in srgb,var(--color-text) 50%,transparent);pointer-events:none;text-align:right;max-width:50%;">{{ statusMono }}</span>
+      </section>
+
+      <!-- BRAIN -->
+      <section style="flex:1 1 auto;min-height:0;{{ brainVis }}">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;box-shadow:0 1px 0 var(--color-neutral-800);"><i class="ph ph-brain" style="color:var(--color-accent-300);align-self:center;"></i><sc-for list="{{ brainPresets }}" as="p" hint-placeholder-count="3"><button type="button" class="btn btn-secondary" style="font-size:12px;min-height:30px;" onClick="{{ p.ask }}" disabled="{{ brainBusy }}">{{ p.label }}</button></sc-for></div>
+        <div style="flex:1 1 auto;min-height:0;overflow:auto;padding:14px;display:grid;align-content:start;gap:10px;max-width:760px;">
+          <sc-for list="{{ brainMsgs }}" as="m" hint-placeholder-count="0"><div style="{{ m.st }}"><span style="font:500 10.5px ui-monospace,Menlo,monospace;letter-spacing:0.08em;color:color-mix(in srgb,var(--color-text) 50%,transparent);">{{ m.who }}</span><span style="font-size:13px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;">{{ m.text }}</span></div></sc-for>
+          <sc-if value="{{ brainBusy }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:var(--color-accent-300);animation:tkpulse 1s infinite;">reading the graph…</span></sc-if>
+          <sc-if value="{{ brainEmpty }}" hint-placeholder-val="{{ true }}"><span style="font-size:12.5px;line-height:1.6;color:color-mix(in srgb,var(--color-text) 60%,transparent);">{{ brainNote }}</span></sc-if>
+        </div>
+        <form onSubmit="{{ submitBrain }}" style="display:flex;gap:6px;padding:10px 14px;box-shadow:0 -1px 0 var(--color-neutral-800);"><input class="input" aria-label="Ask the brain" value="{{ brainQ }}" onChange="{{ onBrainQ }}" placeholder="Ask about the code, the graph, the failures…" style="min-height:34px;"><button type="submit" class="btn btn-primary" style="min-height:34px;" disabled="{{ brainBusy }}">Ask</button></form>
+      </section>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;readyBar&quot;: {&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:90,&quot;min&quot;:50,&quot;max&quot;:100,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Launch readiness&quot;},
+  &quot;warnBudget&quot;: {&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:10,&quot;min&quot;:0,&quot;max&quot;:50,&quot;step&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Launch readiness&quot;},
+  &quot;failsBlock&quot;: {&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Launch readiness&quot;}
+}">
+const KEY = 'tk_dash_v4';
+const PAL = { agent: '#e9e9ed', tool: '#f5b547', module: '#7f9cff', work: '#4f9dff', question: '#ff6b6b', claim: '#3fcf8e', thought: '#ffe3a3', source: '#b98cff' };
+const LANES = [['agent', 'agent'], ['tool', 'tool'], ['module', 'code'], ['work', 'test'], ['question', 'finding'], ['claim', 'fix'], ['thought', 'lesson'], ['source', 'data']];
+const THEME = { bg: '#0a0b0f', fog: 0.018, shell: '#35508f', shellOpacity: 0.04, halo: 0.13, haloSize: 2.6, flow: '#bcd6ff', spark: '#eaf1ff', labelBg: 'rgba(10,11,15,.88)', labelInk: '#cfd3e5', labelSel: '#f3f5fe', labelLine: '#3f424d', lanes: PAL };
+const RUNK = { ok: '#3fcf8e', fail: '#ff6b6b', warn: '#f5b547', info: '#8fbaff', dim: 'color-mix(in srgb,var(--color-text) 46%,transparent)' };
+const GROUPS = ['Owner console & ops', 'Site', 'Mobile', 'Web & hub', 'Research', 'Marketing', 'Walkthroughs'];
+const GICON = { 'Owner console & ops': 'ph-terminal-window', 'Site': 'ph-globe', 'Mobile': 'ph-device-mobile', 'Web & hub': 'ph-browsers', 'Research': 'ph-book-open-text', 'Marketing': 'ph-megaphone', 'Walkthroughs': 'ph-presentation' };
+const QUICK = [390, 1440];
+const SIZES = [[360, 'XS', 'Small phone', 'ph-device-mobile'], [390, 'Phone', 'Phone', 'ph-device-mobile'], [768, 'Tablet', 'Tablet portrait', 'ph-device-tablet'], [1024, 'Tablet L', 'Tablet landscape', 'ph-device-tablet'], [1440, 'Laptop', 'Laptop', 'ph-laptop'], [1920, 'Desktop', 'Desktop', 'ph-monitor']];
+const DEEP_W = SIZES.map(s => s[0]);
+const WORD = { scroll: 'scroll', offscreen: 'offscreen', rendering: 'console', console: 'console', request: 'request', a11y: 'a11y', blank: 'console', harness: 'cmd' };
+const RAIL = [['verdict', 'Verdict', 'ph-gauge'], ['console', 'Console', 'ph-terminal-window'], ['tests', 'Tests', 'ph-cards-three'], ['live', 'Live', 'ph-monitor-play'], ['map', 'Map', 'ph-tree-structure'], ['files', 'Files', 'ph-folder-open'], ['reduce', 'Reduce', 'ph-scissors'], ['graph', 'Graph', 'ph-graph'], ['brain', 'Brain', 'ph-brain']];
+const short = p => p.replace(/^apps\//, '').replace(/\.dc\.html$/, '').replace(/\.html$/, '');
+const base = p => p.split('/').pop();
+const groupOf = p => /^apps\/ops\//.test(p) ? GROUPS[0] : /^apps\/site\//.test(p) ? GROUPS[1] : /^apps\/mobile\//.test(p) ? GROUPS[2] : /^apps\//.test(p) ? GROUPS[3] : /^research\//.test(p) ? GROUPS[4] : /^marketing\//.test(p) ? GROUPS[5] : GROUPS[6];
+const fileIcon = p => /\.py$/.test(p) ? ['ph-file-py', '#3fcf8e'] : /\.(dc\.)?html$/.test(p) ? ['ph-file-html', '#ff6b6b'] : /\.(m?js)$/.test(p) ? ['ph-file-js', '#f5b547'] : /\.css$/.test(p) ? ['ph-file-css', '#b98cff'] : /\.(json|ya?ml|toml)$/.test(p) ? ['ph-brackets-curly', '#7f9cff'] : /\.md$/.test(p) ? ['ph-file-text', '#9aa0b8'] : ['ph-file', '#9aa0b8'];
+const dot = (c, d, ring) => 'width:' + (d || 8) + 'px;height:' + (d || 8) + 'px;border-radius:50%;flex:none;display:inline-block;' + (ring ? 'box-shadow:inset 0 0 0 1.5px ' + c + ';' : 'background:' + c + ';');
+const mmss = x => { x = Math.max(0, Math.round(x || 0)); return Math.floor(x / 60) + ':' + String(x % 60).padStart(2, '0'); };
+const hhmm = t => t ? new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+const ago = t => { if (!t) return 'never'; const x = Math.max(0, (Date.now() - t) / 1000); return x < 60 ? 'just now' : x < 5400 ? Math.round(x / 60) + 'm ago' : (x / 3600).toFixed(1) + 'h ago'; };
+const chip = (on, extra) => 'pointer-events:auto;display:inline-flex;align-items:center;gap:5px;min-height:26px;padding:0 9px;border-radius:999px;cursor:pointer;font:inherit;font-size:11.5px;border:1px solid ' + (on ? 'var(--color-accent-600)' : 'var(--color-neutral-800)') + ';background:' + (on ? 'color-mix(in srgb,var(--color-accent) 12%,#0a0b0f)' : 'color-mix(in srgb,#0a0b0f 85%,transparent)') + ';color:' + (on ? 'var(--color-text)' : 'color-mix(in srgb,var(--color-text) 55%,transparent)') + ';' + (extra || '');
+const sCol = st => st === 'passed' ? '#3fcf8e' : st === 'failed' ? '#ff6b6b' : st === 'running' ? '#f5b547' : '#6b7180';
+const pillCls = st => st === 'passed' ? 'tag tag-accent' : st === 'failed' ? 'tag tag-outline' : 'tag tag-neutral';
+
+class Component extends DCLogic {
+  liveRef = React.createRef();
+  liveBox = React.createRef();
+  graphRef = React.createRef();
+  consoleRef = React.createRef();
+  previewRef = React.createRef();
+  _rid = 0;
+  state = {
+    w: 1440, h: 900, view: 'verdict', files: [], pages: [], py: 'idle', mode: 'Browser', edit: false,
+    status: 'Reading the file list', suites: {}, fails: [], warns: 0, graph: null, sel: '', running: false,
+    runs: [], autoscroll: true, rounds: [], deep: 0, deepTarget: 0, testLines: [], audit: {}, detail: '', ui: {}, gapsOpen: false, passes: 0, boxW: 0, boxH: 560, history: [],
+    livePage: 'apps/ops/src/Explorer.dc.html', liveW: 1440, off: {}, motion: true, labels: true, gq: '',
+    cmd: '', fileQ: '', fileSel: '', fileText: '', fileDraft: '', fileDirty: false, fileNew: false, fileSaving: false, filePreview: false, drafts: {},
+    ev: null, outbox: [], mmOpen: null, brain: [], brainBusy: false, brainQ: '',
+    now: Date.now(), t0: 0, last: 0, lastRun: 0, boxW: 900, boxH: 500
+  };
+
+  componentDidMount() {
+    try { document.title = 'Tester · Bridago'; document.documentElement.lang = 'en'; } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) this.setState({ suites: s.suites || {}, fails: s.fails || [], warns: s.warns || 0, drafts: s.drafts || {}, rounds: s.rounds || [], lastRun: s.lastRun || 0, testLines: s.testLines || [], audit: s.audit || {} }); } catch (e) {}
+    if (!window.THREE && !window.__threeLoading) { window.__threeLoading = true; const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js'; sc.onload = () => this.forceUpdate(); document.head.appendChild(sc); }
+    this.onR = () => this.setState({ w: window.innerWidth, h: window.innerHeight }); this.onR(); window.addEventListener('resize', this.onR);
+    this.onKey = e => { if (!(e.ctrlKey || e.metaKey) || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return; const g = this.state.graph; if (!g || !g.nodes.length) return; const keys = g.nodes.map(n => n.key); let i = keys.indexOf(this.state.sel); i = (i + (e.key === 'ArrowRight' ? 1 : -1) + keys.length) % keys.length; e.preventDefault(); this.setState({ sel: keys[i] }); }; window.addEventListener('keydown', this.onKey);
+    this.tick = setInterval(() => { if (this.state.running) this.setState({ now: Date.now() }); }, 1000);
+    fetch('/health', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.graph && 'fixing' in j) { this.setState({ mode: 'Container' }); fetch('/edit').then(r => r.ok ? r.json() : null).then(e => e && this.setState({ edit: !!e.edit })).catch(() => {}); } }).catch(() => {});
+    this.ro = new ResizeObserver(() => { const b = this.liveBox.current; if (b && (b.clientWidth !== this.state.boxW || b.clientHeight !== this.state.boxH)) this.setState({ boxW: b.clientWidth, boxH: b.clientHeight }); });
+    if (this.liveBox.current) this.ro.observe(this.liveBox.current);
+    this.boot();
+  }
+  componentWillUnmount() { this.stopFlag = true; clearInterval(this.tick); if (this.ro) this.ro.disconnect(); window.removeEventListener('resize', this.onR); window.removeEventListener('keydown', this.onKey); if (this.ctl) this.ctl.dispose(); clearTimeout(this._w); clearTimeout(this._gw); }
+  componentDidUpdate() {
+    this.mountGraph();
+    if (this.state.view === 'console' && this.state.autoscroll && this.consoleRef.current) { const c = this.consoleRef.current; c.scrollTop = c.scrollHeight; }
+    if (this.state.view === 'files' && this.state.filePreview && this.previewRef.current) { const want = TestKit.root + this.state.fileSel.split('/').map(encodeURIComponent).join('/'); if (this._prev !== want) { this._prev = want; this.previewRef.current.src = want + '?tk=' + Date.now(); } }
+  }
+  setView(v) { if (this.state.view === 'graph' && v !== 'graph' && this.ctl) { try { this.ctl.dispose(); } catch (e) {} this.ctl = null; this._key = this._sel = this._b = null; } this.setState({ view: v }); }
+  log(t) { console.log('[tester]', t); }
+  save() { const s = this.state; try { localStorage.setItem(KEY, JSON.stringify({ suites: s.suites, fails: s.fails.slice(0, 500), warns: s.warns, drafts: s.drafts, rounds: s.rounds.slice(-40), lastRun: s.lastRun, testLines: s.testLines.slice(0, 200), audit: s.audit })); } catch (e) {} }
+
+  beginRun(cmd, suite) { const id = ++this._rid; this.setState(s => ({ runs: s.runs.concat({ id, cmd, suite: suite || '', out: [], status: 'running', t0: performance.now(), ts: Date.now(), secs: null }).slice(-40) })); return id; }
+  out(id, t, k) { this.setState(s => ({ runs: s.runs.map(r => r.id === id ? { ...r, out: r.out.concat({ t, k }).slice(-1400) } : r) })); }
+  endRun(id, ok) { this.setState(s => ({ runs: s.runs.map(r => r.id === id ? { ...r, status: ok ? 'passed' : 'failed', secs: (performance.now() - r.t0) / 1000 } : r) })); }
+
+  async boot() {
+    if (!window.TestKit) { this._w = setTimeout(() => this.boot(), 200); return; }
+    try {
+      const files = await TestKit.manifest('');
+      const pages = files.filter(f => /\.html$/.test(f) && !/^apps\/web\/dist\//.test(f));
+      this.setState({ files, pages, status: files.length + ' files · ' + pages.length + ' pages' });
+      this.py = TestKit.python(files, () => {}).then(() => { this.setState({ py: 'ready', status: 'Ready' }); return this.audit(true); }, e => this.setState({ py: 'failed', status: 'Python did not start' }));
+    } catch (e) { this.setState({ status: 'Could not read the file list' }); }
+  }
+  async ready() { if (this.state.py !== 'ready') await this.py; if (this.state.py !== 'ready') throw new Error('Python is not available in this tab'); }
+  suite(id, patch) { this.setState(s => ({ suites: { ...s.suites, [id]: { ...(s.suites[id] || {}), ...patch, ts: patch.st && patch.st !== 'running' ? Date.now() : (s.suites[id] || {}).ts } } })); }
+  addFails(list) { this.setState(s => ({ fails: s.fails.concat(list) })); }
+
+  async tests() {
+    this.suite('tests', { st: 'running' });
+    const rid = this.beginRun('pytest -q --tb=short -rA   (apps/tester)', 'tests'); this.out(rid, 'syncing the repository into Python…', 'dim');
+    const t0 = performance.now();
+    try {
+      await this.ready(); await TestKit.sync(this.state.files, m => this.out(rid, m, 'dim'));
+      this.out(rid, 'running pytest…', 'dim');
+      const r = await TestKit.runPython('tests'), n = k => +((r.tail.match(new RegExp('(\\d+) ' + k)) || [])[1] || 0);
+      const p = n('passed'), f = n('failed') + n('error'), sk = n('skipped');
+      this.setState({ testLines: r.lines });
+      r.lines.forEach(l => this.out(rid, l, /^PASS/.test(l) ? 'ok' : /^(FAIL|ERROR)/.test(l) ? 'fail' : 'warn'));
+      this.out(rid, p + ' passed · ' + f + ' failed · ' + sk + ' skipped    (' + r.seconds + 's, exit ' + r.code + ')', f || r.code ? 'fail' : 'ok');
+      this.endRun(rid, !(f || r.code));
+      this.suite('tests', { st: f || r.code ? 'failed' : 'passed', p, f, sk, secs: r.seconds, line: p + ' passed · ' + f + ' failed · ' + sk + ' skipped' });
+      this.addFails(r.lines.filter(l => /^(FAILED|ERROR)/.test(l)).map(l => ({ word: 'cmd', where: 'apps/tester', text: l.replace(/^(FAILED|ERROR) /, ''), src: 'tests' })));
+    } catch (e) { this.out(rid, e.message, 'fail'); this.endRun(rid, false); this.suite('tests', { st: 'failed', line: e.message, secs: (performance.now() - t0) / 1000 }); this.addFails([{ word: 'cmd', where: 'apps/tester', text: 'the tests could not run: ' + e.message, src: 'tests' }]); }
+  }
+  async audit(quiet) {
+    let rid = null;
+    if (!quiet) { this.suite('audit', { st: 'running' }); rid = this.beginRun('tester audit: ingest + static checks', 'audit'); this.out(rid, 'building the graph and running the static checks…', 'dim'); }
+    try {
+      await this.ready(); if (!quiet) await TestKit.sync(this.state.files);
+      const r = await TestKit.runPython('audit');
+      this.setGraph(r.graph);
+      const err = r.findings.filter(f => f.severity === 'error'), warn = r.findings.length - err.length;
+      if (!quiet) {
+        Object.keys(r.status).forEach(k => this.out(rid, k + ': ' + r.status[k].findings + ' finding' + (r.status[k].findings === 1 ? '' : 's') + ' · ' + r.status[k].seconds + 's', r.status[k].findings ? 'warn' : 'ok'));
+        r.findings.slice(0, 90).forEach(f => this.out(rid, (f.severity === 'error' ? 'error ' : 'warn  ') + (f.file || f.check) + ': ' + f.title, f.severity === 'error' ? 'fail' : 'warn'));
+        this.out(rid, r.stats.nodes + ' nodes · ' + r.stats.edges + ' links · ' + err.length + ' errors · ' + warn + ' warnings    (' + r.seconds + 's)', err.length ? 'fail' : 'ok');
+        this.endRun(rid, !err.length);
+        this.setState(s => ({ audit: r.status, warns: s.warns + warn }));
+        this.suite('audit', { st: err.length ? 'failed' : 'passed', p: Object.keys(r.status).length - Object.values(r.status).filter(x => x.findings).length, f: err.length, secs: r.seconds, line: r.stats.nodes + ' nodes · ' + r.stats.edges + ' links · ' + err.length + ' errors · ' + warn + ' warnings' });
+        this.addFails(err.map(f => ({ word: f.check === 'secrets' ? 'secret' : f.check === 'routes' ? 'api' : 'cmd', where: f.file || f.check, text: f.title, key: 'finding:' + f.key, src: 'audit' })));
+      }
+    } catch (e) { if (!quiet) { this.out(rid, e.message, 'fail'); this.endRun(rid, false); this.suite('audit', { st: 'failed', line: e.message }); this.addFails([{ word: 'cmd', where: 'audit', text: 'the audit could not run: ' + e.message, src: 'audit' }]); } }
+  }
+  async js() {
+    this.suite('js', { st: 'running' });
+    const rid = this.beginRun('check javascript & template syntax', 'js'); this.out(rid, 'parsing every .js, .mjs and inline script…', 'dim');
+    const t0 = performance.now(), bad = await TestKit.jsSuite(this.state.files), secs = (performance.now() - t0) / 1000, n = this.state.files.filter(f => /\.(m?js|html)$/.test(f) && !/^apps\/web\/dist\//.test(f)).length;
+    bad.forEach(b => this.out(rid, b.file + ':' + b.line + '  ' + b.msg, 'fail'));
+    this.out(rid, n + ' files · ' + bad.length + ' syntax problem' + (bad.length === 1 ? '' : 's') + '    (' + secs.toFixed(1) + 's)', bad.length ? 'fail' : 'ok');
+    this.endRun(rid, !bad.length);
+    this.suite('js', { st: bad.length ? 'failed' : 'passed', p: n - bad.length, f: bad.length, secs, line: n + ' files · ' + bad.length + ' syntax problems' });
+    this.addFails(bad.map(b => ({ word: 'console', where: b.file + ':' + b.line, text: b.msg, key: 'file:' + b.file, src: 'js' })));
+  }
+  async ui(pages, widths, keep) {
+    pages = pages || this.state.pages; widths = widths || (this.deepWide ? DEEP_W : QUICK);
+    if (!keep) this.setState({ ui: {} });
+    const rid = this.beginRun('browser QA: ' + pages.length + ' pages × ' + widths.length + ' sizes', 'ui'); this._uiBad = false;
+    this.out(rid, 'opening every page in a real iframe and clicking through its controls…', 'dim');
+    await TestKit.uiSuite({ frame: this.liveRef.current, pages, widths, stop: () => this.stopFlag,
+      onOpen: (p, w) => { this.out(rid, 'open ' + short(p) + ' @' + w + 'px', 'info'); this.setState({ livePage: p, liveW: w }); },
+      onStep: r => { if (r.fails.length) this._uiBad = true; this.out(rid, (r.fails.length ? '✕ ' + r.fails.length + ' · ' : '✓ ') + short(r.page) + ' @' + r.width + (r.step ? ' after "' + r.step + '"' : ''), r.fails.length ? 'fail' : 'ok'); r.fails.forEach(([k, m]) => this.out(rid, '    ' + (WORD[k] || k) + ': ' + m, 'warn'));
+        this.setState(s => { const ui = { ...s.ui }, cell = { ...((ui[r.page] || {})[r.width] || { n: 0 }) }; if (!r.step) cell.ran = true; cell.n += r.fails.length; ui[r.page] = { ...(ui[r.page] || {}), [r.width]: cell }; return { ui, fails: s.fails.concat(r.fails.map(([k, m]) => ({ word: WORD[k] || k, where: short(r.page) + ' @' + r.width + (r.step ? ' after "' + r.step + '"' : ''), text: m, key: 'file:' + r.page, page: r.page, width: r.width, src: 'ui' }))) }; }); } });
+    this.endRun(rid, !this._uiBad);
+  }
+  async run(ids) {
+    if (this.state.running) return false;
+    this.stopFlag = false; const all = ids.length > 1;
+    this.setState(s => ({ running: true, t0: Date.now(), now: Date.now(), fails: all ? [] : s.fails.filter(f => !ids.includes(f.src)), warns: all || ids.includes('audit') ? 0 : s.warns }));
+    for (const id of ids) { if (this.stopFlag) break; await this[id](); }
+    return new Promise(res => this.setState(s => ({ running: false, lastRun: Date.now(), last: (Date.now() - s.t0) / 1000, passes: all ? (this.state.fails.length ? 0 : Math.min(3, s.passes + 1)) : s.passes, history: (s.history || []).concat(all ? [{ fails: this.state.fails.length, secs: (Date.now() - s.t0) / 1000 }] : []).slice(-10) }), () => { this.save(); res(!this.state.fails.length); }));
+  }
+  runAll() { return this.run(['tests', 'audit', 'js', 'ui']); }
+  async threePasses() { this.setState({ passes: 0 }); for (let i = 0; i < 3 && this.state.passes < 3; i++) { const ok = await this.runAll(); if (!ok) break; } }
+  async checkPage() { if (this.state.running) return; const p = this.state.livePage, w = this.state.liveW; this.stopFlag = false; this.setState({ running: true, t0: Date.now(), view: 'live' }); await this.ui([p], [w], true); this.setState({ running: false, lastRun: Date.now() }, () => this.save()); }
+  report() {
+    const s = this.state, t = s.suites.tests || {}, a = s.suites.audit || {}, j = s.suites.js || {};
+    const done = ['tests', 'audit', 'js'].every(k => s.suites[k] && ['passed', 'failed'].includes(s.suites[k].st));
+    return ['TESTER REPORT — Anima institute repository (Bridago brain, SEXTANT engine, ops, site, mobile, tester)',
+      'GENERATED: ' + new Date().toISOString(),
+      'OWN TESTS: ' + (t.st ? (t.p || 0) + ' passed, ' + (t.f || 0) + ' failed, ' + (t.sk || 0) + ' skipped' : 'not run'),
+      'CODE AUDIT: ' + (a.st ? a.line : 'not run'),
+      'JAVASCRIPT: ' + (j.st ? j.line : 'not run'),
+      'BROWSER QA: ' + (Object.keys(s.ui).length ? Object.keys(s.ui).length + ' pages at ' + DEEP_W.join('/') + 'px' : 'not run'),
+      'RESULT: ' + (done ? (s.fails.length ? 'FAILED' : 'PASSED') : 'incomplete') + ' · ' + s.fails.length + ' failures · ' + s.warns + ' warnings',
+      'CLEAN PASSES: ' + s.passes + '/3' + ((s.history || []).length ? ' · last: ' + s.history.slice(-3).map(h => h.fails + ' fail in ' + mmss(h.secs)).join('; ') : ''),
+      'OPEN FAILURES:', ...(s.fails.length ? s.fails.slice(0, 120).map(f => '  ' + (f.word || f.src) + '  ' + f.where + ': ' + f.text) : ['  none']),
+      'NEW CODE NEEDS OWNER APPROVAL: yes'].join('\n');
+  }
+  downloadReport() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([this.report()], { type: 'text/plain' })); a.download = 'tester-report.txt'; document.body.appendChild(a); a.click(); a.remove(); }
+  async deepPass() {
+    if (this.state.running) return;
+    const n = 30; this.stopFlag = false; this.deepWide = true; this.setState({ deepTarget: n, rounds: [], view: 'console' });
+    const rid = this.beginRun('deep pass ×' + n + '  —  tests · audit · js · browser QA at ' + DEEP_W.length + ' sizes, over its own code and every institute page', 'deep');
+    for (let i = 1; i <= n && !this.stopFlag; i++) {
+      this.setState({ deep: i }); this.out(rid, '──── round ' + i + ' / ' + n + ' ' + '─'.repeat(28), 'info');
+      await this.run(['tests', 'audit', 'js', 'ui']);
+      const s = this.state, row = { i, ts: Date.now(), fails: s.fails.length, warns: s.warns, nodes: s.graph ? s.graph.nodes.length : 0, secs: s.last || 0 };
+      this.setState(x => ({ rounds: x.rounds.concat(row).slice(-40) }), () => this.save());
+      this.out(rid, 'round ' + i + ': ' + row.fails + ' failing · ' + row.warns + ' warnings · ' + row.nodes + ' nodes · ' + mmss(row.secs), row.fails ? 'fail' : 'ok');
+    }
+    this.out(rid, this.stopFlag ? 'stopped by owner at round ' + this.state.deep : 'done: ' + n + ' rounds complete', 'info');
+    this.deepWide = false; this.endRun(rid, !this.state.fails.length); this.setState({ deep: 0 });
+  }
+
+  view() {
+    const s = this.state, g = s.graph; if (!g) return null;
+    const off = s.off, nodes = g.nodes.filter(n => !off[n.lane]), ok = new Set(nodes.map(n => n.key));
+    return { nodes, edges: g.edges.filter(e => ok.has(e.a) && ok.has(e.b)) };
+  }
+  mountGraph() {
+    const el = this.graphRef.current, s = this.state;
+    if (!el || !s.graph) return;
+    if (!this.ctl) {
+      if (!window.Connectome || !window.THREE) { if (!this._gw) this._gw = setTimeout(() => { this._gw = null; this.forceUpdate(); }, 250); return; }
+      this.ctl = window.Connectome.mount(el, { onPick: k => k && this.setState({ sel: k }), theme: THEME, behaviour: { labels: 'agents', idleResume: 10, rotateSpeed: 0.8, shell: false, edges: 0.7 }, font: "500 11px 'Hanken Grotesk', system-ui, sans-serif" });
+      if (!this.ctl) return;
+    }
+    const key = JSON.stringify(s.off) + '|' + s.graph.nodes.length; if (this._key !== key) { this._key = key; const v = this.view(); if (v) this.ctl.setData(v); this._sel = null; }
+    const b = JSON.stringify([s.motion, s.labels]); if (this._b !== b) { this._b = b; this.ctl.setBehaviour({ autoRotate: s.motion, labels: s.labels ? 'agents' : 'selected' }); }
+    if (this._sel !== s.sel) { this._sel = s.sel; this.ctl.select(s.sel, new Set([s.sel].concat(((this.adj || {})[s.sel] || []).map(x => x.k)))); }
+  }
+  setGraph(g0) {
+    const where = k => { const m = k.match(/^(?:file|code|test|route):((?:apps\/[^/]+)|[^/:]+)/); return k.startsWith('app:') ? k.slice(4).split('/').slice(0, 2).join('/') : m ? (m[1].includes('.') ? 'root' : m[1]) : k.startsWith('service:') ? 'services' : k.startsWith('data:') ? 'data' : k.startsWith('finding:') ? 'findings' : 'core'; };
+    const keys = [...new Set(g0.nodes.map(n => where(n.key)))].filter(k => k !== 'core').sort(), R = 9.5, centre = { core: [0, 0, 0] };
+    keys.forEach((k, i) => { const y = 1 - (i + 0.5) / keys.length * 2, r = Math.sqrt(1 - y * y), t = i * 2.399963; centre[k] = [Math.cos(t) * r * R, y * R * 0.8, Math.sin(t) * r * R]; });
+    const sz = n => n.lane === 'agent' ? 1.5 : n.key.startsWith('app:') ? 1.4 : /\.html$/.test(n.key) && n.key.startsWith('file:') ? 1.1 : n.key.startsWith('file:') ? 0.8 : n.key.startsWith('finding:') ? 1 : 0.45;
+    const g = { nodes: g0.nodes.map(n => { const w = where(n.key); return { ...n, size: sz(n), home: centre[w], hr: w === 'core' ? 2.2 : 1.4 + Math.min(2.2, Math.sqrt(g0.nodes.length) / 30) }; }), edges: g0.edges };
+    const adj = {}, nodes = {};
+    g.nodes.forEach(n => { nodes[n.key] = n; adj[n.key] = []; });
+    g.edges.forEach(e => { if (adj[e.a] && adj[e.b]) { adj[e.a].push({ k: e.b, rel: e.rel, out: true }); adj[e.b].push({ k: e.a, rel: e.rel, out: false }); } });
+    this.adj = adj; this.nodes = nodes; this.setState({ graph: g });
+  }
+
+  async openFile(path) {
+    if (!path) return;
+    const drafted = this.state.drafts[path];
+    this.setState({ view: 'files', fileSel: path, fileNew: false, filePreview: false }); this._prev = null;
+    if (drafted != null) { this.setState({ fileText: drafted, fileDraft: drafted, fileDirty: false }); return; }
+    this.setState({ fileText: 'loading…', fileDraft: 'loading…', fileDirty: false });
+    try { const t = await (await fetch(TestKit.root + path.split('/').map(encodeURIComponent).join('/') + '?' + Date.now())).text(); this.setState(s => s.fileSel === path ? { fileText: t, fileDraft: t, fileDirty: false } : {}); }
+    catch (e) { this.setState({ fileText: 'Could not read it: ' + e.message, fileDraft: '', fileDirty: false }); }
+  }
+  onDraft(v) { this.setState(s => ({ fileDraft: v, fileDirty: v !== s.fileText })); }
+  revertFile() { this.setState(s => ({ fileDraft: s.fileText, fileDirty: false })); }
+  downloadText(name, text) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+  async saveFile() {
+    const path = this.state.fileSel, text = this.state.fileDraft; if (!path) return;
+    this.setState({ fileSaving: true });
+    try {
+      const r = await fetch('/files/write', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ path, text }) });
+      if (!r.ok) throw new Error('status ' + r.status);
+      this.setState(s => { const d = { ...s.drafts }; delete d[path]; return { drafts: d, fileText: text, fileDirty: false, fileSaving: false, fileNew: false }; }, () => this.save());
+    } catch (e) {
+      this.setState(s => ({ drafts: { ...s.drafts, [path]: text }, fileText: text, fileDirty: false, fileSaving: false }), () => this.save());
+      this.downloadText(base(path), text);
+    }
+  }
+  newFile() { let p = ''; try { p = window.prompt('New file path (relative to repo root):', 'apps/') || ''; } catch (e) {} p = p.trim().replace(/^\/+/, ''); if (!p) return; this.setState(s => ({ view: 'files', files: s.files.includes(p) ? s.files : s.files.concat(p).sort(), fileSel: p, fileText: '', fileDraft: '', fileDirty: true, fileNew: true, filePreview: false })); }
+  async deleteFile() { const path = this.state.fileSel; if (!path) return; let ok = false; try { ok = window.confirm('Delete ' + path + '?'); } catch (e) {} if (!ok) return; try { const r = await fetch('/files/delete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ path }) }); if (!r.ok) throw 0; } catch (e) {} this.setState(s => { const d = { ...s.drafts }; delete d[path]; return { files: s.files.filter(f => f !== path), drafts: d, fileSel: '', fileText: '', fileDraft: '', fileDirty: false }; }, () => this.save()); }
+  togglePreview() { this.setState(s => ({ filePreview: !s.filePreview })); this._prev = null; }
+
+  async collect() { try { this.setState({ ev: { loading: true } }); await this.ready(); const r = await TestKit.runPython('challenge'); this.setState({ ev: r }); } catch (e) { this.setState({ ev: null }); } }
+  proposals() {
+    const s = this.state, g = s.graph, out = [];
+    s.fails.filter(f => f.src === 'audit').forEach(f => out.push({ kind: 'Fix', cls: 'tag tag-outline', title: f.text, msg: 'Fix in ' + f.where + ': ' + f.text }));
+    if (s.ev && !s.ev.loading) {
+      (s.ev.unreferenced || []).forEach(u => out.push({ kind: 'Remove', cls: 'tag tag-neutral', title: 'Nothing references ' + base(u.path), msg: 'Delete or wire up ' + u.path + ' (' + u.lines + ' lines) — no other file mentions it.' }));
+      (s.ev.duplicates || []).slice(0, 10).forEach(d => out.push({ kind: 'Dedupe', cls: 'tag tag-accent', title: d.length + ' identical copies', msg: 'Collapse into one source: ' + d.join(' · ') }));
+      (s.ev.biggest || []).slice(0, 6).forEach(u => out.push({ kind: 'Split', cls: 'tag tag-neutral', title: base(u.path) + ' is ' + u.lines.toLocaleString() + ' lines', msg: 'Consider splitting ' + u.path + ' into smaller, testable units.' }));
+    }
+    if (g) {
+      const vend = k => /(^|\/)support\.js(::|$)|apps\/web\/dist\/|marketing\/export\//.test(k);
+      const codes = g.nodes.filter(n => n.key.startsWith('code:') && !vend(n.key)), un = {};
+      codes.forEach(n => { if (!(this.adj[n.key] || []).some(x => x.rel === 'tests' && !x.out)) { const f = n.key.slice(5).split('::')[0]; un[f] = (un[f] || 0) + 1; } });
+      Object.keys(un).sort((a, b) => un[b] - un[a]).slice(0, 8).forEach(f => out.push({ kind: 'Test', cls: 'tag tag-neutral', title: un[f] + ' untested in ' + base(f), msg: f + ' has ' + un[f] + ' function(s)/class(es) with no test linked to them.' }));
+      g.nodes.filter(n => n.key.startsWith('route:') && !vend(n.key) && !(this.adj[n.key] || []).some(x => x.rel === 'calls' && !x.out)).slice(0, 8).forEach(n => out.push({ kind: 'Dead', cls: 'tag tag-outline', title: 'Route ' + n.label + ' has no caller', msg: n.label + ' answers but no page or script in the repository calls it — add a caller or remove it.' }));
+    }
+    return out;
+  }
+  toSextant(items) { const list = Array.isArray(items) ? items : [items]; const text = 'TESTER → SEXTANT — reduce & improve (' + list.length + '):\n' + list.map((p, i) => (i + 1) + '. [' + p.kind + '] ' + p.msg).join('\n'); try { navigator.clipboard.writeText(text); } catch (e) {} this.setState(s => ({ outbox: s.outbox.concat({ ts: Date.now(), n: list.length, label: list.length === 1 ? list[0].kind + ': ' + list[0].title : list.length + ' items' }).slice(-20) })); }
+
+  blast(key, cap = 300) {
+    if (!key || !this.adj || !this.adj[key]) return 0;
+    const seen = new Set([key]); let q = [key];
+    while (q.length && seen.size < cap) { const nx = []; q.forEach(k => (this.adj[k] || []).forEach(x => { if (!x.out && !seen.has(x.k)) { seen.add(x.k); nx.push(x.k); } })); q = nx; }
+    return seen.size - 1;
+  }
+  triage() {
+    const META = { tests: [3, 'a failing test — the behaviour is wrong until it passes'], js: [3, 'a syntax error — the file will not run at all'], audit: [3, 'a static-analysis error'], ui: [2, 'a defect a visitor would hit on the page'] };
+    return this.state.fails.map(f => {
+      const [b, why] = META[f.src] || [2, 'a failure'];
+      const sev = f.word === 'secret' ? 4 : b, blast = this.blast(f.key), node = this.nodes && this.nodes[f.key];
+      return { f, src: f.src, sev, blast, label: node ? node.label : f.where, why: f.word === 'secret' ? 'a secret in source — it must not ship' : why, title: f.text, where: f.where, score: sev * 100 + Math.min(blast, 60) };
+    }).sort((a, b) => b.score - a.score);
+  }
+  localAnswer() {
+    const s = this.state, t = this.triage();
+    if (!t.length) return (s.lastRun ? 'Nothing is failing across the suites that have run.' : 'Nothing has run yet — press Run all.') + ' Open gaps, if any, are on the Verdict tab with a one-click action each.';
+    const top = t.slice(0, 3).map((x, i) => (i + 1) + '. ' + x.where + ' — ' + x.title + (x.blast ? ' (' + x.blast + ' node' + (x.blast === 1 ? '' : 's') + ' depend on it)' : '')).join('\n');
+    const f = t[0];
+    return s.fails.length + ' open failure' + (s.fails.length === 1 ? '' : 's') + '. Fix ' + f.label + ' first — ' + f.why + (f.blast ? ', and ' + f.blast + ' other node' + (f.blast === 1 ? '' : 's') + ' in the graph depend on it' : '') + '.\n\nRanked by severity then blast radius:\n' + top;
+  }
+  digest() {
+    const s = this.state, g = s.graph, by = {};
+    if (g) g.nodes.forEach(n => { by[n.lane] = (by[n.lane] || 0) + 1; });
+    const hubs = g ? Object.keys(this.adj).sort((a, b) => this.adj[b].length - this.adj[a].length).slice(0, 16).map(k => this.nodes[k].label + ' (' + this.adj[k].length + ')') : [];
+    const apps = g ? g.nodes.filter(n => n.key.startsWith('app:')).map(n => n.label) : [];
+    return JSON.stringify({ project: 'Anima / Bridago repository (brain, SEXTANT engine, ops, site, mobile, tester)', counts: by, apps, hubs, suites: Object.fromEntries(Object.entries(s.suites).map(([k, v]) => [k, v.line || v.st])), failures: s.fails.slice(0, 25).map(f => f.word + ' ' + f.where + ': ' + f.text) });
+  }
+  async ask(q) {
+    q = String(q || '').trim(); if (!q || this.state.brainBusy) return;
+    this.setState(s => ({ view: 'brain', brainBusy: true, brainQ: '', brain: s.brain.concat({ who: 'You', text: q }).slice(-20) }));
+    let a = '';
+    try { if (!(window.claude && window.claude.complete)) { a = this.localAnswer(); } else { a = String(await window.claude.complete({ system: 'You are TESTER, an agent that is one graph of this repository: files, functions, routes, pages, services, tests, checks and findings. Answer the owner in under 160 words from the DIGEST only, plainly, naming files and pages. Say what the digest does not show. No markdown headings.', messages: [{ role: 'user', content: 'DIGEST\n' + this.digest() + '\n\nQUESTION\n' + q }], max_tokens: 600 })); } }
+    catch (e) { a = 'No answer: ' + e.message; }
+    this.setState(s => ({ brainBusy: false, brain: s.brain.concat({ who: 'TESTER', text: a.replace(/\*\*(.+?)\*\*/g, '$1') }).slice(-20) }));
+  }
+  command(raw) {
+    const c = String(raw || '').trim(), t = c.toLowerCase(); if (!c) return; this.setState({ cmd: '' });
+    let m;
+    if (/^run( all| everything)?$/.test(t)) return this.runAll();
+    if (/^deep/.test(t)) return this.deepPass();
+    if (/^reduce/.test(t)) { this.setView('reduce'); return this.collect(); }
+    if ((m = t.match(/^find\s+(\d+)/))) { this.setView('tests'); return this.run(['audit', 'js']); }
+    if ((m = t.match(/^(open|check)\s+(.+)/))) { const p = this.state.pages.find(x => short(x).toLowerCase().includes(m[2].trim())); if (!p) return; if (m[1] === 'check') { this.setState({ view: 'tests' }); return this.ui([p], [1440], true); } this.openFile(p); this.setState({ filePreview: true }); return; }
+    return this.ask(c);
+  }
+  report() {
+    const s = this.state, t = s.suites.tests || {}, a = s.suites.audit || {}, j = s.suites.js || {};
+    const ran = ['tests', 'audit', 'js'].some(k => s.suites[k] && s.suites[k].st && s.suites[k].st !== 'running');
+    return ['TESTER REPORT — ' + (s.mode === 'Container' ? 'container' : 'browser tab') + (s.lastRun ? ', run ' + hhmm(s.lastRun) : ', not run yet'),
+      'FILES: ' + s.files.length + ' read, ' + s.pages.length + ' pages',
+      'OWN TESTS: ' + (t.st ? (t.p || 0) + ' passed, ' + (t.f || 0) + ' failed, ' + (t.sk || 0) + ' skipped (' + (t.secs || 0) + 's)' : 'not run yet'),
+      'AUDIT: ' + (a.st ? a.line : 'not run yet'),
+      'JAVASCRIPT: ' + (j.st ? j.line : 'not run yet'),
+      'OPEN FAILURES: ' + s.fails.length + (ran ? '' : ' (nothing has run yet)'),
+      ...s.fails.slice(0, 80).map(f => '  FAIL ' + f.word + ' ' + f.where + ': ' + f.text),
+      s.rounds.length ? 'DEEP PASS: ' + s.rounds.length + ' rounds, last ' + s.rounds[s.rounds.length - 1].fails + ' failing' : ''].filter(Boolean).join('\n');
+  }
+
+  tree() {
+    const files = this.state.files, g = this.state.graph;
+    const key = files.length + '|' + (g ? g.nodes.length : 0); if (this._tk === key && this._tree) return this._tree;
+    const tops = {};
+    files.forEach(f => { const p = f.split('/'); const top = p[0] === 'apps' && p.length > 1 ? 'apps/' + p[1] : p[0]; const t = tops[top] || (tops[top] = { id: 't:' + top, label: top, icon: 'ph-folder', children: [], _sub: {} }); const rest = f.slice(top.length + 1); if (!rest.includes('/')) { t.children.push({ id: 'f:' + f, label: rest || top, path: f }); } else { const sub = rest.split('/')[0], sk = 's:' + top + '/' + sub, sn = t._sub[sub] || (t._sub[sub] = { id: sk, label: sub + '/', icon: 'ph-folder', children: [] }); if (sn.children.length === 0) t.children.push(sn); sn.children.push({ id: 'f:' + f, label: rest.split('/').slice(1).join('/'), path: f }); } });
+    const cnt = n => n.children ? n.children.reduce((a, c) => a + cnt(c), 0) : 1;
+    const tk = Object.keys(tops).sort().map(k => { const t = tops[k]; delete t._sub; t.count = cnt(t); return t; });
+    const root = { id: 'root', label: 'Bridago repository', icon: 'ph-circuitry', children: tk, count: files.length };
+    if (g) {
+      const routes = g.nodes.filter(n => n.key.startsWith('route:'));
+      if (routes.length) root.children.push({ id: 'b:routes', label: 'Routes & APIs', icon: 'ph-plugs', count: routes.length, children: routes.slice(0, 140).map(n => ({ id: n.key, label: n.label, gkey: n.key, icon: 'ph-plug' })) });
+      const svc = g.nodes.filter(n => n.key.startsWith('service:'));
+      if (svc.length) root.children.push({ id: 'b:svc', label: 'Services', icon: 'ph-stack', count: svc.length, children: svc.slice(0, 60).map(n => ({ id: n.key, label: n.label, gkey: n.key, icon: 'ph-circle' })) });
+    }
+    this._tk = key; this._tree = root; return root;
+  }
+  defaultOpen() { const o = new Set(['root']); this.tree().children.forEach(c => { if (/^t:/.test(c.id)) o.add(c.id); }); return o; }
+  flat(node, depth, open, out) { out.push({ node, depth }); if (node.children && open.has(node.id)) node.children.forEach(c => this.flat(c, depth + 1, open, out)); }
+  toggleNode(id) { this.setState(s => { const o = new Set(s.mmOpen || this.defaultOpen()); o.has(id) ? o.delete(id) : o.add(id); return { mmOpen: o }; }); }
+
+  fillGaps() {
+    const s = this.state;
+    const untested = ['tests', 'audit', 'js'].filter(id => !(s.suites[id] || {}).st);
+    if (s.pages.length && !Object.keys(s.ui || {}).length) untested.push('ui');
+    if (untested.length) { this.run(untested); return; }
+    const items = s.fails.map(f => ({ kind: 'Fix', title: f.text, msg: 'Fix in ' + (f.where || f.page || '') + ': ' + f.text })).concat(this.proposals());
+    if (items.length) this.toSextant(items);
+  }
+
+  renderVals() {
+    const s = this.state, wide = s.w >= 900, g = s.graph;
+    const uiCells = Object.values(s.ui || {}).reduce((a, c) => a.concat(Object.values(c)), []), uiPass = uiCells.filter(c => c.ran && !c.n).length;
+
+    const P = this.props || {};
+    const readyBar = +(P.readyBar ?? 90), warnBudget = +(P.warnBudget ?? 10), failsBlock = P.failsBlock ?? true;
+    const uiRan = uiCells.filter(c => c.ran).length, uiBad = uiCells.filter(c => c.n).length;
+    const stP = ((s.suites.tests || {}).p || 0) + ((s.suites.js || {}).p || 0), stF = ((s.suites.tests || {}).f || 0) + ((s.suites.js || {}).f || 0);
+    const stackPct = (stP + stF) ? stP / (stP + stF) * 100 : null, sitesPct = uiRan ? uiPass / uiRan * 100 : null;
+    const dims = [stackPct, sitesPct].filter(x => x != null);
+    const readyPct = dims.length ? Math.round(dims.reduce((a, b) => a + b, 0) / dims.length) : null;
+    const failCount = s.fails.length;
+    const blocking = failsBlock && (stF > 0 || uiBad > 0 || failCount > 0);
+    const noSignal = readyPct == null && !failCount;
+    let readyVerdict, readyColor;
+    if (noSignal) { readyVerdict = 'No signal'; readyColor = 'color-mix(in srgb,var(--color-text) 55%,transparent)'; }
+    else if (blocking) { readyVerdict = 'Not ready'; readyColor = '#ff6b6b'; }
+    else if (!failCount && dims.every(d => d >= readyBar) && s.warns <= warnBudget) { readyVerdict = 'Ready'; readyColor = '#3fcf8e'; }
+    else { readyVerdict = 'Nearly'; readyColor = '#f5b547'; }
+    const pctStr = p => p == null ? '—' : Math.round(p) + '%';
+    const readyTip = 'Launch readiness — bar ' + readyBar + '%, warn budget ' + warnBudget + (failsBlock ? ', fails block' : '') + '\nStack ' + pctStr(stackPct) + ' · Sites ' + pctStr(sitesPct) + ' · ' + s.warns + ' warnings' + (blocking ? '\nBlocked by ' + failCount + ' open failure' + (failCount === 1 ? '' : 's') : '');
+    const rawGaps = [];
+    [['tests', "Tester's tests"], ['audit', 'Code audit'], ['js', 'JavaScript syntax']].forEach(([id, nm]) => { if (!(s.suites[id] || {}).st) rawGaps.push({ label: nm + ' never run', cta: 'Run', fn: () => this.run([id]) }); });
+    if (s.pages.length && !uiRan) rawGaps.push({ label: 'Browser QA never run · ' + s.pages.length + ' pages', cta: 'Run', fn: () => this.run(['ui']) });
+    if (failCount) rawGaps.push({ label: failCount + ' open failure' + (failCount === 1 ? '' : 's'), cta: 'Review', fn: () => this.setView('tests') });
+    if (stackPct != null && stackPct < readyBar) rawGaps.push({ label: 'Stack at ' + Math.round(stackPct) + '%, under the ' + readyBar + '% bar', cta: 'Diagnose', fn: () => this.ask('Which stack failures are keeping readiness below the bar, and what should I fix first?') });
+    if (sitesPct != null && sitesPct < readyBar) rawGaps.push({ label: 'Sites at ' + Math.round(sitesPct) + '%, under the ' + readyBar + '% bar', cta: 'Diagnose', fn: () => this.ask('Which page checks are failing and keeping sites below the readiness bar?') });
+    if (s.warns > warnBudget) rawGaps.push({ label: s.warns + ' warnings over the ' + warnBudget + ' budget', cta: 'Reduce', fn: () => this.setView('reduce') });
+
+    const triaged = this.triage(), vTop = triaged[0];
+    const sevCls = x => x.sev >= 3 ? 'tag tag-outline' : 'tag tag-neutral';
+    const actFor = x => x.src === 'ui' || x.src === 'js' ? { label: 'Open file', go: () => this.openFile((x.f.key || '').replace(/^file:/, '')) } : x.src === 'audit' ? { label: 'Reduce', go: () => this.setView('reduce') } : { label: 'Review', go: () => this.setView('tests') };
+    const verdictItems = triaged.slice(0, 8).map((x, i) => { const a = actFor(x); return { rank: String(i + 1), sev: (x.f.word || x.src).toUpperCase(), sevCls: sevCls(x), blast: x.blast ? x.blast + ' depend' : 'isolated', title: x.title, where: x.where, why: x.why, actLabel: a.label, go: a.go }; });
+    const verdictPlan = !triaged.length
+      ? (s.lastRun ? (rawGaps.length ? 'Nothing is failing. ' + rawGaps.length + ' gap' + (rawGaps.length === 1 ? '' : 's') + ' remain before launch — each has an action below.' : 'Nothing is failing and no gaps remain. Stack and sites are clear.') : 'Nothing has run yet. Press Run all and the verdict will rank what matters.')
+      : 'Start with ' + (vTop.label) + ' — ' + vTop.why + (vTop.blast ? '; ' + vTop.blast + ' node' + (vTop.blast === 1 ? '' : 's') + ' downstream depend on it' : '') + '. ' + triaged.length + ' open failure' + (triaged.length === 1 ? '' : 's') + ' ranked below by severity, then blast radius through the graph.';
+    const nPassed = ((s.suites.tests || {}).p || 0) + ((s.suites.audit || {}).p || 0) + ((s.suites.js || {}).p || 0) + uiPass;
+    const elapsed = s.running ? (s.now - s.t0) / 1000 : s.last || 0;
+    const pagesBy = {}; s.pages.forEach(p => { (pagesBy[groupOf(p)] = pagesBy[groupOf(p)] || []).push(p); });
+
+    const codeDefs = [['tests', "Tester's own tests", 'ph-flask', 'pytest -q'], ['audit', 'Code audit & graph', 'ph-git-diff', 'tester audit'], ['js', 'JavaScript syntax', 'ph-brackets-curly', 'parse scripts']];
+    const mkCard = (id, name, icon, cmd, st, big, bigSub, bigOk, pct, time) => ({ id, name, icon, cmd, state: st, big, bigSub, pct, time, pillCls: pillCls(st === 'not run' || st === 'waiting' ? '' : st), border: s.detail === id ? 'var(--color-accent-600)' : 'var(--color-neutral-800)', bigColor: big === '—' ? 'color-mix(in srgb,var(--color-text) 45%,transparent)' : bigOk ? 'var(--color-accent-200)' : '#ff6b6b', barColor: bigOk ? 'var(--color-accent)' : '#ff6b6b', iconSt: 'width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;font-size:16px;background:color-mix(in srgb,var(--color-accent) 12%,transparent);color:var(--color-accent-200);', run: () => this.run([id.startsWith('g:') ? 'ui' : id]), open: () => this.setState({ detail: id }) });
+    const codeCards = codeDefs.map(([id, name, icon, cmd]) => { const x = s.suites[id] || {}; const st = x.st === 'running' ? 'running' : s.running && !x.st ? 'waiting' : x.st || 'not run'; return mkCard(id, name, icon, cmd, st, x.st ? String((x.p || 0) + (x.f || 0)) : '—', x.st ? (x.f ? x.f + ' failing of ' + ((x.p || 0) + (x.f || 0)) : 'all passing') : 'not run yet', !x.f, x.st === 'running' ? '50%' : x.st ? '100%' : '0%', (x.secs ? mmss(x.secs) + ' · ' : '') + (x.ts ? ago(x.ts) : 'never')); });
+    const groupCards = GROUPS.filter(gn => pagesBy[gn]).map(gn => { const ps = pagesBy[gn], cells = ps.reduce((a, p) => a.concat(Object.values((s.ui || {})[p] || {})), []), ran = cells.filter(c => c.ran).length, bad = cells.filter(c => c.n).length, total = ps.length * QUICK.length; const st = s.running && !ran ? 'waiting' : ran ? (bad ? 'failed' : 'passed') : 'not run'; const id = 'g:' + gn; return mkCard(id, gn, GICON[gn], 'browser QA', st, ran ? String(ran) : '—', ran ? (bad ? bad + ' failing of ' + ran : ps.length + ' pages passing') : ps.length + ' pages, not run', !bad, Math.round(ran / Math.max(1, total) * 100) + '%', ps.length + '×' + QUICK.length); });
+    const cards = codeCards.concat(groupCards);
+
+    const det = s.detail, isG = det.startsWith('g:');
+    let dName = '', dIcon = 'ph-flask', dState = 'not run', dLine = '', dRows = [], dEmpty = 'Nothing here yet — run this test.';
+    if (det) {
+      if (!isG) { const d = codeDefs.find(x => x[0] === det), x = s.suites[det] || {}; dName = d ? d[1] : det; dIcon = d ? d[2] : 'ph-flask'; dState = x.st || 'not run'; dLine = x.line || 'Not run yet in this tab.';
+        if (det === 'tests') dRows = s.testLines.map(l => { const m = l.match(/^(PASSED|FAILED|SKIPPED|ERROR)\s+(.*)$/) || [0, '', l]; const st = (m[1] || '').toLowerCase(); return { a: (m[2] || l).replace(/^test_tester_graph\.py::/, ''), b: st || '', color: m[1] === 'PASSED' ? '#3fcf8e' : m[1] === 'SKIPPED' ? '#6b7180' : '#ff6b6b', dot: dot(m[1] === 'PASSED' ? '#3fcf8e' : m[1] === 'SKIPPED' ? '#6b7180' : '#ff6b6b', 7), bg: 'transparent', go: () => {} }; });
+        else if (det === 'audit') dRows = Object.keys(s.audit).map(k => ({ a: k, b: s.audit[k].findings + ' finding' + (s.audit[k].findings === 1 ? '' : 's') + ' · ' + s.audit[k].seconds + 's', color: s.audit[k].findings ? '#f5b547' : '#3fcf8e', dot: dot(s.audit[k].findings ? '#f5b547' : '#3fcf8e', 7), bg: 'transparent', go: () => {} }));
+        else dRows = s.fails.filter(f => f.src === 'js').map(f => ({ a: f.where, b: 'syntax', color: '#ff6b6b', dot: dot('#ff6b6b', 7), bg: 'transparent', go: () => this.openFile((f.key || '').replace(/^file:/, '')) }));
+      } else { const gn = det.slice(2), ps = pagesBy[gn] || []; dName = gn; dIcon = GICON[gn]; const cells = ps.reduce((a, p) => a.concat(Object.values((s.ui || {})[p] || {})), []), bad = cells.filter(c => c.n).length; dState = cells.filter(c => c.ran).length ? (bad ? 'failed' : 'passed') : 'not run'; dLine = ps.length + ' pages, each opened at ' + QUICK.join(' and ') + 'px, then clicked through.';
+        dRows = ps.map(p => { const c = (s.ui || {})[p] || {}, cs = QUICK.map(w => c[w]), anyBad = cs.some(x => x && x.n); return { a: short(p), b: cs.map(x => !x ? '·' : x.n ? '✕' + x.n : '✓').join('  '), color: anyBad ? '#ff6b6b' : cs.some(x => x && x.ran) ? '#3fcf8e' : '#6b7180', dot: dot(anyBad ? '#ff6b6b' : '#3fcf8e', 7), bg: 'transparent', go: () => { this.openFile(p); this.setState({ filePreview: true }); } }; });
+      }
+    }
+    const lastRunForSuite = [...s.runs].reverse().find(r => r.suite === (isG ? 'ui' : det));
+    const dFails = det ? s.fails.filter(f => isG ? f.page && groupOf(f.page) === det.slice(2) : f.src === det) : [];
+
+    const node = this.nodes && this.nodes[s.sel], rel = [];
+    ((this.adj || {})[s.sel] || []).slice(0, 14).forEach(x => { const n = this.nodes[x.k]; if (n) rel.push({ label: n.label, dot: dot(PAL[n.lane] || '#9397ab', 7), go: () => this.setState({ sel: x.k }) }); });
+    const gq = s.gq.trim().toLowerCase(), hits = gq && this.nodes ? Object.values(this.nodes).filter(n => (n.label + ' ' + n.key).toLowerCase().includes(gq)).slice(0, 8) : [];
+
+    const fq = s.fileQ.trim().toLowerCase();
+    const fileRows = (fq ? s.files.filter(f => f.toLowerCase().includes(fq)) : s.files).slice(0, 400).map(f => { const ic = fileIcon(f); return { label: f.replace(/^apps\//, ''), icon: ic[0], iconColor: ic[1], dirty: s.drafts[f] != null || (s.fileSel === f && s.fileDirty), open: () => this.openFile(f), st: 'display:flex;align-items:center;gap:7px;width:100%;padding:5px 7px;border:0;border-radius:var(--radius-sm);background:' + (s.fileSel === f ? 'color-mix(in srgb,var(--color-accent) 12%,transparent)' : 'transparent') + ';color:' + (s.fileSel === f ? 'var(--color-text)' : 'color-mix(in srgb,var(--color-text) 78%,transparent)') + ';font:inherit;font-size:12px;text-align:left;cursor:pointer;' }; });
+
+    const props = this.proposals();
+    const open = s.mmOpen || this.defaultOpen(), rows = []; if (s.files.length) this.flat(this.tree(), 0, open, rows);
+    const mmRows = rows.map(({ node, depth }) => { const has = node.children && node.children.length; const isOpen = open.has(node.id); return { label: node.label, count: node.count ? String(node.count) : '', caret: has ? (isOpen ? '▾' : '▸') : '', icon: node.icon || 'ph-dot', iconColor: node.path ? fileIcon(node.path)[1] : node.gkey ? 'var(--color-accent-300)' : 'color-mix(in srgb,var(--color-text) 60%,transparent)', act: () => node.path ? this.openFile(node.path) : node.gkey ? this.setState({ view: 'graph', sel: node.gkey }) : this.toggleNode(node.id), st: 'display:flex;align-items:center;gap:7px;width:100%;padding:5px 6px;padding-left:' + (6 + depth * 17) + 'px;border:0;border-radius:var(--radius-sm);background:transparent;color:' + (node.path || node.gkey ? 'color-mix(in srgb,var(--color-text) 82%,transparent)' : 'var(--color-text)') + ';font:inherit;font-size:12.5px;text-align:left;cursor:pointer;' + (has ? 'font-weight:500;' : '') }; });
+
+    const isPage = /\.(dc\.)?html$/.test(s.fileSel);
+    const canWrite = s.mode === 'Container' && s.edit;
+
+    return {
+      liveRef: this.liveRef, graphRef: this.graphRef, consoleRef: this.consoleRef, previewRef: this.previewRef,
+      shellH: wide ? 'height:100vh;' : '', railW: wide ? '158px' : '54px',
+      liveDot: 'width:8px;height:8px;border-radius:50%;flex:none;background:' + (s.running ? '#f5b547' : s.py === 'ready' ? '#3fcf8e' : '#6b7180') + ';' + (s.running ? 'animation:tkpulse 1s infinite;' : ''),
+      readyVerdict, readyPct: readyPct == null ? (failCount ? failCount + ' open' : '—') : readyPct + '%', readyTip,
+      readyPillSt: 'display:flex;align-items:center;gap:6px;padding:3px 10px;border:0;cursor:pointer;font:inherit;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,' + readyColor + ' 15%,transparent);',
+      readyCaretSt: 'font-size:11px;color:' + readyColor + ';transform:rotate(' + (s.gapsOpen ? 180 : 0) + 'deg);',
+      toggleGaps: () => this.setState({ gapsOpen: !s.gapsOpen }), gapsOpen: s.gapsOpen,
+      hasGaps: rawGaps.length > 0, noGaps: !rawGaps.length, gapCount: rawGaps.length ? String(rawGaps.length) : '',
+      readyGaps: rawGaps.map(g => ({ label: g.label, cta: g.cta, go: () => { this.setState({ gapsOpen: false }); g.fn(); } })),
+      fillAll: () => { this.setState({ gapsOpen: false }); this.fillGaps(); },
+      verdictVis: s.view === 'verdict' ? 'display:flex;flex-direction:column;' : 'display:none;',
+      verdictHead: readyVerdict, verdictPct: readyPct == null ? '' : readyPct + '%', verdictHeadSt: 'font:600 20px ui-monospace,Menlo,monospace;color:' + readyColor + ';',
+      verdictDotSt: 'width:11px;height:11px;border-radius:50%;flex:none;background:' + readyColor + ';',
+      verdictPlan, verdictItems, verdictClear: !triaged.length, verdictHasItems: triaged.length > 0,
+      verdictGaps: rawGaps.map(g => ({ label: g.label, cta: g.cta, go: g.fn })), verdictNoGaps: !rawGaps.length,
+      verdictRefresh: () => this.runAll(), verdictAsk: () => this.ask('What should I fix first and why?'),
+      readyDotSt: 'width:8px;height:8px;border-radius:50%;flex:none;background:' + readyColor + ';',
+      readyTxtSt: 'font:600 11.5px ui-monospace,Menlo,monospace;letter-spacing:.02em;color:' + readyColor + ';',
+      readyNumSt: 'font:13px ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;color:' + readyColor + ';',
+      modeLabel: s.mode + ' mode', modeCls: s.mode === 'Container' ? 'tag tag-accent' : 'tag tag-neutral',
+      provenance: s.running ? 'running — ' + s.status : s.lastRun ? 'numbers from a run at ' + hhmm(s.lastRun) : 'nothing run yet · ' + s.status,
+      cmd: s.cmd, onCmd: e => this.setState({ cmd: e.target.value }), submitCmd: e => { e.preventDefault(); this.command(this.state.cmd); },
+      passIcon: s.fails.length ? 'ph-warning-circle' : nPassed ? 'ph-check-circle' : 'ph-circle-dashed', passColor: s.fails.length ? '#ff6b6b' : '#3fcf8e',
+      nPassed: String(nPassed), nFailed: String(s.fails.length), failColor: s.fails.length ? '#ff6b6b' : 'color-mix(in srgb,var(--color-text) 60%,transparent)', clock: mmss(elapsed),
+      running: s.running, idle: !s.running, runAll: () => this.runAll(), stop: () => { this.stopFlag = true; }, deepPass: () => this.deepPass(),
+      deepLabel: s.deep ? 'Deep ' + s.deep + '/' + s.deepTarget : 'Deep pass ×30',
+      railTabs: RAIL.map(([id, label, icon]) => { const on = s.view === id; const badge = id === 'tests' && s.fails.length ? String(s.fails.length) : id === 'reduce' && props.length ? String(props.length) : ''; return { label, icon, on, badge, pick: () => this.setView(id), lblSt: 'font-size:12px;' + (wide ? '' : 'display:none;'), st: 'display:flex;align-items:center;gap:9px;width:100%;padding:8px 9px;border:0;border-radius:var(--radius-md);background:' + (on ? 'color-mix(in srgb,var(--color-accent) 14%,transparent)' : 'transparent') + ';color:' + (on ? 'var(--color-text)' : 'color-mix(in srgb,var(--color-text) 60%,transparent)') + ';font:inherit;cursor:pointer;' + (wide ? '' : 'justify-content:center;') }; }),
+
+      consoleVis: s.view === 'console' ? 'display:flex;flex-direction:column;' : 'display:none;',
+      liveBox: this.liveBox,
+      liveWrapSt: s.view === 'live' ? 'flex:1 1 auto;min-height:0;display:flex;flex-direction:column;' : 'position:fixed;left:-12000px;top:0;width:1600px;height:900px;display:flex;flex-direction:column;',
+      liveSt: (() => { const sc = Math.min(1, (s.boxW || 900) / s.liveW); return 'width:' + s.liveW + 'px;height:' + Math.round((s.boxH || 560) / sc) + 'px;transform:scale(' + sc + ');'; })(),
+      liveScalePct: (() => { const sc = Math.min(1, (s.boxW || 900) / s.liveW); return sc < 1 ? ' · ' + Math.round(sc * 100) + '%' : ''; })(),
+      livePageLabel: short(s.livePage || 'no page yet'), liveSizeLabel: s.liveW + 'px', liveRunning: s.running,
+      liveHref: (typeof window !== 'undefined' && window.TestKit && TestKit.root && s.livePage) ? TestKit.root + s.livePage.split('/').map(encodeURIComponent).join('/') : '#',
+      checkPage: () => this.checkPage(), threePasses: () => this.threePasses(), downloadReport: () => this.downloadReport(),
+      passChips: [0, 1, 2].map(i => ({ label: 'Pass ' + (i + 1) + (i < s.passes ? ' \u2713' : ''), st: 'display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;font:600 11px var(--font-mono);white-space:nowrap;border:1px solid ' + (i < s.passes ? 'color-mix(in srgb,var(--ok) 55%,transparent)' : 'var(--color-neutral-700)') + ';color:' + (i < s.passes ? 'var(--ok)' : 'color-mix(in srgb,var(--color-text) 55%,transparent)') + ';background:' + (i < s.passes ? 'color-mix(in srgb,var(--ok) 12%,transparent)' : 'transparent') + ';' })),
+      widthOpts: SIZES.map(([w, label, title, icon]) => ({ label, title: title + ' · ' + w + 'px', icon, on: s.liveW === w, pick: () => this.setState({ liveW: w }), st: chip(s.liveW === w, 'min-height:28px;') })),
+      runNote: s.running ? 'running…' : s.runs.length ? s.runs.length + ' command' + (s.runs.length === 1 ? '' : 's') + (s.lastRun ? ' · last ' + hhmm(s.lastRun) : '') : 'idle — press Run all',
+      autoscroll: s.autoscroll, flipScroll: () => this.setState({ autoscroll: !s.autoscroll }), scrollSt: chip(s.autoscroll, 'min-height:28px;'),
+      clearRuns: () => this.setState({ runs: [] }), noRuns: !s.runs.length,
+      copyReport: () => { try { navigator.clipboard.writeText(this.report()); } catch (e) {} }, downloadReport: () => this.downloadText('tester-report.txt', this.report()),
+      runs: s.runs.map(r => ({ cmd: r.cmd, state: r.status, stColor: sCol(r.status), at: hhmm(r.ts), pending: r.status === 'running', secs: mmss(r.secs != null ? r.secs : (performance.now() - r.t0) / 1000), dot: dot(sCol(r.status), 9, r.status === 'running'), out: r.out.map(o => ({ t: o.t, color: RUNK[o.k] || 'var(--color-text)' })) })),
+
+      testsVis: s.view === 'tests' ? '' : 'display:none;', noDetail: !s.detail, hasDetail: !!s.detail, cards,
+      closeDetail: () => this.setState({ detail: '' }), dName, dIcon, dState, dPillCls: pillCls(dState === 'not run' ? '' : dState), dLine,
+      dIconSt: 'width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;font-size:15px;background:color-mix(in srgb,var(--color-accent) 12%,transparent);color:var(--color-accent-200);',
+      dRun: () => this.run([isG ? 'ui' : det]), dAsk: () => this.ask('Explain the current state and any failures of "' + dName + '" from the graph, and what to fix first.'),
+      dSend: () => this.toSextant(dFails.length ? dFails.map(f => ({ kind: 'Fix', title: f.text, msg: 'Fix in ' + f.where + ': ' + f.text })) : [{ kind: 'Improve', title: dName, msg: 'Improve coverage and reduce code in: ' + dName }]),
+      dRows, dNoRows: !!det && !dRows.length, dEmpty, dHasOut: !!(lastRunForSuite && lastRunForSuite.out.length), dOut: lastRunForSuite ? lastRunForSuite.out.map(o => ({ t: o.t, color: RUNK[o.k] || 'var(--color-text)' })) : [],
+
+      mapVis: s.view === 'map' ? 'display:flex;flex-direction:column;' : 'display:none;', mapNote: s.files.length + ' files' + (g ? ' · ' + g.nodes.length.toLocaleString() + ' graph nodes' : ''), mmRows,
+      mapExpand: () => { const o = new Set(['root']); const walk = n => { if (n.children) { o.add(n.id); n.children.forEach(walk); } }; walk(this.tree()); this.setState({ mmOpen: o }); }, mapCollapse: () => this.setState({ mmOpen: new Set(['root']) }),
+
+      filesVis: s.view === 'files' ? 'display:flex;' : 'display:none;', fileListW: wide ? '300px' : '150px', fileQ: s.fileQ, onFileQ: e => this.setState({ fileQ: e.target.value }), fileRows, newFile: () => this.newFile(),
+      fileOpen: !!s.fileSel, noFile: !s.fileSel, filePath: s.fileSel, fileDraft: s.fileDraft, onDraft: e => this.onDraft(e.target.value), fileDirty: s.fileDirty, fileStaged: s.drafts[s.fileSel] != null,
+      isPage, filePreview: s.filePreview, togglePreview: () => this.togglePreview(), previewSt: chip(s.filePreview, 'min-height:30px;'),
+      editorVis: s.filePreview ? 'display:none;' : '', previewVis: s.filePreview ? '' : 'display:none;',
+      revertOff: !s.fileDirty, saveOff: s.fileSaving || (!s.fileDirty && s.drafts[s.fileSel] == null && !s.fileNew), saveLabel: s.fileSaving ? 'Saving…' : canWrite ? 'Save to disk' : 'Save',
+      downloadFile: () => this.downloadText(base(s.fileSel), s.fileDraft), deleteFile: () => this.deleteFile(), revertFile: () => this.revertFile(), saveFile: () => this.saveFile(),
+      editNoteOn: !canWrite && !!s.fileSel, editNote: s.mode === 'Container' ? 'Editing is off on the container (start it with TESTER_EDIT=on). Save stages the change in this tab and downloads the file.' : 'This tab can\'t write to disk. Save stages the change here and downloads the file; run the tester container with TESTER_EDIT=on to write and auto re-test.',
+
+      reduceVis: s.view === 'reduce' ? '' : 'display:none;', collect: () => this.collect(), collectLabel: s.ev && s.ev.loading ? 'Collecting…' : s.ev ? 'Collect again' : 'Collect evidence',
+      evLine: s.ev && !s.ev.loading ? 'Across ' + s.ev.files + ' files and ' + s.ev.lines.toLocaleString() + ' lines.' : '', proposals: props.map(p => ({ kind: p.kind, cls: p.cls, title: p.title, msg: p.msg, send: () => this.toSextant(p) })), noProps: !props.length,
+      sendAll: () => this.toSextant(props), hasOutbox: !!s.outbox.length, outbox: s.outbox.slice().reverse().map(o => ({ at: hhmm(o.ts), label: o.label })),
+
+      graphVis: s.view === 'graph' ? '' : 'display:none;', gq: s.gq, onGq: e => this.setState({ gq: e.target.value }), onGqKey: e => { if (e.key === 'Enter' && hits[0]) this.setState({ sel: hits[0].key, gq: '' }); if (e.key === 'Escape') this.setState({ gq: '' }); },
+      hitsOpen: hits.length > 0, hits: hits.map(n => ({ label: n.label, go: () => this.setState({ sel: n.key, gq: '' }) })),
+      laneChips: LANES.map(([lane, label]) => { const on = !s.off[lane]; return { label, on, dot: dot(PAL[lane], 7), st: chip(on), flip: () => this.setState(x => ({ off: { ...x.off, [lane]: on } })) }; }),
+      motionOn: s.motion, flipMotion: () => this.setState({ motion: !s.motion }), motionSt: chip(s.motion),
+      selKind: node ? (node.tip || node.lane || '').toUpperCase() : g ? 'PICK A NODE · CTRL ←/→ TO STEP' : 'BUILDING THE GRAPH', selTitle: node ? node.label : g ? 'Click any node, or use Ctrl + ← / →.' : 'Run the audit to build the graph.',
+      selHasRel: rel.length > 0, selRel: rel,
+      statusMono: (s.running ? 'RUNNING · ' + mmss(elapsed) : (g ? g.nodes.length.toLocaleString() + ' NODES · ' + g.edges.length.toLocaleString() + ' LINKS' : 'NO GRAPH')) + (g ? ' · DRAG TO TURN · CTRL ←/→' : ''),
+
+      brainVis: s.view === 'brain' ? 'display:flex;flex-direction:column;' : 'display:none;', brainPresets: [['Explain the architecture', 'Explain the architecture of this repository from the graph: the apps, how they connect, and where the risk is.'], ['What to fix first?', 'Which failures should be fixed first, and why?'], ['Where can code be cut?', 'From the graph, where is the most code that could be reduced or removed without losing behaviour?']].map(x => ({ label: x[0], ask: () => this.ask(x[1]) })),
+      brainBusy: s.brainBusy, brainEmpty: !s.brain.length, brainMsgs: s.brain.map(m => ({ who: m.who, text: m.text, st: 'display:grid;gap:3px;padding:10px 12px;border-radius:var(--radius-md);' + (m.who === 'You' ? 'border:1px solid var(--color-accent-700);' : 'background:var(--color-surface);') })),
+      brainNote: window.claude && window.claude.complete ? 'Ask about the code, the graph or the failures. Answers come from a digest of the live graph, the suites and the open failures.' : 'There is no model in this page, so the brain cannot answer here. Open the dashboard from the tester container to enable it.',
+      brainQ: s.brainQ, onBrainQ: e => this.setState({ brainQ: e.target.value }), submitBrain: e => { e.preventDefault(); this.ask(this.state.brainQ); }
+    };
+  }
+}
+</script>
+</body>
+</html>

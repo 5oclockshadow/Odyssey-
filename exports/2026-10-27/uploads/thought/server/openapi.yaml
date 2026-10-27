@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info: { title: Map Graph API, version: 0.1.0, description: Waitlist, funnel, contact and analytics endpoints for the Map Graph site. }
+servers: [{ url: http://localhost:8787 }]
+paths:
+  /api/health: { get: { summary: Liveness check, responses: { '200': { description: OK } } } }
+  /api/waitlist:
+    post:
+      summary: Join the early-access list (idempotent per email)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/WaitlistIn' } } } }
+      responses:
+        '201': { description: Joined, content: { application/json: { schema: { $ref: '#/components/schemas/Member' } } } }
+        '200': { description: Already on the list (duplicate true), content: { application/json: { schema: { $ref: '#/components/schemas/Member' } } } }
+        '422': { description: Validation error with per-field messages }
+        '429': { description: Rate limited }
+  /api/waitlist/{code}:
+    get: { summary: Position, referrals and tier for a member, parameters: [{ name: code, in: path, required: true, schema: { type: string, pattern: '^[A-Z2-7]{8}$' } }], responses: { '200': { description: OK }, '404': { description: Unknown code } } }
+  /api/waitlist/{code}/survey:
+    post: { summary: Save the second-step survey, requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/SurveyIn' } } } }, responses: { '200': { description: Saved }, '422': { description: Validation error }, '404': { description: Unknown code } } }
+  /api/upgrade:
+    post: { summary: Register interest in founding membership. Takes no payment., requestBody: { content: { application/json: { schema: { type: object, required: [code], properties: { code: { type: string }, plan: { type: string, enum: [founding] }, note: { type: string } } } } } }, responses: { '201': { description: Recorded }, '404': { description: Unknown code } } }
+  /api/contact:
+    post: { summary: Send a message, requestBody: { content: { application/json: { schema: { type: object, required: [name, email, message], properties: { name: { type: string }, email: { type: string }, topic: { type: string, enum: [general, press, partnership, support, security] }, message: { type: string, minLength: 10 } } } } } }, responses: { '201': { description: Received }, '422': { description: Validation error } } }
+  /api/events:
+    post: { summary: Record a funnel event, requestBody: { content: { application/json: { schema: { type: object, required: [type], properties: { type: { type: string, enum: [page_view, cta_click, signup_start, signup_complete, survey_complete, upgrade_intent, contact_submit, share] }, page: { type: string }, session: { type: string }, props: { type: object } } } } } }, responses: { '202': { description: Accepted } } }
+  /api/stats:
+    get: { summary: Counts by interest and event type. Needs Authorization Bearer ADMIN_TOKEN when set., security: [{ admin: [] }], responses: { '200': { description: OK }, '401': { description: Unauthorized } } }
+  /api/admin/signups.csv:
+    get: { summary: CSV export of the list, security: [{ admin: [] }], responses: { '200': { description: text/csv }, '401': { description: Unauthorized } } }
+components:
+  securitySchemes: { admin: { type: http, scheme: bearer } }
+  schemas:
+    WaitlistIn: { type: object, required: [email], properties: { email: { type: string }, name: { type: string }, role: { type: string, enum: [researcher, founder, legal, educator, writer, archivist, product, other] }, interest: { type: string, enum: [thoughts, atlas, both] }, useCase: { type: string }, ref: { type: string, description: Referrer's member code }, source: { type: string } } }
+    SurveyIn: { type: object, properties: { useCase: { type: string }, teamSize: { type: string, enum: [solo, 2-5, 6-20, 21+] }, domains: { type: array, items: { type: string } } } }
+    Member: { type: object, properties: { ok: { type: boolean }, duplicate: { type: boolean }, id: { type: integer }, code: { type: string }, position: { type: integer }, referrals: { type: integer }, tier: { type: string, enum: [standard, priority, founding circle] }, referralUrl: { type: string } } }

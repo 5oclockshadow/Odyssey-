@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Saltline · Observatory</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="suite-theme.css">
+  <script src="suite-theme.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="suite-launcher.js"></script>
+  <script src="suite-nav.js"></script>
+  <style>body{margin:0;background:var(--color-bg);color:var(--color-text);font-size:13.5px;line-height:1.5}a{color:var(--color-accent-300);text-decoration:none}a:hover{color:var(--color-accent-200)}</style>
+</helmet>
+<div style="min-height:100vh;color:var(--color-text);font-family:var(--font-body);background:radial-gradient(900px 420px at 4% -10%,color-mix(in srgb,var(--color-accent) 8%,transparent),transparent 72%),var(--color-bg)">
+  <div data-suite-nav="observatory"></div>
+  <span data-nav-extra="" style="display:flex;align-items:center"><button class="btn btn-ghost btn-icon" onClick="{{ refresh }}" title="Refresh every feed now"><i class="ph ph-arrows-clockwise"></i></button></span>
+
+  <header style="padding:var(--space-8) var(--space-8) var(--space-6);display:flex;flex-direction:column;gap:var(--space-3);max-width:1180px">
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Planetary hazard observatory</div>
+    <h1 style="margin:0;font-size:34px;line-height:1.1;font-weight:600;letter-spacing:-.02em">Every live hazard, scored against your sites</h1>
+    <p style="margin:0;max-width:760px;font-size:15px;color:var(--color-neutral-300);text-wrap:pretty">Earthquakes, volcanoes, cyclones, floods, wildfire, drought, air quality, space weather, armed conflict, food insecurity and disease outbreaks from 13 open sources, normalised into one event model and screened against every tracked site. Each figure links to its source.</p>
+  </header>
+
+  <section style="padding:0 var(--space-8);display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:var(--space-3);max-width:1500px">
+    <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+      <button onClick="{{ k.go }}" style="display:flex;flex-direction:column;gap:4px;text-align:left;font:inherit;color:inherit;border:0;cursor:pointer;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);min-width:0" style-hover="box-shadow:var(--shadow-md)">
+        <span style="display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500);min-width:0"><i class="ph {{ k.icon }}" style="font-size:14px;flex:none;color:{{ k.color }}"></i><span style="white-space:nowrap">{{ k.label }}</span></span>
+        <span style="font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.15">{{ k.value }}</span>
+        <span style="font-size:12px;color:var(--color-neutral-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.sub }}</span>
+      </button>
+    </sc-for>
+  </section>
+
+  <section style="padding:var(--space-6) var(--space-8) var(--space-3);display:flex;flex-wrap:wrap;gap:6px;max-width:1500px">
+    <sc-for list="{{ chips }}" as="c" hint-placeholder-count="12">
+      <button class="btn" onClick="{{ c.go }}" style="font-size:12.5px;padding:5px 10px;gap:6px;background:{{ c.bg }};border-color:{{ c.bd }};color:{{ c.fg }}"><i class="ph {{ c.icon }}" style="color:{{ c.color }}"></i>{{ c.label }}<span style="font-size:11px;color:var(--color-neutral-500);font-variant-numeric:tabular-nums">{{ c.n }}</span></button>
+    </sc-for>
+  </section>
+
+  <section id="ob-map-anchor" style="padding:0 var(--space-8);display:flex;flex-wrap:wrap;gap:var(--space-4);max-width:1500px;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);flex:3 1 560px;min-width:0;padding:0;overflow:hidden;gap:0">
+      <div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);flex-wrap:wrap">
+        <span style="font-weight:600;font-size:16px;line-height:1.25;font-size:15px">World picture</span>
+        <span style="font-size:12px;color:var(--color-neutral-500)">{{ mapNote }}</span>
+        <span style="flex:1"></span>
+        <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">Shade countries</span>
+        <div class="seg"><sc-for list="{{ shadeOpts }}" as="o" hint-placeholder-count="3"><button class="seg-opt {{ o.cls }}" onClick="{{ o.go }}">{{ o.label }}</button></sc-for></div>
+        <button class="btn btn-ghost" onClick="{{ resetMap }}" title="Reset zoom"><i class="ph ph-arrows-in-simple"></i></button>
+      </div>
+      <div ref="{{ mapRef }}" style="position:relative;height:500px;background:radial-gradient(ellipse at 50% 45%,color-mix(in srgb,var(--color-accent) 7%,var(--color-bg)),var(--color-bg) 72%)"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px 14px;padding:var(--space-3) var(--space-4);font-size:11.5px;color:var(--color-neutral-400)">
+        <sc-for list="{{ legend }}" as="l" hint-placeholder-count="8"><span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:{{ l.color }}"></span>{{ l.label }}</span></sc-for>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;border:1.5px solid var(--color-accent)"></span>Tracked site</span>
+        <span>Dot size = normalised severity · scroll to zoom</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);flex:1 1 320px;min-width:0;padding:0;gap:0;max-height:640px">
+      <div style="display:flex;align-items:center;gap:8px;padding:var(--space-3) var(--space-4)">
+        <span style="font-weight:600;font-size:16px;line-height:1.25;font-size:15px">{{ listTitle }}</span><span style="flex:1"></span><span style="font-size:12px;color:var(--color-neutral-500)">{{ listCount }}</span>
+      </div>
+      <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+        <div style="margin:0 var(--space-3) var(--space-2);padding:var(--space-3);border-radius:var(--radius-md);background:var(--color-bg);display:flex;flex-direction:column;gap:5px;box-shadow:inset 0 0 0 1px var(--color-accent-800)">
+          <div style="display:flex;align-items:center;gap:8px"><i class="ph {{ sel.icon }}" style="color:{{ sel.color }};font-size:18px"></i><span style="font-size:14.5px;font-weight:500;flex:1;min-width:0">{{ sel.title }}</span><button class="btn btn-ghost" onClick="{{ clearSel }}" title="Close"><i class="ph ph-x"></i></button></div>
+          <div style="font-size:12.5px;color:var(--color-neutral-300)">{{ sel.line1 }}</div>
+          <div style="font-size:12.5px;color:var(--color-neutral-400)">{{ sel.line2 }}</div>
+          <div style="font-size:12.5px;color:var(--color-neutral-400)">{{ sel.near }}</div>
+          <a href="{{ sel.url }}" target="_blank" rel="noopener" style="font-size:12.5px">{{ sel.srcLabel }} ↗</a>
+        </div>
+      </sc-if>
+      <div style="overflow-y:auto;flex:1;padding:0 var(--space-2) var(--space-2)">
+        <sc-for list="{{ events }}" as="e" hint-placeholder-count="8">
+          <button onClick="{{ e.go }}" style="display:flex;gap:10px;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:var(--radius-md);background:{{ e.bg }};color:inherit;font:inherit;cursor:pointer" style-hover="background:color-mix(in srgb,var(--color-text) 5%,transparent)">
+            <i class="ph {{ e.icon }}" style="font-size:16px;margin-top:2px;color:{{ e.color }}"></i>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+              <span style="font-size:13.5px;line-height:1.3">{{ e.title }}</span>
+              <span style="font-size:12px;color:var(--color-neutral-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ e.sub }}</span>
+            </span>
+            <span class="tag {{ e.tagCls }}" style="align-self:flex-start;white-space:nowrap">{{ e.tag }}</span>
+          </button>
+        </sc-for>
+        <sc-if value="{{ noEvents }}" hint-placeholder-val="{{ false }}"><div style="padding:var(--space-4);font-size:13px;color:var(--color-neutral-500)">{{ noEventsText }}</div></sc-if>
+      </div>
+    </div>
+  </section>
+
+  <section id="ob-sites" style="padding:var(--space-8) var(--space-8) 0;max-width:1500px;display:flex;flex-direction:column;gap:var(--space-3)">
+    <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1 1 360px">
+        <h2 style="margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em">Site exposure</h2>
+        <p style="margin:0;font-size:13.5px;color:var(--color-neutral-400);max-width:720px;text-wrap:pretty">Each tracked site is screened against live events within hazard-specific radii, plus its own modelled air quality, 92-day water balance, river flow and country context. The scoring method is published below.</p>
+      </div>
+      <form onSubmit="{{ addSite }}" style="display:flex;gap:6px;flex:0 1 440px">
+        <input value="{{ q }}" onChange="{{ setQ }}" placeholder="Track a site: place name or lat, lon" style="flex:1;min-width:0;min-height:34px;padding:6px 10px;font:inherit;font-size:13.5px;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-neutral-800);border-radius:var(--radius-md)">
+        <button class="btn btn-primary" type="submit"><i class="ph ph-map-pin-plus"></i>Track</button>
+      </form>
+    </div>
+    <sc-if value="{{ hasGeo }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span style="font-size:12.5px;color:var(--color-neutral-400)">Pick a match:</span>
+        <sc-for list="{{ geo }}" as="g" hint-placeholder-count="3"><button class="btn btn-secondary" onClick="{{ g.go }}" style="font-size:12.5px;padding:4px 10px">{{ g.label }}</button></sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasGeoMsg }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--color-neutral-400)">{{ geoMsg }}</div></sc-if>
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-2) var(--space-3);overflow-x:auto;gap:0">
+      <div style="min-width:800px">
+        <div style="display:grid;grid-template-columns:minmax(140px,1.2fr) 112px minmax(220px,2.6fr) 96px 124px 112px 34px;gap:12px;padding:8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 60%,transparent);background:linear-gradient(to right,transparent,var(--color-divider) 48px,var(--color-divider) calc(100% - 48px),transparent) no-repeat bottom/100% 1px">
+          <span>Site</span><span>Score</span><span>Top drivers</span><span>Air</span><span>Drought · 92 d</span><span>River</span><span></span>
+        </div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:minmax(140px,1.2fr) 112px minmax(220px,2.6fr) 96px 124px 112px 34px;gap:12px;align-items:start;padding:10px 8px;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px">
+            <div style="min-width:0"><button onClick="{{ r.focus }}" style="border:0;background:none;padding:0;font:inherit;font-size:13.5px;color:var(--color-text);cursor:pointer;text-align:left" style-hover="color:var(--color-accent-300)">{{ r.name }}</button><div style="font-size:11.5px;color:var(--color-neutral-500)">{{ r.coords }}</div></div>
+            <div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:19px;font-variant-numeric:tabular-nums;min-width:26px">{{ r.score }}</span><span class="tag" style="background:{{ r.bandBg }};color:{{ r.bandFg }}">{{ r.band }}</span></div><div style="height:3px;border-radius:2px;background:var(--color-neutral-800);margin-top:6px;width:96px"><div style="height:3px;border-radius:2px;width:{{ r.pct }};background:{{ r.barColor }}"></div></div></div>
+            <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+              <sc-for list="{{ r.drivers }}" as="d" hint-placeholder-count="2"><div style="display:flex;gap:6px;align-items:baseline;font-size:12.5px;line-height:1.35"><i class="ph {{ d.icon }}" style="color:{{ d.color }}"></i><span style="min-width:0">{{ d.why }}</span></div></sc-for>
+              <sc-if value="{{ r.noDrivers }}" hint-placeholder-val="{{ false }}"><span style="color:var(--color-neutral-500);font-size:12.5px">No material drivers</span></sc-if>
+            </div>
+            <div>{{ r.air }}<div style="font-size:11.5px;color:var(--color-neutral-500)">{{ r.airSub }}</div></div>
+            <div>{{ r.dr }}<div style="font-size:11.5px;color:var(--color-neutral-500)">{{ r.drSub }}</div></div>
+            <div>{{ r.fl }}<div style="font-size:11.5px;color:var(--color-neutral-500)">{{ r.flSub }}</div></div>
+            <div><sc-if value="{{ r.canRemove }}" hint-placeholder-val="{{ false }}"><button class="btn btn-ghost" onClick="{{ r.remove }}" title="Stop tracking"><i class="ph ph-x"></i></button></sc-if></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center">
+      <button class="btn btn-primary" onClick="{{ saveSnap }}"><i class="ph ph-file-arrow-down"></i>Save screening to dossier</button>
+      <button class="btn btn-secondary" onClick="{{ toggleMethod }}"><i class="ph ph-function"></i>{{ methodLabel }}</button>
+      <span style="font-size:12.5px;color:var(--color-neutral-400)">{{ snapMsg }}</span>
+    </div>
+    <sc-if value="{{ showMethod }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-4);gap:var(--space-3)">
+        <sc-for list="{{ method }}" as="m" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:var(--space-4);font-size:13px"><span style="color:var(--color-accent-300)">{{ m.k }}</span><span style="color:var(--color-neutral-300);text-wrap:pretty">{{ m.v }}</span></div></sc-for>
+      </div>
+    </sc-if>
+  </section>
+
+  <section id="ob-outlook" style="padding:var(--space-8) var(--space-8) 0;max-width:1500px;display:flex;flex-direction:column;gap:var(--space-3)">
+    <div style="display:flex;flex-direction:column;gap:4px"><h2 style="margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em">Outlook</h2><p style="margin:0;font-size:13.5px;color:var(--color-neutral-400);max-width:820px;text-wrap:pretty">Forecasts for every tracked site, from the next 16 days to the 2040s. Multi-year fire-zone forecasts run as a backtested experiment in the <a href="Agency.dc.html">Agency</a>.</p></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:var(--space-4)">
+      <sc-for list="{{ outlook }}" as="o" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:10px;padding:var(--space-4);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)">
+          <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-weight:600;font-size:15px">{{ o.name }}</span><span style="font-size:11.5px;color:var(--color-neutral-500)">{{ o.coords }}</span></div>
+          <sc-for list="{{ o.rows }}" as="r" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;align-items:start">
+              <i class="ph {{ r.icon }}" style="font-size:16px;margin-top:2px;color:{{ r.color }}"></i>
+              <div style="min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--color-neutral-500)">{{ r.when }}</span><span style="font-size:13.5px;font-weight:500;line-height:1.35">{{ r.head }}</span><span style="font-size:12px;color:var(--color-neutral-400);line-height:1.45;text-wrap:pretty">{{ r.sub }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-size:12px;color:var(--color-neutral-500);max-width:900px;text-wrap:pretty">Sources: Open-Meteo forecast; GloFAS v4 river forecast; the ECMWF seasonal ensemble compared with 1991–2020 ERA5, not bias-corrected; and two CMIP6 high-resolution models under a high-emissions scenario. Heavy rain means 50 mm or more in a day. Hot-dry-windy means a vapour pressure deficit of at least 3 kPa with wind of at least 25 km/h.</div>
+  </section>
+
+  <section style="padding:var(--space-8);display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:var(--space-4);max-width:1500px;align-items:start">
+    <div id="ob-space" style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-4);gap:var(--space-3)">
+      <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Space weather · NOAA SWPC</div>
+      <div style="font-weight:600;font-size:16px;line-height:1.25">Geomagnetic, radiation and radio conditions</div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2)">
+        <sc-for list="{{ scales }}" as="s" hint-placeholder-count="3">
+          <div style="padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--color-bg)"><div style="font-size:11px;color:var(--color-neutral-500)">{{ s.label }}</div><div style="font-size:22px;font-weight:500;color:{{ s.color }}">{{ s.value }}</div><div style="font-size:11.5px;color:var(--color-neutral-400)">{{ s.sub }}</div></div>
+        </sc-for>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--color-neutral-500)"><span>Planetary Kp, 3-hourly, 7 days</span><span>{{ kpNote }}</span></div>
+      <div style="display:flex;align-items:flex-end;gap:1px;height:64px;border-bottom:1px solid var(--color-neutral-800)">
+        <sc-for list="{{ kpBars }}" as="b" hint-placeholder-count="56"><div title="{{ b.tip }}" style="flex:1;height:{{ b.h }};background:{{ b.c }};border-radius:1px 1px 0 0"></div></sc-for>
+      </div>
+      <div style="font-size:12.5px;color:var(--color-neutral-300)">{{ swLine }}</div>
+      <div style="font-size:12px;color:var(--color-neutral-500)">{{ fcLine }}</div>
+      <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400);margin-top:var(--space-3)">Schumann resonance · Tomsk State University</div>
+      <div ref="{{ schRef }}" style="min-height:90px;border-radius:var(--radius-md);background:var(--color-bg);overflow:hidden"></div>
+      <sc-if value="{{ schFailed }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--color-neutral-400)">The station image is unavailable right now. <a href="https://sosrff.tsu.ru/?page_id=7" target="_blank" rel="noopener">Open the station page ↗</a></div></sc-if>
+      <p style="margin:0;font-size:12.5px;color:var(--color-neutral-400);text-wrap:pretty">Resonances of the Earth–ionosphere cavity, excited mainly by global lightning. Reference modes: 7.83, 14.3, 20.8, 27.3 and 33.8 Hz. The station publishes a spectrogram image only, so no values are extracted from it.</p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-4);gap:var(--space-3)">
+      <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Air quality · Copernicus CAMS</div>
+      <div style="font-weight:600;font-size:16px;line-height:1.25">Worst modelled air now</div>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ aqRows }}" as="a" hint-placeholder-count="10">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 70px;gap:10px;align-items:center;padding:6px 0;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 7%,transparent) 32px,color-mix(in srgb,var(--color-text) 7%,transparent) calc(100% - 32px),transparent) no-repeat bottom/100% 1px">
+            <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ a.name }}<span style="color:var(--color-accent-300);font-size:11.5px">{{ a.mark }}</span></span>
+            <span class="tag" style="white-space:nowrap;background:{{ a.bg }};color:{{ a.fg }}">{{ a.aqi }} · {{ a.label }}</span>
+            <span style="text-align:right;font-size:12px;color:var(--color-neutral-400);font-variant-numeric:tabular-nums">{{ a.pm }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:12px;color:var(--color-neutral-500)">{{ aqNote }}</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-4);gap:var(--space-3)">
+      <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Armed conflict · Wikipedia</div>
+      <div style="font-weight:600;font-size:16px;line-height:1.25">Ongoing conflicts by intensity</div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2)">
+        <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="4"><div style="padding:var(--space-2);border-radius:var(--radius-md);background:var(--color-bg)"><div style="font-size:20px;font-weight:500">{{ t.n }}</div><div style="font-size:11.5px;color:var(--color-neutral-300)">{{ t.label }}</div><div style="font-size:11px;color:var(--color-neutral-500)">{{ t.sub }}</div></div></sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ wars }}" as="w" hint-placeholder-count="6">
+          <div style="display:flex;gap:10px;padding:6px 0;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 7%,transparent) 32px,color-mix(in srgb,var(--color-text) 7%,transparent) calc(100% - 32px),transparent) no-repeat bottom/100% 1px">
+            <span style="flex:1;min-width:0"><a href="{{ w.url }}" target="_blank" rel="noopener">{{ w.name }}</a><div style="font-size:11.5px;color:var(--color-neutral-500)">{{ w.where }}</div></span>
+            <span style="font-size:12px;color:var(--color-neutral-300);white-space:nowrap;font-variant-numeric:tabular-nums">{{ w.deaths }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:12px;color:var(--color-neutral-500);text-wrap:pretty">{{ cfNote }}</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-4);gap:var(--space-3)">
+      <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Food security · FAO via World Bank</div>
+      <div style="font-weight:600;font-size:16px;line-height:1.25">Where hunger, drought and conflict overlap</div>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ foodRows }}" as="f" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 54px;gap:10px;padding:6px 0;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 7%,transparent) 32px,color-mix(in srgb,var(--color-text) 7%,transparent) calc(100% - 32px),transparent) no-repeat bottom/100% 1px">
+            <span style="min-width:0"><a href="{{ f.url }}" target="_blank" rel="noopener">{{ f.name }}</a><span style="display:flex;flex-wrap:wrap;gap:4px;margin-top:3px"><sc-for list="{{ f.flags }}" as="x" hint-placeholder-count="2"><span class="tag tag-neutral" style="font-size:10.5px;padding:1px 7px">{{ x.t }}</span></sc-for></span></span>
+            <span style="text-align:right;font-variant-numeric:tabular-nums">{{ f.pou }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:12px;color:var(--color-neutral-500);text-wrap:pretty">{{ foodNote }}</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-4);gap:var(--space-3)">
+      <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Outbreaks · WHO</div>
+      <div style="font-weight:600;font-size:16px;line-height:1.25">Latest Disease Outbreak News</div>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ who }}" as="w" hint-placeholder-count="6">
+          <div style="display:flex;gap:10px;padding:6px 0;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 7%,transparent) 32px,color-mix(in srgb,var(--color-text) 7%,transparent) calc(100% - 32px),transparent) no-repeat bottom/100% 1px">
+            <span style="flex:1;min-width:0"><a href="{{ w.url }}" target="_blank" rel="noopener">{{ w.title }}</a><div style="font-size:11.5px;color:var(--color-neutral-500)">{{ w.country }}</div></span>
+            <span style="font-size:12px;color:var(--color-neutral-400);white-space:nowrap">{{ w.date }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-4);gap:var(--space-3)">
+      <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Volcanoes · USGS, GDACS, NASA</div>
+      <div style="font-weight:600;font-size:16px;line-height:1.25">Elevated and active volcanoes</div>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ volc }}" as="v" hint-placeholder-count="4">
+          <div style="display:flex;gap:10px;padding:6px 0;font-size:13px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 7%,transparent) 32px,color-mix(in srgb,var(--color-text) 7%,transparent) calc(100% - 32px),transparent) no-repeat bottom/100% 1px">
+            <span style="flex:1;min-width:0"><a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.title }}</a><div style="font-size:11.5px;color:var(--color-neutral-500)">{{ v.sub }}</div></span>
+            <span class="tag tag-neutral" style="align-self:flex-start;white-space:nowrap">{{ v.tag }}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noVolc }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--color-neutral-500)">No elevated volcanoes reported by the connected feeds.</div></sc-if>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-4);gap:var(--space-3)">
+      <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--color-accent-400)">Climate forcing · NOAA GML</div>
+      <div style="font-weight:600;font-size:16px;line-height:1.25">Global greenhouse gases</div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)">
+        <div style="padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--color-bg)"><div style="font-size:11px;color:var(--color-neutral-500)">CO₂, global monthly mean</div><div style="font-size:22px;font-weight:500">{{ ghg.co2 }}</div><div style="font-size:11.5px;color:var(--color-neutral-400)">{{ ghg.co2Sub }}</div></div>
+        <div style="padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--color-bg)"><div style="font-size:11px;color:var(--color-neutral-500)">CH₄, global monthly mean</div><div style="font-size:22px;font-weight:500">{{ ghg.ch4 }}</div><div style="font-size:11.5px;color:var(--color-neutral-400)">{{ ghg.ch4Sub }}</div></div>
+      </div>
+      <svg viewBox="0 0 240 44" preserveAspectRatio="none" style="width:100%;height:56px;display:block"><polyline points="{{ ghg.co2Pts }}" fill="none" stroke="var(--color-accent)" stroke-width="1.4" vector-effect="non-scaling-stroke"></polyline></svg>
+      <div style="font-size:12px;color:var(--color-neutral-500)">CO₂, last 10 years. Seasonal cycle visible; NOAA marine surface sites.</div>
+    </div>
+  </section>
+
+  <section style="padding:0 var(--space-8) var(--space-8);max-width:1500px;display:flex;flex-direction:column;gap:var(--space-3)">
+    <h2 style="margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em">Sources and feed health</h2>
+    <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-2) var(--space-3);overflow-x:auto;gap:0">
+      <div style="min-width:860px">
+        <div style="display:grid;grid-template-columns:16px minmax(220px,2fr) minmax(160px,1.4fr) 74px 110px 120px;gap:12px;padding:8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 60%,transparent);background:linear-gradient(to right,transparent,var(--color-divider) 48px,var(--color-divider) calc(100% - 48px),transparent) no-repeat bottom/100% 1px"><span></span><span>Feed</span><span>Publisher</span><span>Records</span><span>Updated</span><span>Licence</span></div>
+        <sc-for list="{{ feeds }}" as="f" hint-placeholder-count="13">
+          <div style="display:grid;grid-template-columns:16px minmax(220px,2fr) minmax(160px,1.4fr) 74px 110px 120px;gap:12px;align-items:center;padding:8px;font-size:12.5px;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--color-text) 8%,transparent) 48px,color-mix(in srgb,var(--color-text) 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom/100% 1px">
+            <span style="width:8px;height:8px;border-radius:50%;background:{{ f.dot }}" title="{{ f.state }}"></span>
+            <span style="min-width:0"><a href="{{ f.home }}" target="_blank" rel="noopener">{{ f.name }}</a><div style="font-size:11.5px;color:var(--color-neutral-500)">{{ f.err }}</div></span>
+            <span style="color:var(--color-neutral-300)">{{ f.org }}</span>
+            <span style="font-variant-numeric:tabular-nums">{{ f.n }}</span>
+            <span style="color:var(--color-neutral-400)">{{ f.when }}</span>
+            <span style="color:var(--color-neutral-400)">{{ f.lic }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <p style="margin:0;font-size:12px;color:var(--color-neutral-500);max-width:860px;text-wrap:pretty">Saltline Observatory. Screening data from open public sources, fetched directly by your browser and cached locally. Check each publisher's terms before redistributing. Scores are screening indicators, not site-specific assessments.</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultShade&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;conflict&quot;,&quot;food&quot;,&quot;none&quot;],&quot;default&quot;:&quot;conflict&quot;,&quot;tsType&quot;:&quot;'conflict'|'food'|'none'&quot;,&quot;section&quot;:&quot;Map&quot;},&quot;autoRefreshMin&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:10,&quot;min&quot;:2,&quot;max&quot;:60,&quot;unit&quot;:&quot;min&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Data&quot;}}">
+class Component extends DCLogic {
+  state = { dom: 'all', shade: null, sel: null, showMethod: false, q: '', geo: [], geoMsg: '', snapMsg: '', st: {}, byFeed: {}, sw: null, aq: null, dr: null, fl: null, cf: null, food: null, who: null, ghg: null, sites: [], countryOf: {}, schOk: null, tick: 0, mapReady: false, fc: {} };
+  mapRef = React.createRef();
+  schRef = React.createRef();
+  mountSchumann() {
+    const el = this.schRef.current; if (!el || !this.H) return;
+    const src = this.H.schumannURL(); if (this._schSrc === src && el.firstChild) return; this._schSrc = src;
+    const img = new Image(); img.alt = 'Schumann resonance spectrogram, Tomsk station'; img.style.cssText = 'display:block;width:100%;height:auto';
+    img.onload = () => { el.replaceChildren(img); if (this.state.schOk !== true) this.setState({ schOk: true }); };
+    img.onerror = () => { if (this.state.schOk !== false) this.setState({ schOk: false }); };
+    img.src = src;
+  }
+
+  async componentDidMount() {
+    const u = p => new URL(p, document.baseURI).href;
+    const [H, C, X] = await Promise.all([import(u('suite-hazards.js')), import(u('suite-core.js')).catch(() => null), import(u('institute-intel.js')).catch(() => null)]);
+    this.H = H; this.C = C; H.init(C);
+    this.mo = new MutationObserver(() => this.setState({ theme: document.documentElement.dataset.theme })); this.mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    const paintToggle = () => window.dispatchEvent(new StorageEvent('storage', { key: 'saltline.theme' })); paintToggle(); setTimeout(paintToggle, 400);
+    H.watch(() => this.setState({ st: { ...H.STATUS } }));
+    this.setState({ sites: H.getSites((X && X.SITES) || []) }, () => { this.loadAll(false); this.initMap(); this.mountSchumann(); });
+    const hidePill = () => { const b = document.getElementById('slk-btn'); if (b) b.style.display = 'none'; return !!b; }; if (!hidePill()) { let n = 0; const iv = setInterval(() => { if (hidePill() || ++n > 40) clearInterval(iv); }, 150); }
+    this.t1 = setInterval(() => { this.setState(s => ({ tick: s.tick + 1 })); this.mountSchumann(); }, 60000);
+    this.t2 = setInterval(() => this.loadAll(false), Math.max(2, +(this.props.autoRefreshMin ?? 10)) * 60000);
+    if (C && C.listen) C.listen(m => { if (!m || m.type !== 'sites' || this._self) return; const ns = H.getSites(); if (JSON.stringify(ns) !== JSON.stringify(this.state.sites)) this.setState({ sites: ns }, () => { this.assignCountries(); this.loadSiteFeeds(false); }); });
+  }
+  componentWillUnmount() { this.mo && this.mo.disconnect(); clearInterval(this.t1); clearInterval(this.t2); this.ro && this.ro.disconnect(); }
+  componentDidUpdate() { if (window.SuiteNav && this._navT !== this._statusLine) { this._navT = this._statusLine; window.SuiteNav.status(this._statusLine, this._statusTone); }
+    const s = this.state, p = this._ps || {}, K = ['byFeed', 'dom', 'shade', 'cf', 'food', 'who', 'aq', 'sites', 'sel', 'mapReady', 'theme']; this._ps = {}; K.forEach(k => this._ps[k] = s[k]); if (K.some(k => s[k] !== p[k])) this.drawDyn(); }
+  col(d) { return this.H ? this.H.domColor(d, document.documentElement.dataset.theme === 'dark') : 'currentColor'; }
+
+  loadAll(force) {
+    const H = this.H; if (!H) return;
+    Object.entries(H.eventJobs({ force })).forEach(([id, f]) => f().then(ev => this.setState(s => ({ byFeed: { ...s.byFeed, [id]: ev } })), () => {}));
+    H.loadSpace({ force }).then(sw => this.setState({ sw }), () => {});
+    H.loadConflicts({ force }).then(cf => this.setState({ cf }), () => {});
+    H.loadFood({ force }).then(food => this.setState({ food }), () => {});
+    H.loadWHO({ force }).then(who => this.setState({ who }), () => {});
+    H.loadGHG({ force }).then(ghg => this.setState({ ghg }), () => {});
+    if (force) { this._schSrc = null; this.mountSchumann(); }
+    this.loadSiteFeeds(force);
+  }
+  loadSiteFeeds(force) {
+    const H = this.H, sites = this.state.sites; if (!H) return;
+    H.loadAir([...H.CITIES, ...sites.map(s => ({ ...s, kind: 'site' }))], { force }).then(aq => this.setState({ aq }), () => {});
+    if (!sites.length) return;
+    const a = H.loadFlood(sites, { force }).then(fl => this.setState({ fl }), () => {}), b = H.loadDrought(sites, { force }).then(dr => this.setState({ dr }), () => {});
+    Promise.allSettled([a, b]).then(() => this.loadOutlook());
+  }
+
+  async loadOutlook() { if (!this.F) { try { this.F = await import(new URL('suite-forecast.js', document.baseURI).href); } catch (e) { return; } } this.F.loadAll(this.state.sites, (id, v) => this.setState(s => ({ fc: { ...s.fc, [id]: v } }))); }
+  outlookRows(site, col) {
+    const v = this.state.fc[site.id] || {}, n = x => x == null ? '—' : x, E = (x, when, icon, color) => ({ icon, color, when, head: x && x.err ? 'Unavailable' : 'Loading…', sub: x && x.err ? x.err : '' });
+    const s = v.short, r = v.river, q = v.seasonal, p = v.proj, rows = [];
+    rows.push(s && !s.err ? { icon: 'ph-thermometer-hot', color: col('climate'), when: 'Next 16 days', head: [s.heat ? `${s.heat} day${s.heat > 1 ? 's' : ''} at 35 °C+` : '', s.rain ? `${s.rain} heavy-rain day${s.rain > 1 ? 's' : ''}` : '', s.fire ? `${s.fire} hot-dry-windy day${s.fire > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ') || 'No heat, heavy-rain or fire-weather days', sub: `Peak ${n(s.tmax)} °C · wettest day ${n(s.pmax)} mm · water balance ${s.wb > 0 ? '+' : ''}${s.wb} mm` } : E(s, 'Next 16 days', 'ph-thermometer-hot', col('climate')));
+    rows.push(r && !r.err ? { icon: 'ph-waves', color: col('flood'), when: 'Next 30 days', head: r.ratio != null ? `River peak ${r.ratio}× p95 flow` : r.cls, sub: r.ratio != null ? `${r.cls}${r.d95 ? ` · ${r.d95} days above p95` : ''}${r.ens != null ? ` · ensemble max ${r.ens} m³/s` : ''}` : r.peak != null ? `Forecast peak ${r.peak} m³/s` : '' } : E(r, 'Next 30 days', 'ph-waves', col('flood')));
+    rows.push(q && !q.err ? { icon: 'ph-cloud-rain', color: col('drought'), when: 'Next 3 months', head: q.cls, sub: q.mean != null && !q.arid ? `${q.mean} mm forecast vs ${q.normal} mm normal (range ${q.p10}–${q.p90}) · ${Math.round(q.below * 100)}% of ${q.members} members below normal` : q.arid ? `${q.mean} mm forecast vs ${q.normal} mm normal` : '' } : E(q, 'Next 3 months', 'ph-cloud-rain', col('drought')));
+    rows.push(p && !p.err ? { icon: 'ph-trend-up', color: col('climate'), when: '2040s vs 2005–14', head: `${p.dT > 0 ? '+' : ''}${p.dT} °C on daily highs`, sub: `${p.dTr[0]} to ${p.dTr[1]} °C across ${p.models.length} models · days at 35 °C+ ${p.hot[0]} → ${p.hot[1]} a year · rainfall ${p.dP > 0 ? '+' : ''}${p.dP}% (${p.dPr[0]} to ${p.dPr[1]}%)` } : E(p, '2040s vs 2005–14', 'ph-trend-up', col('climate')));
+    return rows;
+  }
+
+  /* ---------- map ---------- */
+  async initMap() {
+    for (let i = 0; i < 200 && !(window.d3 && window.topojson); i++) await new Promise(r => setTimeout(r, 50));
+    if (!window.d3 || !window.topojson || !this.mapRef.current) return;
+    try { const t = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json()); this.land = topojson.feature(t, t.objects.countries).features; } catch (e) { this.land = []; }
+    this.cent = new Map(this.land.map(f => [this.H.canon(f.properties.name), d3.geoCentroid(f)]));
+    this.assignCountries(); this.buildMap();
+    this.ro = new ResizeObserver(() => { clearTimeout(this._rz); this._rz = setTimeout(() => this.buildMap(), 120); });
+    this.ro.observe(this.mapRef.current);
+    this.setState({ mapReady: true });
+  }
+  countryAt(lat, lon) { if (!this.land) return ''; const hit = p => { const f = this.land.find(x => d3.geoContains(x, p)); return f ? f.properties.name : ''; }; let n = hit([lon, lat]); for (const r of [0.3, 0.7, 1.5]) for (let a = 0; a < 360 && !n; a += 45) n = hit([lon + r * Math.cos(a * Math.PI / 180), lat + r * Math.sin(a * Math.PI / 180)]); return n; }
+  assignCountries() { const o = {}; this.state.sites.forEach(s => o[s.id] = s.country || this.countryAt(s.lat, s.lon)); this.setState({ countryOf: o }); }
+  buildMap() {
+    const el = this.mapRef.current; if (!el || !window.d3 || !this.land) return;
+    const w = el.clientWidth, h = el.clientHeight; if (!w || !h) return;
+    d3.select(el).selectAll('svg,div.ob-tip').remove();
+    const svg = d3.select(el).append('svg').attr('width', w).attr('height', h).style('display', 'block').style('cursor', 'grab');
+    const proj = this.proj = d3.geoNaturalEarth1().fitExtent([[10, 10], [w - 10, h - 10]], { type: 'Sphere' }), path = d3.geoPath(proj), g = svg.append('g');
+    g.append('path').attr('d', path({ type: 'Sphere' })).style('fill', 'color-mix(in srgb, var(--color-surface) 45%, var(--color-bg))');
+    g.append('path').attr('d', path(d3.geoGraticule10())).style('fill', 'none').style('stroke', 'color-mix(in srgb, var(--color-text) 7%, transparent)').style('stroke-width', .5);
+    this.gLand = g.append('g'); this.gEv = g.append('g'); this.gSite = g.append('g');
+    this.gLand.selectAll('path').data(this.land).join('path').attr('d', path).style('stroke', 'var(--color-bg)').style('stroke-width', .5).on('mousemove', (e, f) => this.tip(e, this.countryTip(f))).on('mouseleave', () => this.hideTip());
+    this.tipEl = d3.select(el).append('div').attr('class', 'ob-tip').style('position', 'absolute').style('pointer-events', 'none').style('display', 'none').style('z-index', 5).style('max-width', '280px').style('padding', '8px 10px').style('border-radius', 'var(--radius-md)').style('background', 'var(--color-surface)').style('box-shadow', 'var(--shadow-lg)').style('font-size', '12.5px').style('line-height', '1.45').style('color', 'var(--color-text)');
+    this.zoom = d3.zoom().scaleExtent([1, 12]).on('zoom', ev => { this.k = ev.transform.k; g.attr('transform', ev.transform); this.scaleMarks(); });
+    svg.call(this.zoom); this.svg = svg; this.k = 1; this.drawDyn();
+  }
+  drawDyn() {
+    if (!this.gLand || !this.H) return; const H = this.H, sel = this.state.sel;
+    this.gLand.selectAll('path').style('fill', f => this.shade(f).fill);
+    const pts = this.mapItems().filter(e => e.lat != null && !isNaN(e.lat));
+    this.gEv.selectAll('circle').data(pts, e => e.id).join('circle')
+      .attr('cx', e => this.proj([e.lon, e.lat])[0]).attr('cy', e => this.proj([e.lon, e.lat])[1])
+      .style('fill', e => this.col(e.dom)).style('fill-opacity', .8)
+      .style('stroke', e => e.id === sel ? 'var(--color-text)' : 'color-mix(in srgb, var(--color-bg) 60%, transparent)').style('stroke-width', e => e.id === sel ? 2 : .6).style('cursor', 'pointer')
+      .on('mousemove', (ev, e) => this.tip(ev, this.evTip(e))).on('mouseleave', () => this.hideTip())
+      .on('click', (ev, e) => { ev.stopPropagation(); this.setState({ sel: e.id }); });
+    const sg = this.gSite.selectAll('g.s').data(this.state.sites, x => x.id).join(en => { const gg = en.append('g').attr('class', 's').style('cursor', 'pointer'); gg.append('circle').attr('r', 7).style('fill', 'none').style('stroke', 'var(--color-accent)').style('stroke-width', 1.5); gg.append('circle').attr('r', 2.5).style('fill', 'var(--color-accent)'); gg.append('text').attr('x', 10).attr('y', 4).style('font-size', '11px').style('fill', 'var(--color-accent-200)').style('paint-order', 'stroke').style('stroke', 'var(--color-bg)').style('stroke-width', 3); return gg; });
+    sg.select('text').text(x => x.name.split(' · ')[0].split(',')[0]);
+    sg.on('mousemove', (ev, x) => this.tip(ev, this.siteTip(x))).on('mouseleave', () => this.hideTip()).on('click', (ev, x) => { ev.stopPropagation(); this.fly([x.lon, x.lat], 5); });
+    this.scaleMarks();
+  }
+  scaleMarks() { const k = this.k || 1; if (!this.gEv) return; this.gEv.selectAll('circle').attr('r', e => (2.5 + 7 * (e.sev || .2)) / Math.sqrt(k)); this.gSite.selectAll('g.s').attr('transform', x => { const p = this.proj([x.lon, x.lat]); return `translate(${p[0]},${p[1]}) scale(${1 / k})`; }); }
+  fly(c, k = 4) { if (!this.svg || !this.proj) return; const p = this.proj(c), el = this.mapRef.current; this.svg.transition().duration(800).call(this.zoom.transform, d3.zoomIdentity.translate(el.clientWidth / 2 - k * p[0], el.clientHeight / 2 - k * p[1]).scale(k)); }
+  tip(ev, html) { if (!this.tipEl || !html) return this.hideTip(); const r = this.mapRef.current.getBoundingClientRect(); this.tipEl.html(html).style('display', 'block'); const n = this.tipEl.node(); let x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 12; if (x + n.offsetWidth > r.width - 6) x = ev.clientX - r.left - n.offsetWidth - 14; if (y + n.offsetHeight > r.height - 6) y = ev.clientY - r.top - n.offsetHeight - 12; this.tipEl.style('left', x + 'px').style('top', y + 'px'); }
+  hideTip() { this.tipEl && this.tipEl.style('display', 'none'); }
+  esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]); }
+  ago(t) { if (!t || isNaN(t)) return ''; const m = Math.round((Date.now() - t) / 6e4); if (m < 1) return 'just now'; if (m < 60) return m + ' min ago'; const h = Math.round(m / 60); return h < 48 ? h + ' h ago' : Math.round(h / 24) + ' d ago'; }
+  fmtT(t) { return t && !isNaN(t) ? new Date(t).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : ''; }
+  evTip(e) { const H = this.H, D = H.DOMAINS[e.dom] || {}, F = H.FEEDS[e.src]; return `<b>${this.esc(e.title)}</b><div style="color:var(--color-neutral-400)">${this.esc(D.label)}${e.place ? ' · ' + this.esc(e.place) : ''}</div>${e.mag ? `<div>${this.esc(e.mag)}</div>` : ''}<div style="color:var(--color-neutral-500)">${[this.ago(e.t), F ? F.org : ''].filter(Boolean).join(' · ')}</div>`; }
+  countryTip(f) { const n = f.properties.name, sh = this.shade(f), inside = this.state.sites.filter(s => this.state.countryOf[s.id] === n); return `<b>${this.esc(n)}</b>${sh.tip ? `<div style="color:var(--color-neutral-300)">${this.esc(sh.tip)}</div>` : ''}${inside.map(s => `<div style="color:var(--color-accent-300)">● ${this.esc(s.name)}</div>`).join('')}`; }
+  siteTip(x) { const r = (this._rows || []).find(z => z.id === x.id); return `<b>${this.esc(x.name)}</b><div style="color:var(--color-neutral-400)">${(+x.lat).toFixed(2)}, ${(+x.lon).toFixed(2)}</div>${r ? `<div>Exposure ${r.score}/100 · ${r.band}</div>` : ''}`; }
+  shade(f) {
+    const H = this.H, s = this.state, k = H.canon(f.properties.name), mode = this.shadeMode();
+    if (mode === 'conflict' && this.cfBy && this.cfBy[k]) { const c = this.cfBy[k]; return { fill: `color-mix(in srgb, ${this.col('conflict')} ${({ major: 54, minor: 38, conflict: 22, skirmish: 8 })[c.tier]}%, var(--color-neutral-800))`, tip: `${H.TIER_LABEL[c.tier]} · ${c.how}` }; }
+    if (mode === 'food' && this.foodBy && this.foodBy[k]) { const r = this.foodBy[k]; return { fill: `color-mix(in srgb, ${this.col('food')} ${Math.round(8 + 62 * Math.min(1, r.pou / 40))}%, var(--color-neutral-800))`, tip: `Undernourishment ${r.pou}% (${r.year}) · ${r.cls}` }; }
+    return { fill: 'var(--color-neutral-800)', tip: '' };
+  }
+  shadeMode() { return this.state.shade ?? (this.props.defaultShade || 'conflict'); }
+  ll(name) { const c = this.cent && this.cent.get(this.H.canon(name)); return c ? { lon: c[0], lat: c[1] } : { lat: null, lon: null }; }
+  items() {
+    const s = this.state, H = this.H, key = [s.byFeed, s.who, s.aq, s.cf, s.food, s.mapReady];
+    if (this._ik && key.every((v, i) => v === this._ik[i])) return this._it;
+    let ev = H.dedupe([].concat(...Object.values(s.byFeed)));
+    if (s.who) ev = ev.concat(s.who.filter(w => Date.now() - w.t < 60 * 864e5).map(w => ({ ...w, ...this.ll(w.country), sev: .4, place: w.country, mag: 'WHO Disease Outbreak News' })));
+    const cities = (s.aq || []).filter(a => a.kind === 'city' && a.aqi != null).map(a => ({ id: 'aq:' + a.name, dom: 'air', title: `US AQI ${a.aqi} · ${a.band.label}`, place: a.name, lat: a.lat, lon: a.lon, t: a.t, sev: H.clamp01((a.aqi - 50) / 250), mag: `PM2.5 ${a.pm25 != null ? Math.round(a.pm25) : '—'} µg/m³ (modelled)`, src: 'aq', url: 'https://open-meteo.com/en/docs/air-quality-api', aqi: a.aqi }));
+    this.cfBy = s.cf ? H.conflictsByCountry(s.cf.list, s.cf.deaths) : null;
+    const conf = s.cf ? s.cf.list.map(c => ({ id: 'cf:' + c.name, dom: 'conflict', title: c.name, place: c.countries.slice(0, 4).join(', ') + (c.countries.length > 4 ? ` +${c.countries.length - 4}` : ''), ...this.ll(c.countries[0]), t: null, sev: H.TIER_W[c.tier], tier: c.tier, mag: `${H.TIER_LABEL[c.tier]}${c.deaths != null ? ' · ' + c.deaths.toLocaleString('en') + ' deaths, latest year' : ''}`, src: 'conflict', url: c.url })) : [];
+    this.foodBy = {}; (s.food ? s.food.list : []).forEach(r => this.foodBy[H.canon(r.name)] = r);
+    const food = s.food ? s.food.list.filter(r => r.pou >= 15).map(r => ({ id: 'fd:' + r.iso3, dom: 'food', title: `${r.pou}% undernourished`, place: r.name, ...this.ll(r.name), t: null, sev: H.clamp01(r.pou / 50), mag: `${r.cls} · ${r.year}`, src: 'food', url: 'https://data.worldbank.org/indicator/SN.ITK.DEFC.ZS?locations=' + r.iso3, pou: r.pou })) : [];
+    this._ik = key; this._it = { ev, cities, conf, food }; return this._it;
+  }
+  listFor(dom) { const it = this.items(); if (dom === 'all') return it.ev.concat(it.cities.filter(c => c.aqi > 150)); if (dom === 'air') return it.ev.filter(e => e.dom === 'air').concat(it.cities); if (dom === 'conflict') return it.conf; if (dom === 'food') return it.food; return it.ev.filter(e => e.dom === dom); }
+  mapItems() { return this.listFor(this.state.dom); }
+  setDom(dom) { const shade = dom === 'conflict' ? 'conflict' : dom === 'food' ? 'food' : this.state.shade; this.setState({ dom, sel: null, shade }); }
+  scrollTo(id) { const el = document.getElementById(id); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); }
+
+  /* ---------- sites ---------- */
+  persistSites(list) { this._self = true; this.H.saveSites(list); this._self = false; }
+  addPlace(g) {
+    const s = this.state; if (s.sites.some(x => Math.abs(x.lat - g.lat) < .01 && Math.abs(x.lon - g.lon) < .01)) return this.setState({ geo: [], geoMsg: 'Already tracked.' });
+    const site = { id: 'S' + Date.now().toString(36), name: g.name, lat: g.lat, lon: g.lon, country: g.country || '' }, list = [...s.sites, site];
+    this.persistSites(list);
+    this.setState({ sites: list, geo: [], q: '', geoMsg: `Tracking ${g.name}. Pulling air, drought and river data for it now.` }, () => { this.assignCountries(); this.loadSiteFeeds(false); });
+  }
+  async lookup(e) {
+    e && e.preventDefault && e.preventDefault(); const q = this.state.q.trim(); if (!q || !this.H) return;
+    this.setState({ geoMsg: 'Searching…', geo: [] });
+    try { const r = await this.H.geocode(q); if (!r.length) return this.setState({ geoMsg: 'No place found. Try a nearby town, or enter coordinates as lat, lon.' }); if (r.length === 1) return this.addPlace(r[0]); this.setState({ geo: r, geoMsg: '' }); }
+    catch (err) { this.setState({ geoMsg: 'Place search failed: ' + err.message }); }
+  }
+
+  /* ---------- view ---------- */
+  renderVals() {
+    const s = this.state, H = this.H, fmtN = n => n == null || isNaN(n) ? '—' : Number(n).toLocaleString('en');
+    const base = { openSearch: () => { const b = document.getElementById('slk-btn'); if (b) b.click(); }, mapRef: this.mapRef, refresh: () => this.loadAll(true), resetMap: () => this.svg && this.svg.transition().duration(700).call(this.zoom.transform, d3.zoomIdentity), q: s.q, setQ: e => this.setState({ q: e.target.value }), addSite: e => this.lookup(e), clearSel: () => this.setState({ sel: null }), toggleMethod: () => this.setState({ showMethod: !s.showMethod }), showMethod: s.showMethod, methodLabel: s.showMethod ? 'Hide method' : 'Scoring method', geoMsg: s.geoMsg, hasGeoMsg: !!s.geoMsg, snapMsg: s.snapMsg, schRef: this.schRef, schFailed: s.schOk === false };
+    if (!H) return { ...base, statusLine: 'Connecting to sources…', liveDot: 'var(--color-neutral-600)', kpis: [], chips: [], shadeOpts: [], legend: [], events: [], rows: [], geo: [], hasGeo: false, method: [], scales: [], kpBars: [], aqRows: [], tiers: [], wars: [], foodRows: [], who: [], volc: [], feeds: [], outlook: [], ghg: { co2: '—', co2Sub: '', ch4: '—', ch4Sub: '', co2Pts: '' }, sel: {}, hasSel: false, hasSch: false, noEvents: false, noVolc: false, mapNote: '', listTitle: 'Events', listCount: '', kpNote: '', swLine: '', fcLine: '', aqNote: '', cfNote: '', foodNote: '', noEventsText: '', saveSnap: () => {} };
+    const it = this.items(), D = H.DOMAINS, OK = 'var(--ok)', AMB = 'var(--warn)', RED = 'var(--bad)', dark = document.documentElement.dataset.theme === 'dark', col = d => H.domColor(d, dark);
+    const st = s.st, feedIds = Object.keys(H.FEEDS), stOf = id => id === 'schumann' ? (s.schOk === true ? 'ok' : s.schOk === false ? 'err' : 'load') : (st[id] ? st[id].st : 'load');
+    const okN = feedIds.filter(id => ['ok', 'stale'].includes(stOf(id))).length, errN = feedIds.filter(id => stOf(id) === 'err').length, lastT = Math.max(0, ...Object.values(st).map(x => x.t || 0));
+
+    /* exposure rows */
+    const kp = s.sw ? s.sw.kpNow : null, BC = { High: RED, Elevated: AMB, Low: 'var(--color-accent-500)', Minimal: 'var(--color-neutral-500)' };
+    const rows = s.sites.map(site => {
+      const aq = (s.aq || []).find(a => a.kind === 'site' && a.id === site.id), dr = s.dr && s.dr[site.id], drE = s.dr && s.dr.err && s.dr.err[site.id], fl = s.fl && s.fl[site.id], flE = s.fl && s.fl.err && s.fl.err[site.id];
+      const cname = s.countryOf[site.id] || site.country || '', cf = cname && this.cfBy ? this.cfBy[H.canon(cname)] : null;
+      const ob = cname && s.who ? s.who.find(w => H.canon(w.country) === H.canon(cname) && Date.now() - w.t < 60 * 864e5) : null;
+      const x = H.exposure(site, { events: it.ev, aq, drought: dr, flood: fl, kp, conflict: cf ? { tier: cf.tier, name: cf.name, how: cf.how, via: cf.conflicts[0] } : null, outbreak: ob });
+      const pend = id => (st[id] && st[id].st === 'load') || !st[id] ? 'Loading…' : 'Unavailable';
+      return {
+        id: site.id, name: site.name, lat: site.lat, lon: site.lon, score: x.score, band: x.band, rawDrivers: x.drivers,
+        coords: `${(+site.lat).toFixed(2)}, ${(+site.lon).toFixed(2)}${cname ? ' · ' + cname : ''}`,
+        bandBg: `color-mix(in srgb, ${BC[x.band]} 20%, transparent)`, bandFg: x.band === 'Minimal' ? 'var(--color-neutral-300)' : BC[x.band], pct: x.score + '%', barColor: BC[x.band],
+        drivers: x.drivers.slice(0, 3).map(d => ({ icon: (D[d.dom] || {}).icon || 'ph-circle', color: col(d.dom), why: d.why })), noDrivers: !x.drivers.length,
+        air: aq && aq.aqi != null ? 'AQI ' + aq.aqi : pend('aq'), airSub: aq && aq.band ? aq.band.label : '',
+        dr: dr ? (dr.arid ? 'Arid window' : `z ${dr.z > 0 ? '+' : ''}${dr.z.toFixed(1)}`) : drE ? 'Unavailable' : pend('drought'), drSub: dr ? (dr.arid ? `${dr.P} mm vs ${dr.Pclim} mm normal` : dr.cls) : drE ? drE.slice(0, 48) : '',
+        fl: fl ? (fl.ratio != null ? `${fl.ratio}× p95` : '—') : flE ? 'Unavailable' : pend('flood'), flSub: fl ? fl.cls : flE ? flE.slice(0, 48) : '',
+        canRemove: !site.ref || s.sites.length > 1,
+        focus: () => { this.fly([site.lon, site.lat], 5); this.scrollTo('ob-map-anchor'); },
+        remove: () => { const list = s.sites.filter(z => z.id !== site.id); this.persistSites(list); this.setState({ sites: list }, () => this.assignCountries()); },
+      };
+    }).sort((a, b) => b.score - a.score);
+    this._rows = rows;
+
+    /* list + selection */
+    const all = this.listFor(s.dom).slice().sort((a, b) => (b.sev - a.sev) || ((b.t || 0) - (a.t || 0)));
+    const tagOf = e => e.dom === 'seismic' ? ['M' + e.mag.toFixed(1), e.sev >= .5 ? 'tag-accent' : 'tag-outline'] : e.src === 'gdacs' && e.lvl ? [e.lvl[0].toUpperCase() + e.lvl.slice(1) + ' alert', e.lvl === 'red' ? 'tag-accent' : e.lvl === 'orange' ? 'tag-outline' : 'tag-neutral'] : e.src === 'hans' ? [e.lvl ? e.lvl[0].toUpperCase() + e.lvl.slice(1) : 'Notice', e.sev >= .6 ? 'tag-accent' : 'tag-outline'] : e.dom === 'conflict' ? [H.TIER_LABEL[e.tier], e.tier === 'major' ? 'tag-accent' : e.tier === 'minor' ? 'tag-outline' : 'tag-neutral'] : e.dom === 'food' ? [e.pou + '%', e.pou >= 25 ? 'tag-accent' : 'tag-outline'] : e.src === 'aq' ? ['AQI ' + e.aqi, e.aqi > 200 ? 'tag-accent' : e.aqi > 100 ? 'tag-outline' : 'tag-neutral'] : e.src === 'who' ? ['WHO', 'tag-neutral'] : [e.sev >= .6 ? 'High' : e.sev >= .35 ? 'Moderate' : 'Low', e.sev >= .6 ? 'tag-accent' : e.sev >= .35 ? 'tag-outline' : 'tag-neutral'];
+    const events = all.slice(0, 80).map(e => { const [tag, tagCls] = tagOf(e); return { go: () => { this.setState({ sel: e.id }); if (e.lat != null) this.fly([e.lon, e.lat], e.dom === 'conflict' || e.dom === 'food' ? 3 : 4.5); }, bg: e.id === s.sel ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'transparent', icon: (D[e.dom] || {}).icon, color: col(e.dom), title: e.title, sub: [e.place, this.ago(e.t), e.also ? 'also ' + e.also.map(a => (H.FEEDS[a] || {}).org || a).join(', ') : ''].filter(Boolean).join(' · '), tag, tagCls }; });
+    const selE = s.sel ? [...it.ev, ...it.cities, ...it.conf, ...it.food].find(e => e.id === s.sel) : null;
+    let near = ''; if (selE && selE.lat != null && s.sites.length) { const n = s.sites.map(x => [x, H.km(x.lat, x.lon, selE.lat, selE.lon)]).sort((a, b) => a[1] - b[1])[0]; near = `Nearest tracked site: ${n[0].name.split(' · ')[0]} · ${fmtN(Math.round(n[1]))} km`; }
+    const sel = selE ? { icon: (D[selE.dom] || {}).icon, color: col(selE.dom), title: selE.title, line1: [(D[selE.dom] || {}).label, selE.place, selE.mag].filter(Boolean).join(' · '), line2: [this.fmtT(selE.t), selE.lat != null ? `${selE.lat.toFixed(2)}, ${selE.lon.toFixed(2)}` : ''].filter(Boolean).join(' · '), near, url: selE.url || '#', srcLabel: 'Open at ' + ((H.FEEDS[selE.src] || {}).org || 'source') } : {};
+
+    /* chips + kpis */
+    const cnt = dom => this.listFor(dom).length;
+    const chipDefs = [['all', 'All hazards', 'ph-globe-hemisphere-west', 'var(--color-accent)'], ...['seismic', 'volcanic', 'storm', 'flood', 'wildfire', 'drought', 'air', 'ice', 'health', 'conflict', 'food'].map(d => [d, D[d].label, D[d].icon, col(d)])];
+    const chips = chipDefs.map(([d, label, icon, color]) => ({ bg: s.dom === d ? 'var(--color-accent-900)' : '', bd: s.dom === d ? 'var(--color-accent-700)' : '', fg: s.dom === d ? 'var(--color-accent-200)' : '', go: () => this.setDom(d), icon, color, label, n: cnt(d) }));
+    const quakes = it.ev.filter(e => e.dom === 'seismic').sort((a, b) => b.mag - a.mag), q0 = quakes[0];
+    const worst = it.cities.slice().sort((a, b) => b.aqi - a.aqi)[0];
+    const ro = it.ev.filter(e => e.src === 'gdacs' && (e.lvl === 'red' || e.lvl === 'orange')).length, majors = s.cf ? s.cf.list.filter(c => c.tier === 'major').length : null;
+    const elev = rows.filter(r => r.score >= 30).length;
+    const GT = ['quiet', 'minor storm', 'moderate storm', 'strong storm', 'severe storm', 'extreme storm'];
+    const kpis = [
+      { icon: 'ph-pulse', color: 'var(--color-accent)', label: 'Active events', value: fmtN(it.ev.length), sub: `${ro} GDACS red or orange alerts`, go: () => this.setDom('all') },
+      { icon: D.seismic.icon, color: col('seismic'), label: 'Largest quake', value: q0 ? 'M' + q0.mag.toFixed(1) : '—', sub: q0 ? '7 d · ' + q0.place : 'USGS', go: () => { this.setDom('seismic'); if (q0) { this.setState({ sel: q0.id }); this.fly([q0.lon, q0.lat], 4); } } },
+      { icon: D.space.icon, color: col('space'), label: 'Geomagnetic', value: kp != null ? 'Kp ' + kp.toFixed(1) : '—', sub: kp != null ? `G${H.gScale(kp)} · ${GT[H.gScale(kp)]}` : 'NOAA SWPC', go: () => this.scrollTo('ob-space') },
+      { icon: D.air.icon, color: col('air'), label: 'Worst air', value: worst ? 'AQI ' + worst.aqi : '—', sub: worst ? worst.place + ' · modelled' : 'CAMS', go: () => this.setDom('air') },
+      { icon: D.conflict.icon, color: col('conflict'), label: 'Conflicts', value: s.cf ? fmtN(s.cf.list.length) : '—', sub: majors != null ? `${majors} major wars` : 'Wikipedia', go: () => this.setDom('conflict') },
+      { icon: 'ph-map-pin', color: 'var(--color-accent)', label: 'Sites screened', value: `${elev}/${rows.length}`, sub: 'elevated or high exposure', go: () => this.scrollTo('ob-sites') },
+    ];
+    const shadeOpts = [['none', 'None'], ['conflict', 'Conflict'], ['food', 'Hunger']].map(([k, label]) => ({ label, cls: this.shadeMode() === k ? 'on' : '', go: () => this.setState({ shade: k }) }));
+    const legendDoms = s.dom === 'all' ? ['seismic', 'volcanic', 'storm', 'flood', 'wildfire', 'drought', 'air', 'ice', 'health'] : [s.dom];
+    const legend = legendDoms.filter(d => D[d]).map(d => ({ color: col(d), label: D[d].label }));
+
+    /* space weather */
+    const sw = s.sw, sc = sw && sw.scales && sw.scales.now, d1 = sw && sw.scales && sw.scales.d1, lvlC = n => n >= 3 ? RED : n >= 1 ? AMB : 'var(--color-neutral-200)';
+    const RS = ['none', 'minor', 'moderate', 'strong', 'severe', 'extreme'];
+    const scales = sc ? [{ label: 'Geomagnetic storm', value: 'G' + sc.G, sub: RS[sc.G], color: lvlC(sc.G) }, { label: 'Solar radiation', value: 'S' + sc.S, sub: RS[sc.S], color: lvlC(sc.S) }, { label: 'Radio blackout', value: 'R' + sc.R, sub: RS[sc.R], color: lvlC(sc.R) }] : [];
+    const kpBars = sw ? sw.kp3.map(k => ({ h: Math.max(3, k.kp / 9 * 100) + '%', c: k.kp >= 5 ? (k.kp >= 7 ? RED : AMB) : 'color-mix(in srgb, var(--color-accent) 70%, transparent)', tip: `${this.fmtT(k.t)} · Kp ${k.kp.toFixed(2)}` })) : [];
+    const swLine = sw ? [sw.wind != null ? `Solar wind ${fmtN(Math.round(sw.wind))} km/s` : '', sw.bt != null ? `Bt ${sw.bt} nT, Bz ${sw.bz} nT` : '', sw.flare ? `X-ray ${sw.flare.now}, latest flare peak ${sw.flare.max}` : ''].filter(Boolean).join(' · ') : 'Loading NOAA SWPC…';
+    const fcLine = d1 ? `Next 24 h probability: R1–R2 ${d1.Rminor ?? '—'}%, R3+ ${d1.Rmajor ?? '—'}%, S1+ ${d1.Sprob ?? '—'}%` : '';
+
+    /* panels */
+    const AQC = dark ? ['oklch(0.78 0.11 155)', 'oklch(0.86 0.11 95)', 'oklch(0.79 0.13 65)', 'oklch(0.70 0.16 30)', 'oklch(0.70 0.13 330)', 'oklch(0.64 0.14 15)'] : ['oklch(0.52 0.13 155)', 'oklch(0.56 0.12 95)', 'oklch(0.58 0.15 60)', 'oklch(0.53 0.19 30)', 'oklch(0.48 0.16 330)', 'oklch(0.42 0.15 15)'];
+    const aqAll = (s.aq || []).filter(a => a.aqi != null).sort((a, b) => b.aqi - a.aqi);
+    const aqRows = [...aqAll.filter(a => a.kind === 'city').slice(0, 8), ...aqAll.filter(a => a.kind === 'site')].map(a => ({ name: a.kind === 'site' ? a.name.split(' · ')[0] : a.name, mark: a.kind === 'site' ? '  · tracked site' : '', aqi: a.aqi, label: ['Good', 'Moderate', 'Sensitive', 'Unhealthy', 'Very unhealthy', 'Hazardous'][a.band.lvl], bg: `color-mix(in srgb, ${AQC[a.band.lvl]} 20%, transparent)`, fg: AQC[a.band.lvl], pm: a.pm25 != null ? `PM2.5 ${Math.round(a.pm25)}` : '' }));
+    const tiers = s.cf ? H.TIERS.map(([t, , label, sub]) => ({ label, sub, n: s.cf.list.filter(c => c.tier === t).length })) : [];
+    const wars = s.cf ? s.cf.list.filter(c => c.tier === 'major').sort((a, b) => (b.deaths || 0) - (a.deaths || 0)).map(c => ({ name: c.name, url: c.url, where: c.countries.slice(0, 5).join(', ') + (c.countries.length > 5 ? ` +${c.countries.length - 5}` : ''), deaths: c.deaths != null ? fmtN(c.deaths) + ' deaths' : '' })) : [];
+    const gdDr = new Set(it.ev.filter(e => e.dom === 'drought' && e.iso3 && (e.lvl === 'orange' || e.lvl === 'red')).map(e => e.iso3));
+    const foodRows = (s.food ? s.food.list : []).map(r => { const c = this.cfBy && this.cfBy[H.canon(r.name)], flags = []; if (r.pou >= 15) flags.push({ t: r.cls + ' hunger' }); if (gdDr.has(r.iso3)) flags.push({ t: 'Drought alert' }); if (c && (c.tier === 'major' || c.tier === 'minor') && c.how !== 'spillover') flags.push({ t: H.TIER_LABEL[c.tier] }); return { name: r.name, url: 'https://data.worldbank.org/indicator/SN.ITK.DEFC.ZS?locations=' + r.iso3, pou: r.pou + '%', flags, f: flags.length, p: r.pou }; }).filter(r => r.f).sort((a, b) => b.f - a.f || b.p - a.p).slice(0, 10);
+    const who = (s.who || []).slice(0, 7).map(w => ({ title: w.title, country: w.country + (w.updates > 1 ? ` · ${w.updates} notices` : ''), url: w.url, date: w.t ? new Date(w.t).toISOString().slice(0, 10) : '' }));
+    const volc = it.ev.filter(e => e.dom === 'volcanic').sort((a, b) => b.sev - a.sev).slice(0, 8).map(e => ({ title: e.title, url: e.url, sub: [e.place, (H.FEEDS[e.src] || {}).org, this.ago(e.t)].filter(Boolean).join(' · '), tag: e.src === 'hans' ? e.mag.replace('Aviation ', '') : e.lvl ? e.lvl + ' alert' : 'active' }));
+    const g = s.ghg, mon = m => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1];
+    let co2Pts = ''; if (g && g.co2 && g.co2.series.length > 1) { const v = g.co2.series.map(p => p[1]), mn = Math.min(...v), mx = Math.max(...v); co2Pts = v.map((y, i) => `${(i / (v.length - 1) * 240).toFixed(1)},${(42 - (y - mn) / (mx - mn || 1) * 38).toFixed(1)}`).join(' '); }
+    const ghg = { co2: g && g.co2 ? g.co2.value.toFixed(1) + ' ppm' : '—', co2Sub: g && g.co2 ? `${mon(g.co2.month)} ${g.co2.year}${g.co2.yoy != null ? ` · +${g.co2.yoy} on a year earlier` : ''}` : 'Loading NOAA GML…', ch4: g && g.ch4 ? fmtN(+g.ch4.value.toFixed(1)) + ' ppb' : '—', ch4Sub: g && g.ch4 ? `${mon(g.ch4.month)} ${g.ch4.year}${g.ch4.yoy != null ? ` · ${g.ch4.yoy >= 0 ? '+' : ''}${g.ch4.yoy} on a year earlier` : ''}` : '', co2Pts };
+    const DOT = { ok: OK, stale: AMB, err: RED, load: 'var(--color-neutral-600)' };
+    const feeds = feedIds.map(id => { const f = H.FEEDS[id], x = st[id] || {}, state = stOf(id); return { dot: DOT[state] || DOT.load, state, name: f.name, org: f.org, home: f.home, lic: f.lic, n: id === 'schumann' ? (s.schOk ? 'image' : '—') : x.n != null ? fmtN(x.n) : '—', when: state === 'load' ? 'loading…' : x.t ? this.ago(x.t) + (x.cached ? ' · cached' : '') : id === 'schumann' && s.schOk ? 'live image' : '—', err: x.err ? (state === 'stale' ? 'Showing cached data: ' : 'Unavailable: ') + x.err : x.warn ? x.warn : id === 'schumann' && s.schOk === false ? 'Station image did not load' : '' }; });
+    const listName = s.dom === 'all' ? 'All live events' : (D[s.dom] || {}).label;
+
+    this._statusLine = `${okN}/${feedIds.length} sources live${errN ? ` · ${errN} down` : ''}${lastT ? ' · ' + this.ago(lastT) : ''}`; this._statusTone = errN ? 'warn' : okN ? 'ok' : 'busy';
+    return {
+      ...base, statusLine: `${okN}/${feedIds.length} live${errN ? ` · ${errN} down` : ''}${lastT ? ' · ' + this.ago(lastT) : ''}`, liveDot: errN ? AMB : okN ? OK : 'var(--color-neutral-600)',
+      kpis, chips, shadeOpts, legend, mapNote: s.mapReady ? 'Natural Earth 1:110m · drag to pan' : 'Loading basemap…',
+      listTitle: listName, listCount: all.length ? `${fmtN(all.length)} items` : '', events, noEvents: !all.length, noEventsText: s.dom === 'all' ? 'Waiting for feeds…' : `No current ${(D[s.dom] || {}).label.toLowerCase()} items in the connected feeds.`, sel, hasSel: !!selE,
+      rows, geo: s.geo.map(x => ({ label: x.name, go: () => this.addPlace(x) })), hasGeo: s.geo.length > 0,
+      saveSnap: () => { const snap = H.snapshot(rows.map(r => ({ id: r.id, name: r.name, lat: r.lat, lon: r.lon, score: r.score, band: r.band, drivers: r.rawDrivers }))); this.setState({ snapMsg: `Saved ${this.fmtT(snap.t)}. The Dossier builder includes it as the hazard screening section.` }); },
+      method: H.METHOD.map(([k, v]) => ({ k, v })),
+      scales, kpBars, kpNote: kp != null ? `now ${kp.toFixed(2)}` : '', swLine, fcLine, 
+      aqRows, aqNote: 'Modelled by Copernicus CAMS at about 40 km resolution, not station measurements. US EPA AQI bands.',
+      tiers, wars, cfNote: 'Country shading: the first-listed country of each conflict is its primary theatre; other listed countries count as spillover unless their own recorded deaths place them higher.',
+      foodRows, foodNote: 'Screening overlay, not an IPC phase classification. Hunger: FAO prevalence of undernourishment, latest year. Drought: active GDACS orange or red alerts. Conflict: primary theatres only.',
+      who, volc, noVolc: !volc.length, ghg, feeds,
+      outlook: s.sites.map(site => ({ name: site.name.split(' · ')[0], coords: `${(+site.lat).toFixed(2)}, ${(+site.lon).toFixed(2)}${s.countryOf[site.id] ? ' · ' + s.countryOf[site.id] : ''}`, rows: this.outlookRows(site, col) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>UI audit runner</title>
+<style>body{font:12px/1.45 ui-monospace,Menlo,monospace;margin:10px;background:#111;color:#ddd}pre{white-space:pre-wrap;margin:0}iframe{position:absolute;left:-9999px;top:0;border:0;height:900px}</style></head>
+<body><h3 id="h">UI audit…</h3><pre id="o"></pre>
+<script>
+// The tester's browser check, run here on every page: render at each width, then click through the page's tabs and views.
+const out = document.getElementById('o'), H = document.getElementById('h'), say = s => { out.textContent += s + '\n'; console.log(s); };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const DANGER = /reset|delete|remove|sign ?out|log ?out|clear|start over|retire|fire\b|publish|send|apply|approve|decline|pay|buy|upgrade|run|turn|ask|generate|propose|reprice|hire|connect|sign in|export|download|print|copy|install|ship|close|cancel|logout|×|✕/i;
+function check(w, d) {
+  const out = [], iw = w.innerWidth, txt = d.body ? d.body.innerText : '';
+  if (txt.length < 60) out.push('blank page');
+  if (d.documentElement.scrollWidth - iw > 2) out.push('scroll: page is ' + (d.documentElement.scrollWidth - iw) + 'px wider than the screen');
+  const clipped = el => { for (let p = el.parentElement; p && p !== d.body; p = p.parentElement) { const o = w.getComputedStyle(p).overflowX; if (o === 'auto' || o === 'scroll' || o === 'hidden') { const r = p.getBoundingClientRect(); if (r.right <= iw + 2) return true; } } return false; };
+  let off = 0, ex = '';
+  d.querySelectorAll('body *').forEach(el => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return; const cs = w.getComputedStyle(el); if (cs.position === 'fixed' || cs.visibility === 'hidden' || cs.display === 'none') return; if (r.right > iw + 2 && !clipped(el)) { off++; if (!ex) ex = el.tagName.toLowerCase() + ' "' + (el.textContent || '').trim().slice(0, 30) + '" +' + Math.round(r.right - iw); } });
+  if (off) out.push('offscreen: ' + off + ' element(s), e.g. ' + ex);
+  ['NaN', 'undefined', '[object', 'null%'].forEach(b => { if (txt.includes(b)) { const i = txt.indexOf(b); out.push('rendering: text contains "' + b + '" near "' + txt.slice(Math.max(0, i - 30), i + 20).replace(/\s+/g, ' ') + '"'); } });
+  let nb = 0; d.querySelectorAll('button,a[href]').forEach(b => { if (!(b.textContent || '').trim() && !b.getAttribute('aria-label') && !b.title) nb++; });
+  if (nb) out.push('a11y: ' + nb + ' button or link with no name');
+  const bad = (w.performance.getEntriesByType('resource') || []).filter(e => e.responseStatus >= 400 && e.name.startsWith(w.location.origin) && !/\/api\/|\/health/.test(e.name)).map(e => e.responseStatus + ' ' + decodeURIComponent(new URL(e.name).pathname));
+  [...new Set(bad)].slice(0, 4).forEach(b => out.push('missing: ' + b));
+  return out;
+}
+function hook(f, errs) {
+  let done = false;
+  const t = setInterval(() => { try { const w = f.contentWindow; if (!w || w.__hooked || w.location.href === 'about:blank') return; w.__hooked = true; w.addEventListener('error', e => errs.push('uncaught ' + (e.message || e.type) + (e.filename ? ' @ ' + decodeURIComponent(e.filename.replace(location.origin, '')) + ':' + e.lineno : ''))); w.addEventListener('unhandledrejection', e => errs.push('unhandled rejection ' + String(e.reason && (e.reason.message || e.reason)).slice(0, 160))); const ce = w.console.error.bind(w.console); w.console.error = (...a) => { errs.push('console ' + a.map(x => x && x.message ? x.message : typeof x === 'object' ? JSON.stringify(x) : String(x)).join(' ').slice(0, 200)); ce(...a); }; } catch (e) {} if (done) clearInterval(t); }, 4);
+  return () => { done = true; };
+}
+function controls(w, d) {
+  const seen = new Set(), list = [];
+  d.querySelectorAll('button, label, [role=tab], [role=radio]').forEach(el => {
+    const t = (el.textContent || '').replace(/\s+/g, ' ').trim(), r = el.getBoundingClientRect();
+    if (!t || t.length > 28 || DANGER.test(t) || !r.width || !r.height || seen.has(t) || el.closest('a[href],form,[role=dialog]')) return;
+    if (el.tagName === 'LABEL' && !el.querySelector('input[type=radio],input[type=checkbox]')) return;
+    seen.add(t); list.push(t);
+  });
+  return list.slice(0, 18);
+}
+function find(d, t) { return [...d.querySelectorAll('button, label, [role=tab], [role=radio]')].find(el => (el.textContent || '').replace(/\s+/g, ' ').trim() === t); }
+(async () => {
+  const q = new URLSearchParams(location.hash.slice(1)), only = q.get('only') || '', widths = (q.get('w') || '390,1440').split(',').map(Number), crawl = q.get('crawl') !== '0';
+  try { const k = 'threshold_livesim_v2', s = JSON.parse(localStorage.getItem(k) || 'null'); if (s) { window.__was = s.paused; s.paused = true; localStorage.setItem(k, JSON.stringify(s)); } } catch (e) {}
+  const man = await (await fetch('manifest.json?' + Date.now())).json();
+  const pages = man.files.filter(f => /\.html$/.test(f) && !f.startsWith('apps/web/dist/') && (!only || f.includes(only)));
+  let fails = 0, steps = 0;
+  for (const rel of pages) {
+    for (const width of widths) {
+      const f = document.createElement('iframe'), errs = []; f.style.width = width + 'px';
+      const unhook = hook(f, errs); f.src = '../' + rel.split('/').map(encodeURIComponent).join('/'); document.body.appendChild(f);
+      await new Promise(r => { f.onload = r; setTimeout(r, 15000); }); await wait(3500); unhook();
+      const w = f.contentWindow, d = w.document; let res = [];
+      try { res = check(w, d); } catch (e) { res = ['harness: ' + e.message]; }
+      res = res.concat([...new Set(errs)].slice(0, 5)); errs.length = 0;
+      if (res.length) { fails++; say('[ui] FAIL ' + rel + ' @' + width + ' · ' + res.join(' | ')); }
+      if (crawl && width === Math.max(...widths)) {
+        for (const t of controls(w, d)) {
+          const el = find(d, t); if (!el) continue; steps++;
+          try { el.click(); } catch (e) { errs.push('click threw ' + e.message); }
+          await wait(900);
+          let r2 = []; try { r2 = check(w, d).filter(x => !/^a11y|^missing/.test(x)); } catch (e) {}
+          r2 = r2.concat([...new Set(errs)].slice(0, 4)); errs.length = 0;
+          if (r2.length) { fails++; say('[ui] FAIL ' + rel + ' @' + width + ' after "' + t + '" · ' + r2.join(' | ')); }
+        }
+      }
+      f.remove();
+    }
+  }
+  try { const k = 'threshold_livesim_v2', s = JSON.parse(localStorage.getItem(k) || 'null'); if (s) { s.paused = !!window.__was; localStorage.setItem(k, JSON.stringify(s)); } } catch (e) {}
+  say('[ui] DONE ' + pages.length + ' pages × ' + widths.length + ' widths, ' + steps + ' clicks, ' + fails + ' failures'); H.textContent = 'done';
+})().catch(e => { say('[ui] ERROR ' + e.message); });
+</script></body></html>

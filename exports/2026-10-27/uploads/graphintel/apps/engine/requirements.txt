@@ -1,0 +1,15 @@
+dspy>=2.6
+pyyaml
+fastapi
+uvicorn
+pytest
+httpx
+ddgs
+mcp>=1.9
+tweepy
+praw
+docker>=7
+redis>=5
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
+openinference-instrumentation-dspy

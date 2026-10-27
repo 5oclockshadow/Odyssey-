@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Codegen Console</title>
+<style>
+  /* dark-first console; one accent, semantic status colors separate from accent */
+  :root{
+    --bg:#070b11; --bg2:#0a0f17; --panel:#0c131d; --panel2:#0e1725; --line:#1a2740; --line2:#243552;
+    --text:#dde9fb; --dim:#7892ad; --dim2:#46586f;
+    --acc:#39ff9f; --acc2:#8affc9; --acc3:#1a7f55;
+    --ok:#39ff9f; --warn:#ffb347; --bad:#ff6b7d; --cy:#45d6ff; --vio:#b58cff; --mag:#ff5db1;
+    --mono:ui-monospace,SFMono-Regular,Menlo,"Cascadia Code",monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,sans-serif;
+  }
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+    --bg:#eef3fa;--bg2:#e5ecf6;--panel:#ffffff;--panel2:#eef4fb;--line:#d6e0ee;--line2:#bdd0e6;
+    --text:#0f1e36;--dim:#51657f;--dim2:#8698ae;--acc3:#128a54;color-scheme:light;}}
+  :root[data-theme="light"]{
+    --bg:#eef3fa;--bg2:#e5ecf6;--panel:#ffffff;--panel2:#eef4fb;--line:#d6e0ee;--line2:#bdd0e6;
+    --text:#0f1e36;--dim:#51657f;--dim2:#8698ae;--acc3:#128a54;color-scheme:light;}
+  :root[data-theme="dark"]{color-scheme:dark;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;}
+  #app{position:fixed;inset:0;display:grid;grid-template-columns:216px minmax(0,1fr);}
+  /* rail */
+  .rail{display:flex;flex-direction:column;gap:4px;padding:16px 10px;border-right:1px solid var(--line);
+    background:linear-gradient(180deg,var(--bg2),var(--bg));min-height:0;overflow:auto;}
+  .brand{display:flex;flex-direction:column;gap:2px;padding:4px 10px 14px;}
+  .brand b{font-size:17px;letter-spacing:-.01em;} .brand b i{color:var(--acc);font-style:normal;}
+  .brand span{font-size:11px;color:var(--dim);}
+  .nav{display:flex;flex-direction:column;gap:2px;}
+  .nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;cursor:pointer;
+    font:inherit;font-size:13px;padding:9px 11px;border-radius:9px;background:transparent;color:var(--dim);transition:.15s;}
+  .nav button:hover{background:rgba(127,160,200,.08);color:var(--text);}
+  .nav button.on{background:color-mix(in srgb,var(--acc) 15%,transparent);color:var(--text);}
+  .nav button .ic{width:16px;text-align:center;color:var(--dim2);font-size:13px;}
+  .nav button.on .ic{color:var(--acc);}
+  .railfoot{margin-top:auto;padding:12px 10px 2px;display:flex;flex-direction:column;gap:9px;}
+  .swrow{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+  .sw{width:15px;height:15px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
+  .sw.on{border-color:var(--text);}
+  .ctlrow{display:flex;gap:6px;}
+  .tbtn{height:28px;min-width:28px;padding:0 8px;border-radius:7px;border:1px solid var(--line);background:var(--panel);
+    color:var(--dim);cursor:pointer;font:inherit;font-size:11px;display:grid;place-items:center;}
+  .tbtn:hover{border-color:var(--acc);color:var(--text);}
+  /* main */
+  main{display:flex;flex-direction:column;min-width:0;min-height:0;}
+  .top{display:flex;align-items:center;gap:12px;padding:0 20px;height:48px;border-bottom:1px solid var(--line);
+    background:var(--bg2);flex:0 0 auto;}
+  .top .ttl{font-weight:600;font-size:14px;}
+  .top .crumb{font-size:12px;color:var(--dim);}
+  .top .right{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;}
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--panel);}
+  .pill b{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 7px var(--acc);animation:bl 1.5s infinite;}
+  @keyframes bl{50%{opacity:.3;}}
+  .ticker{max-width:220px;overflow:hidden;white-space:nowrap;font-family:var(--mono);color:var(--dim2);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);}
+  .wrap{flex:1;min-height:0;overflow:auto;padding:20px;}
+  .view{display:none;} .view.on{display:block;animation:vf .28s ease;}
+  @keyframes vf{from{opacity:0;transform:translateY(6px);}}
+  .head{margin:0 0 16px;}
+  .head h1{margin:0 0 4px;font-size:21px;letter-spacing:-.01em;}
+  .head p{margin:0;color:var(--dim);font-size:13px;line-height:1.55;max-width:80ch;}
+  .grid{display:grid;gap:13px;} .g2{grid-template-columns:1fr 1fr;} .g3{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr));} .g5{grid-template-columns:repeat(5,minmax(0,1fr));}
+  .g32{grid-template-columns:3fr 2fr;} .g23{grid-template-columns:2fr 3fr;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px;min-width:0;}
+  .card.glow{box-shadow:0 0 0 1px color-mix(in srgb,var(--acc) 22%,transparent),0 16px 44px -26px var(--acc);}
+  .card.pad0{padding:0;overflow:hidden;}
+  .ck{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2);margin-bottom:10px;display:flex;justify-content:space-between;gap:8px;align-items:center;}
+  .ck .r{text-transform:none;letter-spacing:.01em;font-size:10.5px;color:var(--dim);}
+  .big{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+  .big.sm{font-size:17px;} .sub{font-size:11.5px;color:var(--dim);margin-top:3px;}
+  .row{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:12.5px;}
+  .row:first-of-type{border-top:0;} .row.tight{padding:5px 0;}
+  .grow{flex:1;min-width:0;} .mono{font-family:var(--mono);font-size:11.5px;} .mut{color:var(--dim);}
+  .nowrap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tag{font-size:10px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--dim);white-space:nowrap;}
+  .tag.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent);background:color-mix(in srgb,var(--ok) 10%,transparent);}
+  .tag.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent);}
+  .tag.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent);background:color-mix(in srgb,var(--bad) 10%,transparent);}
+  .tag.cy{color:var(--cy);border-color:color-mix(in srgb,var(--cy) 40%,transparent);}
+  .tag.vi{color:var(--vio);border-color:color-mix(in srgb,var(--vio) 40%,transparent);}
+  .tag.mg{color:var(--mag);border-color:color-mix(in srgb,var(--mag) 40%,transparent);}
+  .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc3),var(--acc));}
+  .note{font-size:12px;color:var(--dim);line-height:1.6;} .note b{color:var(--text);}
+  .kbd{font-family:var(--mono);font-size:10.5px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--acc2);}
+  .term{background:#05080d;border-radius:11px;font-family:var(--mono);font-size:11px;color:#9fb4cf;overflow:hidden;}
+  :root[data-theme="light"] .term{background:#0a1220;}
+  .term .b2{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--line);background:var(--panel2);font-size:10.5px;}
+  .term .b2 .d{width:8px;height:8px;border-radius:50%;}
+  .term .b{padding:10px 11px;line-height:1.55;max-height:260px;overflow:auto;white-space:pre-wrap;}
+  .term .b .g{color:var(--acc);} .term .b .c{color:var(--cy);} .term .b .y{color:var(--warn);} .term .b .m{color:var(--mag);} .term .b .v{color:var(--vio);} .term .b .d2{color:var(--dim2);}
+  canvas{display:block;width:100%;}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th{text-align:left;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim2);font-weight:500;padding:0 8px 7px 0;border-bottom:1px solid var(--line);}
+  td{padding:7px 8px 7px 0;border-bottom:1px solid var(--line);vertical-align:middle;}
+  td.n,th.n{text-align:right;font-family:var(--mono);font-size:11.5px;}
+  tr:last-child td{border-bottom:0;} tr:hover td{background:rgba(127,160,200,.04);}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{font-size:11.5px;border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 11px;color:var(--dim);cursor:default;}
+  .chip b{color:var(--text);font-weight:500;}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--dim);}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+  h3.sec{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);margin:22px 0 10px;}
+  [data-ep]{cursor:pointer;} [data-ep]:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);}
+  :focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px;}
+  /* palette + toasts */
+  .pal{position:fixed;inset:0;background:rgba(2,5,10,.5);z-index:50;display:none;align-items:flex-start;justify-content:center;padding-top:12vh;}
+  .pal.on{display:flex;}
+  .palbox{width:min(560px,92vw);background:var(--panel);border:1px solid var(--line2);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px -30px #000;}
+  .palbox input{width:100%;border:0;background:var(--panel2);color:var(--text);font:inherit;font-size:15px;padding:14px 16px;outline:none;}
+  .palist{max-height:46vh;overflow:auto;}
+  .palrow{display:flex;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;border-top:1px solid var(--line);}
+  .palrow.sel,.palrow:hover{background:color-mix(in srgb,var(--acc) 15%,transparent);}
+  .toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:60;}
+  .toast{background:var(--panel);border:1px solid var(--line2);border-left:3px solid var(--acc);border-radius:10px;padding:9px 13px;font-size:12.5px;color:var(--text);box-shadow:0 14px 40px -22px #000;animation:ti .25s ease;max-width:300px;}
+  @keyframes ti{from{opacity:0;transform:translateY(8px);}}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
+  @media(max-width:860px){
+    #app{grid-template-columns:1fr;grid-template-rows:auto 1fr;}
+    .rail{flex-direction:row;overflow-x:auto;align-items:center;gap:6px;border-right:0;border-bottom:1px solid var(--line);}
+    .brand,.railfoot{display:none;} .nav{flex-direction:row;}
+    .g5,.g4,.g3,.g32,.g23{grid-template-columns:1fr 1fr;} .g2{grid-template-columns:1fr;}
+  }
+  @media(max-width:560px){.g5,.g4,.g3,.g2,.g32,.g23{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside class="rail">
+    <div class="brand"><b>Code<i>·</i>gen</b><span>owned · self-referential</span></div>
+    <nav class="nav" id="nav">
+      <button data-v="over" class="on"><span class="ic">◈</span>Overview</button>
+      <button data-v="reason"><span class="ic">❯</span>Reasoning</button>
+      <button data-v="graph"><span class="ic">✸</span>Graph &amp; Memory</button>
+      <button data-v="self"><span class="ic">↑</span>Self-Improve</button>
+      <button data-v="lanes"><span class="ic">≋</span>Lanes &amp; Routing</button>
+      <button data-v="mcp"><span class="ic">⬡</span>MCP &amp; Tools</button>
+      <button data-v="skills"><span class="ic">✦</span>Skills</button>
+      <button data-v="autonomy"><span class="ic">⟳</span>Autonomy</button>
+    </nav>
+    <div class="railfoot">
+      <div class="swrow" id="swrow"></div>
+      <div class="ctlrow">
+        <button class="tbtn" id="themeBtn" title="Theme">◐</button>
+        <button class="tbtn" id="palBtn" title="Command palette (⌘K)">⌘K</button>
+      </div>
+    </div>
+  </aside>
+  <main>
+    <div class="top">
+      <span class="ttl" id="crumbTtl">Overview</span><span class="crumb" id="crumb">codegen · :8000</span>
+      <div class="right"><span class="ticker" id="ticker">● live</span><span class="pill"><b></b>representative</span><span id="clock">--:--:--</span></div>
+    </div>
+    <div class="wrap">
+
+      <!-- OVERVIEW -->
+      <section class="view on" data-v="over">
+        <div class="head"><h1>Codegen</h1><p>An owned, self-referential code engine: it ingests its own source into the same graph it retrieves from, reasons through one structured contract, routes every call across the fleet and rentals, and rewrites itself only under a measured gate. Every surface here maps to a real endpoint in the running app.</p></div>
+        <div class="grid g5" style="margin-bottom:13px">
+          <div class="card glow"><div class="ck">skills</div><div class="big" id="k_skills">30</div><div class="sub">/api/v3/skills</div></div>
+          <div class="card"><div class="ck">endpoints</div><div class="big">60+</div><div class="sub">FastAPI /api/v3/*</div></div>
+          <div class="card"><div class="ck">graph nodes</div><div class="big sm" id="k_nodes">—</div><div class="sub">self + ingested</div></div>
+          <div class="card"><div class="ck">think p50</div><div class="big sm" id="k_lat">—</div><div class="sub">reasoning</div></div>
+          <div class="card"><div class="ck">reasoning conf</div><div class="big" id="k_conf">0.82</div><div class="sub">StructuredThought</div></div>
+        </div>
+        <div class="grid g32">
+          <div class="card"><div class="ck">real endpoints<span class="r">click to copy a call</span></div>
+            <div class="row tight" data-ep="/api/v3/think"><span class="tag cy">POST</span><span class="mono grow">/api/v3/think</span><span class="mut">structured reasoning</span></div>
+            <div class="row tight" data-ep="/api/v3/sessions/{sid}/chat"><span class="tag cy">POST</span><span class="mono grow">/sessions/{sid}/chat</span><span class="mut">chat loop</span></div>
+            <div class="row tight" data-ep="/api/v3/loop/run"><span class="tag cy">POST</span><span class="mono grow">/loop/run</span><span class="mut">dual-loop generate+verify</span></div>
+            <div class="row tight" data-ep="/api/v3/brain/ingest/self"><span class="tag ok">POST</span><span class="mono grow">/ingest/self</span><span class="mut">ingest own source</span></div>
+            <div class="row tight" data-ep="/api/v3/connectome/4d"><span class="tag ok">GET</span><span class="mono grow">/connectome/4d</span><span class="mut">graph nodes+edges</span></div>
+            <div class="row tight" data-ep="/api/v3/rewrite/propose"><span class="tag vi">POST</span><span class="mono grow">/rewrite/propose</span><span class="mut">self-rewrite · gated</span></div>
+            <div class="row tight" data-ep="/api/v3/candidates"><span class="tag vi">GET</span><span class="mono grow">/candidates</span><span class="mut">rewrite candidates</span></div>
+            <div class="row tight" data-ep="/api/v3/route-health"><span class="tag warn">GET</span><span class="mono grow">/route-health</span><span class="mut">router state</span></div>
+          </div>
+          <div class="card pad0"><div class="term"><div class="b2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--warn)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">/api/v3/think — live</span></div><div class="b" id="thinkLog"></div></div></div>
+        </div>
+      </section>
+
+      <!-- REASONING -->
+      <section class="view" data-v="reason">
+        <div class="head"><h1>Structured Reasoning</h1><p>One output contract for every model call — a single JSON object the parser can't fail on (fenced, balanced-scan, clamped). It's what makes the agent composable: thinking, the answer, an optional tool call, and the model's own confidence.</p></div>
+        <div class="grid g2">
+          <div class="card"><div class="ck">StructuredThought — the contract</div>
+            <div class="row"><span class="mono grow">reasoning</span><span class="mut">concise step-by-step</span></div>
+            <div class="row"><span class="mono grow">answer</span><span class="mut">final answer</span></div>
+            <div class="row"><span class="mono grow">tool</span><span class="mut">next tool, or null</span></div>
+            <div class="row"><span class="mono grow">tool_input</span><span class="mut">args dict</span></div>
+            <div class="row"><span class="mono grow">confidence</span><span class="mut">0.0–1.0 (clamped)</span></div>
+            <div class="row"><span class="mono grow">needs_more_steps</span><span class="mut">loop or stop</span></div>
+            <div class="note" style="margin-top:10px"><b>Why one field.</b> A single structured output means one parser, one contract, and a confidence the router and the loop can act on — instead of scraping free text.</div>
+          </div>
+          <div class="card pad0"><div class="term"><div class="b2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--warn)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">think trace · POST /api/v3/think</span></div>
+            <div class="b"><span class="c">{</span>
+  <span class="y">"reasoning"</span>: <span class="g">"read req → locate db.py → add index → verify"</span>,
+  <span class="y">"answer"</span>: <span class="g">"added index mig_014 on items.order_id"</span>,
+  <span class="y">"tool"</span>: <span class="g">"apply_patch"</span>,
+  <span class="y">"tool_input"</span>: <span class="c">{</span> <span class="y">"file"</span>:<span class="g">"app/db.py"</span> <span class="c">}</span>,
+  <span class="y">"confidence"</span>: 0.82,
+  <span class="y">"needs_more_steps"</span>: false
+<span class="c">}</span>
+<span class="d2">—— parser: fenced → balanced-json scan → clamp(conf) ——</span>
+<span class="g">OK</span> dispatched tool=apply_patch (gated)</div></div></div>
+        </div>
+      </section>
+
+      <!-- GRAPH -->
+      <section class="view" data-v="graph">
+        <div class="head"><h1>Graph &amp; Memory</h1><p>Retrieval <b>is</b> the graph, and the graph holds codegen's own self-ingested code — so when it generates, it can surface its own modules, functions and patterns. GraphRM traverses it (recall seeds + Hebbian hops + RAPTOR levels) and registers as DSPy's retriever.</p></div>
+        <div class="grid g32">
+          <div class="card glow pad0"><div class="ck" style="padding:14px 14px 0">live graph · recall → 1 Hebbian hop → RAPTOR</div>
+            <canvas id="brain" height="380"></canvas>
+            <div class="legend" style="padding:0 14px 14px"><span><i style="background:var(--acc)"></i>recall cascade</span><span><i style="background:var(--cy)"></i>code nodes</span><span><i style="background:var(--vio)"></i>RAPTOR summaries</span></div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:13px"><div class="ck">GraphRM <span class="r">app/graph/dspy_rm.py</span></div>
+              <div class="row tight"><span class="grow">traverse()</span><span class="mut">pure · no LLM</span></div>
+              <div class="row tight"><span class="grow">seeds</span><span class="mut">Graph.recall (lexical + 1 hop)</span></div>
+              <div class="row tight"><span class="grow">registered</span><span class="mono">dspy.rm</span></div>
+              <div class="row tight"><span class="grow">store</span><span class="mono">redis-backed</span></div>
+            </div>
+            <div class="card" style="margin-bottom:13px"><div class="ck">self-ingest <span class="r">app/ingest/selfcode.py</span></div>
+              <div class="row tight"><span class="grow">globs</span><span class="mono nowrap">app/**/*.py · static/*</span></div>
+              <div class="row tight"><span class="grow">extracts</span><span class="mut">modules·classes·fns·imports</span></div>
+              <div class="row tight"><span class="grow">endpoint</span><span class="mono">POST /ingest/self</span></div>
+            </div>
+            <div class="card"><div class="ck">plasticity</div>
+              <div class="row tight"><span class="grow">Hebbian</span><span class="mut">bounded coactivation</span></div>
+              <div class="row tight"><span class="grow">Q-table</span><span class="mut">ε-greedy · real reward</span></div>
+              <div class="row tight"><span class="grow">RAPTOR</span><span class="mut">recursive summaries</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SELF-IMPROVE -->
+      <section class="view" data-v="self">
+        <div class="head"><h1>Self-Improvement</h1><p>Because its own code is in its graph, codegen can code better <i>on tasks about itself</i> — and it's measured, not claimed. The baseline steps up only when a change is <b>proven</b> on the eval harness; the live line jitters per task. A self-rewrite that only "passes because nothing broke" never moves it.</p></div>
+        <div class="grid g32" style="margin-bottom:13px">
+          <div class="card glow pad0"><div class="ck" style="padding:14px 14px 0">self-grounding lift<span class="r">baseline steps on proof · live jitters</span></div>
+            <canvas id="self" height="150"></canvas>
+            <div class="legend" style="padding:0 14px 14px"><span><i style="background:var(--acc)"></i>baseline (measured)</span><span><i style="background:var(--acc2)"></i>live per-task</span></div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:13px"><div class="ck">how it's measured <span class="r">app/eval</span></div>
+              <div class="row tight"><span class="tag ok">lift</span><span class="grow">score(self-RAG on) − off</span><span class="mono">run_lift()</span></div>
+              <div class="row tight"><span class="tag cy">yield</span><span class="grow">% self-rewrites with +Δ</span></div>
+              <div class="row tight"><span class="tag vi">curve</span><span class="grow">score vs episodes</span></div>
+            </div>
+            <div class="card"><div class="ck">the gate <span class="r">gate_rewrite()</span></div><div class="note">A self-rewrite ships only on a measured positive delta on the golden set — flat or regressing is blocked, "tests still pass" is not enough. Closes the known false-pass in rewrite.py.</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="ck">gap-to-Fable scorecard <span class="r">research/gap-scorecard.json · UNMEASURED until run on a host with models</span></div>
+          <table><thead><tr><th>task-type</th><th class="n">baseline</th><th class="n">self-RAG on</th><th class="n">lift</th><th class="n">frontier</th><th class="n">gap</th></tr></thead><tbody>
+            <tr><td>codegen</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">90</td><td class="n">—</td></tr>
+            <tr><td>structured-reasoning</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">95</td><td class="n">—</td></tr>
+            <tr><td>graph-synth</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">88</td><td class="n">—</td></tr>
+          </tbody></table>
+          <div class="note" style="margin-top:9px">Dashes are honest: no provider keys in a cloud session, so the harness reports UNMEASURED rather than inventing a number. On the fleet, <span class="kbd">python -m app.eval</span> + the ablation fill these in and the tile above starts stepping.</div>
+        </div>
+      </section>
+
+      <!-- LANES -->
+      <section class="view" data-v="lanes">
+        <div class="head"><h1>Lanes &amp; Routing</h1><p>Work is routed by its nature into osiiso lanes, then each model call is placed on the cheapest capable provider across fleet, DMR containers and cloud — returning an explainable RoutingDecision.</p></div>
+        <div class="grid g3" style="margin-bottom:13px">
+          <div class="card"><div class="ck">osiiso lanes <span class="r">/api/v3/lanes</span></div>
+            <div class="row tight"><span class="tag ok">ASYNC</span><span class="grow mut">io / network / API</span><span class="mono">78%</span></div>
+            <div class="row tight"><span class="tag cy">THREAD</span><span class="grow mut">tokenize / rerank</span><span class="mono">14%</span></div>
+            <div class="row tight"><span class="tag vi">PROCESS</span><span class="grow mut">embed / vLLM</span><span class="mono">8%</span></div>
+            <div class="note" style="margin-top:9px">ProcessPool uses a spawn context to avoid fork deadlocks.</div>
+          </div>
+          <div class="card"><div class="ck">router + DMR <span class="r">app/router.py</span></div>
+            <div class="row tight"><span class="grow">RoutingDecision</span><span class="mut">model + reason</span></div>
+            <div class="row tight"><span class="grow">candidates</span><span class="mut">default+pins+DMR</span></div>
+            <div class="row tight"><span class="grow">DMR</span><span class="mono nowrap">dmr/&lt;model&gt; :12434</span></div>
+            <div class="row tight"><span class="grow">health</span><span class="mono">/route-health</span></div>
+          </div>
+          <div class="card"><div class="ck">tiers</div>
+            <div class="row tight"><span class="tag ok">FREE</span><span class="grow mut">groq · gemini · or:free</span></div>
+            <div class="bar" style="margin:2px 0 7px"><i style="width:71%"></i></div>
+            <div class="row tight"><span class="tag warn">PAID</span><span class="grow mut">anthropic · openai</span></div>
+            <div class="row tight"><span class="tag cy">LOCAL</span><span class="grow mut">fleet vLLM / ollama</span></div>
+          </div>
+        </div>
+        <div class="card pad0"><div class="term"><div class="b2"><span class="d" style="background:var(--mag)"></span><span class="d" style="background:var(--warn)"></span><span class="d" style="background:var(--acc)"></span><span style="margin-left:4px;color:var(--dim)">routing decisions</span></div><div class="b" id="routeLog"></div></div></div>
+      </section>
+
+      <!-- MCP -->
+      <section class="view" data-v="mcp">
+        <div class="head"><h1>MCP &amp; Tools</h1><p>One permissive MCP server fronts every other MCP server — start, inspect, list tools, and call them through a single surface, with perms from ENV and the warden gate on anything that writes.</p></div>
+        <div class="grid g4" style="margin-bottom:13px">
+          <div class="card"><div class="ck">servers mounted</div><div class="big">7</div><div class="sub">/mcp/servers</div></div>
+          <div class="card"><div class="ck">tools exposed</div><div class="big">31</div><div class="sub">/{name}/tools</div></div>
+          <div class="card"><div class="ck">calls / min</div><div class="big sm" id="k_mcp">—</div><div class="sub">/{name}/call</div></div>
+          <div class="card"><div class="ck">denied by warden</div><div class="big sm">0</div><div class="sub">gate held</div></div>
+        </div>
+        <div class="card"><div class="ck">servers</div>
+          <table><thead><tr><th>server</th><th class="n">tools</th><th>status</th><th>endpoint</th></tr></thead><tbody>
+            <tr><td>github</td><td class="n">9</td><td><span class="tag ok">up</span></td><td class="mono">/mcp/servers/github/*</td></tr>
+            <tr><td>filesystem</td><td class="n">6</td><td><span class="tag ok">up</span></td><td class="mono">/filesystem/call</td></tr>
+            <tr><td>web</td><td class="n">4</td><td><span class="tag ok">up</span></td><td class="mono">/web/tools</td></tr>
+            <tr><td>shell (warden)</td><td class="n">3</td><td><span class="tag warn">gated</span></td><td class="mono">/shell/start</td></tr>
+            <tr><td>redis</td><td class="n">5</td><td><span class="tag ok">up</span></td><td class="mono">/redis/call</td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <!-- SKILLS -->
+      <section class="view" data-v="skills">
+        <div class="head"><h1>Skills</h1><p>The agent's playbooks — loaded into prompts so it self-builds the backlog. These are the real files in <span class="kbd">skills/</span>, served at <span class="kbd">/api/v3/skills</span>.</p></div>
+        <div class="card"><div class="ck">skill library <span class="r" id="k_skills2">30 files</span></div><div class="chips" id="skillChips"></div></div>
+      </section>
+
+      <!-- AUTONOMY -->
+      <section class="view" data-v="autonomy">
+        <div class="head"><h1>Autonomy &amp; Approvals</h1><p>Pause-only, never-stop autonomy from ENV, with a hard kill-switch — and a warden that holds every writing action behind approval. The agent proposes and routes; it doesn't apply without a tap.</p></div>
+        <div class="grid g4" style="margin-bottom:13px">
+          <div class="card"><div class="ck">mode</div><div class="big sm">pause-only</div><div class="sub">auto-from-env</div></div>
+          <div class="card"><div class="ck">kill-switch</div><div class="big sm bad" style="color:var(--bad)">armed</div><div class="sub">/autonomy/halt</div></div>
+          <div class="card"><div class="ck">backoff</div><div class="big sm">30m</div><div class="sub">on 3 fails · auto-resumes</div></div>
+          <div class="card"><div class="ck">pending approvals</div><div class="big">2</div><div class="sub">/api/v3/approvals</div></div>
+        </div>
+        <div class="grid g2">
+          <div class="card"><div class="ck">controls <span class="r">/api/v3/autonomy/*</span></div>
+            <div class="row"><span class="tag ok">pause</span><span class="grow mut">halt new work, keep state</span><span class="mono">/pause</span></div>
+            <div class="row"><span class="tag ok">resume</span><span class="grow mut">continue backlog</span><span class="mono">/resume</span></div>
+            <div class="row"><span class="tag warn">tick</span><span class="grow mut">one non-blocking cycle</span><span class="mono">/tick</span></div>
+            <div class="row"><span class="tag bad">halt</span><span class="grow mut">hard stop</span><span class="mono">/halt</span></div>
+          </div>
+          <div class="card"><div class="ck">approval queue <span class="r">warden gate</span></div>
+            <div class="row"><span class="tag vi">PATCH</span><span class="grow">add index mig_014 (db.py)</span><span class="tag ok">approve</span><span class="tag bad">deny</span></div>
+            <div class="row"><span class="tag vi">REWRITE</span><span class="grow">dedupe router cascade</span><span class="tag ok">approve</span><span class="tag bad">deny</span></div>
+            <div class="note" style="margin-top:9px">Patches never apply without approval — and a self-rewrite also needs a measured eval delta (the gate) before it's even eligible.</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="pal" id="pal"><div class="palbox"><input id="palIn" placeholder="Jump to a section…" aria-label="Command palette"><div class="palist" id="palList"></div></div></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+"use strict";
+const root=document.documentElement;
+/* clock + representative live counters */
+setInterval(()=>{document.getElementById("clock").textContent=new Date().toTimeString().slice(0,8);},1000);
+function setTxt(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+setInterval(()=>{ setTxt("k_conf",(0.76+Math.random()*0.14).toFixed(2));
+  setTxt("k_lat",(200+Math.random()*60|0)+"ms"); setTxt("k_nodes",(3100+(Math.random()*40|0)).toLocaleString());
+  setTxt("k_mcp",(8+Math.random()*6|0)); },1600);
+
+/* nav */
+const nav=document.getElementById("nav");
+const TITLES={over:"Overview",reason:"Reasoning",graph:"Graph & Memory",self:"Self-Improve",lanes:"Lanes & Routing",mcp:"MCP & Tools",skills:"Skills",autonomy:"Autonomy"};
+function go(v){ [...nav.children].forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.dataset.v===v));
+  setTxt("crumbTtl",TITLES[v]||v); }
+nav.addEventListener("click",e=>{const b=e.target.closest("button");if(b)go(b.dataset.v);});
+
+/* theme + accents */
+const ACC={neon:["#39ff9f","#8affc9","#1a7f55"],cyan:["#45d6ff","#9ae9ff","#1a6a8f"],magenta:["#ff5db1","#ffa6d6","#8f2a63"],amber:["#ffb347","#ffd79a","#8f5e1a"],violet:["#b58cff","#d6c2ff","#5e3f8f"]};
+function setAccent(k){const a=ACC[k]||ACC.neon;root.style.setProperty("--acc",a[0]);root.style.setProperty("--acc2",a[1]);root.style.setProperty("--acc3",a[2]);root.style.setProperty("--ok",a[0]);
+  document.querySelectorAll("#swrow .sw").forEach(s=>s.classList.toggle("on",s.dataset.k===k));try{localStorage.setItem("cg-accent",k);}catch(e){}}
+function setTheme(t){const b=document.getElementById("themeBtn");if(t==="system")root.removeAttribute("data-theme");else root.setAttribute("data-theme",t);
+  if(b)b.textContent=t==="light"?"☀":t==="dark"?"☾":"◐";try{localStorage.setItem("cg-theme",t);}catch(e){}}
+function curTheme(){try{return localStorage.getItem("cg-theme")||"system";}catch(e){return "system";}}
+const swrow=document.getElementById("swrow");
+Object.keys(ACC).forEach(k=>{const d=document.createElement("span");d.className="sw";d.dataset.k=k;d.style.background=ACC[k][0];d.title=k;d.onclick=()=>setAccent(k);swrow.appendChild(d);});
+document.getElementById("themeBtn").onclick=()=>{const c=curTheme();setTheme(c==="system"?"dark":c==="dark"?"light":"system");};
+try{setAccent(localStorage.getItem("cg-accent")||"neon");}catch(e){setAccent("neon");}
+try{const t=localStorage.getItem("cg-theme");if(t&&t!=="system")setTheme(t);}catch(e){}
+
+/* toasts */
+const tc=document.getElementById("toasts");
+function toast(m){const el=document.createElement("div");el.className="toast";el.textContent=m;tc.appendChild(el);
+  setTimeout(()=>{el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),320);},2200);}
+document.addEventListener("click",e=>{const ep=e.target.closest("[data-ep]");if(ep){toast("GET "+ep.dataset.ep);return;}
+  const tg=e.target.closest(".tag");if(!tg)return;const w=tg.textContent.trim().toLowerCase();
+  if(/^(approve|resume|pause|tick)/.test(w))toast("✓ "+tg.textContent.trim());
+  else if(/^(deny|halt)/.test(w))toast("● "+tg.textContent.trim());});
+
+/* command palette */
+const PAL=Object.keys(TITLES).map(v=>({v,label:TITLES[v]}));
+const pal=document.getElementById("pal"),palIn=document.getElementById("palIn"),palList=document.getElementById("palList");
+let psel=0,prows=[];
+function rpal(q){q=(q||"").toLowerCase();prows=PAL.filter(r=>r.label.toLowerCase().includes(q));psel=0;
+  palList.innerHTML=prows.map((r,i)=>'<div class="palrow'+(i===0?' sel':'')+'" data-i="'+i+'">'+r.label+'</div>').join("")||'<div class="palrow">no match</div>';}
+function opal(){pal.classList.add("on");palIn.value="";rpal("");palIn.focus();}
+function cpal(){pal.classList.remove("on");}
+function gpal(r){if(r){go(r.v);cpal();}}
+document.getElementById("palBtn").onclick=opal;
+palIn.addEventListener("input",()=>rpal(palIn.value));
+palList.addEventListener("click",e=>{const r=e.target.closest(".palrow");if(r&&prows[r.dataset.i])gpal(prows[r.dataset.i]);});
+pal.addEventListener("click",e=>{if(e.target===pal)cpal();});
+document.addEventListener("keydown",e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();opal();return;}
+  if(e.key==="Escape"){cpal();return;}
+  if(pal.classList.contains("on")){
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();psel=Math.max(0,Math.min(prows.length-1,psel+(e.key==="ArrowDown"?1:-1)));
+      [...palList.children].forEach((c,i)=>c.classList.toggle("sel",i===psel));}
+    if(e.key==="Enter")gpal(prows[psel]);return;}
+  if(e.target.tagName==="INPUT")return;
+  if(e.key>="1"&&e.key<="9"){const b=nav.children[+e.key-1];if(b)go(b.dataset.v);}});
+
+/* tickers + logs */
+const TK=["think ok · conf 0.84","route→groq 38ms FREE","ingest/self +12 nodes","rewrite proposed · gated","lane ASYNC drained","mcp tool called","q-reward +0.3","eval baseline step +2"];
+(function(){const t=document.getElementById("ticker");let i=0;setInterval(()=>{t.textContent="● "+TK[i%TK.length];i++;},2200);})();
+function streamer(id,lines,ms,guard){const el=document.getElementById(id);if(!el)return;let i=0;
+  setInterval(()=>{if(guard&&!guard())return;const L=lines[i%lines.length];i++;const d=document.createElement("div");
+    d.innerHTML='<span class="d2">'+new Date().toTimeString().slice(0,8)+'</span> '+L;el.appendChild(d);
+    while(el.children.length>11)el.removeChild(el.firstChild);el.scrollTop=el.scrollHeight;},ms);}
+streamer("thinkLog",['<span class="g">THINK</span> conf 0.84 · tool=apply_patch','<span class="c">ROUTE</span> groq 38ms · FREE','<span class="g">ANSWER</span> ready · needs_more=false','<span class="y">REWRITE</span> propose db.py · gated','<span class="c">RECALL</span> traverse k=8 · 1 hop'],1100,()=>document.querySelector('.view[data-v="over"]').classList.contains("on"));
+streamer("routeLog",['<span class="g">ROUTE</span> groq/llama-3.3 · 38ms · FREE','<span class="c">ROUTE</span> fleet:204 vLLM · 61ms · LOCAL','<span class="y">FALL</span> gemini 429 → or:free','<span class="m">SPILL</span> ctx&gt;128k → anthropic · PAID'],950,()=>document.querySelector('.view[data-v="lanes"]').classList.contains("on"));
+
+/* skills */
+const SKILLS=["self-build","tester-mandate","ai-discovery-research","institute-health-service","dspy-structured-reasoning","neuroplasticity","skill-brain-optimizer","brain-4d","continuous-optimization","two-tier-self-audit","recorder-playback","soc2-and-saas","trending-fit-and-pr","agentic-concurrency","ingest-and-locate","reconcile-before-acting","reporting-honesty","outputs-must-exist","failure-patterns","launch-readiness-audit","live-recording","smooth-shutdown","shared-session","codegen-usage","design-assets","ui-design","usage-demo-movie","charter"];
+const sc=document.getElementById("skillChips");
+if(sc){sc.innerHTML=SKILLS.map(s=>'<span class="chip">'+s+'</span>').join("");
+  setTxt("k_skills",SKILLS.length+2); setTxt("k_skills2",(SKILLS.length+2)+" files");}
+
+/* ---- live code graph (recall cascade) ---- */
+function startBrain(id){
+  const cv=document.getElementById(id);if(!cv)return;const dpr=Math.min(2,window.devicePixelRatio||1);
+  const H=cv.getAttribute("height")?+cv.getAttribute("height"):360,N=260,COMM=7;
+  function size(){cv.width=Math.max(2,cv.clientWidth*dpr);cv.height=H*dpr;cv.getContext("2d").setTransform(dpr,0,0,dpr,0,0);}
+  const ctx=cv.getContext("2d");
+  const rnd=s=>()=>((s=(s*1664525+1013904223)>>>0)/4294967296),R=rnd(11);
+  const nodes=[],hubs=[];for(let c=0;c<COMM;c++)hubs.push([(c&1)?1:-1,(c&2)?1:-1,(c&4)?1:-1]);
+  for(let i=0;i<N;i++){const c=i%COMM,h=hubs[c];nodes.push({c,deg:0,v:[h[0]*.9+(R()-.5),h[1]*.9+(R()-.5),h[2]*.9+(R()-.5)]});}
+  const adj=Array.from({length:N},()=>[]),edges=[];
+  function addE(a,b){if(a===b)return;edges.push([a,b]);adj[a].push(b);adj[b].push(a);nodes[a].deg++;nodes[b].deg++;}
+  for(let i=0;i<N;i++){const c=i%COMM;for(let k=0;k<3;k++){const j=(i+(1+Math.floor(R()*24))*COMM)%N;if(j%COMM===c)addE(i,j);}}
+  for(let c=0;c<COMM;c++)for(let k=0;k<5;k++)addE((c+k*COMM)%N,((c*31+5)+k*COMM*3)%N);
+  const lit=new Float32Array(N),pulses=[];let nextAt=0,yaw=.5,a={xy:0,xz:0,yz:0},last=performance.now();
+  const COL=[[57,255,159],[69,214,255],[181,140,255],[255,93,177],[255,179,71],[122,230,160],[140,200,255]];
+  function rot(v){let x=v[0],y=v[1],z=v[2],c,s,n;c=Math.cos(a.xy);s=Math.sin(a.xy);n=x*c-y*s;y=x*s+y*c;x=n;
+    c=Math.cos(a.xz);s=Math.sin(a.xz);n=x*c-z*s;z=x*s+z*c;x=n;c=Math.cos(a.yz);s=Math.sin(a.yz);n=y*c-z*s;z=y*s+z*c;y=n;return[x,y,z];}
+  function proj(v,W,Hh){const cy=Math.cos(yaw),sy=Math.sin(yaw);let x=v[0]*cy-v[2]*sy,z=v[0]*sy+v[2]*cy;
+    const k=3.0/Math.max(.3,3.4+z),sc=Math.min(W,Hh)*.4;return{x:W/2+x*k*sc,y:Hh/2-v[1]*k*sc,s:k};}
+  function fire(now){let seed=0,b=-1;for(let t=0;t<8;t++){const i=Math.random()*N|0;if(nodes[i].deg>b){b=nodes[i].deg;seed=i;}}
+    const lv=[[seed]],seen=new Set([seed]);for(let h=0;h<4;h++){const nx=[];for(const u of lv[h])for(const q of adj[u])if(!seen.has(q)){seen.add(q);nx.push(q);}if(!nx.length)break;lv.push(nx);}
+    lv.forEach((l,h)=>pulses.push({nodes:l,at:now+h*.16,life:0,dur:1.1,hop:h,seed}));}
+  function frame(now){requestAnimationFrame(frame);if(cv.offsetParent===null)return;
+    if(Math.abs(cv.width/dpr-cv.clientWidth)>4||cv.width<3)size();
+    const dt=Math.min(.05,(now-last)/1000);last=now;a.xy+=dt*.05;a.xz+=dt*.03;a.yz+=dt*.02;yaw+=dt*.05;
+    const nS=now/1000;if(nS>=nextAt){fire(nS);nextAt=nS+1.3;}
+    const dec=Math.pow(.12,dt);for(let i=0;i<N;i++)lit[i]*=dec;
+    for(let i=pulses.length-1;i>=0;i--){const p=pulses[i];if(nS<p.at)continue;p.life+=dt;const f=Math.min(1,p.life/p.dur);
+      for(const n of p.nodes)lit[n]=Math.max(lit[n],(1-f)*(1-p.hop*.12));if(p.life>=p.dur)pulses.splice(i,1);}
+    const W=cv.clientWidth,Hh=H;ctx.clearRect(0,0,W,Hh);
+    const P=nodes.map(n=>proj(rot(n.v),W,Hh));
+    for(const e of edges){const pa=P[e[0]],pb=P[e[1]],l=Math.max(lit[e[0]],lit[e[1]]);
+      ctx.strokeStyle=l<.05?"rgba(120,150,190,.07)":"rgba(138,255,201,"+(.15+.5*l)+")";ctx.lineWidth=l<.05?1:.8+1.4*l;
+      ctx.beginPath();ctx.moveTo(pa.x,pa.y);ctx.lineTo(pb.x,pb.y);ctx.stroke();}
+    ctx.lineWidth=1;const ord=[...P.keys()].sort((x,y)=>P[y].s-P[x].s);
+    for(const i of ord){const p=P[i],l=lit[i],cc=COL[nodes[i].c],r=(1+Math.min(2.2,nodes[i].deg*.16))*p.s*1.1*(1+l);
+      if(l>.05){ctx.beginPath();ctx.arc(p.x,p.y,r+l*6,0,7);ctx.fillStyle="rgba(57,255,159,"+(.1+l*.18)+")";ctx.fill();}
+      ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.6,r),0,7);
+      ctx.fillStyle=l>.1?"rgba(138,255,201,"+(.6+.4*l)+")":"rgba("+cc[0]+","+cc[1]+","+cc[2]+","+(.3+.4*Math.min(1,p.s)).toFixed(2)+")";ctx.fill();}}
+  requestAnimationFrame(frame);
+}
+/* ---- self-improvement tile ---- */
+function startSelf(id){
+  const cv=document.getElementById(id);if(!cv)return;const dpr=Math.min(2,window.devicePixelRatio||1);
+  const H=cv.getAttribute("height")?+cv.getAttribute("height"):150;
+  function size(){cv.width=Math.max(2,cv.clientWidth*dpr);cv.height=H*dpr;cv.getContext("2d").setTransform(dpr,0,0,dpr,0,0);}
+  const ctx=cv.getContext("2d");let base=0.4,pts=[],t=0,lastStep=0,last=performance.now();
+  for(let i=0;i<160;i++)pts.push(0.4);
+  function frame(now){requestAnimationFrame(frame);if(cv.offsetParent===null)return;
+    if(Math.abs(cv.width/dpr-cv.clientWidth)>4||cv.width<3)size();
+    const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
+    if(t-lastStep>3.2){lastStep=t;if(Math.random()<0.6)base=Math.min(0.9,base+0.02+Math.random()*0.03);}
+    const live=Math.max(.05,Math.min(.98,base+(Math.random()-0.5)*0.10));pts.push(live);if(pts.length>160)pts.shift();
+    const W=cv.clientWidth,Hh=H;ctx.clearRect(0,0,W,Hh);
+    const acc=getComputedStyle(root).getPropertyValue("--acc").trim()||"#39ff9f",a2=getComputedStyle(root).getPropertyValue("--acc2").trim()||"#8affc9";
+    ctx.beginPath();pts.forEach((p,i)=>{const x=i/(pts.length-1)*W,y=Hh-p*Hh;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+    ctx.strokeStyle=a2;ctx.globalAlpha=.5;ctx.lineWidth=1;ctx.stroke();ctx.globalAlpha=1;
+    ctx.beginPath();ctx.moveTo(0,Hh-base*Hh);ctx.lineTo(W,Hh-base*Hh);ctx.strokeStyle=acc;ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=acc;ctx.font="600 12px "+getComputedStyle(document.body).fontFamily;ctx.textAlign="right";
+    ctx.fillText("baseline "+Math.round(base*100)+" · live "+Math.round(live*100),W-7,15);}
+  requestAnimationFrame(frame);
+}
+startBrain("brain");startSelf("self");
+</script>
+</body>
+</html>

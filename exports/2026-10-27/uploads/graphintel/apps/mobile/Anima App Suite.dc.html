@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; background: #e9e2d2; color: #14121f; font-family: 'Bricolage Grotesque', sans-serif; text-wrap: pretty; }
+    a { color: #2f3cff; text-underline-offset: 3px; } a:hover { color: #ff4b2b; }
+  </style>
+</helmet>
+<div data-screen-label="App suite" style="padding:56px 56px 120px;display:grid;gap:64px;min-width:1600px;">
+
+  <header style="display:grid;gap:14px;max-width:1100px;">
+    <div style="display:flex;gap:10px;align-items:center;font:600 12px 'IBM Plex Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;"><span style="background:#14121f;color:#d7ff3d;padding:5px 10px;border-radius:999px;">Anima Institute</span><span>Phone suite · 19 screens · 4 apps</span></div>
+    <h1 style="margin:0;font:800 96px/0.88 'Bricolage Grotesque',sans-serif;letter-spacing:-0.045em;">Everything on the web,<br><span style="color:#ff4b2b;">in your pocket.</span></h1>
+    <p style="margin:0;font-size:21px;line-height:1.4;max-width:860px;">One sign-in, four apps: the owner runs the institute, researchers search, read and talk to it, API customers meter it, subscribers follow it. The parity table at the bottom maps every web surface to the screen that carries it. Numbers are sample data until the engine is connected.</p>
+  </header>
+
+  <section data-screen-label="00 Sign in" style="display:grid;gap:22px;">
+    <div style="display:flex;gap:14px;align-items:baseline;"><span style="font:800 44px 'Bricolage Grotesque';letter-spacing:-0.03em;">00 · Door</span><span style="font:500 14px 'IBM Plex Mono';">one account, role decides the app</span></div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;">
+      <div id="X0" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">X0</span> Sign in and pick a role</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#14121f;color:#f4efe4;box-shadow:8px 8px 0 #ff4b2b;display:grid;grid-template-rows:auto minmax(0,1fr);">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 0;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>5G ▮▮▮</span></div>
+          <div style="padding:28px 22px;display:grid;gap:18px;align-content:start;">
+            <div style="font:800 76px/0.82 'Bricolage Grotesque';letter-spacing:-0.06em;color:#d7ff3d;">ANI<br>MA</div>
+            <span style="font-size:17px;line-height:1.35;">The graph carries the cognition. The model is the substrate.</span>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <sc-for list="{{ roles }}" as="r" hint-placeholder-count="4">
+                <div style="border:2px solid #f4efe4;border-radius:16px;padding:12px;display:grid;gap:4px;min-height:84px;background:{{ r.bg }};color:{{ r.fg }};"><span style="font:800 19px 'Bricolage Grotesque';">{{ r.name }}</span><span style="font:500 10.5px/1.35 'IBM Plex Mono';">{{ r.text }}</span></div>
+              </sc-for>
+            </div>
+            <div style="border:2px solid #f4efe4;border-radius:999px;padding:13px 16px;font:500 13px 'IBM Plex Mono';opacity:0.8;">you@company.com</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><span style="background:#ff4b2b;color:#14121f;border-radius:999px;padding:13px;text-align:center;font:800 15px 'Bricolage Grotesque';">Passkey</span><span style="border:2px solid #f4efe4;border-radius:999px;padding:11px;text-align:center;font:600 15px 'Bricolage Grotesque';">Email link</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="01 Owner" style="display:grid;gap:22px;">
+    <div style="display:flex;gap:14px;align-items:baseline;"><span style="font:800 44px 'Bricolage Grotesque';letter-spacing:-0.03em;background:#ff4b2b;padding:0 12px;border-radius:10px;">01 · Owner</span><span style="font:500 14px 'IBM Plex Mono';">oversee the overseers · 1,000 fires down to a ranked few</span></div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;">
+
+      <div id="O1" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">O1</span> Today</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#f4efe4;box-shadow:8px 8px 0 #14121f;display:grid;grid-template-rows:auto minmax(0,1fr) auto;position:relative;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Owner</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <span style="font:600 10.5px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;">Thu 16 Oct · 214 items held back</span>
+            <h2 style="margin:0;font:800 40px/0.9 'Bricolage Grotesque';letter-spacing:-0.04em;">5 fires.<br>About 10 min.</h2>
+            <sc-for list="{{ fires }}" as="f" hint-placeholder-count="4">
+              <div style="background:#fff;border:2px solid #14121f;border-radius:16px;padding:10px 12px;box-shadow:3px 3px 0 #14121f;display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:center;">
+                <span style="font:800 24px 'Bricolage Grotesque';color:#ff4b2b;">{{ f.score }}</span>
+                <div style="display:grid;gap:5px;"><span style="font:600 14.5px/1.2 'Bricolage Grotesque';">{{ f.title }}</span><span style="font:400 10.5px 'IBM Plex Mono';color:#5d5768;">{{ f.who }} · {{ f.detail }}</span>
+                  <div style="display:flex;gap:6px;"><span style="background:#14121f;color:#f4efe4;border-radius:999px;padding:4px 10px;font:600 11px 'IBM Plex Mono';">{{ f.a }}</span><span style="border:1.5px solid #14121f;border-radius:999px;padding:3px 10px;font:600 11px 'IBM Plex Mono';">{{ f.b }}</span></div></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="position:absolute;left:14px;right:14px;bottom:76px;background:#d7ff3d;border:2.5px solid #14121f;border-radius:18px;padding:12px 14px;box-shadow:4px 4px 0 #14121f;display:grid;gap:6px;">
+            <span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;">Suggestion · Overseer</span>
+            <span style="font:600 14px/1.3 'Bricolage Grotesque';">4 post drafts pass the mindful gate. Approve them as one batch?</span>
+            <div style="display:flex;gap:6px;"><span style="background:#14121f;color:#d7ff3d;border-radius:999px;padding:5px 12px;font:600 11px 'IBM Plex Mono';">Approve 4</span><span style="padding:5px 8px;font:600 11px 'IBM Plex Mono';">Later</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="background:#ff4b2b;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Today</span><span style="padding:7px 4px;">Agents</span><span style="padding:7px 4px;">Pipes</span><span style="padding:7px 4px;">Publish</span><span style="padding:7px 4px;">Config</span></div>
+        </div>
+      </div>
+
+      <div id="O2" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">O2</span> Agents and the register</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#f4efe4;box-shadow:8px 8px 0 #14121f;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Owner</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:8px;align-content:start;">
+            <h2 style="margin:0;font:800 34px/0.92 'Bricolage Grotesque';letter-spacing:-0.04em;">10 agents.<br>2 need you.</h2>
+            <span style="font:400 11px/1.4 'IBM Plex Mono';color:#5d5768;">Each works on one rung of the ladder. The two overseers run on rules, no model.</span>
+            <sc-for list="{{ agents }}" as="a" hint-placeholder-count="10">
+              <div style="display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 10px;background:#fff;border:2px solid #14121f;border-radius:12px;">
+                <span style="font:600 9.5px 'IBM Plex Mono';text-transform:uppercase;color:#5d5768;">{{ a.layer }}</span>
+                <div style="display:grid;gap:1px;"><span style="font:700 14px 'Bricolage Grotesque';">{{ a.name }}</span><span style="font:400 10px 'IBM Plex Mono';color:#5d5768;">{{ a.rung }} · {{ a.line }}</span></div>
+                <span style="font:600 10px 'IBM Plex Mono';padding:3px 8px;border-radius:999px;border:1.5px solid #14121f;background:{{ a.bg }};color:{{ a.fg }};">{{ a.state }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Today</span><span style="background:#ff4b2b;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Agents</span><span style="padding:7px 4px;">Pipes</span><span style="padding:7px 4px;">Publish</span><span style="padding:7px 4px;">Config</span></div>
+        </div>
+      </div>
+
+      <div id="O3" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">O3</span> Pipelines and funnels</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#f4efe4;box-shadow:8px 8px 0 #14121f;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Owner</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <h2 style="margin:0;font:800 34px/0.92 'Bricolage Grotesque';letter-spacing:-0.04em;">Four pipes,<br>every stage clocked.</h2>
+            <sc-for list="{{ pipes }}" as="p" hint-placeholder-count="4">
+              <div style="background:#fff;border:2px solid #14121f;border-radius:16px;padding:10px 12px;box-shadow:3px 3px 0 #14121f;display:grid;gap:8px;">
+                <div style="display:flex;justify-content:space-between;"><span style="font:700 15px 'Bricolage Grotesque';">{{ p.name }}</span><span style="font:600 10px 'IBM Plex Mono';color:#ff4b2b;">{{ p.late }}</span></div>
+                <div style="display:flex;gap:4px;align-items:flex-end;">
+                  <sc-for list="{{ p.stages }}" as="s" hint-placeholder-count="5">
+                    <div style="flex:1;display:grid;gap:3px;justify-items:center;"><span style="font:800 17px 'Bricolage Grotesque';">{{ s.n }}</span><div style="width:100%;height:{{ s.h }};background:{{ s.bg }};border:1.5px solid #14121f;border-radius:4px;"></div><span style="font:500 8.5px 'IBM Plex Mono';">{{ s.k }}</span></div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Today</span><span style="padding:7px 4px;">Agents</span><span style="background:#ff4b2b;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Pipes</span><span style="padding:7px 4px;">Publish</span><span style="padding:7px 4px;">Config</span></div>
+        </div>
+      </div>
+
+      <div id="O4" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">O4</span> Approve and publish</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#f4efe4;box-shadow:8px 8px 0 #14121f;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Owner</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <h2 style="margin:0;font:800 34px/0.92 'Bricolage Grotesque';letter-spacing:-0.04em;">Nothing goes out<br>without you.</h2>
+            <div style="background:#2f3cff;color:#fff;border:2px solid #14121f;border-radius:16px;padding:12px;box-shadow:3px 3px 0 #14121f;display:grid;gap:6px;">
+              <span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;">Public graph batch · Publisher</span>
+              <span style="font:700 17px/1.2 'Bricolage Grotesque';">12 nodes turn from grey to labelled</span>
+              <span style="font:400 11px 'IBM Plex Mono';">9 sources · Critic re-run passed · 0 private links</span>
+              <div style="display:flex;gap:6px;"><span style="background:#d7ff3d;color:#14121f;border-radius:999px;padding:5px 12px;font:600 11px 'IBM Plex Mono';">Publish</span><span style="border:1.5px solid #fff;border-radius:999px;padding:4px 12px;font:600 11px 'IBM Plex Mono';">Inspect</span></div>
+            </div>
+            <span style="font:600 10.5px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;">Post drafts · mindful gate</span>
+            <sc-for list="{{ posts }}" as="p" hint-placeholder-count="3">
+              <div style="background:#fff;border:2px solid #14121f;border-radius:12px;padding:8px 10px;display:grid;gap:4px;"><div style="display:flex;justify-content:space-between;"><span style="font:600 10px 'IBM Plex Mono';background:#14121f;color:#f4efe4;padding:2px 7px;border-radius:999px;">{{ p.ch }}</span><span style="font:500 10px 'IBM Plex Mono';">{{ p.when }}</span></div><span style="font:500 13px/1.3 'Bricolage Grotesque';">{{ p.text }}</span></div>
+            </sc-for>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ gate }}" as="g" hint-placeholder-count="5"><span style="font:600 10px 'IBM Plex Mono';padding:3px 8px;border-radius:999px;background:#d7ff3d;border:1.5px solid #14121f;">✓ {{ g }}</span></sc-for></div>
+            <div style="background:#14121f;color:#f4efe4;border-radius:16px;padding:12px;display:grid;gap:4px;"><span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;color:#d7ff3d;">Coming-out party · wave 1</span><span style="font:700 16px 'Bricolage Grotesque';">20 repos ready · 18 clear the bar</span><span style="font:400 10.5px 'IBM Plex Mono';">2 blocked: licence scan, flaky test</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Today</span><span style="padding:7px 4px;">Agents</span><span style="padding:7px 4px;">Pipes</span><span style="background:#ff4b2b;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Publish</span><span style="padding:7px 4px;">Config</span></div>
+        </div>
+      </div>
+
+      <div id="O5" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">O5</span> Spend, routing, stack, studio</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#f4efe4;box-shadow:8px 8px 0 #14121f;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Owner</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <h2 style="margin:0;font:800 34px/0.92 'Bricolage Grotesque';letter-spacing:-0.04em;">Config.</h2>
+            <div style="background:#fff;border:2px solid #14121f;border-radius:16px;padding:12px;display:grid;gap:6px;box-shadow:3px 3px 0 #14121f;">
+              <div style="display:flex;justify-content:space-between;"><span style="font:700 15px 'Bricolage Grotesque';">Monthly spend</span><span style="font:600 12px 'IBM Plex Mono';">$412 / $450</span></div>
+              <div style="height:14px;border:2px solid #14121f;border-radius:999px;overflow:hidden;background:#f4efe4;"><div style="width:91%;height:100%;background:#ff4b2b;"></div></div>
+            </div>
+            <div style="background:#fff;border:2px solid #14121f;border-radius:16px;padding:12px;display:grid;gap:4px;">
+              <span style="font:700 15px 'Bricolage Grotesque';">Ladder routing</span>
+              <sc-for list="{{ routing }}" as="r" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;font:500 11px 'IBM Plex Mono';padding:3px 0;border-top:1px dashed #14121f;"><span>{{ r.a }}</span><span>{{ r.now }} → <b style="color:#2f3cff;">{{ r.shadow }}</b></span></div></sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="6">
+                <div style="border:2px solid #14121f;border-radius:14px;padding:10px;display:grid;gap:2px;background:{{ t.bg }};"><span style="font:800 22px 'Bricolage Grotesque';">{{ t.v }}</span><span style="font:600 10px 'IBM Plex Mono';">{{ t.k }}</span><span style="font:400 9.5px 'IBM Plex Mono';">{{ t.d }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Today</span><span style="padding:7px 4px;">Agents</span><span style="padding:7px 4px;">Pipes</span><span style="padding:7px 4px;">Publish</span><span style="background:#ff4b2b;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Config</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="02 Researcher" style="display:grid;gap:22px;">
+    <div style="display:flex;gap:14px;align-items:baseline;"><span style="font:800 44px 'Bricolage Grotesque';letter-spacing:-0.03em;background:#2f3cff;color:#fff;padding:0 12px;border-radius:10px;">02 · Institute</span><span style="font:500 14px 'IBM Plex Mono';">for researchers · search, read, chat, settings</span></div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;">
+
+      <div id="R1" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">R1</span> Search the graph</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#f4efe4;box-shadow:8px 8px 0 #2f3cff;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Researcher</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <div style="border:2.5px solid #14121f;border-radius:999px;padding:12px 16px;background:#fff;font:500 14px 'IBM Plex Mono';display:flex;justify-content:space-between;"><span>shuffled seed lstm</span><span style="color:#2f3cff;">⌕</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ filters }}" as="f" hint-placeholder-count="6"><span style="font:600 10.5px 'IBM Plex Mono';padding:4px 9px;border-radius:999px;border:1.5px solid #14121f;background:{{ f.bg }};color:{{ f.fg }};">{{ f.k }}</span></sc-for></div>
+            <span style="font:500 10.5px 'IBM Plex Mono';color:#5d5768;">7 nodes · 2 private (your clearance) · ranked by graph distance</span>
+            <sc-for list="{{ results }}" as="r" hint-placeholder-count="5">
+              <div style="background:#fff;border:2px solid #14121f;border-radius:14px;padding:10px 12px;display:grid;gap:4px;">
+                <div style="display:flex;justify-content:space-between;gap:6px;"><span style="font:600 9.5px 'IBM Plex Mono';text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1.5px solid #14121f;background:{{ r.bg }};">{{ r.kind }}</span><span style="font:500 10px 'IBM Plex Mono';color:#5d5768;">{{ r.hop }}</span></div>
+                <span style="font:700 14.5px/1.2 'Bricolage Grotesque';">{{ r.t }}</span>
+                <span style="font:400 12px/1.4 'Bricolage Grotesque';color:#3d3848;">{{ r.s }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="background:#2f3cff;color:#fff;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Search</span><span style="padding:7px 4px;">Read</span><span style="padding:7px 4px;">Graph</span><span style="padding:7px 4px;">Chat</span><span style="padding:7px 4px;">Me</span></div>
+        </div>
+      </div>
+
+      <div id="R2" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">R2</span> Read, with citations</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#fffdf7;box-shadow:8px 8px 0 #2f3cff;display:grid;grid-template-rows:auto minmax(0,1fr) auto;position:relative;">
+          <div style="display:grid;gap:6px;padding:14px 20px 8px;"><div style="display:flex;justify-content:space-between;font:500 11px 'IBM Plex Mono';"><span>‹ Library</span><span>38%</span></div><div style="height:4px;background:#e9e2d2;border-radius:2px;"><div style="width:38%;height:100%;background:#2f3cff;border-radius:2px;"></div></div></div>
+          <div style="overflow:hidden;padding:8px 22px;display:grid;gap:12px;align-content:start;">
+            <span style="font:600 10.5px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;color:#2f3cff;">Companion A · §03</span>
+            <h2 style="margin:0;font:800 30px/0.95 'Bricolage Grotesque';letter-spacing:-0.035em;">A 7M recursive network on ARC</h2>
+            <p style="margin:0;font:400 15.5px/1.6 'Bricolage Grotesque';">Samsung SAIL's Tiny Recursive Model <span style="background:#d7ff3d;box-shadow:0 0 0 2px #d7ff3d;">scores 44.6% on ARC-AGI-1 with 7M parameters</span>. A living survey of ARC reads it as evidence that recursive depth can compensate for parameter count.</p>
+            <p style="margin:0;font:400 15.5px/1.6 'Bricolage Grotesque';color:#5d5768;">Jarvis's energy-halting loop comes from this line of work. The original results rely on heavy test-time augmentation…</p>
+          </div>
+          <div style="position:absolute;left:16px;right:16px;top:330px;background:#2f3cff;color:#fff;border:2.5px solid #14121f;border-radius:18px;padding:12px 14px;box-shadow:4px 4px 0 #14121f;display:grid;gap:6px;">
+            <span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;">Source node · cited in 3 reports</span>
+            <span style="font:600 14px/1.3 'Bricolage Grotesque';">TRM on ARC-AGI-1. Bears on H0 and H3. Limit: trained per task family.</span>
+            <div style="display:flex;gap:6px;"><span style="background:#fff;color:#14121f;border-radius:999px;padding:5px 11px;font:600 11px 'IBM Plex Mono';">Open node</span><span style="border:1.5px solid #fff;border-radius:999px;padding:4px 11px;font:600 11px 'IBM Plex Mono';">Ask about this</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Search</span><span style="background:#2f3cff;color:#fff;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Read</span><span style="padding:7px 4px;">Graph</span><span style="padding:7px 4px;">Chat</span><span style="padding:7px 4px;">Me</span></div>
+        </div>
+      </div>
+
+      <div id="R3" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">R3</span> Graph node and neighbourhood</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#14121f;color:#f4efe4;box-shadow:8px 8px 0 #2f3cff;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Researcher</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <div style="position:relative;height:250px;border:2px solid #f4efe4;border-radius:18px;overflow:hidden;background:radial-gradient(circle at 50% 50%, #2a2650 0%, #14121f 70%);">
+              <sc-for list="{{ edges }}" as="e" hint-placeholder-count="6"><div style="position:absolute;left:50%;top:50%;width:{{ e.len }};height:2px;background:#f4efe4;opacity:0.45;transform-origin:0 50%;transform:rotate({{ e.deg }});"></div></sc-for>
+              <sc-for list="{{ nbrs }}" as="n" hint-placeholder-count="6"><div style="position:absolute;left:{{ n.x }};top:{{ n.y }};transform:translate(-50%,-50%);display:grid;justify-items:center;gap:3px;"><div style="width:{{ n.d }};height:{{ n.d }};border-radius:50%;background:{{ n.bg }};border:2px solid #f4efe4;"></div><span style="font:500 9px 'IBM Plex Mono';white-space:nowrap;">{{ n.k }}</span></div></sc-for>
+              <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:#ff4b2b;border:3px solid #f4efe4;display:grid;place-items:center;font:800 16px 'Bricolage Grotesque';color:#14121f;">H5</div>
+              <div style="position:absolute;right:10px;bottom:10px;display:flex;gap:4px;font:600 10px 'IBM Plex Mono';"><span style="padding:3px 8px;border-radius:999px;background:#d7ff3d;color:#14121f;">1 hop</span><span style="padding:3px 8px;border-radius:999px;border:1.5px solid #f4efe4;">2</span><span style="padding:3px 8px;border-radius:999px;border:1.5px solid #f4efe4;">3</span></div>
+            </div>
+            <span style="font:600 10.5px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;color:#d7ff3d;">Hypothesis · public · read in P3</span>
+            <h2 style="margin:0;font:800 28px/0.95 'Bricolage Grotesque';letter-spacing:-0.03em;">Shuffled-seed control</h2>
+            <span style="font:400 13px/1.45 'Bricolage Grotesque';">A degree-preserving shuffle of the seed should remove at least 80% of the gain. Refuted if the shuffle keeps more than 20%.</span>
+            <sc-for list="{{ rels }}" as="r" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px dashed #5d5768;font:500 11px 'IBM Plex Mono';"><span style="color:#d7ff3d;">{{ r.rel }}</span><span>{{ r.to }}</span></div></sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #f4efe4;background:#14121f;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Search</span><span style="padding:7px 4px;">Read</span><span style="background:#2f3cff;color:#fff;border:2px solid #f4efe4;border-radius:999px;padding:5px 9px;">Graph</span><span style="padding:7px 4px;">Chat</span><span style="padding:7px 4px;">Me</span></div>
+        </div>
+      </div>
+
+      <div id="R4" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">R4</span> Chat with SEXTANT</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#f4efe4;box-shadow:8px 8px 0 #2f3cff;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px 10px;border-bottom:2.5px solid #14121f;background:#fff;"><div style="display:grid;"><span style="font:800 18px 'Bricolage Grotesque';">SEXTANT</span><span style="font:500 10px 'IBM Plex Mono';color:#5d5768;">the institute's voice · 8B rung · cites the graph</span></div><span style="width:12px;height:12px;border-radius:50%;background:#d7ff3d;border:2px solid #14121f;"></span></div>
+          <div style="overflow:hidden;padding:12px 14px;display:grid;gap:9px;align-content:start;">
+            <div style="justify-self:end;max-width:80%;background:#14121f;color:#f4efe4;border-radius:16px 16px 4px 16px;padding:9px 12px;font:500 13.5px/1.4 'Bricolage Grotesque';">Can a small model really be as good?</div>
+            <div style="max-width:90%;background:#fff;border:2px solid #14121f;border-radius:16px 16px 16px 4px;padding:10px 12px;display:grid;gap:8px;">
+              <span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;color:#ff4b2b;">One question first</span>
+              <span style="font:500 13.5px/1.4 'Bricolage Grotesque';">Do you mean quality, or cost per answer?</span>
+              <sc-for list="{{ opts }}" as="o" hint-placeholder-count="3"><span style="border:2px solid #14121f;border-radius:12px;padding:8px 10px;font:600 12.5px 'Bricolage Grotesque';background:{{ o.bg }};">{{ o.t }}</span></sc-for>
+            </div>
+            <div style="justify-self:end;max-width:80%;background:#14121f;color:#f4efe4;border-radius:16px 16px 4px 16px;padding:9px 12px;font:500 13.5px/1.4 'Bricolage Grotesque';">Cost per answer on CPU</div>
+            <div style="max-width:90%;background:#fff;border:2px solid #14121f;border-radius:16px 16px 16px 4px;padding:10px 12px;display:grid;gap:8px;">
+              <span style="font:500 13.5px/1.45 'Bricolage Grotesque';">A 7B model is 10–30× cheaper to serve than a 70–175B one. An LSTM on CPU is cheaper again; H3 sets the bar at 10× below the tiny transformer. Not yet measured.</span>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;"><span style="font:600 10px 'IBM Plex Mono';padding:3px 8px;border-radius:999px;background:#2f3cff;color:#fff;">Belcak · NVIDIA</span><span style="font:600 10px 'IBM Plex Mono';padding:3px 8px;border-radius:999px;background:#2f3cff;color:#fff;">H3</span></div>
+            </div>
+          </div>
+          <div style="display:grid;gap:8px;padding:10px 14px 20px;border-top:2.5px solid #14121f;background:#fff;">
+            <div style="display:flex;gap:6px;overflow:hidden;"><span style="white-space:nowrap;font:600 10.5px 'IBM Plex Mono';padding:5px 10px;border-radius:999px;border:1.5px solid #14121f;background:#d7ff3d;">Follow-up: when is P3?</span><span style="white-space:nowrap;font:600 10.5px 'IBM Plex Mono';padding:5px 10px;border-radius:999px;border:1.5px solid #14121f;">Show H3 node</span></div>
+            <div style="display:flex;gap:8px;"><div style="flex:1;border:2px solid #14121f;border-radius:999px;padding:10px 14px;font:500 12.5px 'IBM Plex Mono';color:#5d5768;">Ask the institute…</div><span style="width:42px;height:42px;border-radius:50%;background:#ff4b2b;border:2px solid #14121f;display:grid;place-items:center;font:800 18px 'Bricolage Grotesque';">↑</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="R5" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">R5</span> Settings and config</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#f4efe4;box-shadow:8px 8px 0 #2f3cff;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Researcher</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <div style="display:flex;gap:12px;align-items:center;"><div style="width:54px;height:54px;border-radius:16px;background:#2f3cff;border:2.5px solid #14121f;display:grid;place-items:center;font:800 22px 'Bricolage Grotesque';color:#fff;">MK</div><div style="display:grid;"><span style="font:800 22px 'Bricolage Grotesque';">M. Kader</span><span style="font:500 10.5px 'IBM Plex Mono';">Researcher · Pro · clearance: 2 private graphs</span></div></div>
+            <sc-for list="{{ settings }}" as="g" hint-placeholder-count="3">
+              <div style="background:#fff;border:2px solid #14121f;border-radius:16px;padding:6px 12px;display:grid;">
+                <span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;padding:6px 0 2px;color:#2f3cff;">{{ g.head }}</span>
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed #c9c1b0;"><span style="font:500 13.5px 'Bricolage Grotesque';">{{ r.k }}</span>
+                    <sc-if value="{{ r.isToggle }}" hint-placeholder-val="{{ false }}"><span style="width:38px;height:22px;border-radius:999px;border:2px solid #14121f;background:{{ r.tbg }};position:relative;display:block;"><span style="position:absolute;top:2px;left:{{ r.tx }};width:14px;height:14px;border-radius:50%;background:#14121f;"></span></span></sc-if>
+                    <sc-if value="{{ r.isVal }}" hint-placeholder-val="{{ true }}"><span style="font:600 11px 'IBM Plex Mono';">{{ r.v }}</span></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Search</span><span style="padding:7px 4px;">Read</span><span style="padding:7px 4px;">Graph</span><span style="padding:7px 4px;">Chat</span><span style="background:#2f3cff;color:#fff;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Me</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="03 API" style="display:grid;gap:22px;">
+    <div style="display:flex;gap:14px;align-items:baseline;"><span style="font:800 44px 'Bricolage Grotesque';letter-spacing:-0.03em;background:#14121f;color:#d7ff3d;padding:0 12px;border-radius:10px;">03 · API</span><span style="font:500 14px 'IBM Plex Mono';">for paying developers · usage, keys, playground, billing</span></div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;">
+
+      <div id="A1" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">A1</span> Usage</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#14121f;color:#f4efe4;box-shadow:8px 8px 0 #d7ff3d;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>acme-labs · API</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:12px;align-content:start;">
+            <span style="font:600 10.5px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;color:#d7ff3d;">October · sample account</span>
+            <h2 style="margin:0;font:800 52px/0.85 'Bricolage Grotesque';letter-spacing:-0.05em;">18,420<br><span style="font-size:22px;letter-spacing:-0.02em;">calls this month</span></h2>
+            <div style="display:flex;gap:6px;align-items:flex-end;height:110px;border-bottom:2px solid #f4efe4;padding-bottom:4px;">
+              <sc-for list="{{ days }}" as="d" hint-placeholder-count="7"><div style="flex:1;display:grid;gap:4px;justify-items:center;align-self:end;"><div style="width:100%;height:{{ d.h }};background:#d7ff3d;border-radius:5px 5px 0 0;"></div><span style="font:500 9px 'IBM Plex Mono';">{{ d.k }}</span></div></sc-for>
+            </div>
+            <span style="font:700 15px 'Bricolage Grotesque';">Which rung answered</span>
+            <div style="display:flex;height:22px;border:2px solid #f4efe4;border-radius:999px;overflow:hidden;"><sc-for list="{{ mix }}" as="m" hint-placeholder-count="5"><div style="width:{{ m.w }};background:{{ m.bg }};"></div></sc-for></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;"><sc-for list="{{ mix }}" as="m" hint-placeholder-count="5"><span style="font:500 10.5px 'IBM Plex Mono';display:flex;gap:6px;align-items:center;"><span style="width:10px;height:10px;border-radius:3px;background:{{ m.bg }};"></span>{{ m.k }} · {{ m.w }}</span></sc-for></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div style="border:2px solid #f4efe4;border-radius:14px;padding:10px;"><span style="font:800 22px 'Bricolage Grotesque';">$86.40</span><br><span style="font:500 10px 'IBM Plex Mono';">of $200 budget</span></div>
+              <div style="border:2px solid #f4efe4;border-radius:14px;padding:10px;"><span style="font:800 22px 'Bricolage Grotesque';">140 ms</span><br><span style="font:500 10px 'IBM Plex Mono';">p50 latency</span></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #f4efe4;font:600 10.5px 'IBM Plex Mono';"><span style="background:#d7ff3d;color:#14121f;border-radius:999px;padding:5px 9px;">Usage</span><span style="padding:7px 4px;">Keys</span><span style="padding:7px 4px;">Try</span><span style="padding:7px 4px;">Billing</span></div>
+        </div>
+      </div>
+
+      <div id="A2" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">A2</span> Keys and endpoints</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#14121f;color:#f4efe4;box-shadow:8px 8px 0 #d7ff3d;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>acme-labs · API</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <h2 style="margin:0;font:800 34px/0.92 'Bricolage Grotesque';letter-spacing:-0.04em;">Keys.</h2>
+            <sc-for list="{{ keys }}" as="k" hint-placeholder-count="2">
+              <div style="border:2px solid #f4efe4;border-radius:16px;padding:12px;display:grid;gap:6px;">
+                <div style="display:flex;justify-content:space-between;"><span style="font:700 15px 'Bricolage Grotesque';">{{ k.name }}</span><span style="font:600 10px 'IBM Plex Mono';padding:2px 8px;border-radius:999px;background:#d7ff3d;color:#14121f;">{{ k.env }}</span></div>
+                <span style="font:500 12px 'IBM Plex Mono';background:#2a2640;padding:6px 8px;border-radius:8px;">{{ k.mask }}</span>
+                <span style="font:400 10px 'IBM Plex Mono';opacity:0.75;">{{ k.meta }}</span>
+                <div style="display:flex;gap:6px;"><span style="border:1.5px solid #f4efe4;border-radius:999px;padding:4px 10px;font:600 10.5px 'IBM Plex Mono';">Copy</span><span style="border:1.5px solid #f4efe4;border-radius:999px;padding:4px 10px;font:600 10.5px 'IBM Plex Mono';">Rotate</span><span style="border:1.5px solid #ff4b2b;color:#ff4b2b;border-radius:999px;padding:4px 10px;font:600 10.5px 'IBM Plex Mono';">Revoke</span></div>
+              </div>
+            </sc-for>
+            <span style="font:600 10.5px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;color:#d7ff3d;">Endpoints</span>
+            <sc-for list="{{ endpoints }}" as="e" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;padding:6px 0;border-top:1px dashed #5d5768;"><span style="font:600 10px 'IBM Plex Mono';color:#ff4b2b;">{{ e.m }}</span><div style="display:grid;gap:1px;"><span style="font:600 11.5px 'IBM Plex Mono';">{{ e.p }}</span><span style="font:400 11px 'Bricolage Grotesque';opacity:0.75;">{{ e.d }}</span></div></div></sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #f4efe4;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Usage</span><span style="background:#d7ff3d;color:#14121f;border-radius:999px;padding:5px 9px;">Keys</span><span style="padding:7px 4px;">Try</span><span style="padding:7px 4px;">Billing</span></div>
+        </div>
+      </div>
+
+      <div id="A3" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">A3</span> Playground</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#14121f;color:#f4efe4;box-shadow:8px 8px 0 #d7ff3d;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>acme-labs · API</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <div style="display:flex;justify-content:space-between;align-items:center;border:2px solid #f4efe4;border-radius:999px;padding:9px 14px;font:600 12px 'IBM Plex Mono';"><span><span style="color:#ff4b2b;">POST</span> /v1/ask</span><span>▾</span></div>
+            <div style="display:flex;gap:5px;"><span style="font:600 10.5px 'IBM Plex Mono';padding:4px 9px;border-radius:999px;background:#d7ff3d;color:#14121f;">rung: auto</span><span style="font:600 10.5px 'IBM Plex Mono';padding:4px 9px;border-radius:999px;border:1.5px solid #f4efe4;">graph: public</span><span style="font:600 10.5px 'IBM Plex Mono';padding:4px 9px;border-radius:999px;border:1.5px solid #f4efe4;">cite: on</span></div>
+            <pre style="margin:0;white-space:pre-wrap;background:#2a2640;border-radius:14px;padding:12px;font:500 11.5px/1.55 'IBM Plex Mono';">{{ req }}</pre>
+            <span style="background:#ff4b2b;color:#14121f;border:2px solid #f4efe4;border-radius:999px;padding:11px;text-align:center;font:800 16px 'Bricolage Grotesque';">Run · est. $0.0004</span>
+            <pre style="margin:0;white-space:pre-wrap;background:#f4efe4;color:#14121f;border-radius:14px;padding:12px;font:500 11px/1.55 'IBM Plex Mono';">{{ res }}</pre>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #f4efe4;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Usage</span><span style="padding:7px 4px;">Keys</span><span style="background:#d7ff3d;color:#14121f;border-radius:999px;padding:5px 9px;">Try</span><span style="padding:7px 4px;">Billing</span></div>
+        </div>
+      </div>
+
+      <div id="A4" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">A4</span> Metered billing</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#14121f;color:#f4efe4;box-shadow:8px 8px 0 #d7ff3d;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>acme-labs · API</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <h2 style="margin:0;font:800 34px/0.92 'Bricolage Grotesque';letter-spacing:-0.04em;">Pay for the rung<br>that answered.</h2>
+            <span style="font:400 11px/1.4 'IBM Plex Mono';opacity:0.8;">Draft price list, per 1,000 calls. Auto-routing picks the smallest rung that clears the quality bar.</span>
+            <div style="border:2px solid #f4efe4;border-radius:16px;padding:6px 12px;">
+              <sc-for list="{{ prices }}" as="p" hint-placeholder-count="5"><div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px dashed #5d5768;font:500 12px 'IBM Plex Mono';"><span>{{ p.k }}</span><span style="color:#d7ff3d;">{{ p.v }}</span></div></sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div style="background:#d7ff3d;color:#14121f;border-radius:14px;padding:10px;"><span style="font:800 22px 'Bricolage Grotesque';">$86.40</span><br><span style="font:600 10px 'IBM Plex Mono';">due 1 Nov</span></div>
+              <div style="border:2px solid #f4efe4;border-radius:14px;padding:10px;"><span style="font:800 22px 'Bricolage Grotesque';">$200</span><br><span style="font:500 10px 'IBM Plex Mono';">hard cap · edit</span></div>
+            </div>
+            <sc-for list="{{ invoices }}" as="i" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px dashed #5d5768;font:500 11.5px 'IBM Plex Mono';"><span>{{ i.m }}</span><span>{{ i.v }} · PDF</span></div></sc-for>
+            <span style="font:500 11px 'IBM Plex Mono';opacity:0.8;">Visa ·· 4242 · change</span>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #f4efe4;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Usage</span><span style="padding:7px 4px;">Keys</span><span style="padding:7px 4px;">Try</span><span style="background:#d7ff3d;color:#14121f;border-radius:999px;padding:5px 9px;">Billing</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="04 Subscriber" style="display:grid;gap:22px;">
+    <div style="display:flex;gap:14px;align-items:baseline;"><span style="font:800 44px 'Bricolage Grotesque';letter-spacing:-0.03em;background:#d7ff3d;padding:0 12px;border-radius:10px;border:2.5px solid #14121f;">04 · Subscriber</span><span style="font:500 14px 'IBM Plex Mono';">Member and Pro · follow the experiment</span></div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;">
+
+      <div id="S1" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">S1</span> This week</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#fffdf7;box-shadow:8px 8px 0 #ff4b2b;display:grid;grid-template-rows:auto minmax(0,1fr) auto;position:relative;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Member</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <h2 style="margin:0;font:800 40px/0.88 'Bricolage Grotesque';letter-spacing:-0.045em;">This week at<br><span style="color:#ff4b2b;">the institute</span></h2>
+            <div style="background:#14121f;color:#f4efe4;border-radius:18px;padding:14px;display:grid;gap:8px;">
+              <span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;color:#d7ff3d;">Headline experiment · P3 small grid</span>
+              <span style="font:700 17px/1.2 'Bricolage Grotesque';">30B, small and LSTM at depth 1–3</span>
+              <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;"><sc-for list="{{ phaseBar }}" as="p" hint-placeholder-count="6"><div style="display:grid;gap:3px;"><div style="height:8px;border-radius:4px;background:{{ p.bg }};"></div><span style="font:500 9px 'IBM Plex Mono';">{{ p.k }}</span></div></sc-for></div>
+              <span style="font:400 10.5px 'IBM Plex Mono';opacity:0.8;">Result not in yet. Published either way.</span>
+            </div>
+            <sc-for list="{{ feed }}" as="f" hint-placeholder-count="3">
+              <div style="border:2px solid #14121f;border-radius:16px;padding:10px 12px;display:grid;gap:4px;background:#fff;"><span style="font:600 9.5px 'IBM Plex Mono';text-transform:uppercase;color:#2f3cff;">{{ f.k }}</span><span style="font:700 14.5px/1.2 'Bricolage Grotesque';">{{ f.t }}</span><span style="font:400 11px 'IBM Plex Mono';color:#5d5768;">{{ f.m }}</span></div>
+            </sc-for>
+          </div>
+          <div style="position:absolute;left:14px;right:14px;bottom:76px;background:#ff4b2b;border:2.5px solid #14121f;border-radius:18px;padding:12px 14px;box-shadow:4px 4px 0 #14121f;display:grid;gap:6px;">
+            <span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;">Because you read Companion A</span>
+            <span style="font:600 14px/1.3 'Bricolage Grotesque';">H5 is the control it says nobody has run. See what would refute it.</span>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="background:#d7ff3d;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Home</span><span style="padding:7px 4px;">Library</span><span style="padding:7px 4px;">Ask</span><span style="padding:7px 4px;">Plan</span></div>
+        </div>
+      </div>
+
+      <div id="S2" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">S2</span> Library</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#fffdf7;box-shadow:8px 8px 0 #ff4b2b;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Member</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <h2 style="margin:0;font:800 34px/0.92 'Bricolage Grotesque';letter-spacing:-0.04em;">Library.</h2>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);border:2px solid #14121f;border-radius:999px;overflow:hidden;font:600 11px 'IBM Plex Mono';text-align:center;"><span style="background:#14121f;color:#f4efe4;padding:7px;">Reports</span><span style="padding:7px;">Findings</span><span style="padding:7px;">Saved</span></div>
+            <sc-for list="{{ library }}" as="r" hint-placeholder-count="5">
+              <div style="display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:center;border:2px solid #14121f;border-radius:14px;padding:8px;background:#fff;">
+                <div style="height:62px;border-radius:9px;border:2px solid #14121f;background:{{ r.bg }};display:grid;place-items:center;font:800 20px 'Bricolage Grotesque';">{{ r.badge }}</div>
+                <div style="display:grid;gap:2px;"><span style="font:700 14px/1.15 'Bricolage Grotesque';">{{ r.t }}</span><span style="font:400 10.5px 'IBM Plex Mono';color:#5d5768;">{{ r.m }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Home</span><span style="background:#d7ff3d;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Library</span><span style="padding:7px 4px;">Ask</span><span style="padding:7px 4px;">Plan</span></div>
+        </div>
+      </div>
+
+      <div id="S3" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">S3</span> Ask, with a monthly quota</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#fffdf7;box-shadow:8px 8px 0 #ff4b2b;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:grid;gap:6px;padding:14px 18px 10px;border-bottom:2.5px solid #14121f;"><div style="display:flex;justify-content:space-between;"><span style="font:800 18px 'Bricolage Grotesque';">Ask the institute</span><span style="font:600 11px 'IBM Plex Mono';">12 / 50 left</span></div><div style="height:8px;border:1.5px solid #14121f;border-radius:999px;overflow:hidden;"><div style="width:76%;height:100%;background:#ff4b2b;"></div></div></div>
+          <div style="overflow:hidden;padding:12px 14px;display:grid;gap:9px;align-content:start;">
+            <div style="justify-self:end;max-width:80%;background:#14121f;color:#f4efe4;border-radius:16px 16px 4px 16px;padding:9px 12px;font:500 13.5px/1.4 'Bricolage Grotesque';">Is the GPU boom a bubble?</div>
+            <div style="max-width:90%;background:#fff;border:2px solid #14121f;border-radius:16px 16px 16px 4px;padding:10px 12px;font:500 13.5px/1.45 'Bricolage Grotesque';">Companion B argues a sector correction in AI infrastructure is likely. A depression would need losses to spread through lenders while jobs fall broadly; neither has happened.</div>
+            <div style="max-width:90%;background:#d7ff3d;border:2px solid #14121f;border-radius:16px;padding:10px 12px;display:grid;gap:6px;"><span style="font:600 10px 'IBM Plex Mono';letter-spacing:0.08em;text-transform:uppercase;">Clarify</span><span style="font:500 13px 'Bricolage Grotesque';">Do you want the seven indicators, or how this affects your sector?</span><div style="display:flex;gap:6px;"><span style="background:#14121f;color:#d7ff3d;border-radius:999px;padding:4px 10px;font:600 10.5px 'IBM Plex Mono';">Indicators</span><span style="border:1.5px solid #14121f;border-radius:999px;padding:3px 10px;font:600 10.5px 'IBM Plex Mono';">My sector</span></div></div>
+            <div style="border:2px dashed #14121f;border-radius:14px;padding:10px 12px;font:500 12px/1.4 'Bricolage Grotesque';">Pro gets unlimited questions, raw result tables and private follow-ups.</div>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Home</span><span style="padding:7px 4px;">Library</span><span style="background:#d7ff3d;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Ask</span><span style="padding:7px 4px;">Plan</span></div>
+        </div>
+      </div>
+
+      <div id="S4" style="display:grid;gap:10px;">
+        <span style="font:600 12px 'IBM Plex Mono';"><span style="background:#14121f;color:#fff;padding:3px 8px;border-radius:6px;">S4</span> Plan and tiers</span>
+        <div style="width:360px;height:760px;border:2.5px solid #14121f;border-radius:34px;overflow:hidden;background:#fffdf7;box-shadow:8px 8px 0 #ff4b2b;display:grid;grid-template-rows:auto minmax(0,1fr) auto;">
+          <div style="display:flex;justify-content:space-between;padding:14px 20px 6px;font:500 11px 'IBM Plex Mono';"><span>9:41</span><span>Member</span></div>
+          <div style="overflow:hidden;padding:6px 16px;display:grid;gap:10px;align-content:start;">
+            <h2 style="margin:0;font:800 34px/0.92 'Bricolage Grotesque';letter-spacing:-0.04em;">Pick your depth.</h2>
+            <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="3">
+              <div style="border:2.5px solid #14121f;border-radius:18px;padding:12px;display:grid;gap:6px;background:{{ t.bg }};color:{{ t.fg }};box-shadow:3px 3px 0 #14121f;">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font:800 22px 'Bricolage Grotesque';">{{ t.name }}</span><span style="font:600 12px 'IBM Plex Mono';">{{ t.price }}</span></div>
+                <sc-for list="{{ t.feats }}" as="f" hint-placeholder-count="3"><span style="font:500 11.5px/1.35 'IBM Plex Mono';">+ {{ f }}</span></sc-for>
+                <span style="font:600 10.5px 'IBM Plex Mono';justify-self:start;padding:4px 10px;border-radius:999px;border:1.5px solid currentColor;">{{ t.cta }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-around;padding:10px 6px 18px;border-top:2.5px solid #14121f;background:#fff;font:600 10.5px 'IBM Plex Mono';"><span style="padding:7px 4px;">Home</span><span style="padding:7px 4px;">Library</span><span style="padding:7px 4px;">Ask</span><span style="background:#d7ff3d;border:2px solid #14121f;border-radius:999px;padding:5px 9px;">Plan</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="05 Parity" style="display:grid;gap:18px;max-width:1300px;">
+    <div style="display:flex;gap:14px;align-items:baseline;"><span style="font:800 44px 'Bricolage Grotesque';letter-spacing:-0.03em;">05 · Web ↔ app parity</span><span style="font:500 14px 'IBM Plex Mono';">every web surface and the screen that carries it</span></div>
+    <div style="border:2.5px solid #14121f;border-radius:20px;overflow:hidden;background:#fff;box-shadow:6px 6px 0 #14121f;">
+      <div style="display:grid;grid-template-columns:1.1fr 1.6fr 0.9fr 1.4fr;background:#14121f;color:#f4efe4;font:600 12px 'IBM Plex Mono';text-transform:uppercase;letter-spacing:0.06em;"><span style="padding:12px 16px;">Web surface</span><span style="padding:12px 16px;">What it does</span><span style="padding:12px 16px;">App screens</span><span style="padding:12px 16px;">Phone difference</span></div>
+      <sc-for list="{{ parity }}" as="p" hint-placeholder-count="14">
+        <div style="display:grid;grid-template-columns:1.1fr 1.6fr 0.9fr 1.4fr;border-top:2px solid #14121f;font-size:15px;line-height:1.4;">
+          <span style="padding:11px 16px;font-weight:700;">{{ p.web }}</span><span style="padding:11px 16px;">{{ p.does }}</span>
+          <span style="padding:11px 16px;display:flex;flex-wrap:wrap;gap:5px;align-content:start;"><sc-for list="{{ p.ids }}" as="i" hint-placeholder-count="2"><a href="#{{ i }}" style="font:600 12px 'IBM Plex Mono';background:#d7ff3d;color:#14121f;border:1.5px solid #14121f;border-radius:6px;padding:2px 7px;text-decoration:none;">{{ i }}</a></sc-for></span>
+          <span style="padding:11px 16px;color:#5d5768;">{{ p.diff }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const INK = '#14121f', LIME = '#d7ff3d', RED = '#ff4b2b', BLUE = '#2f3cff', PAPER = '#f4efe4';
+const AG = [['Work', 'Scout', '1–3B', '2 rounds / 24 h', 'silent'], ['Work', 'Theorist', '8B', '43% failed', 'noisy'], ['Work', 'Experimenter', '8B', '9 rounds', 'ok'], ['Work', 'Builder', '30B', '3 repos in review', 'ok'], ['Work', 'SEXTANT', '8B', '31 chats', 'ok'], ['Check', 'Critic', '30B', '6 re-runs', 'ok'], ['Check', 'Publisher', '1–3B', '4 drafts', 'ok'], ['Check', 'Maintainer', '8B', '1 repair', 'ok'], ['Oversee', 'Overseer', 'no model', 'ranks fires', 'ok'], ['Oversee', 'Registrar', 'no model', '1 shadow winning', 'ok']];
+const ST = { ok: [LIME, INK], silent: [RED, INK], noisy: [RED, INK] };
+const PIPES = [['A · Research', '1 late', [['ingest', 42], ['question', 9], ['cell', 6], ['result', 4], ['attack', 3], ['promote', 1]]], ['B · Build', 'on time', [['spec', 5], ['code', 3], ['review', 2], ['ship', 1]]], ['C · Publish', 'on time', [['propose', 2], ['approve', 1], ['label', 12], ['post', 4]]], ['D · Client', '1 late', [['contact', 7], ['qualify', 3], ['accept', 1], ['seed', 1], ['run', 1], ['deliver', 0]]]];
+const NB = [['H0', 50, 12, RED], ['Seed v4', 86, 34, LIME], ['TRM', 84, 76, BLUE], ['Plan v4', 50, 90, PAPER], ['Critic', 15, 72, LIME], ['H4', 16, 28, RED]];
+const json = o => JSON.stringify(o, null, 2);
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      roles: [['Owner', 'run the institute', RED, INK], ['Researcher', 'search, read, chat', BLUE, '#fff'], ['API', 'keys, usage, billing', LIME, INK], ['Subscriber', 'follow the work', PAPER, INK]].map(([name, text, bg, fg]) => ({ name, text, bg, fg })),
+      fires: [[80, 'Spend near the monthly cap', 'owner', '$412 of $450', 'Raise', 'Throttle'], [74, 'KeyError in round.merge', 'maintainer', 'patch ready', 'Approve', 'Retry'], [69, 'Scout is silent', 'overseer', '14 h, expected 6 h', 'Wake', 'Mute'], [45, 'LSTM shadow beats 1–3B for Scout', 'registrar', '7 days', 'Promote', 'Hold']].map(([score, title, who, detail, a, b]) => ({ score, title, who, detail, a, b })),
+      agents: AG.map(([layer, name, rung, line, state]) => ({ layer, name, rung, line, state, bg: ST[state][0], fg: ST[state][1] })),
+      pipes: PIPES.map(([name, late, st]) => { const m = Math.max(...st.map(s => s[1]), 1); return { name, late, stages: st.map(([k, n]) => ({ k, n, h: Math.max(4, Math.round(Math.sqrt(n / m) * 46)) + 'px', bg: n ? (name[0] === 'A' ? RED : name[0] === 'B' ? BLUE : name[0] === 'C' ? LIME : INK) : PAPER })) }; }),
+      posts: [['x', 'tue 10:00', 'We published the shuffled-seed control (H5) before running it. Here is what would refute us.'], ['linkedin', 'wed 09:30', 'Seven indicators we track to tell a correction from a depression.'], ['reddit', 'thu 16:00', 'r/MachineLearning: the 30B-to-LSTM ladder, method only, results pending.']].map(([ch, when, text]) => ({ ch, when, text })),
+      gate: ['caps', 'quiet hours', 'spacing', 'no duplicates', 'disclosure'],
+      routing: [['Scout', '1–3B', 'LSTM'], ['Publisher', '1–3B', 'tiny'], ['Theorist', '8B', '1–3B'], ['SEXTANT', '8B', '8B']].map(([a, now, shadow]) => ({ a, now, shadow })),
+      tiles: [['7', 'MCP servers', '1 audit pending', LIME], ['3', 'upgrades', 'Maintainer tested', '#fff'], ['4', 'Studio sites', '1 awaiting review', '#fff'], ['42', 'Tmpltz archetypes', 'catalogue live', BLUE], ['245', 'members · Pro', '214 · 31', '#fff'], ['12', 'API accounts', '2 near cap', RED]].map(([v, k, d, bg]) => ({ v, k, d, bg })),
+      filters: [['all', INK, PAPER], ['hypothesis', '#fff', INK], ['source', '#fff', INK], ['finding', '#fff', INK], ['artifact', '#fff', INK], ['private', RED, INK]].map(([k, bg, fg]) => ({ k, bg, fg })),
+      results: [['hypothesis', '0 hops', 'H5 · Shuffled-seed control', 'A degree-preserving shuffle should remove at least 80% of the gain.', RED], ['hypothesis', '1 hop', 'H4 · The LSTM signature', 'Fails unseeded, passes with the curated seed.', RED], ['artifact', '1 hop', 'Seed v4', 'Incidence, types, restriction maps, Horn constraints, energy.', LIME], ['source', '2 hops', 'TRM on ARC-AGI-1', '7M parameters, 44.6%. Recursion in place of size.', BLUE], ['private', '2 hops', 'Substrate shadow results', 'LSTM shadow for Scout: 0.83 vs 0.81 over 7 days.', PAPER]].map(([kind, hop, t, s, bg]) => ({ kind, hop, t, s, bg })),
+      edges: NB.map(([, x, y]) => { const dx = (x - 50) * 3.24, dy = (y - 50) * 2.46; return { len: Math.hypot(dx, dy) + 'px', deg: Math.atan2(dy, dx) + 'rad' }; }),
+      nbrs: NB.map(([k, x, y, bg], i) => ({ k, x: x + '%', y: y + '%', bg, d: (i < 3 ? 22 : 16) + 'px' })),
+      rels: [['tests', 'H0 · quality holds'], ['shuffles', 'Seed v4'], ['separates', 'structure from context'], ['run by', 'Critic']].map(([rel, to]) => ({ rel, to })),
+      opts: [['Quality on the frozen split', '#fff'], ['Cost per answer on CPU', LIME], ['Both', '#fff']].map(([t, bg]) => ({ t, bg })),
+      settings: [{ head: 'Graph', rows: [['Show private nodes', true, true], ['Hop depth', null, '2'], ['Default rung for my agent', null, 'auto']] }, { head: 'Notify me', rows: [['New findings', true, true], ['Clarifying questions', true, true], ['Suggestions', true, false]] }, { head: 'Account', rows: [['Plan', null, 'Pro · $29'], ['API keys', null, '2 ›'], ['Export my notes', null, 'JSON ›']] }].map(g => ({ head: g.head, rows: g.rows.map(([k, tog, v]) => ({ k, isToggle: tog === true, isVal: tog !== true, v, tbg: v === true ? LIME : '#e9e2d2', tx: v === true ? '18px' : '2px' })) })),
+      days: [['M', 58], ['T', 72], ['W', 64], ['T', 90], ['F', 81], ['S', 30], ['S', 24]].map(([k, v]) => ({ k, h: v + 'px' })),
+      mix: [['LSTM', '41%', LIME], ['tiny', '22%', '#a8f0ff'], ['1–3B', '24%', BLUE], ['8B', '10%', RED], ['30B', '3%', PAPER]].map(([k, w, bg]) => ({ k, w, bg })),
+      keys: [['production', 'live', 'anm_live_••••••••••••7Qx2', 'scopes: ask, graph.read · created 2 Sep · used 3 min ago'], ['staging', 'test', 'anm_test_••••••••••••c19F', 'scopes: all · created 2 Sep · used 1 day ago']].map(([name, env, mask, meta]) => ({ name, env, mask, meta })),
+      endpoints: [['POST', '/v1/ask', 'Answer with citations, auto rung'], ['POST', '/v1/graph/query', 'Typed hops over the public graph'], ['POST', '/v1/seed', 'Seed a private graph from your schema'], ['POST', '/v1/harness/run', 'Run a harness cell, get a result row'], ['GET', '/v1/usage', 'Calls, spend, rung mix']].map(([m, p, d]) => ({ m, p, d })),
+      req: json({ question: 'Which rung clears depth-4 schemas?', graph: 'public', rung: 'auto', cite: true }),
+      res: json({ answer: 'Seeded, the 1–3B rung clears depth 4 in shadow runs; the full grid reads in P4.', rung: '1–3B', cost_usd: 0.0003, latency_ms: 162, cites: ['H6', 'Plan v4 §7'] }),
+      prices: [['LSTM · CPU', '$0.05'], ['tiny · CPU', '$0.10'], ['1–3B', '$0.40'], ['8B', '$1.20'], ['30B', '$4.00']].map(([k, v]) => ({ k, v })),
+      invoices: [['September', '$71.10'], ['August', '$44.85'], ['July', '$12.30']].map(([m, v]) => ({ m, v })),
+      phaseBar: ['P0', 'P1', 'P2', 'P3', 'P4', 'P5'].map((k, i) => ({ k, bg: i < 3 ? LIME : i === 3 ? RED : '#4a4560' })),
+      feed: [['Report', 'Companion D: who is exposed if H0 holds', '15 Oct · 9 min read'], ['Finding', 'LSTM shadow edges past 1–3B for Scout', 'private to Pro until published'], ['Indicator', 'Debt share of AI capex: 32%', 'Companion B · tracked weekly']].map(([k, t, m]) => ({ k, t, m })),
+      library: [['P', 'Seeded Substrate Plan v4', 'Core paper · 13 Oct', RED], ['A', 'Does the cheap brain work?', 'Evidence · 15 Oct', LIME], ['B', 'The dot-com bubble of the AI era', 'Macro · 15 Oct', BLUE], ['C', 'Institute blueprint v3', 'Organisation · 15 Oct', PAPER], ['D', 'Exposure and templates', '50 companies · 42 archetypes', '#fff']].map(([badge, t, m, bg]) => ({ badge, t, m, bg })),
+      tiers: [['Member', 'free', ['Public graph and all reports', '50 questions a month', 'Weekly digest'], 'Current plan', '#fff', INK], ['Pro', '$29 / mo', ['Unlimited questions', 'Raw result tables and shadow scores', 'Private follow-ups with SEXTANT'], 'Upgrade', RED, INK], ['Institute partner', 'talk to us', ['Private seeded graph', 'Paid study or design partnership', 'Bridago on your CPUs'], 'Start a conversation', INK, PAPER]].map(([name, price, feats, cta, bg, fg]) => ({ name, price, feats, cta, bg, fg })),
+      parity: [
+        ['Sign-in and tiers', 'Passkey or email; role picks the surface', ['X0', 'S4'], 'Same accounts; role tiles replace the web tier switch'],
+        ['Public site and 3D hero', 'Thesis, ladder, self-running slides', ['S1', 'X0'], 'Hero becomes the experiment card; 3D stays on web'],
+        ['Public graph', 'Search, 1–3 hop neighbourhoods, grey private nodes', ['R1', 'R3'], 'Radial neighbourhood instead of the full force graph'],
+        ['Research reports', 'Core paper and companions A–D', ['R2', 'S2'], 'Reader with inline citation sheets'],
+        ['Popups: suggestions, clarifications', 'Context suggestions and clarifying questions', ['O1', 'R4', 'S1', 'S3'], 'Bottom sheets and pinned cards'],
+        ['SEXTANT chat', 'Answers from the graph, with citations', ['R4', 'S3'], 'Quota bar for Members'],
+        ['Overseer', 'Ranked fires with one-tap actions', ['O1'], 'Top fires only; the rest batch'],
+        ['Console: approvals, incidents', 'Day page, approvals, repairs', ['O1', 'O4'], 'Approvals grouped per channel'],
+        ['Agents and register', 'States, rungs, promotions', ['O2', 'O5'], 'Shadow routing as a list'],
+        ['Pipelines and funnels', 'Stage counts and clocks', ['O3'], 'Mini funnels per pipeline'],
+        ['Stack (MCP hub), upgrades, apps', 'Install audit, upgrades, health', ['O5'], 'Approve and review; installs stay on web'],
+        ['Style Studio and Tmpltz', 'Build sites and templates', ['O5'], 'Review and publish; editing stays on web'],
+        ['100 repos launch', 'Waves and the quality bar', ['O4'], 'Wave status and blockers'],
+        ['API dashboard', 'Usage, keys, playground, billing', ['A1', 'A2', 'A3', 'A4'], 'Full parity'],
+        ['Settings and config', 'Profile, visibility, notifications, plan', ['R5', 'O5'], 'Full parity'],
+      ].map(([web, does, ids, diff]) => ({ web, does, ids, diff })),
+    };
+  }
+}
+</script>
+</body>
+</html>

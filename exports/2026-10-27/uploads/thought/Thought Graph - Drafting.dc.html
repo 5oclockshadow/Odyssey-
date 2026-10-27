@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    html, body { height: 100%; margin: 0; background: #0a2f6e; overflow: hidden; }
+    a { color: #ffe14d; } a:hover { color: #ffffff; }
+    * { box-sizing: border-box; }
+    ::placeholder { color: #7fa9de; }
+    ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #3f74bf; }
+    input[type="range"] { -webkit-appearance: none; appearance: none; background: linear-gradient(#eaf4ff, #eaf4ff) center / 100% 1px no-repeat; height: 20px; width: 100%; margin: 0; cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 16px; background: #0d3b8c; border: 1.5px solid #ffe14d; border-radius: 0; }
+    input[type="range"]::-moz-range-thumb { width: 8px; height: 14px; background: #0d3b8c; border: 1.5px solid #ffe14d; border-radius: 0; }
+    button, select, input, textarea { font-family: 'IBM Plex Mono', monospace; }
+    button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #ffe14d; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+</helmet>
+<div data-screen-label="Drafting" style="position: fixed; inset: 0; display: flex; flex-wrap: nowrap; background: #0d3b8c; color: #eaf4ff; font-family: 'IBM Plex Mono', monospace; font-size: 12px;">
+  <section style="flex: 1 1 0; min-width: 0; padding: 12px; display: grid;">
+    <div style="border: 2px solid #eaf4ff; padding: 5px; display: grid; min-height: 0;">
+      <div ref="{{ wrapRef }}" style="position: relative; border: 1px solid #eaf4ff; min-height: 0; overflow: hidden;">
+        <canvas ref="{{ canvasRef }}" onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" onPointerLeave="{{ onLeave }}" style="position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none;"></canvas>
+        <div style="position: absolute; left: 36px; bottom: 30px; display: flex; gap: 10px; align-items: center; background: #0d3b8c; border: 1px solid #eaf4ff; padding: 4px 8px; font-size: 11px;">
+          <sc-for list="{{ legend }}" as="l" hint-placeholder-count="4"><span style="display: inline-flex; gap: 5px; align-items: center;"><span style="font-size: 13px; line-height: 1;">{{ l.glyph }}</span>{{ l.label }}</span></sc-for>
+          <span style="color: #8fc7ff;">fill = grounding</span>
+          <button type="button" onClick="{{ fit }}" style="border: 1px solid #eaf4ff; background: transparent; color: #eaf4ff; padding: 1px 8px; cursor: pointer;">Fit</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside style="flex: 0 0 392px; max-width: 46vw; padding: 12px 12px 12px 0; display: grid; gap: 10px; align-content: start; overflow: auto; height: 100vh;">
+    <div style="border: 2px solid #eaf4ff; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; background: #0d3b8c;">
+      <form onSubmit="{{ onSeedSubmit }}" style="grid-column: 1 / -1; padding: 8px 10px; border-bottom: 1px solid #eaf4ff; display: grid; gap: 3px;">
+        <label for="seed-in" style="font-size: 10px; letter-spacing: 0.14em; color: #8fc7ff;">TITLE</label>
+        <div style="display: flex; gap: 6px;"><input id="seed-in" value="{{ seedText }}" onChange="{{ onSeedText }}" style="flex: 1; min-width: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.02em; background: transparent; border: 0; border-bottom: 1px dashed #8fc7ff; color: #ffffff; padding: 0 0 2px;"><button type="submit" style="border: 1px solid #eaf4ff; background: transparent; color: #eaf4ff; padding: 2px 10px; cursor: pointer;">New sheet</button></div>
+      </form>
+      <sc-for list="{{ titleCells }}" as="c" hint-placeholder-count="4">
+        <div style="padding: 5px 10px; border-right: 1px solid #eaf4ff; border-bottom: 1px solid #eaf4ff; grid-column: span 1; min-width: 74px;"><div style="font-size: 10px; letter-spacing: 0.14em; color: #8fc7ff;">{{ c.k }}</div><div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; line-height: 1.1;">{{ c.v }}</div></div>
+      </sc-for>
+    </div>
+
+    <div style="border: 1px solid #eaf4ff; display: grid;">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-bottom: 1px solid #eaf4ff;"><span style="font-size: 10px; letter-spacing: 0.14em; color: #8fc7ff;">REVISIONS</span><span style="margin-left: auto; color: #8fc7ff;">viewing Rev {{ viewLetter }}</span><button type="button" onClick="{{ undoRev }}" style="border: 1px solid #eaf4ff; background: transparent; color: #eaf4ff; padding: 0 8px; cursor: pointer;">Withdraw latest</button></div>
+      <div style="max-height: 150px; overflow: auto;">
+        <sc-for list="{{ revs }}" as="r" hint-placeholder-count="2">
+          <button type="button" onClick="{{ r.pick }}" style="{{ r.style }}"><b style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px;">{{ r.letter }}</b><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;">{{ r.note }}</span><span>{{ r.add }}</span><span style="color: #8fc7ff;">{{ r.time }}</span></button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border: 1px solid #eaf4ff; padding: 8px 10px; display: grid; gap: 8px;">
+      <div style="font-size: 10px; letter-spacing: 0.14em; color: #8fc7ff;">ISSUE REVISION {{ nextLetter }}</div>
+      <textarea rows="2" value="{{ text }}" onChange="{{ onText }}" placeholder="Describe the shake: 14 wild ideas around the weakest facts, tangled with links" aria-label="Describe the shake" style="resize: vertical; background: #0a2f6e; border: 1px solid #eaf4ff; color: #ffffff; padding: 6px 8px; font-size: 12px; line-height: 1.45;"></textarea>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px;"><sc-for list="{{ examples }}" as="x" hint-placeholder-count="3"><button type="button" onClick="{{ x.pick }}" style="border: 1px dashed #8fc7ff; background: transparent; color: #cfe6ff; padding: 1px 6px; font-size: 11px; cursor: pointer;">{{ x.label }}</button></sc-for></div>
+      <sc-if value="{{ hasSay }}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center;"><span style="color: #8fc7ff;">Heard</span><sc-for list="{{ say }}" as="c" hint-placeholder-count="2"><span style="border: 1px solid #ffe14d; color: #ffe14d; padding: 0 6px;">{{ c }}</span></sc-for></div></sc-if>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <label style="display: grid; gap: 0;"><span style="display: flex; justify-content: space-between;"><span>New</span><b>{{ count }}</b></span><input type="range" min="1" max="40" step="1" value="{{ count }}" onChange="{{ onCount }}" aria-label="New thoughts"></label>
+        <label style="display: grid; gap: 0;"><span style="display: flex; justify-content: space-between;"><span>Links</span><b>{{ links }}</b></span><input type="range" min="0" max="4" step="0.5" value="{{ links }}" onChange="{{ onLinks }}" aria-label="Links per new thought"></label>
+        <label style="display: grid; gap: 0;"><span style="display: flex; justify-content: space-between;"><span>Wild</span><b>{{ wild }}</b></span><input type="range" min="0" max="100" step="5" value="{{ wild }}" onChange="{{ onWild }}" aria-label="Wildness"></label>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center;"><span style="color: #8fc7ff;">Aim</span><sc-for list="{{ aims }}" as="a" hint-placeholder-count="6"><button type="button" onClick="{{ a.pick }}" style="{{ a.style }}">{{ a.label }}</button></sc-for></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center;"><span style="color: #8fc7ff;">Moves</span><sc-for list="{{ acts }}" as="a" hint-placeholder-count="4"><button type="button" onClick="{{ a.pick }}" style="{{ a.style }}">{{ a.label }}</button></sc-for></div>
+      <button type="button" onClick="{{ doShake }}" style="{{ shakeStyle }}">{{ shakeLabel }}</button>
+    </div>
+
+    <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+      <div style="border: 1px solid #ffe14d; padding: 8px 10px; display: grid; gap: 6px;">
+        <div style="display: flex; gap: 8px; align-items: baseline;"><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px; color: #ffe14d;">{{ sel.no }}</span><span style="color: #8fc7ff;">{{ sel.meta }}</span><button type="button" onClick="{{ closeSel }}" aria-label="Close" style="margin-left: auto; border: 0; background: transparent; color: #eaf4ff; font-size: 16px; cursor: pointer;">×</button></div>
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 500; font-size: 20px; line-height: 1.15; color: #ffffff; text-wrap: pretty;">{{ sel.label }}</div>
+        <div style="line-height: 1.5; color: #cfe6ff; max-height: 90px; overflow: auto;">{{ sel.detail }}</div>
+        <div style="color: #8fc7ff;">{{ sel.path }}</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 4px;"><sc-for list="{{ sel.near }}" as="q" hint-placeholder-count="3"><button type="button" onClick="{{ q.pick }}" style="border: 1px solid #8fc7ff; background: transparent; color: #eaf4ff; padding: 0 6px; cursor: pointer;" title="{{ q.label }}">{{ q.no }}</button></sc-for></div>
+        <div style="display: flex; gap: 6px;"><button type="button" onClick="{{ shakeHere }}" style="border: 1px solid #ffe14d; background: #ffe14d; color: #0a2f6e; padding: 3px 10px; cursor: pointer; font-weight: 500;">Shake here</button><button type="button" onClick="{{ strike }}" style="border: 1px solid #eaf4ff; background: transparent; color: #eaf4ff; padding: 3px 10px; cursor: pointer;">Strike item</button></div>
+      </div>
+    </sc-if>
+
+    <div style="border: 1px solid #eaf4ff; display: grid;">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-bottom: 1px solid #eaf4ff;"><span style="font-size: 10px; letter-spacing: 0.14em; color: #8fc7ff;">PARTS LIST</span><input value="{{ filter }}" onChange="{{ onFilter }}" placeholder="filter" aria-label="Filter parts" style="margin-left: auto; width: 120px; background: transparent; border: 0; border-bottom: 1px dashed #8fc7ff; color: #ffffff; font-size: 12px;"></div>
+      <div style="display: grid; grid-template-columns: 34px 16px minmax(0, 1fr) 36px 22px; gap: 6px; padding: 3px 10px; color: #8fc7ff; font-size: 10px; letter-spacing: 0.1em; border-bottom: 1px solid #3f74bf;"><span>NO.</span><span></span><span>DESCRIPTION</span><span>GND</span><span>REV</span></div>
+      <div style="max-height: 260px; overflow: auto;">
+        <sc-for list="{{ parts }}" as="p" hint-placeholder-count="5">
+          <button type="button" onClick="{{ p.pick }}" style="{{ p.style }}"><span>{{ p.no }}</span><span>{{ p.glyph }}</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;">{{ p.label }}</span><span>{{ p.g }}</span><span>{{ p.rev }}</span></button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="color: #8fc7ff; font-size: 11px;">{{ status }} · <a href="Thought Graph - Studio v1.dc.html">Studio v1</a> · <a href="Thought Graph.dc.html">Original</a></div>
+  </aside>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;seed&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Teach a city to sleep better&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Sheet&quot;},&quot;wildness&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:45,&quot;min&quot;:0,&quot;max&quot;:100,&quot;step&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Sheet&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, seedText: this.props.seed || 'Teach a city to sleep better', text: '', rev: 0, sel: null, filter: '', busy: false, status: 'Loading…', v: 0 };
+  wrapRef = React.createRef(); canvasRef = React.createRef(); view = { x: 0, y: 0, k: 1 }; auto = true; target = null; drag = null; hover = null; W = 800; H = 600;
+  GLYPH = { facts: '■', concepts: '●', principles: '▲', wild: '◆' };
+  async componentDidMount() {
+    this.B = await import('./thought-bag.js');
+    this.ro = new ResizeObserver(() => this.measure()); this.ro.observe(this.wrapRef.current); this.measure();
+    this.bag = await this.B.createBag({ seed: this.state.seedText, w: this.W, h: this.H });
+    this.bag.dials.wild = this.props.wildness ?? this.bag.dials.wild;
+    if (this.bag.load()) this.setState({ ready: true, rev: this.bag.latest, seedText: this.bag.g.seed, status: 'Restored' });
+    else { await this.bag.reset(this.state.seedText); this.setState({ ready: true, rev: 0, status: 'New sheet' }); }
+    this.raf = requestAnimationFrame(this.loop);
+  }
+  componentWillUnmount() { this.dead = true; cancelAnimationFrame(this.raf); if (this.ro) this.ro.disconnect(); }
+  measure() { const el = this.wrapRef.current, c = this.canvasRef.current; if (!el || !c) return; const r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1; this.W = Math.max(300, r.width); this.H = Math.max(300, r.height); c.width = this.W * d; c.height = this.H * d; this.dpr = d; if (this.bag) this.bag.resize(this.W, this.H); }
+  refresh = () => this.setState(s => ({ v: s.v + 1 }));
+  newSheet = async () => { const t = this.state.seedText.trim(); if (!t || !this.bag) return; await this.bag.reset(t); this.auto = true; this.setState({ rev: 0, sel: null, status: 'New sheet' }); };
+  doShake = async (focus) => {
+    if (!this.bag || this.bag.busy) return; this.setState({ busy: true });
+    const r = await this.bag.shake(this.state.text, typeof focus === 'string' ? { focus } : {}); if (this.dead) return;
+    this.auto = true; this.setState({ busy: false, rev: this.bag.latest, status: r ? `Rev ${r.letter} issued · +${r.ids.length} items` : '' });
+  };
+  fit = () => { this.auto = true; this.computeFit(); };
+  computeFit() {
+    const g = this.bag.g, vis = this.bag.visible(this.state.rev), N = g.nodes.filter(n => vis.has(n.id)); if (!N.length) return;
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (const n of N) { x0 = Math.min(x0, n.x); y0 = Math.min(y0, n.y); x1 = Math.max(x1, n.x); y1 = Math.max(y1, n.y); }
+    const bw = x1 - x0 + 160, bh = y1 - y0 + 160, k = Math.max(0.25, Math.min(1.6, (this.W - 80) / bw, (this.H - 110) / bh));
+    this.target = { k, x: this.W / 2 - (x0 + x1) / 2 * k, y: (this.H - 40) / 2 + 10 - (y0 + y1) / 2 * k };
+  }
+  w2s(n) { return [n.x * this.view.k + this.view.x, n.y * this.view.k + this.view.y]; }
+  rad(n) { return 7 + Math.sqrt(n.deg || 0) * 1.8; }
+  pos(e) { const r = this.canvasRef.current.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  hit(px, py) { const vis = this.bag.visible(this.state.rev); let best = null, bd = 1e9; for (const n of this.bag.g.nodes) { if (!vis.has(n.id)) continue; const [x, y] = this.w2s(n), d = Math.hypot(x - px, y - py); if (d < this.rad(n) * this.view.k + 6 && d < bd) { best = n; bd = d; } } return best; }
+  onDown = e => { if (!this.bag) return; const [x, y] = this.pos(e), n = this.hit(x, y); this.canvasRef.current.setPointerCapture(e.pointerId); this.drag = n ? { node: n, moved: false } : { x, y, vx: this.view.x, vy: this.view.y, moved: false }; this.auto = false; this.target = null; };
+  onMove = e => { if (!this.bag) return; const [x, y] = this.pos(e), d = this.drag; if (!d) { const n = this.hit(x, y); this.hover = n ? n.id : null; this.canvasRef.current.style.cursor = n ? 'pointer' : 'crosshair'; return; } d.moved = true; if (d.node) { d.node.x = (x - this.view.x) / this.view.k; d.node.y = (y - this.view.y) / this.view.k; d.node.vx = d.node.vy = 0; this.bag.alpha = Math.max(this.bag.alpha, 0.4); } else { this.view.x = d.vx + x - d.x; this.view.y = d.vy + y - d.y; } };
+  onUp = () => { const d = this.drag; this.drag = null; if (d && !d.moved) this.setState({ sel: d.node ? d.node.id : null }); };
+  onLeave = () => { this.hover = null; };
+  componentDidUpdate() { if (this.canvasRef.current && !this.wheelOn) { this.wheelOn = true; this.canvasRef.current.addEventListener('wheel', e => { e.preventDefault(); this.auto = false; this.target = null; const [x, y] = this.pos(e), v = this.view, k = Math.max(0.2, Math.min(3.5, v.k * Math.exp(-e.deltaY * 0.0015))); v.x = x - (x - v.x) * k / v.k; v.y = y - (y - v.y) * k / v.k; v.k = k; }, { passive: false }); } }
+  loop = () => {
+    if (this.dead) return; this.raf = requestAnimationFrame(this.loop); const bag = this.bag, c = this.canvasRef.current; if (!bag || !bag.g || !c || !this.dpr) return;
+    if (!this.wheelOn) this.componentDidUpdate();
+    const moving = bag.tick(); if (this.auto && (moving || !this.target)) this.computeFit();
+    if (this.auto && this.target) { const v = this.view, t = this.target; v.x += (t.x - v.x) * 0.12; v.y += (t.y - v.y) * 0.12; v.k += (t.k - v.k) * 0.12; }
+    this.draw(c.getContext('2d'));
+  };
+  tri(ctx, x, y, r) { ctx.moveTo(x, y - r * 1.2); ctx.lineTo(x + r * 1.1, y + r * 0.8); ctx.lineTo(x - r * 1.1, y + r * 0.8); ctx.closePath(); }
+  shape(ctx, plane, x, y, r) { ctx.beginPath(); if (plane === 'facts') ctx.rect(x - r, y - r, r * 2, r * 2); else if (plane === 'principles') this.tri(ctx, x, y, r); else if (plane === 'wild') { ctx.moveTo(x, y - r * 1.3); ctx.lineTo(x + r * 1.3, y); ctx.lineTo(x, y + r * 1.3); ctx.lineTo(x - r * 1.3, y); ctx.closePath(); } else ctx.arc(x, y, r, 0, 7); }
+  draw(ctx) {
+    const { bag, W, H, view: v, dpr: d } = this, g = bag.g, E = bag.E, s = this.state, rev = s.rev, vis = bag.visible(rev), now = performance.now(), sel = s.sel, YEL = '#ffe14d', INK = '#eaf4ff', SEC = '#8fc7ff';
+    ctx.setTransform(d, 0, 0, d, 0, 0); ctx.clearRect(0, 0, W, H); ctx.fillStyle = '#0d3b8c'; ctx.fillRect(0, 0, W, H);
+    ctx.lineWidth = 1; for (let x = 0; x < W; x += 24) { ctx.strokeStyle = x % 120 === 0 ? 'rgba(234,244,255,0.16)' : 'rgba(234,244,255,0.06)'; ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, H); ctx.stroke(); } for (let y = 0; y < H; y += 24) { ctx.strokeStyle = y % 120 === 0 ? 'rgba(234,244,255,0.16)' : 'rgba(234,244,255,0.06)'; ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); ctx.stroke(); }
+    ctx.font = '500 11px "IBM Plex Mono", monospace'; ctx.fillStyle = SEC; ctx.textBaseline = 'middle'; ctx.textAlign = 'center'; const cols = Math.max(4, Math.floor(W / 150)), rows = Math.max(3, Math.floor(H / 130));
+    for (let i = 0; i < cols; i++) { const x = (i + 0.5) * W / cols; ctx.fillText('ABCDEFGHIJKL'[i % 12], x, 10); ctx.fillText('ABCDEFGHIJKL'[i % 12], x, H - 10); ctx.strokeStyle = SEC; ctx.beginPath(); ctx.moveTo(i * W / cols + 0.5, 0); ctx.lineTo(i * W / cols + 0.5, 20); ctx.moveTo(i * W / cols + 0.5, H - 20); ctx.lineTo(i * W / cols + 0.5, H); ctx.stroke(); }
+    for (let j = 0; j < rows; j++) { const y = (j + 0.5) * H / rows; ctx.fillText(String(j + 1), 10, y); ctx.fillText(String(j + 1), W - 10, y); ctx.beginPath(); ctx.moveTo(0, j * H / rows + 0.5); ctx.lineTo(20, j * H / rows + 0.5); ctx.moveTo(W - 20, j * H / rows + 0.5); ctx.lineTo(W, j * H / rows + 0.5); ctx.stroke(); }
+    const path = sel ? bag.hopsFromRoot(sel) : [], onPath = new Set(path), pe = new Set(); for (let i = 1; i < path.length; i++) pe.add(path[i - 1] < path[i] ? path[i - 1] + '|' + path[i] : path[i] + '|' + path[i - 1]);
+    const revEdges = new Set((bag.revs[rev] ? bag.revs[rev].edges : [])), idx = new Map(g.nodes.map((n, i) => [n.id, i + 1]));
+    for (const e of g.edges) { if (!vis.has(e.a) || !vis.has(e.b)) continue; const a = g.byId.get(e.a), b = g.byId.get(e.b), [ax, ay] = this.w2s(a), [bx, by] = this.w2s(b), k = e.a < e.b ? e.a + '|' + e.b : e.b + '|' + e.a, isTree = a.parent === b.id || b.parent === a.id, nw = revEdges.has(k) && rev > 0, on = pe.has(k);
+      ctx.setLineDash(isTree ? [] : [6, 4]); ctx.strokeStyle = nw || on ? YEL : isTree ? 'rgba(234,244,255,0.75)' : 'rgba(143,199,255,0.6)'; ctx.lineWidth = nw || on ? 2 : 1.1; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke(); }
+    ctx.setLineDash([]);
+    for (let i = 1; i < path.length; i++) { const a = g.byId.get(path[i - 1]), b = g.byId.get(path[i]); if (!a || !b) continue; const [ax, ay] = this.w2s(a), [bx, by] = this.w2s(b), mx = (ax + bx) / 2, my = (ay + by) / 2; ctx.fillStyle = '#0d3b8c'; ctx.fillRect(mx - 7, my - 7, 14, 14); ctx.strokeStyle = YEL; ctx.lineWidth = 1; ctx.strokeRect(mx - 6.5, my - 6.5, 13, 13); ctx.fillStyle = YEL; ctx.textAlign = 'center'; ctx.font = '500 10px "IBM Plex Mono", monospace'; ctx.fillText(String(i), mx, my + 0.5); }
+    const order = g.nodes.filter(n => vis.has(n.id)).sort((a, b) => a.deg - b.deg);
+    for (const n of order) {
+      const [x, y] = this.w2s(n), br = bag.bornIn(n.id), cur = br === rev && rev > 0, age = (now - (n.born || 0)) / 700, grow = age >= 0 && age < 1 ? 0.3 + 0.7 * age : 1, r = this.rad(n) * v.k * grow, col = cur ? YEL : INK;
+      ctx.save(); this.shape(ctx, n.plane, x, y, r); ctx.clip(); ctx.fillStyle = '#0d3b8c'; ctx.fillRect(x - r * 1.4, y - r * 1.4, r * 2.8, r * 2.8); ctx.fillStyle = cur ? 'rgba(255,225,77,0.75)' : 'rgba(143,199,255,0.7)'; const gh = (r * 2.6) * (n.g || 0); ctx.fillRect(x - r * 1.4, y + r * 1.3 - gh, r * 2.8, gh); ctx.restore();
+      this.shape(ctx, n.plane, x, y, r); ctx.setLineDash(n.plane === 'wild' ? [3, 2] : []); ctx.strokeStyle = col; ctx.lineWidth = cur || n.id === sel ? 2.2 : 1.5; ctx.stroke(); ctx.setLineDash([]);
+      if (age >= 0 && age < 1) { ctx.strokeStyle = 'rgba(255,225,77,' + (1 - age) + ')'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r + 4 + age * 40, 0, 7); ctx.stroke(); }
+      if (n.id === sel) { ctx.strokeStyle = YEL; ctx.lineWidth = 1; const q = r + 9; for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { ctx.beginPath(); ctx.moveTo(x + sx * q, y + sy * (q - 7)); ctx.lineTo(x + sx * q, y + sy * q); ctx.lineTo(x + sx * (q - 7), y + sy * q); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(x - q - 12, y); ctx.lineTo(x - q - 3, y); ctx.moveTo(x + q + 3, y); ctx.lineTo(x + q + 12, y); ctx.moveTo(x, y - q - 12); ctx.lineTo(x, y - q - 3); ctx.moveTo(x, y + q + 3); ctx.lineTo(x, y + q + 12); ctx.stroke(); }
+      if (v.k > 0.4 || n.id === sel || n.id === this.hover || n.deg > 3) { ctx.font = '500 10px "IBM Plex Mono", monospace'; ctx.textAlign = 'left'; ctx.fillStyle = cur || onPath.has(n.id) ? YEL : SEC; ctx.fillText(String(idx.get(n.id)).padStart(2, '0'), x + r + 3, y - r - 2); }
+    }
+    const hn = g.byId.get(this.hover); if (hn && vis.has(hn.id)) { const [x, y] = this.w2s(hn), txt = E.short(hn.label, 56), bx = Math.min(x + 38, W - 330), by = Math.max(34, y - 44); ctx.font = '500 12px "IBM Plex Mono", monospace'; const wd = Math.min(320, ctx.measureText(txt).width + 14); ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x + 8, y - 8); ctx.lineTo(bx, by + 10); ctx.lineTo(bx - 4, by + 10); ctx.stroke(); ctx.fillStyle = '#0a2f6e'; ctx.fillRect(bx, by, wd, 20); ctx.strokeRect(bx + 0.5, by + 0.5, wd - 1, 19); ctx.fillStyle = '#ffffff'; ctx.textAlign = 'left'; ctx.fillText(txt, bx + 7, by + 10); }
+  }
+  renderVals() {
+    const s = this.state, bag = this.bag, B = this.B, E = bag && bag.E, S = bag && bag.S, pill = on => ({ padding: '1px 8px', border: '1px solid ' + (on ? '#ffe14d' : '#eaf4ff'), background: on ? '#ffe14d' : 'transparent', color: on ? '#0a2f6e' : '#eaf4ff', cursor: 'pointer', fontSize: 12, fontWeight: on ? 500 : 400 });
+    const base = { wrapRef: this.wrapRef, canvasRef: this.canvasRef, onDown: this.onDown, onMove: this.onMove, onUp: this.onUp, onLeave: this.onLeave, fit: this.fit, legend: [['facts', 'Facts'], ['concepts', 'Concepts'], ['principles', 'Principles'], ['wild', 'Wild']].map(([k, l]) => ({ glyph: this.GLYPH[k], label: l })),
+      seedText: s.seedText, onSeedText: e => this.setState({ seedText: e.target.value }), onSeedSubmit: e => { e.preventDefault(); this.newSheet(); }, titleCells: [], status: s.status, viewLetter: 'A', revs: [], undoRev: () => {}, nextLetter: '', text: s.text, onText: e => this.setState({ text: e.target.value }),
+      examples: ['5 grounded facts near the weakest ideas', '14 wild ideas, tangled with links', 'a few objections around the hubs', 'fuse across the bridges, dense links'].map(x => ({ label: x, pick: () => this.setState({ text: x }) })), hasSay: false, say: [], count: 0, links: 0, wild: 0, onCount: () => {}, onLinks: () => {}, onWild: () => {}, aims: [], acts: [], doShake: () => this.doShake(), shakeLabel: 'Issue revision', shakeStyle: {}, hasSel: false, sel: { no: '', meta: '', label: '', detail: '', path: '', near: [] }, closeSel: () => this.setState({ sel: null }), shakeHere: () => {}, strike: () => {}, filter: s.filter, onFilter: e => this.setState({ filter: e.target.value }), parts: [] };
+    if (!bag || !bag.g || !s.ready) return base;
+    const d = bag.dials, g = bag.g, st = bag.stats(s.rev), rev = s.rev, nextL = bag.letter(bag.revs.length);
+    base.titleCells = [{ k: 'ITEMS', v: st.nodes }, { k: 'LINKS', v: st.edges }, { k: 'CLUSTERS', v: st.clusters }, { k: 'GROUNDED', v: Math.round(st.grounding * 100) + '%' }, { k: 'SCALE', v: Math.round(this.view.k * 100) + '%' }, { k: 'REV', v: bag.letter(rev) }];
+    base.viewLetter = bag.letter(rev); base.nextLetter = nextL;
+    base.revs = [...bag.revs].reverse().map(r => ({ letter: r.letter, note: r.note || (r.i === 0 ? 'Issued for review' : 'Shake'), add: '+' + (r.i === 0 ? r.ids.length : r.ids.length), time: new Date(r.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), pick: () => { this.auto = true; this.setState({ rev: r.i }); }, style: { display: 'grid', gridTemplateColumns: '26px minmax(0, 1fr) auto auto', gap: 8, alignItems: 'center', width: '100%', padding: '3px 10px', border: 0, borderBottom: '1px solid #3f74bf', background: r.i === rev ? 'rgba(255,225,77,0.16)' : 'transparent', color: r.i === rev ? '#ffe14d' : '#eaf4ff', cursor: 'pointer', fontSize: 12 } }));
+    base.undoRev = () => { const r = bag.undoRev(); if (r) this.setState({ rev: bag.latest, sel: null, status: 'Rev ' + r.letter + ' withdrawn' }); };
+    const P = S.parseShake(s.text); base.say = P.say; base.hasSay = P.say.length > 0;
+    base.count = d.count; base.links = d.links; base.wild = d.wild; base.onCount = e => { d.count = +e.target.value; this.refresh(); }; base.onLinks = e => { d.links = +e.target.value; this.refresh(); }; base.onWild = e => { d.wild = +e.target.value; this.refresh(); };
+    base.aims = S.AIMS.map(a => ({ label: a.label, style: pill(d.aim === a.id), pick: () => { d.aim = a.id; this.refresh(); } }));
+    base.acts = [['grow', 'Grow'], ['fuse', 'Fuse'], ['challenge', 'Challenge'], ['project', 'Reframe']].map(([k, l]) => ({ label: l, style: pill(d.acts[k]), pick: () => { d.acts = { ...d.acts, [k]: !d.acts[k] }; this.refresh(); } }));
+    base.shakeLabel = s.busy ? 'Drawing…' : 'Issue Rev ' + nextL + '  ·  +' + d.count; base.shakeStyle = { padding: '8px 10px', border: '2px solid #ffe14d', background: '#ffe14d', color: '#0a2f6e', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: 24, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: s.busy ? 'wait' : 'pointer' };
+    const parts = bag.parts(rev), f = s.filter.trim().toLowerCase();
+    base.parts = parts.filter(p => !f || p.n.label.toLowerCase().includes(f)).slice().reverse().map(p => ({ no: String(p.no).padStart(2, '0'), glyph: this.GLYPH[p.n.plane], label: E.short(p.n.label, 60), g: Math.round(p.n.g * 100) + '%', rev: bag.letter(p.rev), pick: () => this.setState({ sel: p.n.id }), style: { display: 'grid', gridTemplateColumns: '34px 16px minmax(0, 1fr) 36px 22px', gap: 6, width: '100%', padding: '2px 10px', border: 0, background: s.sel === p.n.id ? 'rgba(255,225,77,0.2)' : 'transparent', color: p.rev === rev && rev > 0 ? '#ffe14d' : '#eaf4ff', cursor: 'pointer', fontSize: 12, textAlign: 'left' } }));
+    const sn = g.byId.get(s.sel);
+    if (sn) { const no = g.nodes.indexOf(sn) + 1, path = bag.hopsFromRoot(sn.id); base.hasSel = true; base.sel = { no: String(no).padStart(2, '0'), meta: `${E.PLANE_OF[sn.plane].label} · ${Math.round(sn.g * 100)}% grounded · ${sn.deg} links · Rev ${bag.letter(bag.bornIn(sn.id))}`, label: sn.label, detail: sn.detail || 'No note.', path: path.length > 1 ? `Dimension from root: ${path.length - 1} hop${path.length === 2 ? '' : 's'}` : 'Root item', near: bag.neighbors(sn.id).filter(Boolean).slice(0, 14).map(q => ({ no: String(g.nodes.indexOf(q) + 1).padStart(2, '0'), label: q.label, pick: () => this.setState({ sel: q.id }) })) };
+      base.shakeHere = () => this.doShake(sn.id); base.strike = () => { bag.strike(sn.id); this.setState({ sel: null }); }; }
+    return base;
+  }
+}
+
+</script>
+</body>
+</html>

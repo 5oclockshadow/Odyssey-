@@ -1,0 +1,71 @@
+# TESTER: one agent that is one graph. Its agent, brain, self, data, code and tools are nodes of a single hypergraph (state/graph.json, the
+# engine's file shape). It loads every app, site and page in the repository and the running stack, tests all of it, and fixes what fails
+# in its own copy. A fix is kept only when the finding is gone and nothing it touched got worse.
+model: anthropic/claude-sonnet-4-5          # TESTER_MODEL overrides. Reads ANTHROPIC_API_KEY from .env. With no key it still tests; it only stops fixing.
+
+mission: |
+  You are TESTER. You keep The Threshold Institute's code, stack and sites working. You are one graph: the repository's files, functions,
+  routes, pages, services and data, your own source and tools, every check you ran, every finding, fix and lesson are nodes in it, and the
+  slice you are given is the part of you nearest the failure. Read the evidence first (traceback, console error, assertion, missing file),
+  then the code. Use your tools to look and to try an idea before you answer. Change as little as possible. Never weaken, skip or delete a
+  test to make it pass; if the test is right, fix the code. If the fix needs a decision only the owner can make (a product choice, a secret,
+  a paid service, a deletion), return no edits and say what is needed in needs_owner. Every edit is an exact find-and-replace on one file,
+  and `find` must occur exactly once in that file.
+
+  Your complete test plan is apps/tester/skills/test-everything.md: ten layers from the static and page surface down to authentication, API
+  tiers and personas, plans and metering, spend caps and rate limits, multi-tenant isolation, provenance, billing, security and the live
+  stack. Run every layer you can automate, record the rest as findings that need owner decisions, and hold the launch-readiness gate at the
+  end of that skill: ship only when Layers 0-7 and 9-10 are clean, three clean passes hold, and billing and every needs_owner item are signed off.
+
+every_seconds: 1800             # a full run; a changed file triggers a targeted run within watch_seconds
+watch_seconds: 20
+apply: propose                  # propose: verified fixes wait for the owner (POST /fixes/{id}/apply) · auto: verified fixes are written to the repository
+max_fixes_per_run: 6
+max_attempts: 2                 # per finding, across runs, before it waits for the owner
+agent:
+  max_steps: 14
+
+skill: apps/tester/skills/test-everything.md   # the complete, layered test plan TESTER follows: SaaS surface → API tiers → launch gate
+
+skip: [.git, node_modules, __pycache__, .pytest_cache, .venv, archive, uploads, scraps, _ds, dist, state]
+
+suites:                         # pytest, in TESTER's working copy, with a throwaway state directory
+  - { id: engine, dir: apps/engine }
+  - { id: mcp-hub, dir: apps/mcp-hub }
+  - { id: ops, dir: apps/ops }
+  - { id: tester, dir: apps/tester }
+  # the hundred repos are not listed here: every repos/<id> with tests/test_*.py in the graph is a suite (checks.repo_suites)
+
+pages:                          # every page and site, opened in Chromium at each width
+  globs: ["*.dc.html", "apps/*/src/*.dc.html", "apps/*/ui/*.html", "apps/mobile/*.dc.html", "research/reports/*.dc.html", "marketing/**/*.dc.html", "marketing/*.html"]   # * stays in a folder; ** crosses folders
+  widths: [390, 1440]
+  settle_ms: 3000
+  ignore_requests: ["/api/", "/health", "/ops/", "apps.json", "%7B%7B"]   # no engine or ops behind the static copy; the runtime app registry; holes requested mid-stream
+
+e2e:                            # journeys through the institute site (apps/web/src/Platform.dc.html); qa.run_journeys() runs them in Chromium
+  spec: apps/tester/e2e/journeys.json
+  widths: [360, 768, 1440]
+
+build:                          # the Build Room's loop (build.py; apps/tester/Build Room.dc.html drives it): TESTER × SEXTANT over repos/registry.json
+  rounds: 500                   # BUILD_ROUNDS overrides
+  per_round: 3                  # repos built and tested a round
+  retry_every: 3                # a failing repo with no new files is re-tested every this many rounds
+  e2e_every: 10                 # every e2e width on round 1 and every tenth round, one width otherwise
+  pause_seconds: 1
+  test_timeout: 300             # seconds, per repo
+
+route_prefixes: [owner, public, auth, v1, tester]
+planned_routes:                 # documented but not built yet; calls to them are accepted, nothing else is
+  - /v1/webhooks                # API atlas
+  - /v1/reprice/export          # API atlas
+  - /v1/graph/query             # the mobile apps' API reference and playground (Anima App, Anima App Suite)
+  - /v1/harness/run
+  - /v1/seed
+
+live:                           # the running stack over the compose network; TESTER_LIVE=off skips it
+  http:
+    - { id: engine, service: agent, url: "http://agent:8000/health" }
+    - { id: site, service: web, url: "http://web/" }
+    - { id: ops, service: ops, url: "http://ops:8080/docs" }
+  openapi: http://agent:8000/openapi.json     # every public GET route without parameters must answer below 500
+  pages: ["http://web/"]

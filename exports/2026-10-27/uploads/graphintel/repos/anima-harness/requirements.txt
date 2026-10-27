@@ -1,0 +1,1 @@
+anima-seed-gen @ git+https://github.com/anima/seed-gen@v0.1.0

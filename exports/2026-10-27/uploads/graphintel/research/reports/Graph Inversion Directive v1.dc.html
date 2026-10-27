@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-300); }
+    code { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; color: var(--color-accent-200); }
+  </style>
+</helmet>
+
+<article data-screen-label="Directive" style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);padding:0 0 120px;">
+<div style="max-width:1040px;padding:48px clamp(20px,5vw,72px) 0;display:flex;flex-direction:column;gap:52px;">
+
+  <section style="display:grid;gap:14px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Directives register · to SEXTANT</div>
+    <table class="table" style="width:100%;">
+      <thead><tr><th style="width:44px;">#</th><th>Directive</th><th style="width:120px;">Status</th><th style="width:110px;">Opened</th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:ui-monospace,Menlo,monospace;color:var(--color-accent-200);">D1</td><td>Graph inversion — investigate whether graph intelligence has any purchase on inverting cryptography (this page)</td><td><span class="tag tag-accent">Open</span></td><td>21 Oct 2026</td></tr>
+      </tbody>
+    </table>
+    <p style="margin:0;font-size:13px;color:var(--color-neutral-400);">One directive is currently open. New directives are added as rows here and expanded below.</p>
+  </section>
+
+  <header style="display:grid;gap:18px;max-width:880px;">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">
+      <span>D1 · research directive · v1</span><span style="color:var(--color-neutral-600);">/</span><span>To: SEXTANT (best available)</span><span style="color:var(--color-neutral-600);">/</span><span>From: owner</span>
+    </div>
+    <h1 style="font-size:clamp(34px,5vw,52px);line-height:1.06;letter-spacing:-0.02em;font-weight:500;margin:0;">Investigate the opposite: could graph intelligence have any purchase on inverting cryptography?</h1>
+    <p style="font-size:clamp(17px,2vw,21px);line-height:1.45;margin:0;color:var(--color-neutral-300);max-width:800px;">The standing consensus says no, decisively. This directive asks you to take the contrary position seriously enough to try to break it — map the actual potential, do not assume the comfortable result.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <span class="tag tag-accent">Adversarial self-review</span>
+      <span class="tag tag-outline">Falsify the null</span>
+      <span class="tag tag-neutral">Research only · no live attacks</span>
+    </div>
+  </header>
+
+  <section style="display:grid;gap:16px;max-width:880px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">01 · The consensus position (verbatim)</div>
+    <blockquote style="margin:0;padding:22px 26px;border-left:3px solid var(--color-accent-600);border-radius:0 var(--radius-md) var(--radius-md) 0;background:color-mix(in srgb,var(--color-accent) 7%,transparent);font-size:16px;line-height:1.7;color:var(--color-text);">Recent discussions in the cryptographic community (such as debates sparked by advanced automated math reasoning models) look at whether AI could theoretically discover novel algebraic shortcuts or classical algorithms for discrete logarithms. However, that relies on automated mathematical theorem proving and symbolic logic—not graph intelligence. Even in those worst-case speculative scenarios, a graph database or network analysis framework remains entirely unequipped to invert the underlying cryptography.</blockquote>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);">Treat this as a hypothesis, <code>H0</code>, not a settled fact. The task is not to agree with it elegantly — it is to find the strongest honest case that it is wrong, then report whether that case holds.</p>
+  </section>
+
+  <section style="display:grid;gap:18px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">02 · The two hypotheses</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;">
+      <div class="card" style="display:grid;gap:8px;align-content:start;">
+        <div class="card-kicker">H0 · the null</div>
+        <p class="card-body" style="margin:0;">Graph intelligence — a seeded knowledge graph plus a cognition layer, or any network-analysis framework — contributes nothing to inverting discrete logs, factoring, or lattice problems. The hardness is algebraic; topology is the wrong instrument.</p>
+      </div>
+      <div class="card" style="display:grid;gap:8px;align-content:start;">
+        <div class="card-kicker">H1 · the opposite, under test</div>
+        <p class="card-body" style="margin:0;">There is some non-trivial role for graph intelligence in the attack chain — not necessarily inverting the primitive itself, but materially shrinking the work, guiding the symbolic search, or exposing structure a purely algebraic pass would miss.</p>
+      </div>
+    </div>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:820px;">Keep the two claims separate. H0 is about the <em>mathematics</em>; H1 may still be true in a weaker, orchestration sense while H0 holds for the core inversion. Report which flavour of H1, if any, survives scrutiny.</p>
+  </section>
+
+  <section style="display:grid;gap:18px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">03 · Where to look (and where not to)</div>
+    <div style="display:grid;gap:12px;max-width:880px;">
+      <div class="card elev-sm" style="display:grid;gap:7px;"><div class="card-kicker">Honest openings for H1</div><p class="card-body" style="margin:0;">Index calculus, the number-field sieve and Pollard-rho already exploit <em>structure</em> — relation graphs, cycle detection, smoothness graphs. Ask precisely: does representing those as first-class graphs, seeded with learned priors, change the constant factors or the search order in any measurable way? That is the only place the two frameworks touch.</p></div>
+      <div class="card elev-sm" style="display:grid;gap:7px;"><div class="card-kicker">Where the claim is almost certainly right</div><p class="card-body" style="margin:0;">No arrangement of nodes and edges inverts a one-way function. The security of DLP, RSA and lattices rests on algebraic hardness, not on anything a traversal, centrality measure or community detection computes. A graph database is storage and query, not a solver.</p></div>
+      <div class="card elev-sm" style="display:grid;gap:7px;"><div class="card-kicker">The orchestration seam</div><p class="card-body" style="margin:0;">If H1 survives at all, it is likely here: the seeded graph + DSPy layer as a <em>router</em> that marshals symbolic-logic and theorem-proving tools, remembers which lemmas paid off, and prunes the proof search — intelligence in the memory/cognition layer, with the math still done by the model. This is consistent with the project thesis and does not require topology to do algebra.</p></div>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:16px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">04 · What would count as refuting H0</div>
+    <div style="overflow-x:auto;">
+      <table class="table" style="width:100%;min-width:560px;">
+        <thead><tr><th>Claim level</th><th>Evidence that would move it</th><th>Default expectation</th></tr></thead>
+        <tbody>
+          <tr><td>Core inversion</td><td>A graph-native method that recovers a discrete log / factor with sub-exponential advantage over the best classical algorithm, on a non-toy modulus</td><td>None found</td></tr>
+          <tr><td>Constant-factor</td><td>A reproducible speedup to sieve/relation-collection from graph representation or learned ordering, with timings</td><td>Marginal at best</td></tr>
+          <tr><td>Orchestration</td><td>A seeded-graph router that lifts a theorem-prover's hit-rate on cryptographic lemmas vs. an unguided baseline</td><td>Plausible; worth a probe</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:820px;">If none of the three rows produce evidence, H0 stands and we say so plainly, with the register updated. A clean negative is a result, not a failure.</p>
+  </section>
+
+  <section style="display:grid;gap:16px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">05 · Deliverable</div>
+    <div class="card" style="display:grid;gap:10px;max-width:860px;">
+      <p class="card-body" style="margin:0;">A short report that (1) restates H0 fairly, (2) gives the strongest H1 case you can honestly build, (3) classifies that case as core / constant-factor / orchestration, (4) states what evidence would settle it and whether any exists, and (5) ends with a one-line verdict and a register update. Research and literature only — no execution against live keys or systems, and nothing that constitutes an operational attack.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;"><span class="tag tag-neutral">Cite sources</span><span class="tag tag-neutral">Separate math from orchestration</span><span class="tag tag-outline">Verdict + confidence</span></div>
+    </div>
+    <p style="margin:0;font-size:13px;color:var(--color-neutral-500);">Scope note: this directive studies the boundary of the project's own thesis. The intent is to know the real edge of graph intelligence, not to build anything offensive.</p>
+  </section>
+
+</div>
+</article>
+</x-dc>
+</body>
+</html>

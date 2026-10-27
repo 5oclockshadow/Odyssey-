@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-300); text-decoration-color: var(--color-accent-700); text-underline-offset: 3px; }
+    a:hover { color: var(--color-accent-200); text-decoration-color: var(--color-accent); }
+  </style>
+</helmet>
+<article style="min-height:100vh;background:radial-gradient(ellipse 60% 40% at 18% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);padding:0 0 120px;">
+<div style="max-width:1080px;padding:56px clamp(20px,5vw,72px) 0;display:flex;flex-direction:column;gap:64px;">
+
+<header data-screen-label="Masthead" style="display:grid;gap:18px;max-width:880px;">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);"><span>Companion A to the Seeded Substrate paper</span><span style="color:var(--color-neutral-600);">/</span><span>Evidence</span><span style="color:var(--color-neutral-600);">/</span><span>15 October 2026</span></div>
+  <h1 style="font-size:clamp(36px,5vw,52px);line-height:1.05;letter-spacing:-0.02em;font-weight:500;margin:0;">Does the cheap brain work? The public record</h1>
+  <p style="font-size:clamp(18px,2vw,21px);line-height:1.45;margin:0;color:var(--color-neutral-300);max-width:800px;">The <a href="Seeded Substrate Plan v4.dc.html">Seeded Substrate paper</a> claims that once Bridago is seeded, quality holds from a 30B model down to an LSTM on CPU (H0). Nobody has published that result. What has been published is each of its parts: small models matching large ones on scoped tasks, structure standing in for parameters, and a market that prices efficiency. This report grades that record against the paper's hypotheses.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;"><span class="tag tag-accent">Established: replicated or peer results</span><span class="tag tag-neutral">Supported: single study or vendor</span><span class="tag tag-outline">Open: H0 itself</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:14px;font-size:14px;"><a href="Seeded Substrate Plan v4.dc.html">Core paper: Plan v4</a><a href="AI Era Bubble.dc.html">Companion B: the AI-era bubble</a><a href="Institute Blueprint v3.dc.html">Companion C: Institute blueprint</a></div>
+</header>
+
+<section data-screen-label="01 Scorecard" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">01 · Scorecard</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Five parts of the claim, five verdicts</h2>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:940px;">
+      <thead><tr><th>Part of the claim</th><th>Paper link</th><th>Verdict</th><th>Strongest evidence</th></tr></thead>
+      <tbody>
+        <tr><td>Small models suffice for scoped agent work</td><td>H0 (top rungs)</td><td><span class="tag tag-accent">established</span></td><td>2.7B on par with 30B; 350M beats 175B on ToolBench</td></tr>
+        <tr><td>Recursion and depth substitute for parameters</td><td>Jarvis halting, H3</td><td><span class="tag tag-accent">established</span> on puzzles</td><td>7M TRM: 44.6% on ARC-AGI-1</td></tr>
+        <tr><td>System structure and memory beat model size</td><td>Rex, H5</td><td><span class="tag tag-neutral">supported</span></td><td>Small multi-agent systems beat larger single agents; memory ablation costs 18.3 pp</td></tr>
+        <tr><td>Cost per capability falls fast</td><td>Market case</td><td><span class="tag tag-accent">established</span></td><td>About 13× cheaper per task per year since 2023</td></tr>
+        <tr><td>A seeded graph lets an LSTM match 30B</td><td>H0, H3, H7</td><td><span class="tag tag-outline">open</span></td><td>No published test. This is the institute's experiment.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section data-screen-label="02 Small models" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">02 · Small models on scoped work</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Most agent calls do not need a frontier model</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">NVIDIA researchers argue that most agentic subtasks are repetitive, scoped and non-conversational, and that small models are sufficient for them and cheaper to run. Independent results point the same way.</p>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:900px;">
+      <thead><tr><th>Result</th><th>Figure</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Phi-2 (2.7B)</td><td>Commonsense reasoning and code scores on par with 30B models, about 15× faster</td><td><a href="https://arxiv.org/pdf/2506.02153">Belcak et al., NVIDIA</a></td></tr>
+        <tr><td>Nemotron-H 2–9B</td><td>Instruction following and code comparable to dense 30B models of the same generation</td><td><a href="https://arxiv.org/pdf/2506.02153">Belcak et al., NVIDIA</a></td></tr>
+        <tr><td>Serving cost</td><td>A 7B model is 10–30× cheaper to serve than a 70–175B model in latency, energy and FLOPs</td><td><a href="https://arxiv.org/html/2506.02153v3">Belcak et al., NVIDIA</a></td></tr>
+        <tr><td>OPT-350M, fine-tuned</td><td>77.55% pass rate on ToolBench against 26.00% for ChatGPT-CoT</td><td><a href="https://arxiv.org/html/2512.15943v2">Jhandi et al.</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:780px;">Limit: these models were fine-tuned or distilled for their task. The paper's claim is different: no task training, with the seed carrying the knowledge. The NVIDIA authors also note that large generalists keep an edge in broad language understanding.</p>
+</section>
+
+<section data-screen-label="03 Recursion" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">03 · Depth in place of size</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">A 7M recursive network on ARC</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">Samsung SAIL's Tiny Recursive Model scores 44.6% on ARC-AGI-1 and 7.8% on ARC-AGI-2 with 7M parameters. Gemini 2.5 Pro scores 4.9% on ARC-AGI-2. A living survey of ARC reads it as evidence that recursive depth can compensate for parameter count. Jarvis's energy-halting loop in the paper comes from this line of work.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px;max-width:820px;">
+    <div class="card-kicker">Caveats from follow-up work</div>
+    <p class="card-body" style="margin:0;">The original results rely on heavy test-time augmentation and majority-vote ensembling, and the model uses embeddings indexed by puzzle ID (<a href="https://arxiv.org/pdf/2512.11847">2512.11847</a>). One independent replication reached 79.37% on Sudoku-Extreme against the paper's 87.4% (<a href="https://ai-engineering-trend.medium.com/tiny-recursive-reasoning-7m-parameters-outperforming-100x-larger-models-on-arc-agi-challenges-cd8509f69eb7">replication</a>). TRM is trained per task family; it is not a general model.</p>
+  </div>
+</section>
+
+<section data-screen-label="04 Structure" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">04 · Structure and memory</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">The system around the model matters as much as its size</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">On tool-heavy benchmarks including GAIA, <a href="https://arxiv.org/html/2601.11327v2">small multi-agent systems outperformed much larger single-agent models</a>, even when the large models had tools. Performance tracked the orchestrator, not the sub-agents. Removing structured memory cut AIME by 18.3 points and GPQA by 8.1. This is the closest public result to Rex: memory structure carries measurable weight.</p>
+  </div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:780px;">Limit: one study, and its memory is accumulated context, not a seeded hypergraph. None of these studies runs a shuffled-structure control (H5), so it is unknown whether the structure helps or just the extra tokens.</p>
+</section>
+
+<section data-screen-label="05 Price" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">05 · The price of capability</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">Each level of capability gets cheaper fast</h2>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table" style="min-width:900px;">
+      <thead><tr><th>Measure</th><th>Figure</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Cost per task at fixed capability</td><td>Down about 47% per quarter since 2023, roughly 13× per year</td><td><a href="https://epoch.ai/publications/the-plunging-price-of-thought">Epoch AI, Sept 2026</a></td></tr>
+        <tr><td>Price per token, by benchmark</td><td>9× to 900× per year; median 50×, 200× since January 2024</td><td><a href="https://epoch.ai/data-insights/llm-inference-price-trends">Epoch AI, 2025</a></td></tr>
+        <tr><td>The frontier itself</td><td>Cost of evaluating the best model on a benchmark rose roughly 3× to 18× per year</td><td><a href="https://agentik.blog/p/ai-got-13x-cheaper-a-year-the-best-ai-got-more-expensive">Agentik, citing Epoch</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin:0;font-size:15px;line-height:1.6;max-width:780px;">Both trends matter to the paper. A fixed level of capability gets cheaper, but the best model gets more expensive. If H0 holds, buyers get frontier-equivalent quality on their own tasks at the falling end of the curve.</p>
+</section>
+
+<section data-screen-label="06 Market test" style="display:grid;gap:20px;">
+  <div style="display:grid;gap:14px;max-width:780px;">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">06 · The market has already tested the idea once</div>
+    <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">27 January 2025</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;">After DeepSeek released R1, Nvidia fell about 17% in one day and <a href="https://www.bloomberg.com/news/articles/2025-01-27/asml-sinks-as-china-ai-startup-triggers-panic-in-tech-stocks">lost $589 billion in market value</a>, the largest single-day loss in US market history. DeepSeek said a recent model cost $5.6 million to train. Investors read it as a sign that AI might need fewer chips and less energy.</p>
+  </div>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--color-neutral-400);max-width:780px;">Limits: the $5.6M figure was disputed by analysts, and Nvidia recovered about 9% the next day. The episode shows how the market prices efficiency news. It does not show that efficiency reduces total GPU demand.</p>
+</section>
+
+<section data-screen-label="07 Gap" style="display:grid;gap:16px;max-width:820px;">
+  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">07 · What remains unproven</div>
+  <h2 style="margin:0;font-size:32px;line-height:1.12;font-weight:500;">The gap the paper's experiment closes</h2>
+  <ul style="margin:0;padding-left:20px;display:grid;gap:10px;font-size:16px;line-height:1.6;">
+    <li>No public result runs one seeded memory across a ladder of model sizes down to a recurrent network (H0, H3).</li>
+    <li>No result compares a curated seed against a degree-preserving shuffle of the same seed (H5). Without that control, "the graph carries cognition" cannot be separated from "more context helps".</li>
+    <li>The small-model wins above rely on task training. The paper's claim is that seeding replaces it (H7).</li>
+    <li>Cheaper capability may raise total compute use rather than lower it. The counter-thesis has to win on quality per dollar, not on a fall in GPU demand.</li>
+  </ul>
+  <p style="margin:0;font-size:15px;line-height:1.6;color:var(--color-neutral-300);">The public record makes H0 plausible and the experiment worth running. It does not substitute for running it.</p>
+</section>
+
+</div>
+</article>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.git
+.env
+archive
+uploads
+_ds
+research/reports
+apps/engine/state
+apps/engine/__pycache__
+apps/engine/.pytest_cache

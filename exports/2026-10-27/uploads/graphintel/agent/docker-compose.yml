@@ -1,0 +1,18 @@
+# The agent's own Docker. `MCP_TOKEN=pick-a-long-secret docker compose up --build`, then paste the token into the Studio's MCP box.
+# mcp  : tools (filesystem, terminal) the Studio agent calls; it only ever talks to `dind`, never the host Docker.
+# dind : a private Docker daemon; containers the agent spins run inside it. Port 8088 is where the shipped site appears.
+services:
+  dind:
+    image: docker:27-dind
+    privileged: true
+    environment: { DOCKER_TLS_CERTDIR: "" }
+    ports: ["127.0.0.1:8088:8088"]
+    volumes: ["work:/work"]
+  mcp:
+    build: .
+    environment: { MCP_TOKEN: "${MCP_TOKEN:?set MCP_TOKEN}", DOCKER_HOST: "tcp://dind:2375", WORK: /work }
+    ports: ["127.0.0.1:8765:8765"]
+    volumes: ["work:/work"]
+    depends_on: [dind]
+    restart: unless-stopped
+volumes: { work: {} }

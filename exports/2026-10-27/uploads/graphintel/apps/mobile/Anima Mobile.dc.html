@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/styles.css">
+  <script src="../../_ds/nocturne-9ff5fde8-ef85-443e-9227-cefce455bb20/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); } a { color: var(--color-accent-300); } a:hover { color: var(--color-accent-200); } ::-webkit-scrollbar { display: none; }</style>
+</helmet>
+<div data-screen-label="Mobile" style="width:100%;max-width:430px;height:100vh;max-height:932px;margin:0 auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:radial-gradient(ellipse 90% 40% at 0% 0%, var(--color-accent-900) 0%, transparent 60%), var(--color-bg);position:relative;overflow:hidden;">
+  <header style="display:grid;gap:4px;padding:52px 20px 14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-300);">Anima · {{ tierName }}</span>
+      <button class="btn btn-ghost" style="font-size:12px;min-height:44px;" onClick="{{ toggleTier }}">Switch to {{ otherTier }}</button>
+    </div>
+    <h1 style="margin:0;font-size:28px;font-weight:500;letter-spacing:-0.02em;">{{ title }}</h1>
+    <span style="font-size:13px;color:var(--color-neutral-400);">{{ sub }}</span>
+  </header>
+
+  <main style="overflow-y:auto;padding:4px 16px 20px;display:grid;gap:10px;align-content:start;">
+    <sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}">
+      <sc-for list="{{ fires }}" as="f" hint-placeholder-count="4">
+        <div class="card" style="display:grid;gap:8px;padding:14px;">
+          <div style="display:flex;gap:10px;align-items:center;"><span style="font-size:20px;font-weight:500;color:var(--color-accent-200);width:34px;">{{ f.score }}</span><div style="display:grid;gap:2px;min-width:0;"><span style="font-size:15px;font-weight:500;">{{ f.title }}</span><span style="font-size:12px;color:var(--color-neutral-400);">{{ f.source }} · {{ f.detail }}</span></div></div>
+          <div style="display:flex;gap:8px;"><sc-for list="{{ f.acts }}" as="a" hint-placeholder-count="2"><button class="btn btn-secondary" style="flex:1;min-height:44px;font-size:13px;" onClick="{{ a.fn }}">{{ a.label }}</button></sc-for></div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ calm }}" hint-placeholder-val="{{ false }}"><div class="card" style="padding:18px;font-size:15px;">All clear. The agents will page you if anything changes.</div></sc-if>
+    </sc-if>
+
+    <sc-if value="{{ isAgents }}" hint-placeholder-val="{{ false }}">
+      <sc-for list="{{ agents }}" as="g" hint-placeholder-count="6">
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px;min-height:44px;">
+          <div style="display:grid;gap:2px;"><span style="font-size:15px;font-weight:500;">{{ g.name }}</span><span style="font-size:12px;color:var(--color-neutral-400);">{{ g.line }}</span></div>
+          <span class="{{ g.tag }}" style="font-size:11px;">{{ g.state }}</span>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isGraph }}" hint-placeholder-val="{{ false }}">
+      <input class="input" placeholder="Search the graph" value="{{ gq }}" onChange="{{ onGq }}" style="min-height:44px;"></input>
+      <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="5">
+        <div class="card" style="display:grid;gap:6px;padding:14px;">
+          <div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-size:15px;font-weight:500;">{{ n.label }}</span><span class="{{ n.tag }}" style="font-size:10px;padding:1px 7px;">{{ n.kind }}</span></div>
+          <span style="font-size:13px;line-height:1.5;color:var(--color-neutral-300);">{{ n.text }}</span>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isAsk }}" hint-placeholder-val="{{ false }}">
+      <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="2">
+        <div style="{{ m.style }}"><span style="font-size:14px;line-height:1.5;">{{ m.text }}</span></div>
+      </sc-for>
+      <sc-if value="{{ clarify }}" hint-placeholder-val="{{ false }}">
+        <div class="card elev-md" style="display:grid;gap:10px;padding:14px;border-color:var(--color-accent-700);">
+          <span class="card-kicker">SEXTANT asks</span>
+          <span style="font-size:14px;">{{ clarifyQ }}</span>
+          <div style="display:grid;gap:6px;"><sc-for list="{{ clarifyOpts }}" as="o" hint-placeholder-count="3"><button class="btn btn-secondary" style="min-height:44px;font-size:13px;justify-content:flex-start;" onClick="{{ o.fn }}">{{ o.label }}</button></sc-for></div>
+        </div>
+      </sc-if>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ chips }}" as="c" hint-placeholder-count="3"><button class="btn btn-ghost" style="font-size:12px;min-height:44px;" onClick="{{ c.fn }}">{{ c.label }}</button></sc-for></div>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div class="card elev-lg" style="position:absolute;left:16px;right:16px;bottom:96px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;">
+      <span style="font-size:13px;">{{ toastText }}</span><button class="btn btn-ghost" style="font-size:12px;min-height:44px;" onClick="{{ undo }}">Undo</button>
+    </div>
+  </sc-if>
+
+  <nav style="display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px 28px;border-top:1px solid var(--color-neutral-800);background:var(--color-bg);">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+      <button onClick="{{ t.fn }}" style="{{ t.style }}">{{ t.label }}</button>
+    </sc-for>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;tier&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;owner&quot;,&quot;member&quot;],&quot;default&quot;:&quot;owner&quot;,&quot;tsType&quot;:&quot;'owner'|'member'&quot;}}">
+const FIRES = [
+  { id: 'spend', score: 80, title: 'Spend near the monthly cap', source: 'owner', detail: '$412 of $450', acts: ['Raise', 'Throttle'] },
+  { id: 'inc', score: 74, title: 'KeyError in round.merge', source: 'maintainer', detail: 'patch ready, tests failed once', acts: ['Approve', 'Retry'] },
+  { id: 'scout', score: 69, title: 'Scout is silent', source: 'overseer', detail: '14 h, expected every 6 h', acts: ['Wake'] },
+  { id: 'shadow', score: 45, title: 'LSTM beats 1–3B for Scout', source: 'registrar', detail: '0.83 vs 0.81, 7 days', acts: ['Promote', 'Hold'] },
+  { id: 'posts', score: 38, title: '4 post drafts', source: 'publisher', detail: 'x, linkedin, reddit', acts: ['Approve all', 'Review'] },
+];
+const AGENTS = [['Scout', 'silent', '2 rounds / 24 h · 1–3B'], ['Theorist', 'noisy', '14 rounds · 43% failed · 8B'], ['Experimenter', 'ok', '9 rounds · 8B'], ['Critic', 'ok', '6 rounds · 30B'], ['Builder', 'ok', '3 repos in review · 30B'], ['Publisher', 'ok', '4 drafts · 1–3B'], ['Maintainer', 'ok', '1 repair · 8B'], ['SEXTANT', 'idle', '31 visitor chats · 8B']];
+const NODES = [
+  { label: 'H0 · Quality holds across the ladder', kind: 'hypothesis', text: 'Seeded once, a 30B model and an LSTM on CPU score within the margin on the frozen split.', pub: true },
+  { label: 'H5 · Shuffled-seed control', kind: 'hypothesis', text: 'A degree-preserving shuffle of the seed should lose most of the gain.', pub: true },
+  { label: 'TRM on ARC-AGI-1', kind: 'source', text: '7M parameters, 44.6%. Recursion in place of size.', pub: true },
+  { label: 'Seed v4', kind: 'artifact', text: 'Incidence, types, restriction maps, Horn constraints, energy.', pub: true },
+  { label: 'Substrate shadow results', kind: 'finding', text: 'LSTM shadow for Scout: 0.83 vs 0.81 over 7 days.', pub: false },
+  { label: 'Client graph · municipal water rules', kind: 'private', text: 'Private client study. Visible to owner only.', pub: false },
+];
+const TIERS = { owner: 'Owner', member: 'Member' };
+
+class Component extends DCLogic {
+  state = { tier: new URLSearchParams(location.search).get('tier') || this.props.tier || 'owner', tab: 'today', gone: {}, last: null, gq: '', msgs: [{ me: false, text: 'I can answer from the published graph. What would you like to know?' }], clarify: null };
+  act(id, label) { this.setState(s => ({ gone: { ...s.gone, [id]: 1 }, last: { id, label } })); clearTimeout(this.t); this.t = setTimeout(() => this.setState({ last: null }), 4000); }
+  ask(q) {
+    if (/cheap|small|lstm|cost/i.test(q)) return this.setState(s => ({ msgs: [...s.msgs, { me: true, text: q }], clarify: { q: 'Do you mean quality, or cost per answer?', opts: ['Quality on the frozen split', 'Cost per answer on CPU', 'Both'] } }));
+    this.setState(s => ({ msgs: [...s.msgs, { me: true, text: q }, { me: false, text: 'H0 is open. The public record supports its parts (small models on scoped tasks, recursion in place of size) but no one has run the full ladder. That is the headline experiment.' }] }));
+  }
+  answer(o) { this.setState(s => ({ clarify: null, msgs: [...s.msgs, { me: true, text: o }, { me: false, text: o.startsWith('Cost') ? 'A 7B model is 10–30× cheaper to serve than a 70–175B one. An LSTM on CPU would be cheaper again; the paper measures by how much.' : 'Quality is measured on a frozen split no agent can read. The result is not in yet; the owner app shows shadow scores as they arrive.' }] })); }
+  renderVals() {
+    const s = this.state, owner = s.tier === 'owner';
+    const tabsAll = owner ? [['today', 'Today'], ['agents', 'Agents'], ['graph', 'Graph'], ['ask', 'Ask']] : [['graph', 'Graph'], ['ask', 'Ask']];
+    const tab = tabsAll.some(t => t[0] === s.tab) ? s.tab : tabsAll[0][0];
+    const fires = FIRES.filter(f => !s.gone[f.id]);
+    const q = s.gq.toLowerCase();
+    const nodes = NODES.filter(n => (owner || n.pub) && (!q || (n.label + n.text).toLowerCase().includes(q)));
+    const heads = { today: [`${fires.length} things need you`, `About ${fires.length * 2} minutes`], agents: ['The agents', '8 running · 1 silent · 1 noisy'], graph: ['The graph', owner ? 'Public and private nodes' : 'Published nodes only'], ask: ['Ask SEXTANT', 'Answers cite the graph'] };
+    return {
+      tierName: TIERS[s.tier], otherTier: owner ? 'Member' : 'Owner', toggleTier: () => this.setState({ tier: owner ? 'member' : 'owner' }),
+      title: heads[tab][0], sub: heads[tab][1],
+      isToday: tab === 'today', isAgents: tab === 'agents', isGraph: tab === 'graph', isAsk: tab === 'ask',
+      fires: fires.map(f => ({ ...f, acts: f.acts.map(l => ({ label: l, fn: () => this.act(f.id, l) })) })), calm: !fires.length,
+      agents: AGENTS.map(([name, state, line]) => ({ name, state, line, tag: state === 'ok' ? 'tag tag-accent' : state === 'idle' ? 'tag tag-neutral' : 'tag tag-outline' })),
+      gq: s.gq, onGq: e => this.setState({ gq: e.target.value }),
+      nodes: nodes.map(n => ({ ...n, tag: n.pub ? 'tag tag-neutral' : 'tag tag-outline' })),
+      msgs: s.msgs.map(m => ({ text: m.text, style: m.me ? 'justify-self:end;max-width:82%;padding:10px 12px;border-radius:12px;background:var(--color-accent-900);border:1px solid var(--color-accent-700);' : 'justify-self:start;max-width:88%;padding:10px 12px;border-radius:12px;background:var(--color-neutral-900);border:1px solid var(--color-neutral-800);' })),
+      clarify: !!s.clarify, clarifyQ: s.clarify && s.clarify.q, clarifyOpts: (s.clarify ? s.clarify.opts : []).map(o => ({ label: o, fn: () => this.answer(o) })),
+      chips: ['Can a small model be as good?', 'What is H0?', 'Is the result in?'].map(l => ({ label: l, fn: () => this.ask(l) })),
+      toast: !!s.last, toastText: s.last ? `${s.last.label} · done` : '', undo: () => this.setState(st => { const g = { ...st.gone }; delete g[st.last.id]; return { gone: g, last: null }; }),
+      tabs: tabsAll.map(([id, label]) => ({ label, fn: () => this.setState({ tab: id }), style: `min-height:48px;background:none;border:0;font:inherit;font-size:12px;cursor:pointer;color:${id === tab ? 'var(--color-accent-200)' : 'var(--color-neutral-400)'};border-top:2px solid ${id === tab ? 'var(--color-accent)' : 'transparent'};` })),
+    };
+  }
+}
+</script>
+</body>
+</html>

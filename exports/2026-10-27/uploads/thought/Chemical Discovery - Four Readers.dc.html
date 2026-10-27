@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html { color-scheme: dark; } html, body { margin: 0; background: #161826; color: #e9e9ed; font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+button, input { font: inherit; color: inherit; }
+a { color: #b5abfc; } a:hover { color: #d2cefd; }
+::selection { background: rgba(145, 132, 217, 0.35); }
+:focus { outline: none; } :focus-visible { outline: 2px solid #9184d9; outline-offset: 2px; }
+</style>
+</helmet>
+
+<div data-screen-label="Four readers" style="max-width: 1100px; margin: 0 auto; padding: 44px 24px 72px; display: grid; gap: 34px;">
+
+  <header style="display: grid; gap: 12px; max-width: 760px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.16em; color: #75798c;">CHEMGRAPH · ONE RUN, FOUR READERS</span>
+    <h1 style="margin: 0; font-size: 38px; line-height: 1.12; letter-spacing: -0.02em; font-weight: 600; text-wrap: pretty;">The same chemical discovery, read four ways</h1>
+    <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #b2b6ca; text-wrap: pretty;">A single run: one parent compound, one swapped atom, one climb up the grading ladder. Nothing about the chemistry changes between these four readers. What changes is which part of it they are allowed to believe.</p>
+  </header>
+
+  <section aria-label="The run" style="display: grid; gap: 14px; padding: 18px 18px 20px; border-radius: 14px; background: #1b1d2c; border: 1px solid rgba(233, 233, 237, 0.08);">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; color: #75798c;">THE RUN EVERYONE IS LOOKING AT</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px;">
+      <div style="display: grid; gap: 4px; align-content: start;"><span style="font-size: 11.5px; color: #9397ab;">Parent on the map</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7fb2e5; word-break: break-all;">Cc1ccc(Cl)cc1C(=O)N</span></div>
+      <div style="display: grid; gap: 4px; align-content: start;"><span style="font-size: 11.5px; color: #9397ab;">The edit it proposed</span><span style="font-size: 13px;">Swap the chlorine for a fluorine</span></div>
+      <div style="display: grid; gap: 4px; align-content: start;"><span style="font-size: 11.5px; color: #9397ab;">Candidate</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7fcfb6; word-break: break-all;">Cc1ccc(F)cc1C(=O)N</span></div>
+      <div style="display: grid; gap: 4px; align-content: start;"><span style="font-size: 11.5px; color: #9397ab;">Where it stopped</span><span style="font-size: 13px; color: #e5c46f;">Drug-like · not Backed</span></div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px;">
+      <span style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; border-radius: 14px; background: rgba(127, 207, 182, 0.14); border: 1px solid rgba(127, 207, 182, 0.4); font-size: 12px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #7fcfb6;"></span>Valid</span>
+      <span style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; border-radius: 14px; background: rgba(127, 207, 182, 0.14); border: 1px solid rgba(127, 207, 182, 0.4); font-size: 12px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #7fcfb6;"></span>New to PubChem</span>
+      <span style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; border-radius: 14px; background: rgba(127, 207, 182, 0.14); border: 1px solid rgba(127, 207, 182, 0.4); font-size: 12px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #7fcfb6;"></span>No alert groups</span>
+      <span style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; border-radius: 14px; background: rgba(229, 196, 111, 0.14); border: 1px solid rgba(229, 196, 111, 0.4); font-size: 12px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #e5c46f;"></span>Drug-like on paper</span>
+      <span style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; border-radius: 14px; background: rgba(232, 149, 111, 0.1); border: 1px dashed rgba(232, 149, 111, 0.5); font-size: 12px; color: #f0c7b3;">Backed — nothing yet</span>
+    </div>
+  </section>
+
+  <section aria-label="Reader" style="display: grid; gap: 18px;">
+    <div role="tablist" aria-label="Choose a reader" style="display: flex; flex-wrap: wrap; gap: 6px;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button type="button" role="tab" onClick="{{ t.pick }}" style="{{ t.style }}"><span style="{{ t.dot }}"></span><span style="display: grid; gap: 1px; text-align: left;"><span style="font-weight: 500;">{{ t.name }}</span><span style="font-size: 11px; color: #9397ab;">{{ t.who }}</span></span></button></sc-for>
+    </div>
+
+    <sc-if value="{{ isChild }}" hint-placeholder-val="{{ true }}">
+    <article style="display: grid; gap: 20px; padding: 24px; border-radius: 14px; background: #1b1d2c; border: 1px solid rgba(232, 149, 111, 0.3);">
+      <div style="display: grid; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; color: #e8956f;">MINA, 6 · SITTING WITH A PARENT</span><h2 style="margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -0.01em;">“Can I make a new one?”</h2></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px;">
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT SHE DOES</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">Taps a ball on the picture and asks for a different one. The green ball turns pale blue. The picture is still a picture of something real.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT THE SCREEN SAYS</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">Four ticks and one empty circle. Underneath, in her words: the balls can hold hands properly, nobody has written this one down before, nothing on it is the dangerous kind, and it is the right size and weight for a medicine.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT SHE TAKES AWAY</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">She drew something nobody has drawn. That is true, and it is the part worth being pleased about.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT IT MUST NOT SAY</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #f0c7b3;">That she made a medicine. The empty circle is the whole point: no one has made this, held it, or given it to anybody. A person in a lab has to do that, and it takes years.</p></div>
+      </div>
+      <p style="margin: 0; padding-top: 4px; border-top: 1px solid rgba(233, 233, 237, 0.08); padding-top: 14px; font-size: 13.5px; line-height: 1.6; color: #b2b6ca;">For her the five steps are a game with one honest rule: <b style="color: #e9e9ed; font-weight: 500;">the last circle never fills in by itself.</b></p>
+    </article>
+    </sc-if>
+
+    <sc-if value="{{ isGrad }}" hint-placeholder-val="{{ false }}">
+    <article style="display: grid; gap: 20px; padding: 24px; border-radius: 14px; background: #1b1d2c; border: 1px solid rgba(127, 178, 229, 0.3);">
+      <div style="display: grid; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; color: #7fb2e5;">FIRST-YEAR CHEMISTRY PHD · MIT</span><h2 style="margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -0.01em;">“What exactly did it check?”</h2></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px;">
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT HE DOES</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">Pastes a SMILES string, asks for analogs, and reads the ladder as five separate assertions rather than one verdict.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT THE SCREEN SAYS</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">Valid is RDKit parsing and sanitising the structure. New is an exact-structure miss in PubChem. Stable is a SMARTS screen for alert groups — peroxide, azide, acyl halide and the rest. Drug-like is a weight, logP and hydrogen-bond count. Backed needs attached literature.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT HE TAKES AWAY</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">A filter, not a result. Para-Cl to para-F is a standard bioisosteric swap; the interesting question is what it does to the ring's electronics and to metabolic clearance, and the tool has not touched either.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT IT MUST NOT SAY</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #f0c7b3;">That the compound is stable or synthesisable. The alert screen is the absence of known-bad substructures, which is not thermodynamics. There is no retrosynthesis, no docking, no ADMET model and no conformer anywhere in the pipeline.</p></div>
+      </div>
+      <p style="margin: 0; padding-top: 14px; border-top: 1px solid rgba(233, 233, 237, 0.08); font-size: 13.5px; line-height: 1.6; color: #b2b6ca;">He is the reader who can break it, and the one the honest labels are written for: <b style="color: #e9e9ed; font-weight: 500;">every level names the test it ran, so he can disagree with the test.</b></p>
+    </article>
+    </sc-if>
+
+    <sc-if value="{{ isLaw }}" hint-placeholder-val="{{ false }}">
+    <article style="display: grid; gap: 20px; padding: 24px; border-radius: 14px; background: #1b1d2c; border: 1px solid rgba(199, 155, 224, 0.3);">
+      <div style="display: grid; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; color: #c79be0;">PATENT LAW SEMINAR · SECOND YEAR</span><h2 style="margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -0.01em;">“New to whom?”</h2></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px;">
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT THEY DO</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">Read one word on the screen — New — and ask what database it was measured against, and on what date.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT THE SCREEN SAYS</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">That this exact structure is not indexed in PubChem. The run log keeps the query, the timestamp and the source for every claim on the map, which is the part that survives being questioned later.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT THEY TAKE AWAY</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">One database's silence, dated. Useful as a starting screen and as a record of what was known when.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT IT MUST NOT SAY</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #f0c7b3;">Novel, patentable, or clear to use. A public chemical index is not a prior-art search: it does not reach patents and applications, unpublished filings, private libraries, or anything a person could argue is an obvious variation of what already exists. A single-atom swap on a known scaffold is exactly the fact pattern where that argument gets made.</p></div>
+      </div>
+      <p style="margin: 0; padding-top: 14px; border-top: 1px solid rgba(233, 233, 237, 0.08); font-size: 13.5px; line-height: 1.6; color: #b2b6ca;">They are why the label reads <b style="color: #e9e9ed; font-weight: 500;">New to PubChem</b> and not <b style="color: #e9e9ed; font-weight: 500;">New</b>. The qualifier is the claim.</p>
+    </article>
+    </sc-if>
+
+    <sc-if value="{{ isSurgeon }}" hint-placeholder-val="{{ false }}">
+    <article style="display: grid; gap: 20px; padding: 24px; border-radius: 14px; background: #1b1d2c; border: 1px solid rgba(127, 207, 182, 0.3);">
+      <div style="display: grid; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; color: #7fcfb6;">NEUROSURGEON · BETWEEN CASES</span><h2 style="margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -0.01em;">“Does it reach the tissue, and does it harm it?”</h2></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px;">
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT SHE DOES</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">Skips the structure entirely and looks for the target, the route of administration, and whether anything on the map came from a trial.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT THE SCREEN SAYS</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">The papers the research agents attached, each with its source, and the open questions they generated. On this run: no trial, no animal work, no measured exposure.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT SHE TAKES AWAY</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #e4e7f5;">A literature map with the gaps marked, which is a reading tool. The one question she wants answered — whether it crosses into the tissue she operates on — is not on the ladder at all.</p></div>
+        <div style="display: grid; gap: 7px; align-content: start;"><span style="font-size: 11.5px; color: #75798c; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">WHAT IT MUST NOT SAY</span><p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #f0c7b3;">Anything clinical. Drug-like is a size-and-weight rule of thumb, not exposure, not selectivity, not safety. Nothing here has been near a cell, let alone a patient, and the distance between Drug-like and a first-in-human study is most of a decade.</p></div>
+      </div>
+      <p style="margin: 0; padding-top: 14px; border-top: 1px solid rgba(233, 233, 237, 0.08); font-size: 13.5px; line-height: 1.6; color: #b2b6ca;">She reads the ladder backwards: <b style="color: #e9e9ed; font-weight: 500;">the only level she cares about is the empty one.</b></p>
+    </article>
+    </sc-if>
+  </section>
+
+  <sc-if value="{{ compareOn }}" hint-placeholder-val="{{ true }}">
+  <section aria-label="Three words" style="display: grid; gap: 14px;">
+    <h2 style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">Three words that change meaning on the way across the room</h2>
+    <div style="display: grid; gap: 1px; background: rgba(233, 233, 237, 0.08); border: 1px solid rgba(233, 233, 237, 0.08); border-radius: 12px; overflow: hidden;">
+      <div style="display: grid; grid-template-columns: minmax(80px, 0.7fr) repeat(4, minmax(0, 1fr)); gap: 1px; background: rgba(233, 233, 237, 0.08);">
+        <div style="padding: 10px 12px; background: #1b1d2c; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #75798c;">WORD</div>
+        <div style="padding: 10px 12px; background: #1b1d2c; font-size: 12px; font-weight: 500; color: #e8956f;">Mina, 6</div>
+        <div style="padding: 10px 12px; background: #1b1d2c; font-size: 12px; font-weight: 500; color: #7fb2e5;">PhD student</div>
+        <div style="padding: 10px 12px; background: #1b1d2c; font-size: 12px; font-weight: 500; color: #c79be0;">Law student</div>
+        <div style="padding: 10px 12px; background: #1b1d2c; font-size: 12px; font-weight: 500; color: #7fcfb6;">Surgeon</div>
+      </div>
+      <div style="display: grid; grid-template-columns: minmax(80px, 0.7fr) repeat(4, minmax(0, 1fr)); gap: 1px; background: rgba(233, 233, 237, 0.08);">
+        <div style="padding: 12px; background: #161826; font-size: 13.5px; font-weight: 500;">New</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">Nobody drew this before</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">Exact-structure miss in one index</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">Not novelty, and not freedom to operate</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">Means untested, which is a warning</div>
+      </div>
+      <div style="display: grid; grid-template-columns: minmax(80px, 0.7fr) repeat(4, minmax(0, 1fr)); gap: 1px; background: rgba(233, 233, 237, 0.08);">
+        <div style="padding: 12px; background: #161826; font-size: 13.5px; font-weight: 500;">Stable</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">Nothing on it is the dangerous kind</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">No alert substructure matched</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">A screen whose basis has to be stated</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">Says nothing about toxicity</div>
+      </div>
+      <div style="display: grid; grid-template-columns: minmax(80px, 0.7fr) repeat(4, minmax(0, 1fr)); gap: 1px; background: rgba(233, 233, 237, 0.08);">
+        <div style="padding: 12px; background: #161826; font-size: 13.5px; font-weight: 500;">Works</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">The computer said yes four times</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">Nothing in the run speaks to activity</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">The word a claim must never rest on</div>
+        <div style="padding: 12px; background: #161826; font-size: 13px; line-height: 1.5; color: #b2b6ca;">Only a trial answers this</div>
+      </div>
+    </div>
+    <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #9397ab; max-width: 760px; text-wrap: pretty;">The run is identical in all four columns. Every disagreement is about the wording on the screen, which is why ChemGraph labels each level with the test it ran rather than with a verdict.</p>
+  </section>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;reader&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;child&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;child&quot;,&quot;grad&quot;,&quot;law&quot;,&quot;surgeon&quot;],&quot;section&quot;:&quot;Reader&quot;},&quot;showCompare&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Reader&quot;}}">
+const R = [
+  ['child', 'Mina, 6', 'A picture made of balls', '#e8956f'],
+  ['grad', 'PhD student', 'Reads the pipeline', '#7fb2e5'],
+  ['law', 'Law student', 'Reads one word', '#c79be0'],
+  ['surgeon', 'Neurosurgeon', 'Reads the gap', '#7fcfb6'],
+];
+class Component extends DCLogic {
+  state = { r: null };
+  renderVals() {
+    const r = this.state.r || this.props.reader || 'child';
+    return {
+      compareOn: this.props.showCompare ?? true,
+      isChild: r === 'child', isGrad: r === 'grad', isLaw: r === 'law', isSurgeon: r === 'surgeon',
+      tabs: R.map(([id, name, who, c]) => ({
+        name, who, pick: () => this.setState({ r: id }),
+        dot: { width: 8, height: 8, borderRadius: '50%', background: c, flex: 'none' },
+        style: { display: 'flex', alignItems: 'center', gap: 10, height: 46, padding: '0 15px 0 13px', borderRadius: 10, cursor: 'pointer', border: '1px solid ' + (r === id ? c : 'rgba(233,233,237,0.12)'), background: r === id ? 'rgba(233,233,237,0.05)' : 'transparent', color: '#e9e9ed' },
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

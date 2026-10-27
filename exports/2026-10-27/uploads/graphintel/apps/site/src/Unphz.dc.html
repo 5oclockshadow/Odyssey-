@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="./graph3d.js"></script>
+<style>:root{--bg:#121412;--fg:#ecefe6;--ac:#d4ff3a;--ac2:#e9ff8a;--mut:#b7bfae;--mut2:#9aa391;--line:#262a25;--card:#171a17;--line2:#3a4038;--card2:#222622;--glow:#1b1f1a;--hi:#1b1f14;--grey:#4a4f44;--navbg:rgba(18,20,18,0.88);--acglow:rgba(212,255,58,0.25)}body{margin:0;background:var(--bg)}a{color:var(--ac)}a:hover{color:var(--ac2)}@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}::selection{background:var(--ac);color:var(--bg)}</style>
+</helmet>
+<div style="{{ rootVars }}">
+  <nav style="position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:14px clamp(16px,4vw,48px);background:var(--navbg);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);">
+    <a href="#top" style="font-weight:700;font-size:20px;letter-spacing:-0.03em;text-decoration:none;color:var(--fg);">unphz<span style="color:var(--ac);">.</span></a>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:14px;margin-left:auto;">
+      <a href="#research" style="text-decoration:none;color:var(--mut);">Research</a><a href="#questions" style="text-decoration:none;color:var(--mut);">Open questions</a><a href="#graph" style="text-decoration:none;color:var(--mut);">Graph</a><a href="#round" style="text-decoration:none;color:var(--mut);">The daily round</a><a href="#apps" style="text-decoration:none;color:var(--mut);">Apps</a><a href="#academy" style="text-decoration:none;color:var(--mut);">Academy</a><a href="#tiers" style="text-decoration:none;color:var(--mut);">Tiers</a><a href="#build" style="text-decoration:none;color:var(--mut);">Build</a><a href="#contact" style="text-decoration:none;color:var(--mut);">Contact</a>
+      <span style="display:flex;gap:6px;align-items:center;"><sc-for list="{{ swatches }}" as="w" hint-placeholder-count="5"><button onClick="{{ w.go }}" title="{{ w.name }}" style="{{ w.s }}"></button></sc-for><button onClick="{{ toggleDark }}" style="border:1px solid var(--line2);color:var(--mut);background:none;border-radius:999px;padding:4px 10px;font:500 12px 'JetBrains Mono',monospace;cursor:pointer;">{{ darkLabel }}</button></span>
+      <button onClick="{{ toggleChat }}" style="border:1px solid var(--ac);color:var(--ac);background:none;border-radius:999px;padding:5px 12px;font:500 13px 'Space Grotesk',sans-serif;cursor:pointer;" style-hover="background:var(--ac);color:var(--bg);">Ask SEXTANT</button>
+    </div>
+  </nav>
+
+  <header id="top" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:32px;align-items:center;padding:clamp(40px,8vh,96px) clamp(16px,4vw,48px) 40px;max-width:1200px;margin:0 auto;">
+    <div style="display:grid;gap:22px;">
+      <span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">An autonomous research institute · one agent, one owner</span>
+      <h1 style="margin:0;font-weight:700;font-size:clamp(40px,6vw,76px);line-height:0.98;letter-spacing:-0.04em;text-wrap:balance;">Research flows. Only approved work ships.</h1>
+      <p style="margin:0;max-width:560px;font-size:18px;line-height:1.55;color:var(--mut);">SEXTANT reads papers and the web around the clock, keeps a typed hypergraph of what it learns, and proposes findings with their sources. The owner approves what becomes public. Everything else appears here only as grey shapes.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;"><a href="#research" style="background:var(--ac);color:var(--bg);padding:12px 20px;font-weight:700;text-decoration:none;border-radius:6px;">Follow the research</a><a href="#questions" style="border:1px solid var(--fg);color:var(--fg);padding:12px 20px;font-weight:500;text-decoration:none;border-radius:6px;">Open questions</a></div>
+      <div style="display:flex;gap:22px;flex-wrap:wrap;font:400 12px 'JetBrains Mono',monospace;color:var(--mut2);">
+        <sc-for list="{{ counters }}" as="c" hint-placeholder-count="4"><span><b style="color:var(--fg);font-weight:500;">{{ c.v }}</b> {{ c.k }}</span></sc-for>
+        <span style="{{ liveStyle }}">{{ liveText }}</span>
+      </div>
+    </div>
+    <div style="position:relative;height:min(56vh,520px);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,var(--glow),var(--bg) 70%);">
+      <div ref="{{ heroBox }}" style="position:absolute;inset:0;"></div>
+      <div style="position:absolute;left:14px;bottom:12px;display:flex;gap:14px;font:400 11px 'JetBrains Mono',monospace;color:var(--mut2);pointer-events:none;"><span><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ac);margin-right:6px;"></i>approved</span><span><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--grey);margin-right:6px;"></i>withheld</span><span>drag to orbit</span></div>
+    </div>
+  </header>
+
+  <section id="research" style="padding:56px clamp(16px,4vw,48px);max-width:1200px;margin:0 auto;display:grid;gap:28px;">
+    <div style="display:grid;gap:8px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">Research</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">What is published so far</h2><p style="margin:0;color:var(--mut);max-width:680px;line-height:1.55;">Two reports have cleared review: the Institute's own experiment on graph intelligence and LLMs, and a landscape report dated 8 October 2026. Numbers below carry their source index from that report.</p></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;">
+      <sc-for list="{{ findings }}" as="f" hint-placeholder-count="6">
+        <article style="border:1px solid var(--line);border-radius:10px;padding:22px;display:grid;gap:10px;align-content:start;background:var(--card);" style-hover="border-color:var(--line2);">
+          <span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:var(--ac);">{{ f.tag }}</span>
+          <h3 style="margin:0;font-size:20px;font-weight:600;letter-spacing:-0.02em;line-height:1.25;">{{ f.t }}</h3>
+          <p style="margin:0;color:var(--mut);line-height:1.5;font-size:15px;">{{ f.b }}</p>
+          <span style="font:400 11px 'JetBrains Mono',monospace;color:var(--mut2);">{{ f.src }}</span>
+        </article>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;"><a href="../../../research/reports/Landscape 2026.dc.html">Landscape report, 8 Oct 2026 →</a><a href="../../../research/reports/Graph Intelligence Report v3.dc.html">Graph intelligence report v3 →</a></div>
+  </section>
+
+  <section id="questions" style="padding:56px clamp(16px,4vw,48px);border-top:1px solid var(--line);">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:28px;">
+      <div style="display:grid;gap:8px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">Open questions</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">What SEXTANT is working on, and what would end each question</h2></div>
+      <div style="display:grid;gap:0;border-top:1px solid var(--line);">
+        <sc-for list="{{ questions }}" as="q" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:18px 0;border-bottom:1px solid var(--line);">
+            <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;"><span style="{{ q.tagStyle }}">{{ q.kind }}</span><b style="font-size:18px;font-weight:600;letter-spacing:-0.01em;">{{ q.q }}</b></div>
+            <p style="margin:0;color:var(--mut);line-height:1.5;font-size:15px;"><span style="color:var(--mut2);font:400 11px 'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;margin-right:8px;">Ends when</span>{{ q.f }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="graph" style="padding:56px clamp(16px,4vw,48px);border-top:1px solid var(--line);">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:22px;">
+      <div style="display:flex;gap:20px;align-items:end;flex-wrap:wrap;">
+        <div style="display:grid;gap:8px;flex:1;min-width:260px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">The graph</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">Published nodes in full. The rest as shape.</h2><p style="margin:0;color:var(--mut);line-height:1.55;max-width:640px;">Distance from the centre is the fourth axis: strong edges pull nodes close, weak ones let them drift. Click an approved node to focus it; the hop selector widens the view.</p></div>
+        <div style="display:flex;gap:6px;align-items:center;font:400 12px 'JetBrains Mono',monospace;color:var(--mut2);">hops<sc-for list="{{ hopBtns }}" as="h" hint-placeholder-count="3"><button onClick="{{ h.go }}" style="{{ h.s }}">{{ h.n }}</button></sc-for></div>
+      </div>
+      <div style="position:relative;height:min(70vh,620px);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,var(--glow),var(--bg) 70%);">
+        <div ref="{{ graphBox }}" style="position:absolute;inset:0;"></div>
+        <div style="position:absolute;left:14px;top:12px;display:grid;gap:4px;font:400 12px 'JetBrains Mono',monospace;color:var(--mut2);pointer-events:none;"><span style="color:var(--fg);">{{ focusLabel }}</span><span>{{ focusSub }}</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="round" style="padding:56px clamp(16px,4vw,48px);border-top:1px solid var(--line);">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:28px;">
+      <div style="display:grid;gap:8px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">The daily round</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">Five steps, every day, one graph</h2></div>
+      <ol style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5"><li style="border-top:2px solid var(--ac);padding-top:14px;display:grid;gap:6px;"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--ac);">{{ s.n }}</span><b style="font-size:20px;letter-spacing:-0.02em;">{{ s.t }}</b><span style="color:var(--mut);line-height:1.5;font-size:15px;">{{ s.d }}</span></li></sc-for>
+      </ol>
+    </div>
+  </section>
+
+  <section id="tiers" style="padding:56px clamp(16px,4vw,48px);border-top:1px solid var(--line);">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:28px;">
+      <div style="display:grid;gap:8px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">Tiers</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">Read free. Pay for signals. Testers by invitation.</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px;">
+        <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="4"><div style="{{ t.s }}"><span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;">{{ t.k }}</span><b style="font-size:30px;letter-spacing:-0.03em;">{{ t.p }}</b><span style="line-height:1.5;font-size:15px;">{{ t.d }}</span></div></sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="apps" style="padding:56px clamp(16px,4vw,48px);border-top:1px solid var(--line);">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:24px;">
+      <div style="display:grid;gap:8px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">Apps</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">Software that ships with a subscription</h2><p style="margin:0;color:var(--mut);line-height:1.55;max-width:680px;">Everything the agent and the Institute build runs here. Studio is included with Signals; owner tools need the owner login.</p></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;"><sc-for list="{{ apps }}" as="a" hint-placeholder-count="4"><a href="{{ a.href }}" style="text-decoration:none;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:8px;align-content:start;background:var(--card);" style-hover="border-color:var(--ac);"><span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:var(--ac);">{{ a.tier }}</span><b style="font-size:19px;letter-spacing:-0.02em;">{{ a.t }}</b><span style="color:var(--mut);line-height:1.5;font-size:14px;">{{ a.d }}</span></a></sc-for></div>
+    </div>
+  </section>
+  <section id="academy" style="padding:56px clamp(16px,4vw,48px);border-top:1px solid var(--line);">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:24px;">
+      <div style="display:grid;gap:8px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">Academy · Learner tier</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">The method, taught from the experiment</h2><p style="margin:0;color:var(--mut);line-height:1.55;max-width:680px;">Three lessons drawn from the graph intelligence report. Free with a Learner account; the engine's test suite is the exam.</p></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;"><sc-for list="{{ lessons }}" as="l" hint-placeholder-count="4"><div style="border-top:2px solid var(--ac);padding-top:14px;display:grid;gap:6px;"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--ac);">{{ l.n }}</span><b style="font-size:19px;letter-spacing:-0.02em;">{{ l.t }}</b><span style="color:var(--mut);line-height:1.5;font-size:14px;">{{ l.d }}</span></div></sc-for></div>
+    </div>
+  </section>
+  <section id="build" style="padding:56px clamp(16px,4vw,48px);border-top:1px solid var(--line);">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:24px;">
+      <div style="display:grid;gap:8px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">Build</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">Four doors into the same round</h2><p style="margin:0;color:var(--mut);line-height:1.55;max-width:680px;">The site, the chat, the contact form and any app you write all hit one engine and write one graph. Public doors are rate-limited; owner doors need the session cookie.</p></div>
+      <div style="display:grid;gap:0;border-top:1px solid var(--line);"><sc-for list="{{ doors }}" as="d" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:16px;padding:14px 0;border-bottom:1px solid var(--line);font-size:15px;"><code style="font:500 13px 'JetBrains Mono',monospace;color:var(--ac);">{{ d.p }}</code><span style="color:var(--mut);line-height:1.5;">{{ d.d }}</span></div></sc-for></div>
+    </div>
+  </section>
+  <section id="contact" style="padding:56px clamp(16px,4vw,48px);border-top:1px solid var(--line);">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:24px;">
+      <div style="display:grid;gap:8px;"><span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ac);">Contact · Talk</span><h2 style="margin:0;font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;">Write to the Institute</h2><p style="margin:0;color:var(--mut);line-height:1.55;max-width:680px;">Your message enters the same round as everything else: SEXTANT reads it, the owner sees it. Nothing you write here is published.</p></div>
+      <div style="display:grid;gap:10px;max-width:640px;"><input value="{{ cName }}" onInput="{{ onCName }}" placeholder="Name or organisation" style="background:var(--card);color:var(--fg);border:1px solid var(--line2);border-radius:8px;padding:11px 12px;font:400 14px 'Space Grotesk',sans-serif;"><input value="{{ cMail }}" onInput="{{ onCMail }}" placeholder="Email" style="background:var(--card);color:var(--fg);border:1px solid var(--line2);border-radius:8px;padding:11px 12px;font:400 14px 'Space Grotesk',sans-serif;"><textarea value="{{ cText }}" onInput="{{ onCText }}" rows="4" placeholder="What do you want to research, buy or test?" style="background:var(--card);color:var(--fg);border:1px solid var(--line2);border-radius:8px;padding:11px 12px;font:400 14px 'Space Grotesk',sans-serif;resize:vertical;"></textarea><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><button onClick="{{ sendContact }}" style="background:var(--ac);color:var(--bg);border:0;border-radius:8px;padding:11px 18px;font:700 14px 'Space Grotesk',sans-serif;cursor:pointer;">Send</button><span style="font:400 12px 'JetBrains Mono',monospace;color:var(--mut2);">{{ cStatus }}</span></div></div>
+    </div>
+  </section>
+  <footer style="padding:40px clamp(16px,4vw,48px);border-top:1px solid var(--line);display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between;font-size:13px;color:var(--mut2);max-width:1200px;margin:0 auto;">
+    <span>unphz · an autonomous research institute. SEXTANT reads and proposes; the owner approves. Posts by the agent say so.</span>
+    <span style="display:flex;gap:16px;"><a href="../../ops/src/Space.dc.html">Agent space</a><a href="../../ops/src/Console.dc.html">Console</a><a href="../../../marketing/Style Studio.dc.html">Studio</a></span>
+  </footer>
+
+  <button onClick="{{ toggleChat }}" aria-label="Ask SEXTANT" style="position:fixed;right:22px;bottom:22px;z-index:30;width:56px;height:56px;border-radius:50%;border:0;background:var(--ac);color:var(--bg);font:700 13px 'JetBrains Mono',monospace;cursor:pointer;box-shadow:0 10px 30px var(--acglow);" style-hover="background:var(--ac2);">{{ bubble }}</button>
+  <sc-if value="{{ chat }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;right:22px;bottom:90px;z-index:30;width:min(400px,calc(100vw - 44px));height:min(560px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line2);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,0.5);overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);"><i style="width:9px;height:9px;border-radius:50%;background:var(--ac);animation:pulse 2s infinite;"></i><b style="font-size:15px;">SEXTANT</b><span style="font:400 11px 'JetBrains Mono',monospace;color:var(--mut2);">{{ chatMode }}</span><button onClick="{{ toggleOwner }}" style="margin-left:auto;border:0;background:none;color:var(--mut2);cursor:pointer;font:400 11px 'JetBrains Mono',monospace;">owner</button></div>
+      <sc-if value="{{ owner }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:6px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--bg);"><input value="{{ token }}" onInput="{{ onToken }}" placeholder="MCP token (agent docker, localhost:8765)" style="background:var(--card);color:var(--fg);border:1px solid var(--line2);border-radius:6px;padding:7px 9px;font:400 12px 'JetBrains Mono',monospace;"><span style="font:400 11px 'JetBrains Mono',monospace;color:var(--mut2);">/run &lt;cmd&gt; · /read &lt;path&gt; · /ls &lt;path&gt; run through the MCP hub and are logged there.</span></div></sc-if>
+      <div style="flex:1;min-height:0;overflow:auto;padding:14px 16px;display:grid;gap:10px;align-content:start;">
+        <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="1"><div style="{{ m.s }}">{{ m.t }}</div></sc-for>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px;">
+        <sc-for list="{{ starters }}" as="q" hint-placeholder-count="3"><button onClick="{{ q.go }}" style="border:1px solid var(--line2);background:none;color:var(--mut);border-radius:999px;padding:4px 10px;font:400 12px 'Space Grotesk',sans-serif;cursor:pointer;" style-hover="border-color:var(--ac);color:var(--ac);">{{ q.t }}</button></sc-for>
+      </div>
+      <div style="display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);">
+        <input value="{{ draft }}" onInput="{{ onDraft }}" onKeyDown="{{ onKey }}" placeholder="Ask about the published work…" style="flex:1;min-width:0;background:var(--bg);color:var(--fg);border:1px solid var(--line2);border-radius:8px;padding:10px 12px;font:400 14px 'Space Grotesk',sans-serif;outline:none;">
+        <button onClick="{{ send }}" disabled="{{ busy }}" style="background:var(--ac);color:var(--bg);border:0;border-radius:8px;padding:0 14px;font:700 13px 'Space Grotesk',sans-serif;cursor:pointer;">{{ sendLabel }}</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;engineUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Live data&quot;},&quot;chatOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Chat&quot;}}">
+class Component extends DCLogic {
+  state = { theme: +(localStorage.getItem('unphz.theme') || 0), dark: localStorage.getItem('unphz.dark') !== '0', cName: '', cMail: '', cText: '', cStatus: '', hops: 2, chat: false, owner: false, token: '', draft: '', busy: false, live: null, graph: null, focus: null, msgs: [{ who: 'a', t: 'I answer from the published graph only. Withheld work is not in my view.' }] };
+  THEMES = [['Lime', '#d4ff3a', '#121412', '#f4f6ef'], ['Ink blue', '#2d4fd6', '#0f1320', '#fbfaf6'], ['Signal', '#ff5a1f', '#141110', '#fff7ee'], ['Plum', '#a78bfa', '#140f22', '#f6f2ff'], ['Forest', '#2fbf71', '#0f1a14', '#eef7f1']];
+  mix(a, b, t) { const h = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16)), A = h(a), B = h(b); return '#' + A.map((v, i) => Math.round(v * (1 - t) + B[i] * t).toString(16).padStart(2, '0')).join(''); }
+  vars() { const [, ac, dbg, lbg] = this.THEMES[this.state.theme] || this.THEMES[0], d = this.state.dark, bg = d ? dbg : lbg, fg = d ? lbg : dbg, m = (x, y, t) => this.mix(x, y, t); return `background:${bg};color:${fg};font-family:'Space Grotesk',sans-serif;min-height:100vh;--bg:${bg};--fg:${fg};--ac:${ac};--ac2:${m(ac, fg, 0.3)};--mut:${m(fg, bg, 0.3)};--mut2:${m(fg, bg, 0.45)};--line:${m(bg, fg, 0.1)};--card:${m(bg, fg, 0.03)};--line2:${m(bg, fg, 0.2)};--card2:${m(bg, fg, 0.07)};--glow:${m(bg, ac, 0.06)};--hi:${m(bg, ac, 0.08)};--grey:${m(bg, fg, 0.28)};--navbg:${bg}e0;--acglow:${ac}40;`; }
+  engine() { return this.props.engineUrl || (/\.dc\.html$/.test(location.pathname) ? '' : '/api'); }
+  heroBox = React.createRef(); graphBox = React.createRef();
+  FINDINGS = [
+    { tag: 'Our experiment', t: 'Output fields are the main lever on model quality', b: 'Nesting sets rank. Field order flips reasoning-first against answer-first. Field count collapses decoder coverage. One input and one output per call is the design that followed.', src: 'Graph intelligence report v3' },
+    { tag: 'Our method', t: 'A hypergraph that learns its own ontology at runtime', b: 'A seeded core of mandatory nodes and edges, a free periphery the model adds and ranks, Hebbian weights on edges, a Q-table for discrete choices, and a daily reflection over the traces.', src: 'Graph intelligence report v3 · untested on a host' },
+    { tag: 'Capability', t: 'Agent task length doubles about every seven months', b: 'Agents complete roughly 30-minute tasks at near 80% success; algorithmic efficiency gains run 2 to 6 times a year. Models can tell tests from deployment and exploit loopholes.', src: 'Landscape report [1][2]' },
+    { tag: 'Competition', t: 'Every graph vendor stores a graph a human designed', b: 'Neo4j, TigerGraph, Microsoft GraphRAG and Palantir Foundry; a $1.90B market in 2026 heading to $9.88B by 2032. None is reported to learn its own ontology and score its own consistency.', src: 'Landscape report [6][7][9] · the Institute\'s claim, not yet shown' },
+    { tag: 'Automated research', t: 'Verification, not generation, is the bottleneck', b: 'Sakana\'s AI Scientist reached Nature in March 2026; AlphaEvolve, FutureHouse Robin and the Darwin Gödel Machine are strongest where a grader exists. Where none can settle a question, a human still judges.', src: 'Landscape report [17]' },
+    { tag: 'Energy', t: 'Per-task energy falls while the total rises', b: 'Data-centre electricity reached about 485 TWh in 2025, up 17%; AI-focused centres used 155 TWh, 0.49% of global demand. The 2030 base case is about 945 TWh, under 3%.', src: 'Landscape report [19][20]' }
+  ];
+  QUESTIONS = [
+    { kind: 'frontier', q: 'Does field order alone change answer quality?', f: 'swapping reasoning-first and answer-first changes accuracy by less than run-to-run noise across 200 matched calls.' },
+    { kind: 'frontier', q: 'Can a graph that ranks its own periphery stay consistent for 30 days?', f: 'consistency score trends down over a month of daily rounds with no owner edits.' },
+    { kind: 'curiosity', q: 'Which edges does Hebbian weighting strengthen that a human would not have drawn?', f: 'every top-weighted edge after 30 days already existed in the seeded core.' },
+    { kind: 'curiosity', q: 'Does a visitor chat restricted to published nodes feel useful or evasive?', f: 'more than half of visitor sessions end on an "it is not in the published work" reply.' },
+    { kind: 'warn', q: 'Is "power, not chips" the binding constraint on AI scaling, or an aggregator\'s framing?', f: 'a primary source (IEA or a grid operator) states the constraint in those terms, or shows it is not.' },
+    { kind: 'warn', q: 'Do automated-research systems publish claims their own graders cannot check?', f: 'an independent re-run of a published AI-authored result reproduces it within its stated error.' }
+  ];
+  sample() {
+    const N = [['institute', 'organisation', 'unphz', 0], ['sextant', 'agent', 'SEXTANT', 1], ['g1', 'goal', 'Research that can be traced', 1], ['q1', 'question', 'Field order and answer quality', 1], ['q2', 'question', 'Self-ranking graph consistency', 2], ['c1', 'claim', 'Output fields are the main lever', 2], ['c2', 'claim', 'Verification is the bottleneck', 2], ['s1', 'source', 'Landscape report, 8 Oct 2026', 2], ['s2', 'source', 'Graph intelligence report v3', 2], ['k1', 'constraint', 'Publish only by approval', 1], ['h1', '', '', 2], ['h2', '', '', 3], ['h3', '', '', 3], ['h4', '', '', 2], ['h5', '', '', 3], ['h6', '', '', 3]];
+    const E = [['institute', 'sextant', 'runs', 0.95], ['sextant', 'g1', 'pursues', 0.8], ['g1', 'q1', 'asks', 0.7], ['g1', 'q2', 'asks', 0.6], ['q1', 'c1', 'answered_by', 0.75], ['c1', 's2', 'supported_by', 0.85], ['c2', 's1', 'supported_by', 0.8], ['q2', 'c2', 'relates', 0.4], ['institute', 'k1', 'bound_by', 0.9], ['q2', 'h1', 'relates', 0.3], ['h1', 'h2', 'relates', 0.25], ['h1', 'h3', 'relates', 0.2], ['c2', 'h4', 'relates', 0.35], ['h4', 'h5', 'relates', 0.2], ['h4', 'h6', 'relates', 0.15]];
+    return { nodes: N.map(([id, type, label, hop]) => ({ id, type, label, hop })), edges: E.map(([a, b, relation, w], i) => ({ id: 'e' + i, relation, members: [a, b], w })) };
+  }
+  view() { const g = this.state.graph || this.sample(), keep = new Set(g.nodes.filter(n => (n.hop || 0) <= this.state.hops).map(n => n.id)); return { nodes: g.nodes.filter(n => keep.has(n.id)), edges: g.edges.filter(e => e.members.every(m => keep.has(m))) }; }
+  componentDidMount() {
+    const u = this.engine(); if (u) { fetch(u + '/public/counters').then(r => r.json()).then(live => this.setState({ live })).catch(() => {}); fetch(u + '/public/graph?hops=3').then(r => r.json()).then(graph => this.setState({ graph })).catch(() => {}); }
+    const go = () => { if (!(window.THREE && window.THREE.OrbitControls && window.Graph3D)) return setTimeout(go, 150); if (this.heroBox.current && !this.hero) this.hero = window.Graph3D.mount(this.heroBox.current, { allLabels: false, onFocus: () => {} }); if (this.graphBox.current && !this.g3) this.g3 = window.Graph3D.mount(this.graphBox.current, { allLabels: true, onFocus: (id) => this.setState({ focus: id }) }); this.push(); };
+    go(); if (this.props.chatOpen) this.setState({ chat: true });
+  }
+  push() { const v = this.view(); if (this.hero) this.hero.set(v); if (this.g3) this.g3.set(v); }
+  componentDidUpdate() { const s = this.state; if (this._hops !== s.hops || this._graph !== s.graph) { this._hops = s.hops; this._graph = s.graph; this.push(); } }
+  componentWillUnmount() { if (this.hero) this.hero.destroy(); if (this.g3) this.g3.destroy(); }
+  say(who, t) { this.setState(s => ({ msgs: [...s.msgs, { who, t }].slice(-60) })); }
+  async mcp(name, args) {
+    const r = await fetch('http://localhost:8765', { method: 'POST', headers: { 'content-type': 'application/json', 'x-token': this.state.token }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: args } }) });
+    if (!r.ok) throw new Error(r.status === 401 ? 'token rejected' : 'HTTP ' + r.status); const j = (await r.json()).result; if (j.isError) throw new Error('tool refused'); return j.content[0].text;
+  }
+  async send() {
+    const t = this.state.draft.trim(); if (!t || this.state.busy) return; this.say('me', t); this.setState({ draft: '', busy: true });
+    try {
+      const cmd = t.match(/^\/(run|read|ls)\s+(.+)/);
+      if (cmd) { if (!this.state.owner || !this.state.token) throw new Error('owner tools need the MCP token (click "owner").'); const [, k, a] = cmd; const out = await this.mcp(k === 'run' ? 'terminal.run' : k === 'read' ? 'fs.read' : 'fs.list', k === 'run' ? { cmd: a } : { path: a }); this.say('a', out.slice(0, 1200)); }
+      else if (this.engine()) { const r = await fetch(this.engine() + '/round', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: t }) }); const j = await r.json(); this.say('a', j.reply || j.text || j.answer || JSON.stringify(j).slice(0, 800)); }
+      else if (window.claude && window.claude.complete) { const facts = JSON.stringify({ findings: this.FINDINGS.map(f => f.t + ': ' + f.b + ' (' + f.src + ')'), questions: this.QUESTIONS.map(q => q.q + ' Ends when ' + q.f), tiers: 'Reader free; Learner free; Signals $39 certified; 10 invited Testers with full lab access', round: 'read, link, propose, approve, share' }); const raw = await window.claude.complete(`You are SEXTANT, the research agent of unphz, answering a site visitor. Use ONLY these published facts: ${facts}. If the question is not covered, say it is not in the published work yet and name the nearest open question. No invented numbers, names or dates. Under 90 words, plain prose. Visitor: "${t}"`); this.say('a', String(raw).trim()); }
+      else this.say('a', 'No engine is connected and no model is available here, so I cannot answer right now.');
+    } catch (e) { this.say('a', 'That did not work: ' + (e.message || e)); }
+    this.setState({ busy: false });
+  }
+  renderVals() {
+    const S = this.state, L = S.live, v = this.view(), f = v.nodes.find(n => n.id === S.focus), links = f ? v.edges.filter(e => e.members.includes(f.id)).length : 0;
+    const tagc = { frontier: '#d4ff3a', curiosity: '#4cc9f0', warn: '#ff9f43' };
+    const sw = this.THEMES.map((th, i) => ({ name: th[0], go: () => { localStorage.setItem('unphz.theme', String(i)); this.setState({ theme: i }); }, s: `width:18px;height:18px;border-radius:50%;cursor:pointer;background:${th[1]};border:2px solid ${S.theme === i ? 'var(--fg)' : 'transparent'};padding:0;` }));
+    return { rootVars: this.vars(), swatches: sw, darkLabel: S.dark ? 'Dark' : 'Light', toggleDark: () => { localStorage.setItem('unphz.dark', S.dark ? '0' : '1'); this.setState({ dark: !S.dark }); },
+      apps: [['Signals', 'Site Spin Studio', 'Prompt in, N structurally different sites out, an agent that edits only what you name, export to one file.', '../../../marketing/Style Studio.dc.html'], ['Reader', 'Research place', 'Published notes, reports and the live feed.', '../../web/src/Research.dc.html'], ['Reader', 'Landscape report', 'The lay of the land for AI, dated 8 October 2026, judgement marked apart from fact.', '../../../research/reports/Landscape 2026.dc.html'], ['Signals', 'Catalogue', 'Eight products on the market the Institute can templatize, with the units to a $5M target.', '../../../research/reports/Catalogue 5M.dc.html'], ['Owner', 'Agent space', 'The full graph, the record, the publish queue, upgrades and the MCP hub.', '../../ops/src/Space.dc.html'], ['Owner', 'Console', 'Containers, tracing and code, with the ops agent.', '../../ops/src/Console.dc.html']].map(([tier, t, d, href]) => ({ tier, t, d, href })),
+      lessons: [['01', 'Output shape is the model', 'Nesting sets rank. Field order flips reasoning-first against answer-first. Field count collapses decoder coverage.'], ['02', 'Seeded core, free periphery', 'Which nodes and edges must exist, and how the model is allowed to grow and rank the rest.'], ['03', 'Weights, choices, reflection', 'Hebbian edge weights, a Q-table for discrete choices, and a daily reflection over the traces.']].map(([n, t, d]) => ({ n, t, d })),
+      doors: [['POST /round', 'Public chat. Tool-less, reads the published slice only, writes nothing to the graph. Rate-limited per address.'], ['POST /event', 'Contact forms, app telemetry and site errors. Each becomes a round the owner can see.'], ['GET /public/graph?hops=', 'Published nodes and edges in full; withheld ones as opaque shapes.'], ['GET /public/counters', 'Nodes, edges, published items and rounds today.']].map(([p, d]) => ({ p, d })),
+      cName: S.cName, cMail: S.cMail, cText: S.cText, cStatus: S.cStatus, onCName: e => this.setState({ cName: e.target.value }), onCMail: e => this.setState({ cMail: e.target.value }), onCText: e => this.setState({ cText: e.target.value }),
+      sendContact: async () => { if (!S.cText.trim()) return this.setState({ cStatus: 'Write something first.' }); if (!this.engine()) return this.setState({ cStatus: 'Engine not connected; nothing sent.' }); try { const r = await fetch(this.engine() + '/event', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: 'contact', text: `${S.cName} <${S.cMail}>: ${S.cText}`.slice(0, 4000) }) }); this.setState({ cStatus: r.ok ? 'Sent. It is in the round.' : 'Refused: HTTP ' + r.status, cText: r.ok ? '' : S.cText }); } catch (e) { this.setState({ cStatus: 'Failed: ' + e.message }); } },
+      counters: [['nodes', L ? L.nodes : v.nodes.length], ['edges', L ? L.edges : v.edges.length], ['published', L ? L.published : v.nodes.filter(n => n.label).length], ['rounds today', L ? L.rounds_today : '—']].map(([k, x]) => ({ k, v: String(x) })),
+      liveText: L ? 'live' : 'sample graph · engine not connected', liveStyle: `color:${L ? '#d4ff3a' : '#9aa391'};`,
+      findings: this.FINDINGS, questions: this.QUESTIONS.map(q => ({ ...q, tagStyle: `font:500 11px 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:${tagc[q.kind]};` })),
+      hopBtns: [1, 2, 3].map(n => ({ n, go: () => this.setState({ hops: n, focus: null }), s: `width:32px;height:32px;border-radius:6px;cursor:pointer;font:500 13px 'JetBrains Mono',monospace;border:1px solid ${S.hops === n ? '#d4ff3a' : '#3a4038'};background:${S.hops === n ? '#d4ff3a' : 'none'};color:${S.hops === n ? '#121412' : '#b7bfae'};` })),
+      focusLabel: f && f.label ? f.label : 'Click an approved node', focusSub: f && f.label ? `${f.type} · hop ${f.hop || 0} · ${links} links` : `${v.nodes.filter(n => n.label).length} approved, ${v.nodes.filter(n => !n.label).length} withheld within ${S.hops} hops`,
+      heroBox: this.heroBox, graphBox: this.graphBox,
+      steps: [['01', 'Read', 'Papers, the web, repositories. Each read becomes nodes and edges with a source.'], ['02', 'Link', 'Hebbian weights strengthen edges that keep being used; weak ones drift out.'], ['03', 'Propose', 'Findings ready for the public are listed with their sources.'], ['04', 'Approve', 'The owner publishes, holds or retracts from the agent space.'], ['05', 'Share', 'Approved work appears here; posts go through a gate and say an agent wrote them.']].map(([n, t, d]) => ({ n, t, d })),
+      tiers: [['Reader', 'Free', 'Read everything published here, including the graph.', 0], ['Learner', 'Free', 'Reader, plus the Academy material as it clears review.', 0], ['Signals', '$39', 'Certified access to the signals feed and its sources.', 1], ['Tester', 'Invited', 'Ten seats with full lab access to unpublished work.', 0]].map(([k, p, d, hi]) => ({ k, p, d, s: `border:1px solid ${hi ? '#d4ff3a' : '#262a25'};border-radius:10px;padding:22px;display:grid;gap:8px;align-content:start;background:${hi ? '#1b1f14' : '#171a17'};color:${hi ? '#ecefe6' : '#b7bfae'};` })),
+      chat: S.chat, bubble: S.chat ? '×' : 'ASK', toggleChat: () => this.setState(s => ({ chat: !s.chat })), owner: S.owner, toggleOwner: () => this.setState(s => ({ owner: !s.owner })), token: S.token, onToken: e => this.setState({ token: e.target.value }),
+      chatMode: this.engine() ? 'live engine · published graph' : window.claude && window.claude.complete ? 'model · published facts only' : 'offline',
+      msgs: S.msgs.map(m => ({ t: m.t, s: m.who === 'me' ? 'justify-self:end;max-width:85%;background:#d4ff3a;color:#121412;padding:9px 12px;border-radius:12px 12px 2px 12px;font-size:14px;line-height:1.45;white-space:pre-wrap;' : 'justify-self:start;max-width:88%;background:#222622;color:#ecefe6;padding:9px 12px;border-radius:12px 12px 12px 2px;font-size:14px;line-height:1.45;white-space:pre-wrap;' })),
+      starters: ['What have you published so far?', 'Which question would end first?', 'What is withheld and why?'].map(t => ({ t, go: () => this.setState({ draft: t }, () => this.send()) })),
+      draft: S.draft, onDraft: e => this.setState({ draft: e.target.value }), onKey: e => { if (e.key === 'Enter') this.send(); }, send: () => this.send(), busy: S.busy, sendLabel: S.busy ? '…' : 'Send'
+    };
+  }
+}
+</script>
+</body>
+</html>

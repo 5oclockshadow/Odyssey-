@@ -1,0 +1,9 @@
+[project]
+name = "appbuilder"
+version = "0.1.0"
+description = "Ability-Based App Builder (Skilld Studio) — self-building, self-improving, SOC2, Tester-verified."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]

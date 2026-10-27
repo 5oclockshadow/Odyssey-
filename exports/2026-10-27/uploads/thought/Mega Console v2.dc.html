@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div data-screen-label="Console" style="height: 100%; min-height: 0; display: grid; grid-template-rows: 34px minmax(0, 1fr); background: var(--card2); color: var(--ink); font-size: 12.5px; overflow: hidden;">
+  <div role="tablist" style="display: flex; align-items: center; gap: 2px; padding: 0 8px; border-bottom: 1px solid rgba(var(--ink-rgb),0.08); overflow-x: auto; scrollbar-width: none;">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button type="button" role="tab" onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button></sc-for>
+    <div style="flex: 1;"></div>
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink6); white-space: nowrap;">{{ spend }}</span>
+  </div>
+
+  <sc-if value="{{ isLog }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr);">
+    <div style="display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 12px; align-items: center;"><sc-for list="{{ filters }}" as="f" hint-placeholder-count="6"><button type="button" onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</button></sc-for><button type="button" onClick="{{ clearLog }}" style="{{ ghost }}">Clear</button></div>
+    <div ref="{{ logRef }}" style="min-height: 0; overflow: auto; padding: 0 12px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; line-height: 1.55;">
+      <sc-if value="{{ logEmpty }}" hint-placeholder-val="{{ false }}"><div style="color: var(--ink6);">Nothing yet. Agent steps, tool calls, map edits and learning events show up here.</div></sc-if>
+      <sc-for list="{{ logs }}" as="l" hint-placeholder-count="4"><div style="display: grid; grid-template-columns: 62px 56px 62px minmax(0, 1fr); gap: 8px; padding: 1px 0;"><span style="color: var(--ink6);">{{ l.t }}</span><span style="{{ l.kStyle }}">{{ l.k }}</span><span style="color: var(--ink5); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ l.who }}</span><span style="white-space: pre-wrap; word-break: break-word; color: #3a3c4e;">{{ l.text }}</span></div></sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isTerm }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto;">
+    <div ref="{{ termRef }}" style="min-height: 0; overflow: auto; padding: 8px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; line-height: 1.55;">
+      <div style="color: var(--ink6);">Sandboxed shell over the workspace files and the map. Type help. Nothing here reaches your computer.</div>
+      <sc-for list="{{ lines }}" as="l" hint-placeholder-count="0"><div><div style="color: var(--good);">$ {{ l.cmd }}</div><div style="white-space: pre-wrap; word-break: break-word; color: #3a3c4e;">{{ l.out }}</div></div></sc-for>
+    </div>
+    <form onSubmit="{{ runCmd }}" style="display: flex; gap: 8px; align-items: center; padding: 6px 12px 10px; border-top: 1px solid rgba(var(--ink-rgb),0.08);"><span style="font-family: 'IBM Plex Mono', monospace; color: var(--good);">$</span><input value="{{ termIn }}" onChange="{{ onTermIn }}" onKeyDown="{{ onTermKey }}" aria-label="Command" autocomplete="off" spellcheck="false" style="flex: 1; min-width: 0; height: 28px; border: 0; background: transparent; color: var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 12px;"></form>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isFiles }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height: 0; display: grid; grid-template-columns: minmax(150px, 34%) minmax(0, 1fr);">
+    <div style="min-height: 0; overflow: auto; border-right: 1px solid rgba(var(--ink-rgb),0.08); padding: 8px; display: grid; gap: 2px; align-content: start;">
+      <form onSubmit="{{ newFile }}" style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px; margin-bottom: 6px;"><input value="{{ newName }}" onChange="{{ onNewName }}" placeholder="/work/new.md" aria-label="New file path" style="height: 26px; padding: 0 8px; border-radius: 6px; border: 1px solid rgba(var(--ink-rgb),0.12); background: var(--bg); color: var(--ink); font-size: 12px; min-width: 0;"><button type="submit" style="{{ ghost }}">New</button></form>
+      <sc-for list="{{ files }}" as="f" hint-placeholder-count="4"><button type="button" onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.path }}</button></sc-for>
+    </div>
+    <div style="min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr);">
+      <div style="display: flex; gap: 6px; align-items: center; padding: 6px 10px; border-bottom: 1px solid rgba(var(--ink-rgb),0.08);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink5); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ fileTitle }}</span><sc-if value="{{ hasFile }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ saveFile }}" style="{{ btn }}">{{ saveLabel }}</button><button type="button" onClick="{{ delFile }}" style="{{ danger }}">Delete</button></sc-if></div>
+      <textarea value="{{ fileText }}" onChange="{{ onFileText }}" readonly="{{ readOnly }}" aria-label="File contents" spellcheck="false" placeholder="Pick a file. /project files are read-only." style="min-height: 0; resize: none; border: 0; padding: 10px 12px; background: transparent; color: var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.55;"></textarea>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isApprove }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height: 0; overflow: auto; padding: 10px 12px; display: grid; gap: 8px; align-content: start;">
+    <sc-if value="{{ noApprovals }}" hint-placeholder-val="{{ true }}"><div style="color: var(--ink6);">No requests waiting. File and terminal actions by agents ask here and in the chat.</div></sc-if>
+    <sc-for list="{{ approvals }}" as="a" hint-placeholder-count="0"><div style="padding: 10px; border-radius: 10px; border: 1px solid var(--warn); background: rgba(229,196,111,0.08); display: grid; gap: 6px;"><div><b>{{ a.who }}</b> wants to run <span style="font-family: 'IBM Plex Mono', monospace;">{{ a.tool }}</span></div><pre style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 11px; white-space: pre-wrap; word-break: break-word; color: var(--ink4); max-height: 140px; overflow: auto;">{{ a.args }}</pre><div style="display: flex; gap: 6px;"><button type="button" onClick="{{ a.approve }}" style="{{ btn }}">Approve</button><button type="button" onClick="{{ a.deny }}" style="{{ ghost }}">Deny</button></div></div></sc-for>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const B = '1px solid rgba(var(--ink-rgb),0.12)';
+const ghost = { height: 26, padding: '0 10px', border: B, borderRadius: 7, background: 'transparent', color: 'var(--ink4)', fontSize: 11.5, cursor: 'pointer' };
+const btn = { height: 26, padding: '0 11px', border: '1px solid var(--acc-line)', borderRadius: 7, background: 'var(--acc-bg)', color: 'var(--acc-ink)', fontSize: 11.5, fontWeight: 500, cursor: 'pointer' };
+const danger = { ...ghost, color: 'var(--bad)', borderColor: 'rgba(232,149,111,0.4)' };
+const KC = { agent: 'var(--purple)', tool: 'var(--good)', graph: 'var(--blue)', error: 'var(--bad)', mcp: 'var(--warn)', sys: 'var(--ink5)' };
+const val = e => (e && e.target ? e.target.value : e);
+
+class Component extends DCLogic {
+  state = { tab: 'log', filter: 'all', lines: [], termIn: '', hi: -1, file: null, fileText: '', dirty: false, newName: '' };
+  logRef = React.createRef(); termRef = React.createRef();
+  async componentDidMount() { this.M = await import('./mega-agent.js'); this.off = this.M.on(() => this.sched()); this.forceUpdate(); }
+  componentWillUnmount() { this.dead = true; if (this.off) this.off(); clearTimeout(this._t); }
+  componentDidUpdate() { const l = this.logRef.current; if (l && this._n !== this.M.S.logs.length) { l.scrollTop = l.scrollHeight; this._n = this.M.S.logs.length; } const t = this.termRef.current; if (t && this._tl !== this.state.lines.length) { t.scrollTop = t.scrollHeight; this._tl = this.state.lines.length; } }
+  sched() { if (this._t) return; this._t = setTimeout(() => { this._t = null; if (!this.dead) this.forceUpdate(); }, 140); }
+  async exec(e) { if (e && e.preventDefault) e.preventDefault(); const c = this.state.termIn.trim(); if (!c) return; this.setState({ termIn: '', hi: -1 }); if (c === 'clear') { this.setState({ lines: [] }); this.M.S.shell = []; return; } const out = await this.M.term(c); this.setState(s => ({ lines: [...s.lines, { cmd: c, out }].slice(-80) })); }
+  async openFile(p) { try { const t = await this.M.fs.read(p); this.setState({ file: p, fileText: t, dirty: false }); } catch (e) { this.setState({ file: p, fileText: 'Error: ' + e.message, dirty: false }); } }
+  renderVals() {
+    const M = this.M, st = this.state;
+    if (!M) return { tabs: [], filters: [], logs: [], lines: [], files: [], approvals: [], ghost, btn, danger, isLog: true };
+    const S = M.S, ap = S.approvals, tab = st.tab, L = S.ledger;
+    const fl = [['all', 'All'], ['agent', 'Agents'], ['tool', 'Tools'], ['graph', 'Map'], ['mcp', 'MCP'], ['error', 'Errors']];
+    const logs = S.logs.filter(l => st.filter === 'all' || l.k === st.filter).slice(-200);
+    const paths = M.fs.all(), readOnly = !st.file || st.file.startsWith('/project');
+    return {
+      tabs: [['log', 'Log'], ['term', 'Terminal'], ['files', 'Files'], ['approve', 'Approvals' + (ap.length ? ' · ' + ap.length : '')]].map(([id, label]) => ({ label, pick: () => this.setState({ tab: id }), style: { flex: 'none', height: 26, padding: '0 11px', border: 0, borderRadius: 6, background: tab === id ? 'var(--acc-bg)' : 'transparent', color: tab === id ? 'var(--acc-ink)' : (id === 'approve' && ap.length ? 'var(--warn)' : 'var(--ink5)'), fontSize: 12, fontWeight: 500, cursor: 'pointer' } })),
+      spend: L.haiku + ' Haiku · ' + L.sonnet + ' Sonnet · ' + L.tools + ' tool runs',
+      isLog: tab === 'log', isTerm: tab === 'term', isFiles: tab === 'files', isApprove: tab === 'approve',
+      filters: fl.map(([id, label]) => ({ label, pick: () => this.setState({ filter: id }), style: { height: 24, padding: '0 9px', borderRadius: 12, border: '1px solid ' + (st.filter === id ? 'var(--acc-line)' : 'rgba(var(--ink-rgb),0.12)'), background: st.filter === id ? 'var(--acc-bg)' : 'transparent', color: st.filter === id ? 'var(--acc-ink)' : 'var(--ink5)', fontSize: 11.5, cursor: 'pointer' } })),
+      clearLog: () => { S.logs.length = 0; M.emit(); }, logRef: this.logRef, logEmpty: !logs.length,
+      logs: logs.map(l => ({ t: l.t, k: l.k, who: l.who, text: l.text, kStyle: { color: KC[l.k] || 'var(--ink5)' } })),
+      termRef: this.termRef, lines: st.lines, termIn: st.termIn, onTermIn: e => this.setState({ termIn: val(e) }), runCmd: e => this.exec(e),
+      onTermKey: e => { const h = S.shell; if (e.key === 'ArrowUp' && h.length) { e.preventDefault(); const i = st.hi < 0 ? h.length - 1 : Math.max(0, st.hi - 1); this.setState({ hi: i, termIn: h[i] }); } else if (e.key === 'ArrowDown' && st.hi >= 0) { e.preventDefault(); const i = st.hi + 1; this.setState(i >= h.length ? { hi: -1, termIn: '' } : { hi: i, termIn: h[i] }); } },
+      files: paths.map(p => ({ path: p, pick: () => this.openFile(p), style: { textAlign: 'left', padding: '4px 8px', border: 0, borderRadius: 6, background: st.file === p ? 'var(--acc-bg)' : 'transparent', color: st.file === p ? 'var(--acc-ink)' : '#3a3c4e', fontFamily: "'IBM Plex Mono', monospace", fontSize: 11.5, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } })),
+      newName: st.newName, onNewName: e => this.setState({ newName: val(e) }), newFile: e => { e.preventDefault(); if (!st.newName.trim()) return; const p = M.fs.write(st.newName, ''); this.setState({ newName: '', file: p, fileText: '', dirty: false }); },
+      hasFile: !!st.file && !readOnly, fileTitle: st.file || 'No file open', readOnly, fileText: st.fileText, onFileText: e => this.setState({ fileText: val(e), dirty: true }), saveLabel: st.dirty ? 'Save' : 'Saved',
+      saveFile: () => { if (st.file) { M.fs.write(st.file, st.fileText); this.setState({ dirty: false }); M.log('file', 'Saved ' + st.file, 'You'); } },
+      delFile: () => { if (st.file && confirm('Delete ' + st.file + '?')) { M.fs.rm(st.file); M.log('file', 'Deleted ' + st.file, 'You'); this.setState({ file: null, fileText: '' }); } },
+      noApprovals: !ap.length, approvals: ap.map(a => ({ who: a.who, tool: a.tool, args: JSON.stringify(a.args, null, 1).slice(0, 900), approve: () => a.res(true), deny: () => a.res(false) })),
+      ghost, btn, danger,
+    };
+  }
+}
+</script>
+</body>
+</html>

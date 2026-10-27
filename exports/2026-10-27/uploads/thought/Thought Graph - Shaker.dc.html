@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Mono:wght@400;500&display=swap">
+  <style>
+    html, body { height: 100%; margin: 0; background: #efe8d6; }
+    a { color: #2f4bff; } a:hover { color: #ff4f9a; }
+    * { box-sizing: border-box; }
+    textarea::placeholder, input::placeholder { color: #8b8672; }
+    @keyframes sh-wob { 0%,100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+    input[type="range"] { -webkit-appearance: none; appearance: none; background: linear-gradient(#1b1a2e, #1b1a2e) center / 100% 6px no-repeat; height: 22px; width: 100%; margin: 0; cursor: pointer; }
+    input[type="range"]::-webkit-slider-runnable-track { height: 6px; background: #1b1a2e; border-radius: 0; }
+    input[type="range"]::-moz-range-track { height: 6px; background: #1b1a2e; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -6px; background: #ffc21a; border: 2px solid #1b1a2e; border-radius: 50%; box-shadow: 2px 2px 0 #1b1a2e; }
+    input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; background: #ffc21a; border: 2px solid #1b1a2e; border-radius: 50%; box-shadow: 2px 2px 0 #1b1a2e; }
+    button { font-family: 'DM Mono', monospace; }
+    button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 3px solid #2f4bff; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+</helmet>
+<div data-screen-label="Shaker" style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #efe8d6; color: #1b1a2e; font-family: 'DM Mono', monospace; font-size: 12px;">
+  <section ref="{{ wrapRef }}" style="position: relative; flex: 1 1 560px; min-width: 0; min-height: 520px; height: 100vh; overflow: hidden; border-right: 2px solid #1b1a2e;">
+    <canvas ref="{{ canvasRef }}" onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" style="position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: {{ cursor }};"></canvas>
+    <header style="position: absolute; top: 14px; left: 14px; right: 14px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; pointer-events: none;">
+      <div style="display: flex; align-items: baseline; gap: 10px; background: #efe8d6; border: 2px solid #1b1a2e; padding: 4px 12px; box-shadow: 3px 3px 0 #ff4f9a; pointer-events: auto;">
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.02em;">Shaker</span>
+        <span style="color: #5d5a4a;">{{ stats }}</span>
+      </div>
+      <form onSubmit="{{ onSeedSubmit }}" style="display: flex; gap: 6px; flex: 1 1 200px; max-width: 420px; pointer-events: auto;">
+        <input value="{{ seedText }}" onChange="{{ onSeedText }}" aria-label="Seed thought" style="flex: 1; min-width: 0; font: inherit; padding: 6px 10px; border: 2px solid #1b1a2e; background: #fffdf6; color: #1b1a2e;">
+        <button type="submit" style="font-size: 12px; padding: 6px 12px; border: 2px solid #1b1a2e; background: #fffdf6; color: #1b1a2e; cursor: pointer;">New seed</button>
+      </form>
+      <a href="Thought Graph.dc.html" style="margin-left: auto; pointer-events: auto; font-size: 12px; background: #efe8d6; padding: 4px 8px; border: 2px solid #1b1a2e; text-decoration: none; color: #1b1a2e;">← Original</a>
+    </header>
+    <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; left: 14px; bottom: 14px; width: min(340px, calc(100% - 28px)); background: #fffdf6; border: 2px solid #1b1a2e; box-shadow: 4px 4px 0 #1b1a2e; padding: 12px; display: grid; gap: 8px;">
+        <div style="display: flex; gap: 8px; align-items: center;"><span style="{{ sel.dot }}"></span><span style="text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: #5d5a4a;">{{ sel.meta }}</span><button type="button" onClick="{{ closeSel }}" aria-label="Close" style="margin-left: auto; border: 0; background: none; font-size: 16px; cursor: pointer; color: #1b1a2e;">×</button></div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; line-height: 1.25; text-wrap: pretty;">{{ sel.label }}</div>
+        <div style="line-height: 1.5; color: #3b3a2f; max-height: 84px; overflow: auto; text-wrap: pretty;">{{ sel.detail }}</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" onClick="{{ shakeHere }}" style="padding: 5px 10px; border: 2px solid #1b1a2e; background: #ff4f9a; color: #1b1a2e; cursor: pointer; font-weight: 500;">Shake here</button>
+          <button type="button" onClick="{{ tossSel }}" style="padding: 5px 10px; border: 2px solid #1b1a2e; background: #fffdf6; color: #1b1a2e; cursor: pointer;">Toss</button>
+        </div>
+      </div>
+    </sc-if>
+    <div style="position: absolute; right: 14px; bottom: 14px; display: grid; gap: 4px; background: #efe8d6; border: 2px solid #1b1a2e; padding: 8px 10px; font-size: 11px; color: #3b3a2f;">
+      <sc-for list="{{ legend }}" as="l" hint-placeholder-count="4"><div style="display: flex; gap: 8px; align-items: center;"><span style="{{ l.dot }}"></span>{{ l.label }}</div></sc-for>
+      <div style="color: #5d5a4a;">ring arc = grounding</div>
+      <button type="button" onClick="{{ fit }}" style="margin-top: 2px; padding: 3px 8px; border: 2px solid #1b1a2e; background: #fffdf6; color: #1b1a2e; cursor: pointer;">Fit view</button>
+    </div>
+  </section>
+
+  <aside style="flex: 0 0 360px; max-width: 100%; margin-left: auto; margin-right: auto; padding: 18px 18px 28px; display: grid; gap: 16px; align-content: start; background: #e4dcc6; height: 100vh; overflow: auto;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 34px; letter-spacing: -0.03em; line-height: 1;">Shake it.</h1>
+      <span style="margin-left: auto; color: #5d5a4a;">{{ status }}</span>
+    </div>
+
+    <label style="display: grid; gap: 6px;">
+      <span style="text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: #5d5a4a;">Describe the shake</span>
+      <textarea rows="3" value="{{ text }}" onChange="{{ onText }}" placeholder="e.g. 14 wild ideas around the weakest facts, tangled with links" style="font: inherit; line-height: 1.5; resize: vertical; padding: 8px 10px; border: 2px solid #1b1a2e; background: #fffdf6; color: #1b1a2e;"></textarea>
+    </label>
+    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+      <sc-for list="{{ examples }}" as="x" hint-placeholder-count="3"><button type="button" onClick="{{ x.pick }}" style="padding: 3px 8px; border: 1.5px dashed #1b1a2e; background: transparent; color: #1b1a2e; cursor: pointer; font-size: 11px;">{{ x.label }}</button></sc-for>
+    </div>
+    <sc-if value="{{ hasSay }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;"><span style="color: #5d5a4a;">Heard:</span>
+        <sc-for list="{{ say }}" as="c" hint-placeholder-count="2"><span style="padding: 1px 8px; background: #ffc21a; border: 1.5px solid #1b1a2e;">{{ c }}</span></sc-for>
+      </div>
+    </sc-if>
+
+    <div style="display: grid; gap: 12px; padding: 14px; border: 2px solid #1b1a2e; background: #efe8d6;">
+      <label style="display: grid; gap: 2px;"><span style="display: flex; justify-content: space-between;"><span>New thoughts</span><b>{{ count }}</b></span><input type="range" min="1" max="40" step="1" value="{{ count }}" onChange="{{ onCount }}" aria-label="New thoughts"></label>
+      <label style="display: grid; gap: 2px;"><span style="display: flex; justify-content: space-between;"><span>Links per new thought</span><b>{{ links }}</b></span><input type="range" min="0" max="4" step="0.5" value="{{ links }}" onChange="{{ onLinks }}" aria-label="Links per new thought"></label>
+      <label style="display: grid; gap: 2px;"><span style="display: flex; justify-content: space-between;"><span>Wildness</span><b>{{ wild }}</b></span><input type="range" min="0" max="100" step="5" value="{{ wild }}" onChange="{{ onWild }}" aria-label="Wildness"></label>
+      <div style="display: grid; gap: 6px;"><span>Aim at</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;"><sc-for list="{{ aims }}" as="a" hint-placeholder-count="6"><button type="button" onClick="{{ a.pick }}" style="{{ a.style }}">{{ a.label }}</button></sc-for></div>
+      </div>
+      <div style="display: grid; gap: 6px;"><span>Moves</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;"><sc-for list="{{ acts }}" as="a" hint-placeholder-count="4"><button type="button" onClick="{{ a.pick }}" aria-pressed="{{ a.on }}" style="{{ a.style }}">{{ a.label }}</button></sc-for></div>
+      </div>
+    </div>
+
+    <button type="button" onClick="{{ doShake }}" style="{{ shakeStyle }}">{{ shakeLabel }}</button>
+
+    <sc-if value="{{ hasReport }}" hint-placeholder-val="{{ false }}">
+      <div style="display: grid; gap: 10px;">
+        <div style="display: flex; align-items: baseline; gap: 8px;"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 20px;">Fell out</span><span style="color: #5d5a4a;">{{ report.line }}</span></div>
+        <div style="color: #5d5a4a; line-height: 1.5;">{{ report.moves }}</div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" onClick="{{ keepAll }}" style="padding: 5px 10px; border: 2px solid #1b1a2e; background: #1fb58f; color: #1b1a2e; cursor: pointer; font-weight: 500;">Keep all</button>
+          <button type="button" onClick="{{ tossAll }}" style="padding: 5px 10px; border: 2px solid #1b1a2e; background: #fffdf6; color: #1b1a2e; cursor: pointer;">Toss all</button>
+        </div>
+        <div style="display: grid; gap: 4px; max-height: 280px; overflow: auto;">
+          <sc-for list="{{ fresh }}" as="f" hint-placeholder-count="3">
+            <div style="display: grid; grid-template-columns: 12px minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 4px 6px; background: #fffdf6; border: 1.5px solid #1b1a2e;">
+              <span style="{{ f.dot }}"></span>
+              <button type="button" onClick="{{ f.focus }}" style="text-align: left; border: 0; background: none; padding: 0; color: #1b1a2e; cursor: pointer; line-height: 1.35; font-size: 12px;">{{ f.label }}</button>
+              <button type="button" onClick="{{ f.keep }}" aria-label="Keep" style="border: 1.5px solid #1b1a2e; background: #1fb58f; width: 24px; height: 24px; cursor: pointer; color: #1b1a2e;">✓</button>
+              <button type="button" onClick="{{ f.toss }}" aria-label="Toss" style="border: 1.5px solid #1b1a2e; background: #fffdf6; width: 24px; height: 24px; cursor: pointer; color: #1b1a2e;">×</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ hasHist }}" hint-placeholder-val="{{ false }}">
+      <div style="display: grid; gap: 6px;">
+        <span style="text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: #5d5a4a;">Seismograph · thoughts (bar) and links (tick) per shake</span>
+        <div style="display: flex; align-items: flex-end; gap: 3px; height: 64px; border-bottom: 2px solid #1b1a2e;">
+          <sc-for list="{{ hist }}" as="h" hint-placeholder-count="6"><div title="{{ h.title }}" style="{{ h.style }}"><span style="{{ h.tick }}"></span></div></sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </aside>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;seed&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Teach a city to sleep better&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Shaker&quot;},&quot;wildness&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:45,&quot;min&quot;:0,&quot;max&quot;:100,&quot;step&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Shaker&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, seedText: this.props.seed || 'Teach a city to sleep better', text: '', count: 10, links: 1.5, wild: this.props.wildness ?? 45, aim: 'auto', acts: { grow: true, fuse: true, challenge: true, project: true }, mix: {}, sel: null, fresh: [], report: null, hist: [], busy: false, status: 'Loading…', cursor: 'grab', tick: 0 };
+  wrapRef = React.createRef(); canvasRef = React.createRef();
+  W = 800; H = 600; view = { x: 0, y: 0, k: 1 }; target = null; autofit = true; alpha = 1; shakeT = 0; burst = new Map(); freshE = new Set(); drag = null; hover = null;
+  PLANE = { facts: '#2f4bff', concepts: '#1fb58f', principles: '#ffc21a', wild: '#ff4f9a' };
+  async componentDidMount() {
+    this.E = await import('./thought-engine.js'); this.S = await import('./thought-shake.js');
+    await this.E.loadModules('reasoning_modules.json');
+    this.ro = new ResizeObserver(() => this.measure()); this.ro.observe(this.wrapRef.current); this.measure();
+    this.canvasRef.current.addEventListener('wheel', this.onWheel, { passive: false });
+    this.keyFn = e => { if ((e.key === 's' || e.key === 'S') && !/INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) this.doShake(); }; window.addEventListener('keydown', this.keyFn);
+    let loaded = false;
+    try { const d = JSON.parse(localStorage.getItem('tg-shaker')); if (d && d.nodes && d.nodes.length) { this.g = this.E.restore(d, { w: this.W, h: this.H }); this.E.sanitize(this.g); loaded = !!this.g; } } catch (e) { this.g = null; }
+    if (loaded) { this.g.cx = this.W / 2; this.g.cy = this.H / 2; for (const n of this.g.nodes) if (!isFinite(n.x) || !isFinite(n.y)) { n.x = this.W / 2 + Math.random() * 80 - 40; n.y = this.H / 2 + Math.random() * 80 - 40; } this.setState({ ready: true, seedText: this.g.seed, status: 'Restored' }); }
+    else await this.reset(this.state.seedText);
+    this.raf = requestAnimationFrame(this.loop);
+  }
+  componentWillUnmount() { this.dead = true; cancelAnimationFrame(this.raf); if (this.ro) this.ro.disconnect(); window.removeEventListener('keydown', this.keyFn); }
+  measure() { const el = this.wrapRef.current, c = this.canvasRef.current; if (!el || !c) return; const r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1; this.W = Math.max(300, r.width); this.H = Math.max(300, r.height); c.width = this.W * d; c.height = this.H * d; this.dpr = d; if (this.g) { this.g.cx = this.W / 2; this.g.cy = this.H / 2; } this.alpha = Math.max(this.alpha, 0.3); }
+  async reset(seed) {
+    const E = this.E; this.g = E.createGraph(seed, { w: this.W, h: this.H }); E.seedGraph(this.g, 5); this.g.cx = this.W / 2; this.g.cy = this.H / 2;
+    this.freshE = new Set(); this.burst.clear(); this.setState({ ready: true, sel: null, fresh: [], report: null, hist: [], status: 'Seeded' });
+    await this.runShake({ count: 8, links: 1, wild: 40, aim: 'auto', quiet: true });
+  }
+  save() { try { localStorage.setItem('tg-shaker', JSON.stringify(this.E.serialize(this.g))); } catch (e) { /* blocked */ } }
+  merged(over = {}) {
+    const s = this.state, P = this.S.parseShake(s.text).settings;
+    return { count: P.count ?? s.count, links: P.links ?? s.links, wild: P.wild ?? s.wild, aim: P.aim ?? s.aim, acts: P.acts ? { ...P.acts } : s.acts, mix: P.mix ?? s.mix, ...over };
+  }
+  async runShake(o) {
+    const g = this.g, E = this.E; if (this.state.busy) return; this.setState({ busy: true });
+    const before = new Map(g.nodes.map(n => [n.id, [n.x, n.y]]));
+    const rep = await this.S.shake(g, { ...o, live: false });
+    if (this.dead) return;
+    const now = performance.now(); this.freshE = new Set(rep.edges);
+    for (const id of rep.nodes) this.burst.set(id, now);
+    this.shakeT = 1; this.alpha = 1; this.autofit = true;
+    for (const n of g.nodes) { const k = before.has(n.id) ? 7 : 2; n.vx += (Math.random() - 0.5) * k * 2; n.vy += (Math.random() - 0.5) * k * 2; }
+    this.save();
+    this.setState(s => ({ busy: false, fresh: rep.nodes, report: rep, hist: [...s.hist, rep].slice(-24), status: `Shake ${rep.id}` }));
+  }
+  doShake = () => { if (!this.g || this.state.busy) return; const m = this.merged(); this.setState({ count: m.count, links: m.links, wild: m.wild, aim: m.aim, acts: m.acts, mix: m.mix }); this.runShake(m); };
+  shakeHere = () => { if (!this.g || !this.state.sel) return; this.runShake({ ...this.merged(), focus: this.state.sel }); };
+  settle(ids) { for (const id of ids) { this.burst.delete(id); } }
+  keepAll = () => { this.freshE = new Set(); this.setState({ fresh: [] }); };
+  tossAll = () => { const ids = this.state.fresh; this.S.toss(this.g, ids); this.freshE = new Set(); this.alpha = 0.6; this.save(); this.setState(s => ({ fresh: [], sel: ids.includes(s.sel) ? null : s.sel, status: `Tossed ${ids.length}` })); };
+  tossSel = () => { const id = this.state.sel; if (!id) return; this.S.toss(this.g, [id]); this.alpha = 0.6; this.save(); this.setState(s => ({ sel: null, fresh: s.fresh.filter(x => x !== id) })); };
+  closeSel = () => this.setState({ sel: null });
+  fit = () => { this.autofit = true; this.computeFit(); };
+  computeFit() {
+    const N = this.g.nodes; if (!N.length) return; let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (const n of N) { x0 = Math.min(x0, n.x); y0 = Math.min(y0, n.y); x1 = Math.max(x1, n.x); y1 = Math.max(y1, n.y); }
+    const top = 100, bot = 70, side = 150, aw = this.W - side * 0.6, ah = this.H - top - bot, bw = x1 - x0 + side, bh = y1 - y0 + 120, k = Math.max(0.3, Math.min(1.5, aw / bw, ah / bh));
+    this.target = { k, x: this.W / 2 - (x0 + x1) / 2 * k - 40, y: top + ah / 2 - (y0 + y1) / 2 * k };
+  }
+  w2s(n) { return [n.x * this.view.k + this.view.x, n.y * this.view.k + this.view.y]; }
+  rad(n) { return 6 + Math.sqrt(n.deg || 0) * 2.4; }
+  hit(px, py) { const g = this.g; let best = null, bd = 1e9; for (const n of g.nodes) { const [sx, sy] = this.w2s(n), d = Math.hypot(sx - px, sy - py); if (d < this.rad(n) * this.view.k + 5 && d < bd) { best = n; bd = d; } } return best; }
+  pos(e) { const r = this.canvasRef.current.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  onDown = e => { const [x, y] = this.pos(e), n = this.hit(x, y); this.canvasRef.current.setPointerCapture(e.pointerId); this.drag = n ? { node: n, moved: false } : { pan: true, x, y, vx: this.view.x, vy: this.view.y, moved: false }; this.autofit = false; this.target = null; };
+  onMove = e => {
+    const [x, y] = this.pos(e), d = this.drag;
+    if (!d) { const n = this.hit(x, y); if ((n && n.id) !== (this.hover && this.hover.id)) { this.hover = n; this.setState({ cursor: n ? 'pointer' : 'grab' }); } return; }
+    d.moved = true;
+    if (d.node) { d.node.x = (x - this.view.x) / this.view.k; d.node.y = (y - this.view.y) / this.view.k; d.node.vx = d.node.vy = 0; this.alpha = Math.max(this.alpha, 0.4); }
+    else { this.view.x = d.vx + x - d.x; this.view.y = d.vy + y - d.y; }
+  };
+  onUp = () => { const d = this.drag; this.drag = null; if (d && d.node && !d.moved) this.setState({ sel: d.node.id }); else if (d && d.pan && !d.moved) this.setState({ sel: null }); };
+  onWheel = e => { e.preventDefault(); this.autofit = false; this.target = null; const [x, y] = this.pos(e), v = this.view, k = Math.max(0.2, Math.min(3, v.k * Math.exp(-e.deltaY * 0.0015))); v.x = x - (x - v.x) * k / v.k; v.y = y - (y - v.y) * k / v.k; v.k = k; };
+  loop = () => {
+    if (this.dead) return; this.raf = requestAnimationFrame(this.loop);
+    const g = this.g, c = this.canvasRef.current; if (!g || !c || !this.dpr) return;
+    if (this.alpha > 0.02) { this.E.stepLayout(g, 'field', { alpha: this.alpha, w: this.W * 3, h: this.H * 3, link: 74, spring: 0.03, repel: 2300, pad: 30 }); this.alpha *= 0.988; if (this.alpha < 0.05 && this.autofit) this.computeFit(); }
+    if (this.autofit && !this.target && this.alpha > 0.1 && g.nodes.length) this.computeFit();
+    if (this.autofit && this.target) { const v = this.view, t = this.target; v.x += (t.x - v.x) * 0.1; v.y += (t.y - v.y) * 0.1; v.k += (t.k - v.k) * 0.1; }
+    this.draw(c.getContext('2d'));
+  };
+  draw(ctx) {
+    const g = this.g, E = this.E, W = this.W, H = this.H, v = this.view, d = this.dpr, now = performance.now();
+    ctx.setTransform(d, 0, 0, d, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#efe8d6'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(27,26,46,0.14)'; for (let x = (v.x % 28 + 28) % 28; x < W; x += 28) for (let y = (v.y % 28 + 28) % 28; y < H; y += 28) ctx.fillRect(x, y, 1.5, 1.5);
+    this.shakeT *= 0.93; const sx = this.shakeT > 0.01 ? Math.sin(now * 0.09) * 14 * this.shakeT : 0, sy = this.shakeT > 0.01 ? Math.cos(now * 0.11) * 10 * this.shakeT : 0;
+    ctx.save(); ctx.translate(sx, sy);
+    const sel = g.byId.get(this.state.sel), selNb = sel ? new Set(E.neighborsOf(g, sel.id).map(n => n.id)) : null, hov = this.hover;
+    ctx.lineCap = 'round';
+    for (const e of g.edges) {
+      const a = g.byId.get(e.a), b = g.byId.get(e.b); if (!a || !b) continue;
+      const [ax, ay] = this.w2s(a), [bx, by] = this.w2s(b), fresh = this.freshE.has(e.a < e.b ? e.a + '|' + e.b : e.b + '|' + e.a), on = sel && (e.a === sel.id || e.b === sel.id);
+      ctx.strokeStyle = fresh ? '#ff4f9a' : on ? '#1b1a2e' : sel ? 'rgba(27,26,46,0.12)' : 'rgba(27,26,46,0.34)'; ctx.lineWidth = fresh ? 2.4 : on ? 2 : 1;
+      ctx.setLineDash(e.kind === 'challenge' ? [5, 4] : []);
+      const mx = (ax + bx) / 2 - (by - ay) * 0.12, my = (ay + by) / 2 + (bx - ax) * 0.12;
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.quadraticCurveTo(mx, my, bx, by); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    for (const [id, t0] of this.burst) { const n = g.byId.get(id), age = (now - t0) / 900; if (!n || age > 1) { this.burst.delete(id); continue; } const [x, y] = this.w2s(n); ctx.strokeStyle = `rgba(255,79,154,${1 - age})`; ctx.lineWidth = 3 * (1 - age) + 0.5; ctx.beginPath(); ctx.arc(x, y, (this.rad(n) + 6 + age * 54) * v.k, 0, 7); ctx.stroke(); }
+    const freshSet = new Set(this.state.fresh), order = [...g.nodes].sort((a, b) => a.deg - b.deg);
+    for (const n of order) {
+      const [x, y] = this.w2s(n), r = this.rad(n) * v.k, col = this.PLANE[n.plane] || '#999', dim = sel && n.id !== sel.id && !(selNb && selNb.has(n.id));
+      ctx.globalAlpha = dim ? 0.3 : 1; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x - 2, y - 2, r, 0, 7); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = 'rgba(27,26,46,0.25)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x + 1.5, y + 1.5, r + 3, 0, 7); ctx.stroke();
+      ctx.strokeStyle = '#1b1a2e'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x + 1.5, y + 1.5, r + 3, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (n.g || 0)); ctx.stroke();
+      if (sel && n.id === sel.id) { ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, r + 8, 0, 7); ctx.stroke(); }
+      if (freshSet.has(n.id)) { ctx.fillStyle = '#ff4f9a'; ctx.strokeStyle = '#1b1a2e'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x + r + 2, y - r - 2, 4.5, 0, 7); ctx.fill(); ctx.stroke(); }
+    }
+    ctx.globalAlpha = 1;
+    const pri = [...g.nodes].sort((a, b) => ((b.id === (sel && sel.id) || (hov && b.id === hov.id)) - (a.id === (sel && sel.id) || (hov && a.id === hov.id))) || (freshSet.has(b.id) - freshSet.has(a.id)) || b.deg - a.deg), boxes = []; let drawn = 0;
+    ctx.font = '500 11px "DM Mono", monospace'; ctx.textBaseline = 'middle';
+    for (const n of pri) {
+      if (drawn > 46) break; const [x, y] = this.w2s(n), must = (sel && n.id === sel.id) || (hov && n.id === hov.id);
+      if (!must && v.k < 0.45 && n.deg < 4) continue;
+      const t = E.short(n.root ? '◎ ' + n.label : n.label, must ? 60 : 30), w = ctx.measureText(t).width + 10, bx = x + this.rad(n) * v.k + 7, by = y - 8, box = [bx, by, bx + w, by + 17];
+      if (x < -20 || x > W + 20 || y < -20 || y > H + 20) continue;
+      if (!must && boxes.some(q => box[0] < q[2] && box[2] > q[0] && box[1] < q[3] && box[3] > q[1])) continue;
+      boxes.push(box); drawn++;
+      ctx.fillStyle = 'rgba(255,253,246,0.94)'; ctx.fillRect(box[0], box[1], w, 17); ctx.strokeStyle = '#1b1a2e'; ctx.lineWidth = 1; ctx.strokeRect(box[0] + 0.5, box[1] + 0.5, w - 1, 16);
+      ctx.fillStyle = '#1b1a2e'; ctx.fillText(t, bx + 5, by + 9);
+    }
+    ctx.restore();
+  }
+  renderVals() {
+    const E = this.E, s = this.state, g = this.g, S = this.S;
+    const pill = on => ({ padding: '4px 9px', border: '2px solid #1b1a2e', background: on ? '#ffc21a' : '#fffdf6', color: '#1b1a2e', cursor: 'pointer', fontWeight: on ? 500 : 400, boxShadow: on ? '2px 2px 0 #1b1a2e' : 'none' });
+    const dot = c => ({ width: 11, height: 11, borderRadius: '50%', background: c, border: '1.5px solid #1b1a2e', display: 'inline-block', flex: 'none' });
+    const examples = ['5 grounded facts near the weakest ideas', '14 wild ideas, tangled with links', 'a few objections around the hubs', 'fuse across the bridges, dense links'];
+    const base = {
+      wrapRef: this.wrapRef, canvasRef: this.canvasRef, onDown: this.onDown, onMove: this.onMove, onUp: this.onUp, cursor: s.cursor,
+      seedText: s.seedText, onSeedText: e => this.setState({ seedText: e.target.value }), onSeedSubmit: e => { e.preventDefault(); if (this.E && s.seedText.trim()) this.reset(s.seedText.trim()); },
+      stats: '', status: s.busy ? 'shaking…' : s.status, text: s.text, onText: e => this.setState({ text: e.target.value }),
+      examples: examples.map(x => ({ label: x, pick: () => this.setState({ text: x }) })),
+      hasSay: false, say: [], count: s.count, links: s.links, wild: s.wild,
+      onCount: e => this.setState({ count: +e.target.value }), onLinks: e => this.setState({ links: +e.target.value }), onWild: e => this.setState({ wild: +e.target.value }),
+      aims: [], acts: [], doShake: this.doShake, shakeLabel: s.busy ? 'Shaking…' : `Shake  ·  +${s.count}`,
+      shakeStyle: { padding: '16px 18px', border: '2px solid #1b1a2e', background: '#ff4f9a', color: '#1b1a2e', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: 26, letterSpacing: '-0.02em', cursor: s.busy ? 'wait' : 'pointer', boxShadow: '5px 5px 0 #1b1a2e', transform: 'rotate(-0.6deg)' },
+      hasSel: false, sel: { dot: {}, meta: '', label: '', detail: '' }, closeSel: this.closeSel, shakeHere: this.shakeHere, tossSel: this.tossSel, fit: this.fit,
+      legend: [['facts', 'Facts'], ['concepts', 'Concepts'], ['principles', 'Principles'], ['wild', 'Wild']].map(([k, l]) => ({ label: l, dot: dot(this.PLANE[k]) })),
+      hasReport: false, report: { line: '', moves: '' }, fresh: [], keepAll: this.keepAll, tossAll: this.tossAll, hasHist: false, hist: [],
+    };
+    if (!E || !g) return base;
+    const M = E.metrics(g);
+    base.stats = `${g.nodes.length} thoughts · ${g.edges.length} links · ${M.communities} clusters`;
+    const P = S.parseShake(s.text); base.say = P.say; base.hasSay = P.say.length > 0;
+    base.aims = S.AIMS.map(a => ({ label: a.label, style: pill(s.aim === a.id), pick: () => this.setState({ aim: a.id }) }));
+    base.acts = [['grow', 'Grow'], ['fuse', 'Fuse'], ['challenge', 'Challenge'], ['project', 'Reframe']].map(([k, l]) => ({ label: l, on: !!s.acts[k], style: pill(s.acts[k]), pick: () => this.setState({ acts: { ...s.acts, [k]: !s.acts[k] } }) }));
+    const sn = g.byId.get(s.sel);
+    if (sn) base.sel = { dot: dot(this.PLANE[sn.plane]), meta: `${E.PLANE_OF[sn.plane].label} · ${E.nodeType(sn)} · ${Math.round(sn.g * 100)}% grounded · ${sn.deg} links`, label: sn.label, detail: sn.detail || 'No detail.' };
+    base.hasSel = !!sn;
+    const R = s.report;
+    if (R) {
+      const d = R.did; base.hasReport = true;
+      base.report = { line: `+${R.nodes.length} thoughts · +${R.edges.length} links · ${R.ms} ms`, moves: [d.grow && `${d.grow} grown`, d.fuse && `${d.fuse} fused`, d.challenge && `${d.challenge} challenged`, d.project && `${d.project} reframed`, d.link && `${d.link} cross-links`].filter(Boolean).join(' · ') + ` · aimed ${R.intent.aim}, wild ${R.intent.wild}` };
+      base.fresh = s.fresh.map(id => g.byId.get(id)).filter(Boolean).map(n => ({ id: n.id, label: E.short(n.label, 70), dot: dot(this.PLANE[n.plane]), focus: () => this.setState({ sel: n.id }), keep: () => { this.setState(st => ({ fresh: st.fresh.filter(x => x !== n.id) })); }, toss: () => { this.S.toss(g, [n.id]); this.alpha = 0.5; this.save(); this.setState(st => ({ fresh: st.fresh.filter(x => x !== n.id), sel: st.sel === n.id ? null : st.sel })); } }));
+    }
+    const hs = s.hist, mx = Math.max(1, ...hs.map(h => h.nodes.length));
+    base.hasHist = hs.length > 0;
+    base.hist = hs.map(h => ({ id: h.id, title: `Shake ${h.id}: +${h.nodes.length} thoughts, +${h.edges.length} links`, style: { flex: '1 1 0', maxWidth: 22, height: Math.max(4, 60 * h.nodes.length / mx), background: '#2f4bff', border: '1.5px solid #1b1a2e', borderBottom: 0, position: 'relative' }, tick: { position: 'absolute', left: -1.5, right: -1.5, bottom: Math.min(56, 60 * h.edges.length / mx) - 2, height: 3, background: '#ff4f9a', border: '1px solid #1b1a2e' } }));
+    return base;
+  }
+}
+
+</script>
+</body>
+</html>
